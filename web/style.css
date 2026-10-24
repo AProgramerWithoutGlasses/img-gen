@@ -426,6 +426,33 @@ textarea::placeholder {
 .tiny-mark {
   font-size:15px
 }
+.reference-frame {
+  position:relative
+}
+.reference-remove {
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:1px solid #fecaca;
+  border-radius:50%;
+  background:#fff;
+  color:#dc2626;
+  font-size:26px;
+  line-height:1;
+  box-shadow:0 2px 6px #00000014
+}
+.reference-remove:hover {
+  background:#fee2e2;
+  color:#b91c1c
+}
+.reference-remove:focus-visible {
+  outline-color:#dc2626
+}
 .upload-zone {
   display:flex;
   align-items:center;
