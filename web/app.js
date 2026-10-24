@@ -13,6 +13,7 @@ const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':
 const dateText = date => new Date(date).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 const dimensions = j => j.images.length ? `${j.images[0].width} × ${j.images[0].height}` : statusNames[j.status];
 let toastTimer;
+let polishing = false, promptVersion = 0, polishUndo = null;
 function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('#toast').hidden = true; }, 4200); }
 async function api(path, options) {
   const response = await fetch(path, options);
@@ -28,24 +29,86 @@ function setView(view) {
   if (view === 'history') refreshHistory().catch(showConnectionError);
   history.replaceState(null, '', view === 'history' ? '#history' : location.pathname);
 }
-function updateCount() { $('#char-count').textContent = [...$('#prompt').value].length; }
+function updateCount() {
+  promptVersion++; polishUndo = null;
+  $('#char-count').textContent = [...$('#prompt').value].length;
+  $('#polish-status').textContent = ''; $('#polish-error').hidden = true;
+  updatePromptActions();
+}
+function updatePromptActions() {
+  const prompt = $('#prompt').value.trim();
+  $('#polish-prompt').disabled = polishing || state.busy || !state.configured || !prompt || [...prompt].length > 6000;
+  $('#polish-prompt').textContent = polishing ? '润色中…' : '✧ 润色提示词';
+  $('#polish-prompt').setAttribute('aria-busy', String(polishing));
+  $('#undo-polish').hidden = polishUndo === null;
+  $('#undo-polish').disabled = polishing || state.busy;
+}
+async function polishPrompt() {
+  if ($('#polish-prompt').disabled) return;
+  const original = $('#prompt').value, mode = state.mode, version = promptVersion;
+  polishing = true; updateControls();
+  $('#polish-error').hidden = true; $('#polish-status').textContent = '正在润色，请稍候…';
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 55000);
+  try {
+    const data = await api('/api/prompt/polish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: original, mode }), signal: controller.signal });
+    if (typeof data.prompt !== 'string' || !data.prompt.trim() || [...data.prompt].length > 6000) throw new Error('润色结果无效，原提示词已保留');
+    if (version !== promptVersion || mode !== state.mode || original !== $('#prompt').value) {
+      $('#polish-status').textContent = '内容或模式已修改，本次润色结果未覆盖当前提示词。';
+      return;
+    }
+    setPrompt(data.prompt);
+    polishUndo = original;
+    $('#polish-status').textContent = '已润色，可继续修改或撤销。';
+  } catch (error) {
+    $('#polish-status').textContent = '';
+    $('#polish-error').textContent = error.name === 'AbortError' ? '润色超时；未自动重试，原提示词已保留。' : error.message.includes('未自动重试') ? error.message : `${error.message}（未自动重试）`;
+    $('#polish-error').hidden = false;
+  } finally { clearTimeout(timeout); polishing = false; updateControls(); }
+}
 function setPrompt(prompt) { $('#prompt').value = prompt; updateCount(); $('#prompt').focus(); }
 function setRatio(ratio) { state.ratio = ratio; $$('[data-ratio]').forEach(button => button.classList.toggle('selected', button.dataset.ratio === ratio)); }
+function selectedModels() {
+  if (!$('#multi-model').open) return [{ model: $('#single-model').value, count: Number($('#single-count').value) }];
+  return $$('[name="selected-model"]:checked').filter(input => !input.disabled).map(input => ({ model: input.value, count: Number($(`[data-count="${input.value}"]`).value) }));
+}
+function selectSingleModel(model) {
+  $('#single-model').value = model; $('#single-count').value = '1'; $('#multi-model').open = false;
+  $$('[name="selected-model"]').forEach(input => { input.checked = input.value === model; });
+  $$('[data-count]').forEach(input => { input.value = '1'; });
+}
 function updateControls() {
   const edit = state.mode === 'edit';
-  for (const option of $('#model').options) option.disabled = edit && !['gpt-image-2', 'gemini-3.1-flash-image'].includes(option.value);
-  if ($('#model').selectedOptions[0].disabled) $('#model').value = 'gpt-image-2';
-  const gemini = $('#model').value.startsWith('gemini-');
+  const multiple = $('#multi-model').open;
+  $('#single-model-controls').hidden = multiple;
+  for (const option of $('#single-model').options) option.disabled = edit && !['gpt-image-2', 'gemini-3.1-flash-image'].includes(option.value);
+  if ($('#single-model').selectedOptions[0].disabled) $('#single-model').value = 'gpt-image-2';
+  $$('[name="selected-model"]').forEach(input => {
+    input.disabled = edit && !['gpt-image-2', 'gemini-3.1-flash-image'].includes(input.value);
+    if (input.disabled) input.checked = false;
+    $(`[data-count="${input.value}"]`).disabled = input.disabled || !input.checked;
+    input.closest('.model-row').classList.toggle('unavailable', input.disabled);
+  });
+  const selections = selectedModels();
+  const hasGPT = selections.some(item => !item.model.startsWith('gemini-'));
+  const hasGemini = selections.some(item => item.model.startsWith('gemini-'));
+  const mixed = hasGPT && hasGemini;
+  const total = selections.reduce((sum, item) => sum + item.count, 0);
   $('#upload-group').hidden = !edit;
-  $('#gpt-settings').hidden = gemini || edit; $('#gemini-settings').hidden = !gemini || edit;
-  if (edit) { setRatio('auto'); $('#gemini-preset').value = 'default'; }
-  $('#generate-label').textContent = state.busy ? '正在提交…' : edit ? '开始编辑' : '生成图片';
-  $('#generate').disabled = state.busy || !state.configured;
-  $('#size-note').textContent = edit ? '保持参考图构图，不保证逐像素保留；使用默认分辨率。' : gemini ? '2K 是接口档位；实测 2752 × 1536，非精确像素承诺。' : '比例为创作引导，最终以实际图片尺寸为准。';
-  $('#model-note').textContent = $('#model').value === 'gemini-3-pro-image' ? '该名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : gemini ? '支持默认画面或已验证的 16:9 + 2K 组合。' : '适合日常创作，比例通过提示词引导。';
+  $('#gpt-settings').hidden = !hasGPT || mixed || edit;
+  $('#gemini-settings').hidden = !hasGemini || mixed || edit;
+  if (edit || mixed || !hasGPT) setRatio('auto');
+  if (edit || mixed || !hasGemini) $('#gemini-preset').value = 'default';
+  $('#generate-label').textContent = state.busy ? '正在提交…' : edit ? `开始编辑 · ${total} 张` : `生成图片 · ${total} 张`;
+  $('#generate').disabled = state.busy || polishing || !state.configured || !selections.length;
+  updatePromptActions();
+  $('#batch-summary').textContent = `${selections.length} 个模型 · 共 ${total} 张`;
+  $('.count-note').textContent = multiple ? '每个模型 1–4 张，每批最多 20 张。每张单独请求、分别计费；失败不会自动重试。' : '每次 1–4 张。每张单独请求、分别计费；失败不会自动重试。';
+  $('#size-note').textContent = edit ? '所有模型共用参考图与默认画面配置，不保证逐像素保留。' : mixed ? 'GPT 与 Gemini 混选时，统一使用自动画面 / 默认分辨率（共同已验证配置）。' : hasGemini ? '2K 是接口档位；实测 2752 × 1536，非精确像素承诺。' : '所有模型共用比例提示；最终以实际图片尺寸为准。';
+  $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '') + (edit ? ' 编辑仅支持 GPT Image 2 / Gemini Flash。' : '');
   $$('[data-mode]').forEach(button => button.classList.toggle('selected', button.dataset.mode === state.mode));
 }
-function setMode(mode) { state.mode = mode; $('#prompt').placeholder = mode === 'edit' ? '描述你希望修改的内容，以及需要保留的部分…' : '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，水彩质感，安静而松弛……'; updateControls(); }
+function setMode(mode) { if (state.mode !== mode) { promptVersion++; polishUndo = null; $('#polish-status').textContent = ''; } state.mode = mode; $('#prompt').placeholder = mode === 'edit' ? '描述你希望修改的内容，以及需要保留的部分…' : '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，水彩质感，安静而松弛……'; updateControls(); }
 function setReference(file) {
   if (file && (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 12 * 1024 * 1024)) { toast('请选择 12 MB 以内的 PNG / JPEG 图片'); return false; }
   if (state.previewURL) URL.revokeObjectURL(state.previewURL);
@@ -58,7 +121,7 @@ function card(j) {
   const image = j.images[0];
   let media;
   if (image) media = `<img src="${image.url}" alt="${escapeHTML(j.prompt)}" loading="lazy"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
-  else if (j.status === 'failed') media = '<span class="error-mark">↻</span><small>这次没有完成，查看原因</small>';
+  else if (j.status === 'failed') media = `<span class="error-mark">↻</span><small>生成失败 · ${escapeHTML(modelNames[j.model])}</small>`;
   else media = `<span class="${j.status === 'running' ? 'spinner' : 'queued-icon'}">${j.status === 'running' ? '' : '◷'}</span><small>${statusNames[j.status]} · ${escapeHTML(modelNames[j.model])}</small>`;
   return `<article class="art-card" tabindex="0" role="button" aria-label="查看作品：${escapeHTML(j.prompt)}" data-job="${j.id}"><div class="card-media ${j.status === 'failed' ? 'card-error' : ''}">${media}</div><div class="card-info"><p>${escapeHTML(j.prompt)}</p><div class="card-meta"><span>${escapeHTML(dimensions(j))}</span><span>${dateText(j.created_at)}</span></div></div></article>`;
 }
@@ -125,8 +188,8 @@ async function fetchImageFile(url, name) {
 async function reuseJob(j) {
   try {
     const file = j.mode === 'edit' ? await fetchImageFile(`/api/jobs/${j.id}/input`, 'reference') : null;
-    state.mode = j.mode; $('#model').value = j.model; updateControls(); setRatio(j.ratio); $('#gemini-preset').value = j.resolution;
-    setReference(file); $('#count').value = '1'; setView('studio'); setPrompt(j.prompt); $('#detail').close();
+    state.mode = j.mode; selectSingleModel(j.model); updateControls(); setRatio(j.ratio); $('#gemini-preset').value = j.resolution;
+    setReference(file); setView('studio'); setPrompt(j.prompt); $('#detail').close();
     toast('已填入参数，点击生成后才会发起新请求'); window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) { toast(error.message); }
 }
@@ -134,20 +197,22 @@ async function editResult(j) {
   try {
     const file = await fetchImageFile(j.images[0].url, 'reference');
     if (!setReference(file)) return;
-    $('#model').value = j.model.startsWith('gemini-') ? 'gemini-3.1-flash-image' : 'gpt-image-2';
-    setMode('edit'); $('#count').value = '1'; setView('studio'); setPrompt('');
+    selectSingleModel(j.model.startsWith('gemini-') ? 'gemini-3.1-flash-image' : 'gpt-image-2');
+    setMode('edit'); setView('studio'); setPrompt('');
     $('#detail').close(); toast('已载入参考图，请描述需要修改的内容'); window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) { toast(error.message); }
 }
 $('#create-form').addEventListener('submit', async event => {
-  event.preventDefault(); if (state.busy) return;
+  event.preventDefault(); if (state.busy || polishing) return;
   $('#form-error').hidden = true;
   if (state.mode === 'edit' && !state.reference) { $('#form-error').textContent = '请先上传参考图片'; $('#form-error').hidden = false; return; }
-  const gemini = $('#model').value.startsWith('gemini-');
+  const selections = selectedModels();
+  if (!selections.length) { toast('请至少选择一个模型'); return; }
+  const gemini = selections.every(item => item.model.startsWith('gemini-'));
   const resolution = gemini && state.mode !== 'edit' ? $('#gemini-preset').value : 'default';
   const ratio = state.mode === 'edit' ? 'auto' : gemini ? resolution === '2K' ? '16:9' : 'auto' : state.ratio;
   const form = new FormData();
-  for (const [key, value] of Object.entries({ mode: state.mode, model: $('#model').value, prompt: $('#prompt').value, count: $('#count').value, ratio, resolution })) form.append(key, value);
+  for (const [key, value] of Object.entries({ mode: state.mode, models: JSON.stringify(selections), prompt: $('#prompt').value, ratio, resolution })) form.append(key, value);
   if (state.mode === 'edit') form.append('image', state.reference);
   state.busy = true; updateControls();
   try {
@@ -173,9 +238,18 @@ document.addEventListener('click', event => {
 });
 document.addEventListener('keydown', event => { if (['Enter', ' '].includes(event.key) && event.target.matches('[data-job]')) { event.preventDefault(); showDetail(event.target.dataset.job); } });
 $('#prompt').addEventListener('input', updateCount);
-$('#model').addEventListener('change', updateControls);
-$('#count-less').onclick = () => { $('#count').value = Math.max(1, Number($('#count').value) - 1); };
-$('#count-more').onclick = () => { $('#count').value = Math.min(4, Number($('#count').value) + 1); };
+$('#polish-prompt').onclick = polishPrompt;
+$('#undo-polish').onclick = () => { if (polishUndo !== null && !polishing && !state.busy) { setPrompt(polishUndo); $('#polish-status').textContent = '已恢复润色前的提示词。'; } };
+$('#model-picker').addEventListener('change', updateControls);
+$('#single-model').addEventListener('change', updateControls);
+$('#single-count').addEventListener('change', updateControls);
+$('#multi-model').addEventListener('toggle', () => {
+  if ($('#multi-model').open) {
+    $$('[name="selected-model"]').forEach(input => { input.checked = input.value === $('#single-model').value; });
+    $$('[data-count]').forEach(input => { input.value = input.dataset.count === $('#single-model').value ? $('#single-count').value : '1'; });
+  }
+  updateControls();
+});
 $('#inspire').onclick = () => setPrompt(ideas[Math.floor(Math.random() * ideas.length)]);
 $('#try-example').onclick = () => { setMode('generate'); setPrompt(ideas[0]); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); };
 $('#reference').onchange = event => { const file = event.target.files[0]; if (file && !setReference(file)) event.target.value = ''; };
@@ -194,10 +268,11 @@ async function init() {
     const config = await api('/api/config'); state.configured = config.configured;
     $('#connection').textContent = config.configured ? '服务已连接' : '待配置密钥';
     if (!config.configured) { $('#banner').textContent = '网站已就绪。请在服务端 .env 中配置 QISO_API_KEY 并重启，即可开始真实创作。'; $('#banner').hidden = false; }
-    try { const ids = JSON.parse(localStorage.getItem('qiso-current-jobs') || '[]'); if (Array.isArray(ids)) state.currentIDs = ids.filter(id => /^[a-f0-9]{32}$/.test(id)).slice(0, 4); } catch { /* Ignore invalid local preferences. */ }
+    try { const ids = JSON.parse(localStorage.getItem('qiso-current-jobs') || '[]'); if (Array.isArray(ids)) state.currentIDs = ids.filter(id => /^[a-f0-9]{32}$/.test(id)).slice(0, 20); } catch { /* Ignore invalid local preferences. */ }
     if (state.currentIDs.length) { const results = await Promise.all(state.currentIDs.map(id => api(`/api/jobs/${id}`).then(() => id).catch(() => null))); state.currentIDs = results.filter(Boolean); }
     updateControls(); if (location.hash === '#history') setView('history'); await refresh();
   } catch (error) { showConnectionError(error); }
   setInterval(async () => { if (!state.configured) { try { const config = await api('/api/config'); state.configured = config.configured; updateControls(); } catch {} } await refresh(); }, 4000);
 }
+updateControls();
 init();

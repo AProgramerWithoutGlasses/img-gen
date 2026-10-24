@@ -277,6 +277,21 @@ textarea::placeholder {
 .text-button:hover {
   color:#244e42
 }
+.prompt-actions {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px 16px;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:10px
+}
+.prompt-actions>span {
+  margin-left:auto
+}
+#polish-status:empty {
+  display:none
+}
 .style-chips {
   display:flex;
   gap:6px;
@@ -1442,3 +1457,20 @@ dialog::backdrop {
     gap:16px
   }
 }
+
+.model-picker { border:0; padding:0; margin:0; min-width:0; }
+.model-picker legend { width:100%; }
+.model-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--line); }
+.model-row label { display:flex; align-items:center; gap:8px; flex:1; min-width:0; font-size:12px; cursor:pointer; }
+.model-row input { margin:0; flex-shrink:0; accent-color:var(--green); width:16px; height:16px; }
+.model-row select { width:70px; flex-shrink:0; padding:7px 24px 7px 8px; background-position:right 7px center; }
+.model-row.unavailable { opacity:.45; }
+.model-row select:disabled { opacity:.45; }
+#batch-summary { font-size:12px; color:var(--green); }
+.single-model-controls:not([hidden]) { display:flex; gap:8px; }
+#single-model { flex:1; min-width:0; }
+#single-count { width:75px; flex-shrink:0; }
+.multi-model { margin-top:12px; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+.multi-model summary { cursor:pointer; font-size:12px; color:var(--green); }
+.multi-model summary span { color:var(--muted); font-size:10px; margin-left:6px; }
+.multi-model .model-picker { margin-top:10px; }

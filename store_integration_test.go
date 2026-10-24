@@ -61,6 +61,10 @@ func TestMySQLWorkflow(t *testing.T) {
 			w.WriteHeader(503)
 			return
 		}
+		if strings.Contains(r.URL.Path, "generateContent") {
+			jsonResponse(w, 200, map[string]any{"candidates": []any{map[string]any{"content": map[string]any{"parts": []any{map[string]any{"inlineData": map[string]string{"data": base64.StdEncoding.EncodeToString(testPNG())}}}}}}})
+			return
+		}
 		jsonResponse(w, 200, map[string]any{"model": "gpt-image-2", "data": []any{map[string]string{"b64_json": base64.StdEncoding.EncodeToString(testPNG())}}})
 	}))
 	defer upstream.Close()
@@ -116,10 +120,54 @@ func TestMySQLWorkflow(t *testing.T) {
 	successIDs := create("持久化图片 <script>alert(1)</script>", 2, false)
 	editIDs := create("编辑参考图", 1, true)
 	failureIDs := create("fail", 1, false)
+	createBatch := func(selections string) *httptest.ResponseRecorder {
+		t.Helper()
+		var body bytes.Buffer
+		writer := multipart.NewWriter(&body)
+		for k, v := range map[string]string{"models": selections, "prompt": "多模型对比", "mode": "generate", "ratio": "auto", "resolution": "default"} {
+			_ = writer.WriteField(k, v)
+		}
+		_ = writer.Close()
+		return request("POST", "/api/jobs", &body, writer.FormDataContentType())
+	}
+	multi := createBatch(`[{"model":"gpt-image-2","count":2},{"model":"gemini-3.1-flash-image","count":1}]`)
+	if multi.Code != 202 {
+		t.Fatalf("multi-model create: %s", multi.Body.String())
+	}
+	var batch struct {
+		IDs     []string `json:"ids"`
+		BatchID string   `json:"batch_id"`
+	}
+	if err := json.Unmarshal(multi.Body.Bytes(), &batch); err != nil {
+		t.Fatal(err)
+	}
+	ids = append(ids, batch.IDs...)
+	if len(batch.IDs) != 3 {
+		t.Fatalf("wrong model counts: %v", batch.IDs)
+	}
+	for i, id := range batch.IDs {
+		j, err := scanJob(db.QueryRow("SELECT "+jobColumns+" FROM jobs WHERE id=?", id))
+		want := "gpt-image-2"
+		if i == 2 {
+			want = "gemini-3.1-flash-image"
+		}
+		if err != nil || j.Model != want || j.BatchID != batch.BatchID || j.Prompt != "多模型对比" {
+			t.Fatalf("batch persistence: %+v, %v", j, err)
+		}
+	}
+	successIDs = append(successIDs, batch.IDs...)
+	for _, invalid := range []string{`[]`, `not-json`, `[{"model":"gpt-image-2","count":1},{"model":"unknown","count":1}]`} {
+		if w := createBatch(invalid); w.Code != 400 {
+			t.Fatalf("invalid batch accepted: %d", w.Code)
+		}
+	}
+	if w := createBatch(`[{"model":"gpt-image-2","count":4},{"model":"gpt-image-1.5","count":4},{"model":"gpt-image-2.5-sunburst","count":4},{"model":"gemini-3.1-flash-image","count":4}]`); w.Code != 429 {
+		t.Fatalf("queue admission must count all models: %d", w.Code)
+	}
 	// Queue is already durable before any worker starts.
 	var queued int
 	_ = db.QueryRow("SELECT COUNT(*) FROM jobs WHERE status='queued'").Scan(&queued)
-	if queued != 4 {
+	if queued != 7 {
 		t.Fatalf("got %d queued jobs", queued)
 	}
 	workerCtx, cancel := context.WithCancel(ctx)

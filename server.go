@@ -27,6 +27,7 @@ type app struct {
 	password string
 	workers  sync.WaitGroup
 	submit   sync.Mutex
+	polish   sync.Mutex
 }
 
 func newID() string {
@@ -64,10 +65,11 @@ func (a *app) routes(static fs.FS) http.Handler {
 		jsonResponse(w, 200, map[string]string{"status": "ok"})
 	})
 	mux.HandleFunc("GET /api/config", func(w http.ResponseWriter, r *http.Request) {
-		jsonResponse(w, 200, map[string]any{"configured": a.upstream.key != "", "max_batch": 4, "max_upload_mb": 12})
+		jsonResponse(w, 200, map[string]any{"configured": a.upstream.key != "", "max_batch": maxBatchImages, "max_per_model": 4, "max_upload_mb": 12})
 	})
 	mux.HandleFunc("GET /api/jobs", a.listJobs)
 	mux.HandleFunc("POST /api/jobs", a.createJobs)
+	mux.HandleFunc("POST /api/prompt/polish", a.polishPrompt)
 	mux.HandleFunc("GET /api/jobs/{id}", a.getJob)
 	mux.HandleFunc("GET /api/jobs/{id}/input", a.getInput)
 	mux.HandleFunc("GET /api/images/{id}", a.getImage)
@@ -116,10 +118,20 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.MultipartForm.RemoveAll()
 	j := job{Mode: r.FormValue("mode"), Model: r.FormValue("model"), Prompt: r.FormValue("prompt"), Ratio: r.FormValue("ratio"), Resolution: r.FormValue("resolution")}
-	count, err := strconv.Atoi(r.FormValue("count"))
-	if err != nil || count < 1 || count > 4 {
-		apiError(w, 400, "每批可生成 1–4 张图片")
-		return
+	var selections []modelSelection
+	if values, exists := r.MultipartForm.Value["models"]; exists {
+		if len(values) != 1 || json.Unmarshal([]byte(values[0]), &selections) != nil {
+			apiError(w, 400, "模型与数量配置无效")
+			return
+		}
+	} else {
+		// Preserve compatibility with existing single-model clients.
+		count, err := strconv.Atoi(r.FormValue("count"))
+		if err != nil {
+			apiError(w, 400, "每个模型可生成 1–4 张图片")
+			return
+		}
+		selections = []modelSelection{{Model: j.Model, Count: count}}
 	}
 	if j.Mode == "edit" {
 		file, _, err := r.FormFile("image")
@@ -141,7 +153,8 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 		j.Input = data
 		j.InputMIME = pic.MIME
 	}
-	if err := validateJob(&j); err != nil {
+	jobs, err := expandBatch(j, selections)
+	if err != nil {
 		apiError(w, 400, err.Error())
 		return
 	}
@@ -153,7 +166,7 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取任务队列失败")
 		return
 	}
-	if pending+count > 20 {
+	if pending+len(jobs) > maxBatchImages {
 		apiError(w, 429, "当前队列已满，请等待已有任务完成")
 		return
 	}
@@ -165,7 +178,7 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 	defer tx.Rollback()
 	batch := newID()
 	ids := []string{}
-	for i := 0; i < count; i++ {
+	for _, j := range jobs {
 		id := newID()
 		_, err = tx.ExecContext(r.Context(), `INSERT INTO jobs(id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,input_image,input_mime,created_at) VALUES(?,?,?,?,?,?,?,?,'queued','',?,?,UTC_TIMESTAMP(3))`, id, batch, j.Mode, j.Model, j.Prompt, j.EffectivePrompt, j.Ratio, j.Resolution, j.Input, j.InputMIME)
 		if err != nil {
