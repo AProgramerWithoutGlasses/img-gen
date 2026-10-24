@@ -1,0 +1,91 @@
+:root {
+  color-scheme: light;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: auto;
+}
+.header-actions .top-status { margin-left: 0; }
+#theme-mode {
+  width: 112px;
+  padding: 9px 26px 9px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  color: #e1e9db;
+  background: #141b17;
+  --green: #b0ca95;
+  --lime: #344733;
+  --muted: #a3b09b;
+  --line: #354237;
+  --night-surface: #1c261f;
+  --night-raised: #253128;
+  --night-text: #e1e9db;
+  --night-muted: #a3b09b;
+}
+:root[data-theme="dark"] :is(.topbar, .composer, .idea-card, .art-card, .stats, .secondary, .dialog-close, select, #search) {
+  background-color: var(--night-surface);
+  color: var(--night-text);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] :is(.segmented, #nav-count, .card-media, .detail-image, .upload-zone) {
+  background: var(--night-raised);
+  color: var(--night-muted);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .segmented button.selected {
+  background: #384b35;
+  color: #d7e9bd;
+  box-shadow: none;
+}
+:root[data-theme="dark"] :is(.brand-mark, .primary) {
+  background: #b0ca95;
+  color: #192b1e;
+}
+:root[data-theme="dark"] .primary:hover { background: #c4dcae; }
+:root[data-theme="dark"] .generate > span:first-child { color: #28432c; }
+:root[data-theme="dark"] .avatar { background: #3c352a; color: #d1bda0; }
+:root[data-theme="dark"] :is(.brand-tag, .nav-button, .top-status, .eyebrow, .panel-heading h1 span, .segmented button, .field-label span, .help, .prompt-footer, .style-chips button, .ratio-options button, .footer-note, .composer-bottom, .upload-zone small, .workspace-heading p, .workspace-badge, .welcome p, .sample-caption, .section-heading h3 > span, .muted, .idea-card small, .idea-card b, .empty p, .main-footer, .card-meta, .stats span, .filter-tabs button, .pagination > span, .detail-meta dt, .detail-info details, .capability-content p, .capability-content li) {
+  color: var(--night-muted);
+}
+:root[data-theme="dark"] :is(.text-button, .main-footer .text-button, .workspace-heading h2 span, .example-button, .detail-meta, .pill) { color: #b0ca95; }
+:root[data-theme="dark"] :is(.text-button:hover, .nav-button.active) { color: #d7e9bd; }
+:root[data-theme="dark"] :is(.brand-tag, .prompt-wrap, .style-chips button, .ratio-options button, .stepper, .workspace-badge, .welcome, .pill, .empty, .main-footer) { border-color: var(--line); }
+:root[data-theme="dark"] .prompt-wrap { background: #18211b; }
+:root[data-theme="dark"] .prompt-wrap:focus-within { border-color: #8da676; box-shadow: 0 0 0 2px #344733; }
+:root[data-theme="dark"] :is(textarea, .stepper input) { color: var(--night-text); }
+:root[data-theme="dark"] :is(textarea, input)::placeholder { color: #899880; }
+:root[data-theme="dark"] :is(.ratio-options button.selected, .filter-tabs button.selected, .style-chips button:hover, .upload-zone.dragging) {
+  background: #344733;
+  color: #d7e9bd;
+  border-color: #7e9b69;
+}
+:root[data-theme="dark"] .welcome { background: #253522; }
+:root[data-theme="dark"] .welcome-copy { background: linear-gradient(110deg, #253522, #1d2c22); }
+:root[data-theme="dark"] .welcome h3 { color: #d7e9bd; }
+:root[data-theme="dark"] .idea-card:hover { border-color: #7e9b69; }
+:root[data-theme="dark"] .mint { background: #344733; color: #bfd3a2; }
+:root[data-theme="dark"] .peach { background: #44352a; color: #dfb892; }
+:root[data-theme="dark"] .lavender { background: #373044; color: #c1b2dc; }
+:root[data-theme="dark"] .empty { background: #18211b; color: var(--night-muted); }
+:root[data-theme="dark"] .card-badge { background: #1c261ff2; color: #d7e9bd; }
+:root[data-theme="dark"] .spinner { border-color: #46583d; border-top-color: #b0ca95; }
+:root[data-theme="dark"] :is(.card-error, .detail-error) { background: #3c2b25; color: #e3b298; }
+:root[data-theme="dark"] .inline-error { color: #f0aa96; }
+:root[data-theme="dark"] .banner { background: #342f20; color: #d9c695; border-color: #53472d; }
+:root[data-theme="dark"] dialog { background: var(--night-surface); color: var(--night-text); border-color: var(--line); box-shadow: 0 25px 100px #0006; }
+:root[data-theme="dark"] dialog::backdrop { background: #050a07aa; }
+:root[data-theme="dark"] #toast { background: #d0e1bb; color: #213722; }
+@media (max-width: 1000px) {
+  .header-actions .top-status { display: none; }
+}
+@media (max-width: 640px) {
+  .topbar { height: auto; flex-wrap: wrap; gap: 12px; padding: 14px 18px 0; }
+  .topbar nav { order: 3; width: 100%; height: 38px; justify-content: center; gap: 40px; }
+  .header-actions { gap: 0; }
+  #theme-mode { width: 108px; }
+}
