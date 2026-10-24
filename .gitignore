@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.local/
+data/
+bin/
+node_modules/
+__pycache__/
+outputs/
+*.log
+*.exe
+coverage.out

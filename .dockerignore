@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+.local
+outputs
+__pycache__
+probe_*.py
+bin
+data
+*.md
+!README.md
