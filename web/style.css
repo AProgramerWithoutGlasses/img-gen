@@ -211,6 +211,54 @@ a {
   justify-content:space-between;
   margin:21px 0 10px
 }
+.size-heading-title {
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+.mixed-model-help {
+  position:relative;
+  display:inline-flex
+}
+.mixed-model-help-button {
+  display:grid;
+  place-items:center;
+  width:22px;
+  height:22px;
+  padding:0;
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:transparent;
+  color:var(--green);
+  font-size:12px;
+  cursor:help
+}
+.mixed-model-help-button:focus-visible {
+  outline:2px solid var(--green);
+  outline-offset:2px
+}
+.field-label .mixed-model-tooltip {
+  position:absolute;
+  z-index:10;
+  top:100%;
+  left:-60px;
+  width:min(260px, calc(100vw - 48px));
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--night-raised, #fff);
+  color:var(--night-text, #314b3c);
+  box-shadow:0 6px 20px #0002;
+  font-size:12px;
+  line-height:1.7;
+  font-weight:400;
+  visibility:hidden;
+  pointer-events:none
+}
+.mixed-model-help:not([data-dismissed]):is(:hover, :focus-within) .mixed-model-tooltip {
+  visibility:visible;
+  pointer-events:auto
+}
 .field-label span {
   font-size:9px;
   color:#aab1a5;

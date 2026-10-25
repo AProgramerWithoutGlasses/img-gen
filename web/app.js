@@ -146,7 +146,9 @@ function updateControls() {
   updatePromptActions();
   $('#batch-summary').textContent = `${selections.length} 个模型 · 共 ${total} 张`;
   $('.count-note').textContent = multiple ? '每个模型 1–4 张，每批最多 20 张。每张单独请求、分别计费；失败不会自动重试。' : '每次 1–4 张。每张单独请求、分别计费；失败不会自动重试。';
-  $('#size-note').textContent = edit ? '所有模型共用参考图与默认画面配置，不保证逐像素保留。' : mixed ? 'GPT 与 Gemini 混选时，统一使用自动画面 / 默认分辨率（共同已验证配置）。' : hasGemini ? '2K 是接口档位；实测 2752 × 1536，非精确像素承诺。' : '所有模型共用比例提示；最终以实际图片尺寸为准。';
+  $('#mixed-model-help').hidden = !mixed;
+  $('#size-note').hidden = mixed;
+  $('#size-note').textContent = edit ? '所有模型共用参考图与默认画面配置，不保证逐像素保留。' : hasGemini ? '2K 是接口档位；实测 2752 × 1536，非精确像素承诺。' : '所有模型共用比例提示；最终以实际图片尺寸为准。';
   $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '') + (edit ? ' 编辑仅支持 GPT Image 2 / Gemini Flash。' : '');
   $$('[data-mode]').forEach(button => button.classList.toggle('selected', button.dataset.mode === state.mode));
 }
@@ -316,6 +318,12 @@ $('#next-page').onclick = () => { state.page++; refreshHistory().catch(showConne
 let searchTimer;
 $('#search').addEventListener('input', event => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { state.search = event.target.value; state.page = 1; refreshHistory().catch(showConnectionError); }, 300); });
 $('#capabilities').onclick = () => $('#capability-dialog').showModal();
+const mixedHelp = $('#mixed-model-help');
+mixedHelp.addEventListener('pointerenter', () => delete mixedHelp.dataset.dismissed);
+mixedHelp.addEventListener('focusin', () => delete mixedHelp.dataset.dismissed);
+mixedHelp.addEventListener('keydown', event => {
+  if (event.key === 'Escape') { mixedHelp.dataset.dismissed = 'true'; event.stopPropagation(); }
+});
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 async function init() {
   try {
