@@ -144,12 +144,24 @@ async function refreshHistory() {
   for (const key of ['total', 'succeeded', 'active', 'failed']) $(`#stat-${key}`).textContent = data.stats[key];
   $('#nav-count').textContent = data.stats.total;
 }
+let recentVersion = 0;
 async function refreshRecent() {
+  const version = ++recentVersion, ids = state.currentIDs;
+  const currentIDs = new Set(ids);
   const data = await api('/api/jobs');
-  state.recent = data.items;
-  renderGallery('#recent-grid', data.items.slice(0, 6));
-  $('#recent-empty').hidden = !!data.items.length;
-  $('#recent-count').textContent = data.total ? ` / ${data.total}` : '';
+  if (version !== recentVersion || ids !== state.currentIDs) return;
+  const recent = data.items.filter(job => !currentIDs.has(job.id));
+  // A full 20-image batch can leave fewer than six older works on page one.
+  for (let page = 2; recent.length < 6 && (page - 1) * data.page_size < data.total; page++) {
+    const more = await api(`/api/jobs?page=${page}`);
+    if (version !== recentVersion || ids !== state.currentIDs) return;
+    recent.push(...more.items.filter(job => !currentIDs.has(job.id)));
+  }
+  state.recent = recent.slice(0, 6);
+  renderGallery('#recent-grid', state.recent);
+  $('#recent-empty').hidden = !!state.recent.length;
+  const total = Math.max(0, data.total - currentIDs.size);
+  $('#recent-count').textContent = total ? ` / ${total}` : '';
   $('#nav-count').textContent = data.stats.total;
 }
 async function refreshCurrent() {
@@ -220,7 +232,8 @@ $('#create-form').addEventListener('submit', async event => {
     state.currentIDs = data.ids;
     try { localStorage.setItem('qiso-current-jobs', JSON.stringify(data.ids)); } catch { /* Storage is optional. */ }
     setView('studio'); toast('创作已加入队列，历史记录已保存');
-    await refresh();
+    // Refresh the new batch even if an older polling cycle is still in flight.
+    await Promise.all([refreshRecent(), refreshCurrent()]);
     if (innerWidth <= 640) $('#current-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) { $('#form-error').textContent = error.message; $('#form-error').hidden = false; }
   finally { state.busy = false; updateControls(); }
