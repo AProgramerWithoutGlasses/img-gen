@@ -216,13 +216,13 @@ async function refreshCurrent() {
   $('#current-count').textContent = `${jobs.filter(j => j.status === 'succeeded').length} / ${jobs.length}`;
   renderGallery('#current-grid', jobs);
 }
-function showConnectionError(error) { $('#connection').textContent = '连接异常'; $('#banner').textContent = `读取服务失败：${error.message}。页面会自动重连。`; $('#banner').hidden = false; }
+function showConnectionError(error) { $('#banner').textContent = `读取服务失败：${error.message}。页面会自动重连。`; $('#banner').hidden = false; }
 async function refresh() {
   if (!state.user || state.refreshing || document.hidden) return;
   state.refreshing = true;
   try {
     await Promise.all([refreshWallet(), refreshRecent(), refreshCurrent(), ...(state.view === 'history' ? [refreshHistory()] : [])]);
-    if (state.configured) { $('#connection').textContent = '服务已连接'; $('#banner').hidden = true; }
+    if (state.configured) { $('#banner').hidden = true; }
   } catch (error) { showConnectionError(error); } finally { state.refreshing = false; }
 }
 async function showDetail(id) {
@@ -336,7 +336,6 @@ async function init() {
     $('#account-name').textContent = `${state.user.username} · ${state.user.role === 'admin' ? '管理员' : '普通用户'}`;
     const config = await api('/api/config'); state.configured = config.configured;
     await refreshWallet();
-    $('#connection').textContent = config.configured ? '服务已连接' : '待配置密钥';
     if (!config.configured) { $('#banner').textContent = '网站已就绪。请在服务端 .env 中配置 QISO_API_KEY 并重启，即可开始真实创作。'; $('#banner').hidden = false; }
     try { const ids = JSON.parse(localStorage.getItem(`qiso-current-jobs:${state.user.id}`) || '[]'); if (Array.isArray(ids)) state.currentIDs = ids.filter(id => /^[a-f0-9]{32}$/.test(id)).slice(0, 20); } catch { /* Ignore invalid local preferences. */ }
     if (state.currentIDs.length) { const results = await Promise.all(state.currentIDs.map(id => api(`/api/jobs/${id}`).then(() => id).catch(() => null))); state.currentIDs = results.filter(Boolean); }

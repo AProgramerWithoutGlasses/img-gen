@@ -125,16 +125,7 @@ a {
   border-radius:5px;
   margin-left:6px
 }
-.top-status {
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  color:#768173;
-  font-size:11px;
-  white-space:nowrap
-}
-.status-dot,.sample-dot {
+.sample-dot {
   width:6px;
   height:6px;
   border-radius:50%;
@@ -1238,9 +1229,6 @@ dialog::backdrop {
   .composer {
     padding:25px 18px
   }
-  .top-status #connection,.top-status .status-dot {
-    display:none
-  }
   .topbar nav {
     gap:18px
   }
@@ -1335,9 +1323,6 @@ dialog::backdrop {
   }
   .brand {
     gap:8px
-  }
-  .top-status {
-    display:none
   }
   .topbar nav {
     gap:15px
