@@ -902,7 +902,21 @@ main {
 }
 .card-error {
   color:#b07a64;
-  background:#f6efea
+  background:#f6efea;
+  padding:16px;
+  gap:8px
+}
+.card-error-message {
+  margin:0;
+  width:100%;
+  min-height:0;
+  max-height:50%;
+  overflow-y:auto;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+  text-align:left;
+  font-size:12px;
+  line-height:1.6
 }
 .stats {
   display:grid;
