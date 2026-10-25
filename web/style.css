@@ -202,13 +202,10 @@ a {
   justify-content:space-between;
   margin:21px 0 10px
 }
-.size-heading-title {
-  display:flex;
-  align-items:center;
-  gap:8px
-}
 .mixed-model-help {
-  position:relative;
+  position:absolute;
+  top:8px;
+  right:12px;
   display:inline-flex
 }
 .mixed-model-help-button {
@@ -228,11 +225,11 @@ a {
   outline:2px solid var(--green);
   outline-offset:2px
 }
-.field-label .mixed-model-tooltip {
+.mixed-model-help .mixed-model-tooltip {
   position:absolute;
   z-index:10;
   top:100%;
-  left:-60px;
+  right:0;
   width:min(260px, calc(100vw - 48px));
   padding:12px;
   border:1px solid var(--line);
@@ -1536,7 +1533,7 @@ dialog::backdrop {
 .single-model-controls:not([hidden]) { display:flex; gap:8px; }
 #single-model { flex:1; min-width:0; }
 #single-count { width:75px; flex-shrink:0; }
-.multi-model { margin-top:12px; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
-.multi-model summary { cursor:pointer; font-size:12px; color:var(--green); }
+.multi-model { position:relative; margin-top:12px; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+.multi-model summary { cursor:pointer; font-size:12px; color:var(--green); padding-right:28px; }
 .multi-model summary span { color:var(--muted); font-size:10px; margin-left:6px; }
 .multi-model .model-picker { margin-top:10px; }
