@@ -93,6 +93,30 @@ function creditText(j) {
   if (j.credits_state === 'refunded') return `0（已退还 ${j.credits_cost}）`;
   return '0（历史记录）';
 }
+function updateGenerationStatus(total, estimate) {
+  let label = state.mode === 'edit' ? `开始编辑 · ${total} 张` : `生成图片 · ${total} 张`;
+  let message = '', attention = false;
+  if ($('#generate').disabled) {
+    if (state.busy) {
+      label = '正在提交…'; message = '正在提交本次创作，请稍候，不要重复提交。';
+    } else if (polishing) {
+      label = '提示词润色中…'; message = '润色完成后即可生成，请稍候。';
+    } else if (!state.configured) {
+      label = '未配置生图服务'; message = '请联系管理员配置生图服务密钥，配置完成后即可生成。'; attention = true;
+    } else if (!selectedModels().length) {
+      label = '请先选择模型'; message = '请至少选择一个模型，再开始创作。'; attention = true;
+    } else if (estimate == null) {
+      label = '积分价格未就绪'; message = '请等待价格读取完成；若持续未就绪，请查看页面顶部的连接提示。';
+    } else {
+      label = '积分不足'; attention = true;
+      message = `本次需要 ${estimate} 积分，当前可用 ${state.user?.credits ?? 0} 积分。` + (state.user?.role === 'admin' ? '请在管理后台为账号增加积分，或减少生成张数。' : '请联系管理员充值，或减少生成张数。');
+    }
+  }
+  $('#generate-label').textContent = label;
+  const status = $('#generate-status');
+  status.textContent = message; status.hidden = !message;
+  status.classList.toggle('inline-error', attention);
+}
 function updateControls() {
   const edit = state.mode === 'edit';
   const multiple = $('#multi-model').open;
@@ -117,7 +141,7 @@ function updateControls() {
   if (edit || mixed || !hasGemini) $('#gemini-preset').value = 'default';
   const estimate = estimatedCredits();
   $('#generate').disabled = state.busy || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
-  $('#generate-label').textContent = state.busy ? '正在提交…' : edit ? `开始编辑 · ${total} 张` : `生成图片 · ${total} 张`;
+  updateGenerationStatus(total, estimate);
   $('#credit-estimate').textContent = estimate === null ? '正在读取积分价格…' : `预计冻结 ${estimate} 积分 · 可用 ${state.user?.credits ?? 0} 积分${state.user && state.user.credits < estimate ? '，余额不足，请联系管理员充值' : '；失败退还'}`;
   updatePromptActions();
   $('#batch-summary').textContent = `${selections.length} 个模型 · 共 ${total} 张`;
