@@ -1,7 +1,7 @@
 'use strict';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
+const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
 const ideas = [
   '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，石桌上摆着小茶壶，水彩插画风格，安静而松弛。',
   '雨后街角的一家小咖啡馆，暖黄色灯光透过玻璃，窗边放着一杯拿铁和一本翻开的书，电影感摄影，细腻光影。',
@@ -217,7 +217,7 @@ async function retryJob(id) {
 }
 async function refreshHistory() {
   const version = ++state.historyVersion;
-  const query = new URLSearchParams({ page: String(state.page), status: state.filter, q: state.search });
+  const query = new URLSearchParams({ page: String(state.page), status: state.filter, model: state.historyModel, q: state.search });
   const data = await api(`/api/jobs?${query}`);
   if (version !== state.historyVersion) return;
   state.jobs = data.items;
@@ -357,6 +357,8 @@ $('#drop-zone').addEventListener('dragleave', () => $('#drop-zone').classList.re
 $('#drop-zone').addEventListener('drop', event => { event.preventDefault(); $('#drop-zone').classList.remove('dragging'); if (event.dataTransfer.files[0]) setReference(event.dataTransfer.files[0]); });
 $('#previous-page').onclick = () => { state.page--; refreshHistory().catch(showConnectionError); };
 $('#next-page').onclick = () => { state.page++; refreshHistory().catch(showConnectionError); };
+$('#history-model').replaceChildren(new Option('全部模型', ''), ...Object.entries(modelNames).map(([value, label]) => new Option(label, value)));
+$('#history-model').addEventListener('change', event => { state.historyModel = event.target.value; state.page = 1; refreshHistory().catch(showConnectionError); });
 let searchTimer;
 $('#search').addEventListener('input', event => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { state.search = event.target.value; state.page = 1; refreshHistory().catch(showConnectionError); }, 300); });
 $('#capabilities').onclick = () => $('#capability-dialog').showModal();

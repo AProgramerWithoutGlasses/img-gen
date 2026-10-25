@@ -954,10 +954,24 @@ main {
 }
 .history-toolbar {
   display:flex;
+  flex-wrap:wrap;
   justify-content:space-between;
   gap:15px;
   margin-bottom:23px;
   align-items:center
+}
+.history-search-fields {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  width:430px;
+  max-width:100%
+}
+.history-search-fields > #history-model,.history-search-fields > #search {
+  flex:1 1 190px;
+  min-width:0;
+  width:190px;
+  font-size:11px
 }
 .filter-tabs {
   display:flex;
@@ -1234,7 +1248,7 @@ dialog::backdrop {
     flex-direction:column;
     align-items:stretch
   }
-  #search {
+  .history-search-fields {
     width:100%
   }
 }

@@ -290,6 +290,14 @@ func (a *app) listJobs(w http.ResponseWriter, r *http.Request) {
 		where += " AND status=?"
 		args = append(args, status)
 	}
+	if model := strings.TrimSpace(r.URL.Query().Get("model")); model != "" {
+		if len(model) > 80 {
+			apiError(w, 400, "模型名称过长")
+			return
+		}
+		where += " AND model=?"
+		args = append(args, model)
+	}
 	var total int
 	if err := a.db.QueryRowContext(r.Context(), "SELECT COUNT(*) FROM jobs"+where, args...).Scan(&total); err != nil {
 		apiError(w, 500, "读取历史记录失败")
