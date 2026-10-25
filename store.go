@@ -8,6 +8,17 @@ import (
 
 func migrate(ctx context.Context, db *sql.DB) error {
 	for _, statement := range []string{
+		`CREATE TABLE IF NOT EXISTS users (
+		id CHAR(32) PRIMARY KEY, username VARCHAR(32) NOT NULL UNIQUE,
+		password_hash VARCHAR(200) NOT NULL, role VARCHAR(16) NOT NULL DEFAULT 'user',
+		active BOOLEAN NOT NULL DEFAULT TRUE, session_version INT NOT NULL DEFAULT 1,
+		created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+		`CREATE TABLE IF NOT EXISTS sessions (
+		token_hash CHAR(64) PRIMARY KEY, user_id CHAR(32) NOT NULL, user_version INT NOT NULL,
+		expires_at DATETIME(3) NOT NULL, INDEX idx_expiry(expires_at),
+		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
 		`CREATE TABLE IF NOT EXISTS jobs (
 		id CHAR(32) PRIMARY KEY, batch_id CHAR(32) NOT NULL,
 		mode VARCHAR(16) NOT NULL, model VARCHAR(80) NOT NULL,
@@ -33,10 +44,24 @@ func migrate(ctx context.Context, db *sql.DB) error {
 			return err
 		}
 	}
-	return nil
+	// An additive migration preserves existing shared jobs without attributing them to a user.
+	var exists int
+	if err := db.QueryRowContext(ctx, `SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='jobs' AND column_name='user_id'`).Scan(&exists); err != nil {
+		return err
+	}
+	if exists == 0 {
+		if _, err := db.ExecContext(ctx, `ALTER TABLE jobs ADD COLUMN user_id CHAR(32) NULL, ADD INDEX idx_user_created(user_id,created_at), ADD CONSTRAINT fk_jobs_user FOREIGN KEY(user_id) REFERENCES users(id)`); err != nil {
+			return err
+		}
+	}
+	return migrateCredits(ctx, db)
 }
 
 type job struct {
+	CreditsCost     int64      `json:"credits_cost"`
+	CreditsState    string     `json:"credits_state"`
+	UserID          string     `json:"user_id"`
+	Username        string     `json:"username"`
 	ID              string     `json:"id"`
 	BatchID         string     `json:"batch_id"`
 	Mode            string     `json:"mode"`
@@ -69,13 +94,13 @@ type picture struct {
 	Content []byte `json:"-"`
 }
 
-const jobColumns = `id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,actual_model,quality,request_id,endpoint,created_at,started_at,finished_at,(input_image IS NOT NULL)`
+const jobColumns = `id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,actual_model,quality,request_id,endpoint,created_at,started_at,finished_at,(input_image IS NOT NULL),COALESCE(user_id,''),COALESCE((SELECT username FROM users WHERE users.id=jobs.user_id),'历史共享记录'),credits_cost,credits_state`
 
 type scanner interface{ Scan(...any) error }
 
 func scanJob(row scanner) (job, error) {
 	j := job{Images: []picture{}}
-	err := row.Scan(&j.ID, &j.BatchID, &j.Mode, &j.Model, &j.Prompt, &j.EffectivePrompt, &j.Ratio, &j.Resolution, &j.Status, &j.Error, &j.ActualModel, &j.Quality, &j.RequestID, &j.Endpoint, &j.CreatedAt, &j.StartedAt, &j.FinishedAt, &j.HasInput)
+	err := row.Scan(&j.ID, &j.BatchID, &j.Mode, &j.Model, &j.Prompt, &j.EffectivePrompt, &j.Ratio, &j.Resolution, &j.Status, &j.Error, &j.ActualModel, &j.Quality, &j.RequestID, &j.Endpoint, &j.CreatedAt, &j.StartedAt, &j.FinishedAt, &j.HasInput, &j.UserID, &j.Username, &j.CreditsCost, &j.CreditsState)
 	return j, err
 }
 

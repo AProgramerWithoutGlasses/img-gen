@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -74,14 +73,6 @@ func run() error {
 		return err
 	}
 	addr := env("LISTEN_ADDR", "127.0.0.1:8080")
-	password := os.Getenv("APP_PASSWORD")
-	if password == "" {
-		host, _, err := net.SplitHostPort(addr)
-		ip := net.ParseIP(host)
-		if os.Getenv("APP_DEV_MODE") != "true" || err != nil || ip == nil || !ip.IsLoopback() {
-			return errors.New("请设置 APP_PASSWORD；无密码开发模式仅允许绑定回环 IP")
-		}
-	}
 	base := strings.TrimRight(env("QISO_BASE_URL", "https://api.qiso.io"), "/")
 	u, err := url.Parse(base)
 	if err != nil || u.Host == "" || (u.Scheme != "https" && u.Scheme != "http") || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
@@ -113,9 +104,6 @@ func run() error {
 	if err := db.PingContext(ctx); err != nil {
 		return errors.New("MySQL 连接失败，请检查 MYSQL_DSN 和数据库权限")
 	}
-	if err := migrate(ctx, db); err != nil {
-		return fmt.Errorf("初始化数据库: %w", err)
-	}
 	// Hold a dedicated connection so only one process owns the durable queue.
 	lock, err := db.Conn(ctx)
 	if err != nil {
@@ -127,10 +115,16 @@ func run() error {
 		return errors.New("该数据库已有 img-gen 实例运行")
 	}
 	defer lock.ExecContext(context.Background(), "SELECT RELEASE_LOCK(CONCAT(DATABASE(), ':imggen-worker'))")
-	if _, err := db.ExecContext(ctx, "UPDATE jobs SET status='failed', error='服务重启中断了任务；请手动重试以避免重复计费', finished_at=UTC_TIMESTAMP(3) WHERE status='running'"); err != nil {
+	if err := migrate(ctx, db); err != nil {
+		return fmt.Errorf("初始化数据库: %w", err)
+	}
+	if err := bootstrapAdmin(ctx, db, env("ADMIN_USERNAME", "admin"), env("ADMIN_PASSWORD", os.Getenv("APP_PASSWORD"))); err != nil {
 		return err
 	}
-	a := &app{db: db, upstream: &provider{base: base, key: os.Getenv("QISO_API_KEY"), client: &http.Client{Timeout: 5 * time.Minute, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}, password: password}
+	a := &app{db: db, upstream: &provider{base: base, key: os.Getenv("QISO_API_KEY"), client: &http.Client{Timeout: 5 * time.Minute, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}, secureCookies: os.Getenv("COOKIE_SECURE") == "true"}
+	if err := a.recoverInterrupted(ctx); err != nil {
+		return err
+	}
 	static, _ := fs.Sub(webFiles, "web")
 	mux := a.routes(static)
 	server := &http.Server{Addr: addr, Handler: mux, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 45 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 90 * time.Second, MaxHeaderBytes: 16 << 10}

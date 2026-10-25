@@ -9,7 +9,9 @@ services:
       MYSQL_DSN: "imggen:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}@tcp(mysql:3306)/imggen?charset=utf8mb4&parseTime=true&loc=UTC"
       QISO_BASE_URL: "${QISO_BASE_URL:-https://api.qiso.io}"
       QISO_API_KEY: "${QISO_API_KEY:?Set QISO_API_KEY in .env}"
-      APP_PASSWORD: "${APP_PASSWORD:?Set APP_PASSWORD in .env}"
+      ADMIN_USERNAME: "${ADMIN_USERNAME:-admin}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-${APP_PASSWORD:-}}"
+      COOKIE_SECURE: "${COOKIE_SECURE:-false}"
     depends_on:
       mysql:
         condition: service_healthy

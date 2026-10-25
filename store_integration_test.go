@@ -31,12 +31,27 @@ func TestMySQLWorkflow(t *testing.T) {
 	}
 	config.ParseTime = true
 	config.Loc = time.UTC
+	if config.Params == nil {
+		config.Params = map[string]string{}
+	}
+	config.Params["time_zone"] = "'+00:00'"
 	db, err := sql.Open("mysql", config.FormatDSN())
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
 	ctx := context.Background()
+	var tableCount int
+	if err := db.QueryRow("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE()").Scan(&tableCount); err != nil || tableCount != 0 {
+		t.Fatal("integration requires a completely empty dedicated database")
+	}
+	t.Cleanup(func() {
+		for _, table := range []string{"credit_ledger", "model_prices", "images", "jobs", "sessions", "users"} {
+			if _, err := db.Exec("DROP TABLE IF EXISTS " + table); err != nil {
+				t.Error(err)
+			}
+		}
+		db.Close()
+	})
 	if err = migrate(ctx, db); err != nil {
 		t.Fatal(err)
 	}
@@ -68,7 +83,18 @@ func TestMySQLWorkflow(t *testing.T) {
 		jsonResponse(w, 200, map[string]any{"model": "gpt-image-2", "data": []any{map[string]string{"b64_json": base64.StdEncoding.EncodeToString(testPNG())}}})
 	}))
 	defer upstream.Close()
-	a := &app{db: db, password: "test-access", upstream: &provider{base: upstream.URL, key: "test-key", client: upstream.Client()}}
+	if err := bootstrapAdmin(ctx, db, "admin", "test-access"); err != nil {
+		t.Fatal(err)
+	}
+	var adminID string
+	if err := db.QueryRow("SELECT id FROM users WHERE username='admin'").Scan(&adminID); err != nil {
+		t.Fatal(err)
+	}
+	token := newID() + newID()
+	if _, err := db.Exec("INSERT INTO sessions(token_hash,user_id,user_version,expires_at) VALUES(?,?,1,DATE_ADD(UTC_TIMESTAMP(3),INTERVAL 1 DAY))", sessionHash(token), adminID); err != nil {
+		t.Fatal(err)
+	}
+	a := &app{db: db, upstream: &provider{base: upstream.URL, key: "test-key", client: upstream.Client()}}
 	h := a.routes(fstest.MapFS{"index.html": {Data: []byte("studio")}})
 	ids := []string{}
 	defer func() {
@@ -82,13 +108,17 @@ func TestMySQLWorkflow(t *testing.T) {
 			body = &bytes.Buffer{}
 		}
 		r := httptest.NewRequest(method, "http://localhost"+path, body)
-		r.SetBasicAuth("admin", "test-access")
+		r.AddCookie(&http.Cookie{Name: sessionCookie, Value: token})
 		if contentType != "" {
 			r.Header.Set("Content-Type", contentType)
 		}
 		w := httptest.NewRecorder()
 		h.ServeHTTP(w, r)
 		return w
+	}
+	grant := request("POST", "/api/admin/users/"+adminID+"/credits", bytes.NewBufferString(`{"delta":1000,"note":"测试积分","request_id":"11111111111111111111111111111111"}`), "application/json")
+	if grant.Code != 200 {
+		t.Fatalf("grant credits: %s", grant.Body.String())
 	}
 	create := func(prompt string, count int, edit bool) []string {
 		t.Helper()
@@ -219,8 +249,10 @@ func TestMySQLWorkflow(t *testing.T) {
 	if !bytes.Equal(w.Body.Bytes(), testPNG()) {
 		t.Fatal("reference not persisted")
 	}
+	testAccountWorkflow(t, db, h, successIDs[0], editIDs[0], adminID, token)
+	testCreditsWorkflow(t, db, h, a, adminID, token)
 	// A fresh app instance reads the same saved history after the old workers stop.
-	a2 := &app{db: db, password: "test-access", upstream: a.upstream}
+	a2 := &app{db: db, upstream: a.upstream}
 	h = a2.routes(fstest.MapFS{"index.html": {Data: []byte("studio")}})
 	w = request("GET", "/api/jobs?q=持久化&status=succeeded", nil, "")
 	var listing struct {

@@ -207,7 +207,7 @@ func TestProviderFailuresAndNoRetry(t *testing.T) {
 }
 
 func TestAuthenticationAndCSRF(t *testing.T) {
-	a := app{password: "private-password", upstream: &provider{key: "server-secret"}}
+	a := app{upstream: &provider{key: "server-secret"}}
 	h := a.routes(fstest.MapFS{"index.html": {Data: []byte("test")}})
 	for _, tc := range []struct {
 		method, path, origin, password string
@@ -220,7 +220,11 @@ func TestAuthenticationAndCSRF(t *testing.T) {
 	} {
 		r := httptest.NewRequest(tc.method, "http://localhost"+tc.path, nil)
 		if tc.password != "" {
-			r.SetBasicAuth("admin", tc.password)
+			if tc.password == "private-password" && tc.origin == "" {
+				mockSession(t, &a, r, "admin")
+			} else {
+				r.SetBasicAuth("admin", tc.password)
+			}
 		}
 		if tc.origin != "" {
 			r.Header.Set("Origin", tc.origin)

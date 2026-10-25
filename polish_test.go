@@ -40,9 +40,9 @@ func TestPolishRouteAndProtocol(t *testing.T) {
 				_, _ = w.Write([]byte(polishFixture("  竹林里，熊猫在柔和光线下喝茶。  ")))
 			}))
 			defer s.Close()
-			a := app{password: "private", upstream: &provider{base: s.URL, key: "test-secret", client: s.Client()}}
+			a := app{upstream: &provider{base: s.URL, key: "test-secret", client: s.Client()}}
 			r := httptest.NewRequest("POST", "http://studio/api/prompt/polish", strings.NewReader(`{"prompt":" 熊猫喝茶 ","mode":"`+mode+`"}`))
-			r.SetBasicAuth("admin", "private")
+			mockSession(t, &a, r, "user")
 			r.Header.Set("Origin", "http://studio")
 			w := httptest.NewRecorder()
 			a.routes(fstest.MapFS{}).ServeHTTP(w, r)
@@ -78,13 +78,15 @@ func TestPolishValidationAndProtection(t *testing.T) {
 		{"concurrent", valid, "key", "private", "", true, 409},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			a := app{password: "private", upstream: &provider{base: s.URL, key: tc.key, client: s.Client()}}
+			a := app{upstream: &provider{base: s.URL, key: tc.key, client: s.Client()}}
 			if tc.locked {
 				a.polish.Lock()
 				defer a.polish.Unlock()
 			}
 			r := httptest.NewRequest("POST", "http://studio/api/prompt/polish", strings.NewReader(tc.body))
-			r.SetBasicAuth("admin", tc.password)
+			if tc.password != "" && tc.origin != "https://evil.test" {
+				mockSession(t, &a, r, "user")
+			}
 			r.Header.Set("Origin", tc.origin)
 			w := httptest.NewRecorder()
 			a.routes(fstest.MapFS{}).ServeHTTP(w, r)

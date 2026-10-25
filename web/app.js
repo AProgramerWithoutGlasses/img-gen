@@ -1,7 +1,7 @@
 'use strict';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
+const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
 const ideas = [
   '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，石桌上摆着小茶壶，水彩插画风格，安静而松弛。',
   '雨后街角的一家小咖啡馆，暖黄色灯光透过玻璃，窗边放着一杯拿铁和一本翻开的书，电影感摄影，细腻光影。',
@@ -18,16 +18,20 @@ function toast(message) { $('#toast').textContent = message; $('#toast').hidden 
 async function api(path, options) {
   const response = await fetch(path, options);
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || `请求失败 (${response.status})`);
+  if (!response.ok) { if (response.status === 401 && state.user) { location.reload(); } const error = new Error(data.error || `请求失败 (${response.status})`); error.status = response.status; throw error; }
   return data;
 }
 function setView(view) {
+  if (view === 'admin' && state.user?.role !== 'admin') return;
   state.view = view;
+  $('#admin-view').hidden = view !== 'admin';
+  document.body.classList.toggle('admin-mode', view === 'admin');
+  if (view === 'admin') refreshAdmin().catch(showAdminError);
   $('#studio-view').hidden = view !== 'studio'; $('#history-view').hidden = view !== 'history';
   document.body.classList.toggle('history-mode', view === 'history');
   $$('.nav-button').forEach(button => button.classList.toggle('active', button.dataset.view === view));
   if (view === 'history') refreshHistory().catch(showConnectionError);
-  history.replaceState(null, '', view === 'history' ? '#history' : location.pathname);
+  history.replaceState(null, '', view === 'studio' ? location.pathname : `#${view}`);
 }
 function updateCount() {
   promptVersion++; polishUndo = null;
@@ -77,6 +81,18 @@ function selectSingleModel(model) {
   $$('[name="selected-model"]').forEach(input => { input.checked = input.value === model; });
   $$('[data-count]').forEach(input => { input.value = '1'; });
 }
+function estimatedCredits() {
+  if (!state.prices) return null;
+  const selections = selectedModels();
+  if (selections.some(item => !Number.isSafeInteger(state.prices[item.model]))) return null;
+  return selections.reduce((sum, item) => sum + state.prices[item.model] * item.count, 0);
+}
+function creditText(j) {
+  if (j.credits_state === 'charged') return `${j.credits_cost} 积分`;
+  if (j.credits_state === 'reserved') return `0（冻结 ${j.credits_cost}）`;
+  if (j.credits_state === 'refunded') return `0（已退还 ${j.credits_cost}）`;
+  return '0（历史记录）';
+}
 function updateControls() {
   const edit = state.mode === 'edit';
   const multiple = $('#multi-model').open;
@@ -99,8 +115,10 @@ function updateControls() {
   $('#gemini-settings').hidden = !hasGemini || mixed || edit;
   if (edit || mixed || !hasGPT) setRatio('auto');
   if (edit || mixed || !hasGemini) $('#gemini-preset').value = 'default';
+  const estimate = estimatedCredits();
+  $('#generate').disabled = state.busy || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
   $('#generate-label').textContent = state.busy ? '正在提交…' : edit ? `开始编辑 · ${total} 张` : `生成图片 · ${total} 张`;
-  $('#generate').disabled = state.busy || polishing || !state.configured || !selections.length;
+  $('#credit-estimate').textContent = estimate === null ? '正在读取积分价格…' : `预计冻结 ${estimate} 积分 · 可用 ${state.user?.credits ?? 0} 积分${state.user && state.user.credits < estimate ? '，余额不足，请联系管理员充值' : '；失败退还'}`;
   updatePromptActions();
   $('#batch-summary').textContent = `${selections.length} 个模型 · 共 ${total} 张`;
   $('.count-note').textContent = multiple ? '每个模型 1–4 张，每批最多 20 张。每张单独请求、分别计费；失败不会自动重试。' : '每次 1–4 张。每张单独请求、分别计费；失败不会自动重试。';
@@ -174,10 +192,10 @@ async function refreshCurrent() {
 }
 function showConnectionError(error) { $('#connection').textContent = '连接异常'; $('#banner').textContent = `读取服务失败：${error.message}。页面会自动重连。`; $('#banner').hidden = false; }
 async function refresh() {
-  if (state.refreshing || document.hidden) return;
+  if (!state.user || state.refreshing || document.hidden) return;
   state.refreshing = true;
   try {
-    await Promise.all([refreshRecent(), refreshCurrent(), ...(state.view === 'history' ? [refreshHistory()] : [])]);
+    await Promise.all([refreshWallet(), refreshRecent(), refreshCurrent(), ...(state.view === 'history' ? [refreshHistory()] : [])]);
     if (state.configured) { $('#connection').textContent = '服务已连接'; $('#banner').hidden = true; }
   } catch (error) { showConnectionError(error); } finally { state.refreshing = false; }
 }
@@ -186,8 +204,8 @@ async function showDetail(id) {
     const j = await api(`/api/jobs/${id}`);
     const seconds = j.started_at && j.finished_at ? `${((new Date(j.finished_at) - new Date(j.started_at)) / 1000).toFixed(1)} 秒` : '—';
     const pictures = j.images.map(p => `<img src="${p.url}" alt="${escapeHTML(j.prompt)}">`).join('');
-    const metadata = [['创作模式', j.mode === 'edit' ? '参考图编辑' : '文字生图'], ['请求模型', j.model], ['返回模型', j.actual_model || '—'], ['画面设定', j.ratio === 'auto' ? '自动 / 默认' : `${j.ratio} · ${j.resolution === 'default' ? '默认分辨率' : j.resolution}`], ['实际图片', j.images.map(p => `${p.width} × ${p.height} · ${p.mime.split('/')[1].toUpperCase()} · ${(p.bytes / 1048576).toFixed(2)} MB`).join('；') || '—'], ['生成耗时', seconds], ['创建时间', new Date(j.created_at).toLocaleString('zh-CN')], ['响应质量', j.quality || '—'], ['请求 ID', j.request_id || '—'], ['任务 ID', j.id]];
-    $('#detail-body').innerHTML = `<div class="detail-layout"><div class="detail-image">${pictures || `<span class="queued-icon">${j.status === 'failed' ? '↻' : '◷'}</span><span>${statusNames[j.status]}</span>`}</div><div class="detail-info"><span class="eyebrow">${statusNames[j.status]}</span><h3>一瞬灵感，一张作品。</h3><p>${escapeHTML(j.prompt)}</p>${j.error ? `<div class="detail-error">${escapeHTML(j.error)}</div>` : ''}<dl class="detail-meta">${metadata.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHTML(v)}</dd>`).join('')}</dl><details><summary>实际发送的提示词与接口</summary><p>${escapeHTML(j.effective_prompt)}</p><p>${escapeHTML(j.endpoint || '尚未调用')}</p></details><div class="detail-actions">${j.images.map((p, index) => `<a class="primary" href="${p.url}?download=1" download>↓ 下载原图${j.images.length > 1 ? index + 1 : ''}</a>`).join('')}<button class="secondary" id="reuse-job">${j.status === 'failed' ? '重试这次创作' : '复用参数'}</button>${j.images.length ? '<button class="secondary" id="edit-result">▧ 继续编辑</button>' : ''}</div></div></div>`;
+    const metadata = [['用户', j.username || '历史共享记录'], ['消耗积分', creditText(j)], ['创作模式', j.mode === 'edit' ? '参考图编辑' : '文字生图'], ['请求模型', j.model], ['返回模型', j.actual_model || '—'], ['画面设定', j.ratio === 'auto' ? '自动 / 默认' : `${j.ratio} · ${j.resolution === 'default' ? '默认分辨率' : j.resolution}`], ['实际图片', j.images.map(p => `${p.width} × ${p.height} · ${p.mime.split('/')[1].toUpperCase()} · ${(p.bytes / 1048576).toFixed(2)} MB`).join('；') || '—'], ['生成耗时', seconds], ['创建时间', new Date(j.created_at).toLocaleString('zh-CN')], ['响应质量', j.quality || '—'], ['请求 ID', j.request_id || '—'], ['任务 ID', j.id]];
+    $('#detail-body').innerHTML = `<div class="detail-layout"><div class="detail-image">${j.has_input ? `<figure><figcaption>输入参考图</figcaption><img src="/api/jobs/${j.id}/input" alt="输入参考图"></figure>` : ''}${pictures ? '<span>生成结果</span>' : ''}${pictures || `<span class="queued-icon">${j.status === 'failed' ? '↻' : '◷'}</span><span>${statusNames[j.status]}</span>`}</div><div class="detail-info"><span class="eyebrow">${statusNames[j.status]}</span><h3>一瞬灵感，一张作品。</h3><p>${escapeHTML(j.prompt)}</p>${j.error ? `<div class="detail-error">${escapeHTML(j.error)}</div>` : ''}<dl class="detail-meta">${metadata.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHTML(v)}</dd>`).join('')}</dl><details><summary>实际发送的提示词与接口</summary><p>${escapeHTML(j.effective_prompt)}</p><p>${escapeHTML(j.endpoint || '尚未调用')}</p></details><div class="detail-actions">${j.images.map((p, index) => `<a class="primary" href="${p.url}?download=1" download>↓ 下载原图${j.images.length > 1 ? index + 1 : ''}</a>`).join('')}<button class="secondary" id="reuse-job">${j.status === 'failed' ? '重试这次创作' : '复用参数'}</button>${j.images.length ? '<button class="secondary" id="edit-result">▧ 继续编辑</button>' : ''}</div></div></div>`;
     if (!$('#detail').open) $('#detail').showModal();
     $('#reuse-job').onclick = () => reuseJob(j);
     if ($('#edit-result')) $('#edit-result').onclick = () => editResult(j);
@@ -215,7 +233,7 @@ async function editResult(j) {
   } catch (error) { toast(error.message); }
 }
 $('#create-form').addEventListener('submit', async event => {
-  event.preventDefault(); if (state.busy || polishing) return;
+  event.preventDefault(); if ($('#generate').disabled) return;
   $('#form-error').hidden = true;
   if (state.mode === 'edit' && !state.reference) { $('#form-error').textContent = '请先上传参考图片'; $('#form-error').hidden = false; return; }
   const selections = selectedModels();
@@ -224,19 +242,18 @@ $('#create-form').addEventListener('submit', async event => {
   const resolution = gemini && state.mode !== 'edit' ? $('#gemini-preset').value : 'default';
   const ratio = state.mode === 'edit' ? 'auto' : gemini ? resolution === '2K' ? '16:9' : 'auto' : state.ratio;
   const form = new FormData();
-  for (const [key, value] of Object.entries({ mode: state.mode, models: JSON.stringify(selections), prompt: $('#prompt').value, ratio, resolution })) form.append(key, value);
+  for (const [key, value] of Object.entries({ mode: state.mode, models: JSON.stringify(selections), prompt: $('#prompt').value, ratio, resolution, expected_credits: estimatedCredits() })) form.append(key, value);
   if (state.mode === 'edit') form.append('image', state.reference);
   state.busy = true; updateControls();
   try {
     const data = await api('/api/jobs', { method: 'POST', body: form });
     state.currentIDs = data.ids;
-    try { localStorage.setItem('qiso-current-jobs', JSON.stringify(data.ids)); } catch { /* Storage is optional. */ }
+    try { localStorage.setItem(`qiso-current-jobs:${state.user.id}`, JSON.stringify(data.ids)); } catch { /* Storage is optional. */ }
     setView('studio'); toast('创作已加入队列，历史记录已保存');
-    // Refresh the new batch even if an older polling cycle is still in flight.
-    await Promise.all([refreshRecent(), refreshCurrent()]);
+    await refresh();
     if (innerWidth <= 640) $('#current-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) { $('#form-error').textContent = error.message; $('#form-error').hidden = false; }
-  finally { state.busy = false; updateControls(); }
+  finally { state.busy = false; await refreshWallet().catch(() => {}); updateControls(); }
 });
 document.addEventListener('click', event => {
   const button = event.target.closest('button');
@@ -278,14 +295,22 @@ $('#capabilities').onclick = () => $('#capability-dialog').showModal();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 async function init() {
   try {
+    state.user = await api('/api/auth/me');
+    document.body.classList.remove('signed-out');
+    $('#login-view').hidden = true;
+    $('#admin-nav').hidden = state.user.role !== 'admin';
+    renderAccount();
+    $('#password-username').value = state.user.username;
+    $('#account-name').textContent = `${state.user.username} · ${state.user.role === 'admin' ? '管理员' : '普通用户'}`;
     const config = await api('/api/config'); state.configured = config.configured;
+    await refreshWallet();
     $('#connection').textContent = config.configured ? '服务已连接' : '待配置密钥';
     if (!config.configured) { $('#banner').textContent = '网站已就绪。请在服务端 .env 中配置 QISO_API_KEY 并重启，即可开始真实创作。'; $('#banner').hidden = false; }
-    try { const ids = JSON.parse(localStorage.getItem('qiso-current-jobs') || '[]'); if (Array.isArray(ids)) state.currentIDs = ids.filter(id => /^[a-f0-9]{32}$/.test(id)).slice(0, 20); } catch { /* Ignore invalid local preferences. */ }
+    try { const ids = JSON.parse(localStorage.getItem(`qiso-current-jobs:${state.user.id}`) || '[]'); if (Array.isArray(ids)) state.currentIDs = ids.filter(id => /^[a-f0-9]{32}$/.test(id)).slice(0, 20); } catch { /* Ignore invalid local preferences. */ }
     if (state.currentIDs.length) { const results = await Promise.all(state.currentIDs.map(id => api(`/api/jobs/${id}`).then(() => id).catch(() => null))); state.currentIDs = results.filter(Boolean); }
-    updateControls(); if (location.hash === '#history') setView('history'); await refresh();
-  } catch (error) { showConnectionError(error); }
+    updateControls(); if (location.hash === '#history') setView('history'); if (location.hash === '#admin' && state.user.role === 'admin') setView('admin'); await refresh();
+  } catch (error) { if (!state.user) { if (error.status !== 401) { $('#login-error').textContent = error.message; $('#login-error').hidden = false; } return; } showConnectionError(error); }
   setInterval(async () => { if (!state.configured) { try { const config = await api('/api/config'); state.configured = config.configured; updateControls(); } catch {} } await refresh(); }, 4000);
 }
 updateControls();
-init();
+// Account UI starts initialization after its event handlers are installed.

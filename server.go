@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"crypto/rand"
-	"crypto/sha256"
-	"crypto/subtle"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
@@ -22,12 +20,14 @@ import (
 )
 
 type app struct {
-	db       *sql.DB
-	upstream *provider
-	password string
-	workers  sync.WaitGroup
-	submit   sync.Mutex
-	polish   sync.Mutex
+	db            *sql.DB
+	upstream      *provider
+	secureCookies bool
+	usersMu       sync.Mutex
+	logins        loginLimiter
+	workers       sync.WaitGroup
+	submit        sync.Mutex
+	polish        sync.Mutex
 }
 
 func newID() string {
@@ -67,6 +67,20 @@ func (a *app) routes(static fs.FS) http.Handler {
 	mux.HandleFunc("GET /api/config", func(w http.ResponseWriter, r *http.Request) {
 		jsonResponse(w, 200, map[string]any{"configured": a.upstream.key != "", "max_batch": maxBatchImages, "max_per_model": 4, "max_upload_mb": 12})
 	})
+	mux.HandleFunc("POST /api/auth/login", a.login)
+	mux.HandleFunc("POST /api/auth/logout", a.logout)
+	mux.HandleFunc("GET /api/auth/me", a.profile)
+	mux.HandleFunc("GET /api/prices", a.listPrices)
+	mux.HandleFunc("GET /api/credits/ledger", a.listCreditLedger)
+	mux.HandleFunc("GET /api/admin/prices", a.listPrices)
+	mux.HandleFunc("PATCH /api/admin/prices/{model}", a.updatePrice)
+	mux.HandleFunc("POST /api/admin/users/{id}/credits", a.adjustCredits)
+	mux.HandleFunc("GET /api/admin/users/{id}/credits", a.listCreditLedger)
+	mux.HandleFunc("POST /api/auth/password", a.changePassword)
+	mux.HandleFunc("GET /api/admin/users", a.listUsers)
+	mux.HandleFunc("POST /api/admin/users", a.createUser)
+	mux.HandleFunc("PATCH /api/admin/users/{id}", a.updateUser)
+	mux.HandleFunc("GET /api/admin/jobs", a.listJobs)
 	mux.HandleFunc("GET /api/jobs", a.listJobs)
 	mux.HandleFunc("POST /api/jobs", a.createJobs)
 	mux.HandleFunc("POST /api/prompt/polish", a.polishPrompt)
@@ -80,15 +94,6 @@ func (a *app) routes(static fs.FS) http.Handler {
 		w.Header().Set("X-Frame-Options", "DENY")
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
 		w.Header().Set("Cache-Control", "no-store")
-		if r.URL.Path != "/healthz" && a.password != "" {
-			user, pass, ok := r.BasicAuth()
-			actual, expected := sha256.Sum256([]byte(pass)), sha256.Sum256([]byte(a.password))
-			if !ok || user != "admin" || subtle.ConstantTimeCompare(actual[:], expected[:]) != 1 {
-				w.Header().Set("WWW-Authenticate", `Basic realm="Qiso Studio", charset="UTF-8"`)
-				apiError(w, 401, "请输入网站访问密码")
-				return
-			}
-		}
 		if r.Method != "GET" && r.Method != "HEAD" {
 			if strings.EqualFold(r.Header.Get("Sec-Fetch-Site"), "cross-site") {
 				apiError(w, 403, "不允许跨站提交")
@@ -100,6 +105,17 @@ func (a *app) routes(static fs.FS) http.Handler {
 					apiError(w, 403, "不允许跨站提交")
 					return
 				}
+			}
+		}
+		if strings.HasPrefix(r.URL.Path, "/api/") && r.URL.Path != "/api/auth/login" {
+			var ok bool
+			r, ok = a.authenticate(w, r)
+			if !ok {
+				return
+			}
+			if strings.HasPrefix(r.URL.Path, "/api/admin/") && currentUser(r).Role != "admin" {
+				apiError(w, 403, "仅管理员可访问")
+				return
 			}
 		}
 		mux.ServeHTTP(w, r)
@@ -176,13 +192,38 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer tx.Rollback()
+	balance, err := reserveBatch(r.Context(), tx, currentUser(r).ID, jobs)
+	if errors.Is(err, errInsufficientCredits) {
+		apiError(w, 402, err.Error())
+		return
+	}
+	if err != nil {
+		apiError(w, 500, "冻结积分失败，任务未提交")
+		return
+	}
+	var reserved int64
+	for _, j := range jobs {
+		reserved += j.CreditsCost
+	}
+	if raw := r.FormValue("expected_credits"); raw != "" {
+		expected, parseErr := strconv.ParseInt(raw, 10, 64)
+		if parseErr != nil || expected != reserved {
+			apiError(w, 409, "模型价格已变化，请确认最新积分价格后重新提交")
+			return
+		}
+	}
 	batch := newID()
 	ids := []string{}
 	for _, j := range jobs {
 		id := newID()
-		_, err = tx.ExecContext(r.Context(), `INSERT INTO jobs(id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,input_image,input_mime,created_at) VALUES(?,?,?,?,?,?,?,?,'queued','',?,?,UTC_TIMESTAMP(3))`, id, batch, j.Mode, j.Model, j.Prompt, j.EffectivePrompt, j.Ratio, j.Resolution, j.Input, j.InputMIME)
+		_, err = tx.ExecContext(r.Context(), `INSERT INTO jobs(id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,input_image,input_mime,user_id,credits_cost,credits_state,created_at) VALUES(?,?,?,?,?,?,?,?,'queued','',?,?,?,?,'reserved',UTC_TIMESTAMP(3))`, id, batch, j.Mode, j.Model, j.Prompt, j.EffectivePrompt, j.Ratio, j.Resolution, j.Input, j.InputMIME, currentUser(r).ID, j.CreditsCost)
 		if err != nil {
 			apiError(w, 500, "保存任务失败，请检查数据库磁盘与 max_allowed_packet")
+			return
+		}
+		balance -= j.CreditsCost
+		if _, err := tx.ExecContext(r.Context(), "INSERT INTO credit_ledger(user_id,request_key,kind,delta,balance_after,job_id) VALUES(?,?,'reserve',?,?,?)", currentUser(r).ID, "reserve:"+id, -j.CreditsCost, balance, id); err != nil {
+			apiError(w, 500, "保存积分流水失败，任务未提交")
 			return
 		}
 		ids = append(ids, id)
@@ -191,7 +232,7 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "任务提交结果未知，请先查看历史记录，避免重复提交")
 		return
 	}
-	jsonResponse(w, 202, map[string]any{"batch_id": batch, "ids": ids})
+	jsonResponse(w, 202, map[string]any{"batch_id": batch, "ids": ids, "credits_reserved": reserved})
 }
 
 func (a *app) listJobs(w http.ResponseWriter, r *http.Request) {
@@ -205,6 +246,38 @@ func (a *app) listJobs(w http.ResponseWriter, r *http.Request) {
 	}
 	where := " WHERE 1=1"
 	args := []any{}
+	// Studio/history is always personal; the admin endpoint explicitly exposes all records.
+	if r.URL.Path != "/api/admin/jobs" {
+		where += " AND user_id=?"
+		args = append(args, currentUser(r).ID)
+	} else {
+		start, end, err := requestTimeRange(r.URL.Query(), time.Now())
+		if err != nil {
+			apiError(w, 400, err.Error())
+			return
+		}
+		where += " AND created_at>=? AND created_at<=?"
+		args = append(args, start, end)
+		if id := r.URL.Query().Get("user_id"); id != "" {
+			if id == "legacy" {
+				where += " AND user_id IS NULL"
+			} else if validID(id) {
+				where += " AND user_id=?"
+				args = append(args, id)
+			} else {
+				apiError(w, 400, "用户参数无效")
+				return
+			}
+		}
+		if username := strings.TrimSpace(r.URL.Query().Get("username")); username != "" {
+			if len(username) > 128 {
+				apiError(w, 400, "用户名过长")
+				return
+			}
+			where += " AND user_id IN (SELECT id FROM users WHERE LOCATE(?,username)>0)"
+			args = append(args, username)
+		}
+	}
 	if q := strings.TrimSpace(r.URL.Query().Get("q")); q != "" {
 		if len(q) > 500 {
 			apiError(w, 400, "搜索词过长")
@@ -251,7 +324,7 @@ func (a *app) listJobs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	stats := map[string]int{"total": 0, "succeeded": 0, "active": 0, "failed": 0}
-	statRows, err := a.db.QueryContext(r.Context(), "SELECT status,COUNT(*) FROM jobs GROUP BY status")
+	statRows, err := a.db.QueryContext(r.Context(), "SELECT status,COUNT(*) FROM jobs"+where+" GROUP BY status", args...)
 	if err != nil {
 		apiError(w, 500, "读取任务统计失败")
 		return
@@ -286,7 +359,8 @@ func (a *app) getJob(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 404, "记录不存在")
 		return
 	}
-	j, err := scanJob(a.db.QueryRowContext(r.Context(), "SELECT "+jobColumns+" FROM jobs WHERE id=?", id))
+	scope, args := ownerScope(r, "user_id")
+	j, err := scanJob(a.db.QueryRowContext(r.Context(), "SELECT "+jobColumns+" FROM jobs WHERE id=?"+scope, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		apiError(w, 404, "记录不存在")
 		return
@@ -309,7 +383,8 @@ func (a *app) getImage(w http.ResponseWriter, r *http.Request) {
 	}
 	var data []byte
 	var mime string
-	err := a.db.QueryRowContext(r.Context(), "SELECT mime,content FROM images WHERE id=?", id).Scan(&mime, &data)
+	scope, args := ownerScope(r, "jobs.user_id")
+	err := a.db.QueryRowContext(r.Context(), "SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=?"+scope, append([]any{id}, args...)...).Scan(&mime, &data)
 	if errors.Is(err, sql.ErrNoRows) {
 		apiError(w, 404, "图片不存在")
 		return
@@ -335,7 +410,8 @@ func (a *app) getInput(w http.ResponseWriter, r *http.Request) {
 	}
 	var data []byte
 	var mime string
-	err := a.db.QueryRowContext(r.Context(), "SELECT input_image,input_mime FROM jobs WHERE id=?", id).Scan(&data, &mime)
+	scope, args := ownerScope(r, "user_id")
+	err := a.db.QueryRowContext(r.Context(), "SELECT input_image,input_mime FROM jobs WHERE id=?"+scope, append([]any{id}, args...)...).Scan(&data, &mime)
 	if errors.Is(err, sql.ErrNoRows) || err == nil && len(data) == 0 {
 		apiError(w, 404, "参考图不存在")
 		return
@@ -399,12 +475,14 @@ func (a *app) worker(ctx context.Context) {
 				requestID = upstream.RequestID
 				endpoint = upstream.Endpoint
 			}
-			if _, saveErr := a.db.ExecContext(saveCtx, "UPDATE jobs SET status='failed',error=?,request_id=?,endpoint=?,finished_at=UTC_TIMESTAMP(3) WHERE id=?", message, requestID, endpoint, j.ID); saveErr != nil {
+			if saveErr := a.failJob(saveCtx, j.ID, message, requestID, endpoint); saveErr != nil {
 				log.Printf("任务 %s 失败状态保存失败", j.ID)
 			}
 		} else if err = a.saveResult(saveCtx, j.ID, result); err != nil {
 			log.Printf("任务 %s 图片持久化失败", j.ID)
-			_, _ = a.db.ExecContext(saveCtx, "UPDATE jobs SET status='failed',error='上游已完成，但图片保存失败；请检查数据库磁盘与 max_allowed_packet。重试会重新计费',request_id=?,endpoint=?,finished_at=UTC_TIMESTAMP(3) WHERE id=?", result.RequestID, result.Endpoint, j.ID)
+			if saveErr := a.failJob(saveCtx, j.ID, "上游已完成，但图片保存失败；冻结积分已退还，请检查数据库。重试会重新计费", result.RequestID, result.Endpoint); saveErr != nil {
+				log.Printf("任务 %s 失败状态保存失败", j.ID)
+			}
 		}
 		cancel()
 	}
@@ -415,6 +493,16 @@ func (a *app) saveResult(ctx context.Context, id string, result generationResult
 		return err
 	}
 	defer tx.Rollback()
+	j, err := scanJob(tx.QueryRowContext(ctx, "SELECT "+jobColumns+" FROM jobs WHERE id=? FOR UPDATE", id))
+	if err != nil {
+		return err
+	}
+	if j.Status == "succeeded" || j.Status == "failed" {
+		return nil
+	}
+	if err := settleCredits(ctx, tx, j, true); err != nil {
+		return err
+	}
 	for _, p := range result.Images {
 		if _, err = tx.ExecContext(ctx, "INSERT INTO images(id,job_id,mime,width,height,byte_size,content) VALUES(?,?,?,?,?,?,?)", newID(), id, p.MIME, p.Width, p.Height, p.Bytes, p.Content); err != nil {
 			return err
