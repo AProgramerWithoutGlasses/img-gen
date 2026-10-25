@@ -80,8 +80,6 @@ function selectedModels() {
 }
 function selectSingleModel(model) {
   $('#single-model').value = model; $('#single-count').value = '1'; $('#multi-model').open = false;
-  $$('[name="selected-model"]').forEach(input => { input.checked = input.value === model; });
-  $$('[data-count]').forEach(input => { input.value = '1'; });
 }
 function estimatedCredits() {
   if (!state.prices) return null;
@@ -128,7 +126,6 @@ function updateControls() {
   if ($('#single-model').selectedOptions[0].disabled) $('#single-model').value = 'gpt-image-2';
   $$('[name="selected-model"]').forEach(input => {
     input.disabled = edit && !['gpt-image-2', 'gemini-3.1-flash-image'].includes(input.value);
-    if (input.disabled) input.checked = false;
     $(`[data-count="${input.value}"]`).disabled = input.disabled || !input.checked;
     input.closest('.model-row').classList.toggle('unavailable', input.disabled);
   });
@@ -341,10 +338,12 @@ $('#undo-polish').onclick = () => { if (polishUndo !== null && !polishing && !st
 $('#model-picker').addEventListener('change', updateControls);
 $('#single-model').addEventListener('change', updateControls);
 $('#single-count').addEventListener('change', updateControls);
+let multiModelInitialized = false;
 $('#multi-model').addEventListener('toggle', () => {
-  if ($('#multi-model').open) {
+  if ($('#multi-model').open && !multiModelInitialized) {
     $$('[name="selected-model"]').forEach(input => { input.checked = input.value === $('#single-model').value; });
     $$('[data-count]').forEach(input => { input.value = input.dataset.count === $('#single-model').value ? $('#single-count').value : '1'; });
+    multiModelInitialized = true;
   }
   updateControls();
 });
