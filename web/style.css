@@ -1545,6 +1545,14 @@ dialog::backdrop {
 .model-row select:disabled { opacity:.45; }
 #batch-summary { font-size:12px; color:var(--green); }
 .single-model-controls:not([hidden]) { display:flex; gap:8px; }
+.generation-flights { position:fixed; inset:0; z-index:20; pointer-events:none; overflow:hidden; }
+.generation-dot {
+  position:absolute; top:-5px; left:-5px; width:10px; height:10px;
+  border-radius:50%; background:var(--green); color:var(--green);
+  box-shadow:0 0 0 4px color-mix(in srgb, currentColor 14%, transparent), 0 0 18px currentColor;
+  opacity:0; will-change:transform, opacity;
+}
+@media (prefers-reduced-motion:reduce) { .generation-flights { display:none; } }
 #single-model { flex:1; min-width:0; }
 #single-count { width:75px; flex-shrink:0; }
 .multi-model { position:relative; margin-top:12px; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }

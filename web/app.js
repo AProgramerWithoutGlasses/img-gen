@@ -14,6 +14,74 @@ let retryingJob = null;
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const dateText = date => new Date(date).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 const dimensions = j => j.images.length ? `${j.images[0].width} × ${j.images[0].height}` : statusNames[j.status];
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let pendingFlights = null, flightFrame = 0, flightLayer = null;
+function clearGenerationFlights() {
+  pendingFlights = null;
+  cancelAnimationFrame(flightFrame);
+  flightFrame = 0;
+  flightLayer?.remove();
+  flightLayer = null;
+}
+function captureGenerationSources(selections) {
+  const multiple = $('#multi-model').open;
+  return selections.flatMap(({ model, count }) => {
+    const node = multiple ? $(`[data-count="${model}"]`) : $('#single-count');
+    const rect = node.getBoundingClientRect();
+    const source = { node, x: rect.left + rect.width / 2 + scrollX, y: rect.top + rect.height / 2 + scrollY };
+    return Array.from({ length: count }, () => source);
+  });
+}
+function playGenerationFlights(flights) {
+  clearGenerationFlights();
+  if (reducedMotion.matches || document.hidden || state.view !== 'studio') return;
+  const layer = document.createElement('div');
+  layer.className = 'generation-flights';
+  layer.setAttribute('aria-hidden', 'true');
+  const particles = flights.map((flight, index) => {
+    const dot = document.createElement('span');
+    dot.className = 'generation-dot';
+    layer.append(dot);
+    return { ...flight, dot, delay: index * 55 };
+  });
+  flightLayer = layer;
+  document.body.append(layer);
+  const started = performance.now();
+  function frame(now) {
+    if (document.hidden || state.view !== 'studio' || reducedMotion.matches) { clearGenerationFlights(); return; }
+    let active = false;
+    // Resolve cards each frame: polling can replace the gallery during flight.
+    const targets = new Map($$('#current-grid [data-job]').map(card => [card.dataset.job, $('.card-media', card)]));
+    const positions = particles.map(({ id, source, delay }) => {
+      const target = targets.get(id);
+      const elapsed = now - started - delay;
+      if (!target || elapsed >= 1100) return null;
+      const rect = source.node.getBoundingClientRect();
+      return { elapsed, startX: rect.width ? rect.left + rect.width / 2 : source.x - scrollX,
+        startY: rect.height ? rect.top + rect.height / 2 : source.y - scrollY, target: target.getBoundingClientRect() };
+    });
+    particles.forEach(({ dot }, index) => {
+      const position = positions[index];
+      if (!position) { dot.remove(); return; }
+      active = true;
+      const { elapsed, startX, startY, target } = position;
+      if (elapsed < 0) return;
+      const progress = Math.min(1, elapsed / 900);
+      const t = progress * progress * (3 - 2 * progress);
+      const endX = target.left + target.width / 2, endY = target.top + target.height / 2;
+      const arc = Math.min(140, Math.hypot(endX - startX, endY - startY) * .18);
+      const x = startX + (endX - startX) * t;
+      const y = startY + (endY - startY) * t - 4 * arc * t * (1 - t);
+      const arrival = Math.max(0, (elapsed - 900) / 200);
+      dot.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${1 + arrival * 2.5})`;
+      dot.style.opacity = String(Math.min(1, elapsed / 80) * (1 - arrival));
+    });
+    if (active) flightFrame = requestAnimationFrame(frame); else clearGenerationFlights();
+  }
+  flightFrame = requestAnimationFrame(frame);
+}
+reducedMotion.addEventListener('change', clearGenerationFlights);
+document.addEventListener('visibilitychange', () => { if (document.hidden) clearGenerationFlights(); });
 let toastTimer;
 let polishing = false, promptVersion = 0, polishUndo = null;
 function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('#toast').hidden = true; }, 4200); }
@@ -25,6 +93,7 @@ async function api(path, options) {
 }
 function setView(view) {
   if (view === 'admin' && state.user?.role !== 'admin') return;
+  if (view !== 'studio') clearGenerationFlights();
   state.view = view;
   $('#admin-view').hidden = view !== 'admin';
   document.body.classList.toggle('admin-mode', view === 'admin');
@@ -248,11 +317,14 @@ async function refreshRecent() {
 }
 async function refreshCurrent() {
   if (!state.currentIDs.length) return;
-  const jobs = await Promise.all(state.currentIDs.map(id => api(`/api/jobs/${id}`)));
+  const ids = state.currentIDs;
+  const jobs = await Promise.all(ids.map(id => api(`/api/jobs/${id}`)));
+  if (ids !== state.currentIDs) return;
   state.currentJobs = jobs;
   $('#welcome').hidden = true; $('#current-section').hidden = false;
   $('#current-count').textContent = `${jobs.filter(j => j.status === 'succeeded').length} / ${jobs.length}`;
   renderGallery('#current-grid', jobs);
+  if (pendingFlights?.ids === ids) playGenerationFlights(pendingFlights.flights);
 }
 function showConnectionError(error) { $('#banner').textContent = `读取服务失败：${error.message}。页面会自动重连。`; $('#banner').hidden = false; }
 async function refresh() {
@@ -308,13 +380,17 @@ $('#create-form').addEventListener('submit', async event => {
   const form = new FormData();
   for (const [key, value] of Object.entries({ mode: state.mode, models: JSON.stringify(selections), prompt: $('#prompt').value, ratio, resolution, expected_credits: estimatedCredits() })) form.append(key, value);
   if (state.mode === 'edit') form.append('image', state.reference);
+  const sources = captureGenerationSources(selections);
   state.busy = true; updateControls();
   try {
     const data = await api('/api/jobs', { method: 'POST', body: form });
+    clearGenerationFlights();
     state.currentIDs = data.ids;
+    pendingFlights = { ids: data.ids, flights: data.ids.map((id, index) => ({ id, source: sources[index] })) };
     try { localStorage.setItem(`qiso-current-jobs:${state.user.id}`, JSON.stringify(data.ids)); } catch { /* Storage is optional. */ }
     setView('studio'); toast('创作已加入队列，历史记录已保存');
-    await refresh();
+    // Refresh the new batch even if an older polling cycle is still in flight.
+    await Promise.all([refreshRecent(), refreshCurrent()]);
     if (innerWidth <= 640) $('#current-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) { $('#form-error').textContent = error.message; $('#form-error').hidden = false; }
   finally { state.busy = false; await refreshWallet().catch(() => {}); updateControls(); }
