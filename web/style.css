@@ -909,6 +909,25 @@ main {
   font-size:12px;
   line-height:1.6
 }
+.retry-button {
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  flex-shrink:0;
+  padding:0;
+  border:1px solid transparent;
+  border-radius:50%;
+  background:transparent;
+  color:inherit;
+  font-size:26px;
+  line-height:1;
+}
+.retry-button:hover:not(:disabled) { background:color-mix(in srgb, currentColor 12%, transparent); }
+.retry-button:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
+.retry-button:disabled { cursor:default; opacity:.55; }
+.retry-button.is-retrying { animation:spin 1.3s linear infinite; }
+@media (prefers-reduced-motion:reduce) { .retry-button.is-retrying { animation:none; } }
 .stats {
   display:grid;
   grid-template-columns:repeat(4,1fr);

@@ -9,6 +9,8 @@ const ideas = [
 ];
 const modelNames = { 'gpt-image-2': 'GPT Image 2', 'gpt-image-1.5': 'GPT Image 1.5', 'gpt-image-2.5-sunburst': 'GPT Image 2.5 Sunburst', 'gemini-3.1-flash-image': 'Gemini Flash', 'gemini-3-pro-image': 'Gemini Pro' };
 const statusNames = { queued: '排队中', running: '正在创作', succeeded: '已完成', failed: '生成失败' };
+const retriedJobs = new Set();
+let retryingJob = null;
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const dateText = date => new Date(date).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 const dimensions = j => j.images.length ? `${j.images[0].width} × ${j.images[0].height}` : statusNames[j.status];
@@ -118,6 +120,7 @@ function updateGenerationStatus(total, estimate) {
   status.classList.toggle('inline-error', attention);
 }
 function updateControls() {
+  updateRetryButtons();
   const edit = state.mode === 'edit';
   const multiple = $('#multi-model').open;
   $('#single-model-controls').hidden = multiple;
@@ -165,7 +168,7 @@ function card(j) {
   const image = j.images[0];
   let media;
   if (image) media = `<img src="${image.url}" alt="${escapeHTML(j.prompt)}" loading="lazy"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
-  else if (j.status === 'failed') media = `<span class="error-mark">↻</span><small>生成失败 · ${escapeHTML(modelNames[j.model])}</small><p class="card-error-message">${escapeHTML(j.error?.trim() || '未返回具体错误信息，请稍后手动重试。')}</p>`;
+  else if (j.status === 'failed') media = `<button type="button" class="error-mark retry-button" data-retry="${j.id}" aria-label="重试这张图片" title="按原参数重试这一张，重新计费">↻</button><small>生成失败 · ${escapeHTML(modelNames[j.model])}</small><p class="card-error-message">${escapeHTML(j.error?.trim() || '未返回具体错误信息，请稍后手动重试。')}</p>`;
   else media = `<span class="${j.status === 'running' ? 'spinner' : 'queued-icon'}">${j.status === 'running' ? '' : '◷'}</span><small>${statusNames[j.status]} · ${escapeHTML(modelNames[j.model])}</small>`;
   return `<article class="art-card" tabindex="0" role="button" aria-label="查看作品：${escapeHTML(j.prompt)}" data-job="${j.id}"><div class="card-media ${j.status === 'failed' ? 'card-error' : ''}">${media}</div><div class="card-info"><p>${escapeHTML(j.prompt)}</p><div class="card-meta"><span>${escapeHTML(dimensions(j))}</span><span>${dateText(j.created_at)}</span></div></div></article>`;
 }
@@ -173,6 +176,44 @@ function renderGallery(target, jobs) {
   const node = $(target);
   const signature = JSON.stringify(jobs.map(j => [j.id, j.status, j.error, j.images.map(i => i.id)]));
   if (node.dataset.signature !== signature) { node.innerHTML = jobs.map(card).join(''); node.dataset.signature = signature; }
+  updateRetryButtons();
+}
+function updateRetryButtons() {
+  $$('[data-retry]').forEach(button => {
+    const id = button.dataset.retry, pending = retryingJob === id, submitted = retriedJobs.has(id);
+    button.disabled = state.busy || submitted;
+    button.classList.toggle('is-retrying', pending);
+    button.setAttribute('aria-busy', String(pending));
+    button.setAttribute('aria-label', pending ? '正在提交重试' : submitted ? '已提交重试' : '重试这张图片');
+    button.title = pending ? '正在提交重试…' : submitted ? '已提交重试，请查看新任务' : '按原参数重试这一张，重新计费';
+  });
+}
+async function retryJob(id) {
+  if (state.busy || retriedJobs.has(id)) return;
+  state.busy = true; retryingJob = id; updateControls();
+  try {
+    const j = await api(`/api/jobs/${id}`);
+    if (j.status !== 'failed') throw new Error('仅失败的图片可以重试');
+    await refreshWallet();
+    const price = state.prices?.[j.model];
+    if (!Number.isSafeInteger(price) || price < 0) throw new Error('暂时无法读取模型价格，请稍后再试');
+    const form = new FormData();
+    for (const [key, value] of Object.entries({ mode: j.mode, models: JSON.stringify([{ model: j.model, count: 1 }]), prompt: j.prompt, ratio: j.ratio, resolution: j.resolution, expected_credits: price })) form.append(key, value);
+    if (j.mode === 'edit') form.append('image', await fetchImageFile(`/api/jobs/${id}/input`, 'reference'));
+    const data = await api('/api/jobs', { method: 'POST', body: form });
+    retriedJobs.add(id);
+    state.currentIDs = state.currentIDs.includes(id) ? state.currentIDs.flatMap(current => current === id ? data.ids : [current]) : data.ids;
+    try { localStorage.setItem(`qiso-current-jobs:${state.user.id}`, JSON.stringify(state.currentIDs)); } catch { /* Storage is optional. */ }
+    setView('studio'); toast('已按原参数重试这一张图片，新任务已加入队列');
+    // A refresh failure must not resubmit a task that was already accepted.
+    await Promise.all([refreshRecent(), refreshCurrent()]).catch(showConnectionError);
+  } catch (error) {
+    toast(`${error.message}（未自动重试；如提交结果不明，请先查看历史记录）`);
+  } finally {
+    retryingJob = null; state.busy = false;
+    updateControls();
+    await refreshWallet().catch(() => {});
+  }
 }
 async function refreshHistory() {
   const version = ++state.historyVersion;
@@ -283,6 +324,7 @@ $('#create-form').addEventListener('submit', async event => {
 });
 document.addEventListener('click', event => {
   const button = event.target.closest('button');
+  if (button?.dataset.retry) { event.preventDefault(); event.stopPropagation(); retryJob(button.dataset.retry); return; }
   if (button?.dataset.view) setView(button.dataset.view);
   if (button?.dataset.mode) setMode(button.dataset.mode);
   if (button?.dataset.ratio) setRatio(button.dataset.ratio);
