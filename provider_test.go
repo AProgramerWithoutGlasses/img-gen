@@ -157,6 +157,78 @@ func TestProviderProtocols(t *testing.T) {
 	}
 }
 
+func TestGeminiResolutionPresets(t *testing.T) {
+	for _, model := range []string{"gemini-3.1-flash-image", "gemini-3-pro-image"} {
+		for _, resolution := range []string{"default", "1K", "2K", "4K"} {
+			t.Run(model+"/"+resolution, func(t *testing.T) {
+				j := job{Mode: "generate", Model: model, Prompt: "相机细节", Ratio: "16:9", Resolution: resolution}
+				if resolution == "default" {
+					j.Ratio = "auto"
+				}
+				err := validateJob(&j)
+				if model == "gemini-3-pro-image" && (resolution == "1K" || resolution == "4K") {
+					if err == nil {
+						t.Fatal("accepted unverified Pro resolution")
+					}
+					return
+				}
+				if err != nil {
+					t.Fatal(err)
+				}
+				var calls atomic.Int32
+				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					calls.Add(1)
+					var request struct {
+						Config struct {
+							Image map[string]string `json:"imageConfig"`
+						} `json:"generationConfig"`
+					}
+					if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+						t.Error(err)
+						return
+					}
+					if resolution == "default" {
+						if request.Config.Image != nil {
+							t.Error("default must omit imageConfig")
+						}
+					} else if request.Config.Image["imageSize"] != resolution || request.Config.Image["aspectRatio"] != "16:9" {
+						t.Errorf("incorrect imageConfig: %v", request.Config.Image)
+					}
+					jsonResponse(w, 200, map[string]any{"candidates": []any{map[string]any{"content": map[string]any{"parts": []any{map[string]any{"inlineData": map[string]string{"data": base64.StdEncoding.EncodeToString(testPNG())}}}}}}})
+				}))
+				defer s.Close()
+				p := provider{base: s.URL, key: "test", client: s.Client()}
+				result, err := p.generate(context.Background(), j)
+				if err != nil || len(result.Images) != 1 || calls.Load() != 1 {
+					t.Fatalf("expected one image from one call: %v, calls=%d", err, calls.Load())
+				}
+			})
+		}
+	}
+}
+
+func TestResolutionBoundaries(t *testing.T) {
+	for model := range models {
+		for _, resolution := range []string{"default", "1K", "2K", "4K", "8K"} {
+			for ratio := range ratioPrompts {
+				for _, mode := range []string{"generate", "edit"} {
+					j := job{Model: model, Mode: mode, Prompt: "x", Ratio: ratio, Resolution: resolution, Input: testPNG()}
+					want := resolution == "default"
+					if strings.HasPrefix(model, "gemini-") {
+						want = ratio == "auto" && resolution == "default" || ratio == "16:9" && (resolution == "2K" || model == "gemini-3.1-flash-image" && (resolution == "1K" || resolution == "4K"))
+					}
+					if mode == "edit" {
+						want = (model == "gpt-image-2" || model == "gemini-3.1-flash-image") && ratio == "auto" && resolution == "default"
+					}
+					if got := validateJob(&j) == nil; got != want {
+						t.Errorf("%s/%s/%s/%s: allowed=%v, want %v", model, mode, ratio, resolution, got, want)
+					}
+				}
+			}
+		}
+	}
+}
+
 func TestRejectUnsupportedCombinations(t *testing.T) {
 	for _, j := range []job{
 		{Model: "fake", Mode: "generate", Prompt: "x", Ratio: "auto", Resolution: "default"},

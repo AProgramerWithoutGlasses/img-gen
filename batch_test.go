@@ -2,6 +2,33 @@ package main
 
 import "testing"
 
+func TestBatchGeminiResolutionPresets(t *testing.T) {
+	for _, resolution := range []string{"1K", "2K", "4K"} {
+		base := job{Mode: "generate", Prompt: "相机", Ratio: "16:9", Resolution: resolution}
+		flash := []modelSelection{{"gemini-3.1-flash-image", 2}}
+		jobs, err := expandBatch(base, flash)
+		if err != nil || len(jobs) != 2 {
+			t.Fatalf("Flash %s: %v", resolution, err)
+		}
+		for _, j := range jobs {
+			if j.Resolution != resolution || j.Ratio != "16:9" {
+				t.Fatal("batch lost selected resolution")
+			}
+		}
+		if jobs, err := expandBatch(base, append(flash, modelSelection{"gpt-image-2", 1})); err == nil || jobs != nil {
+			t.Fatal("mixed GPT batch must reject the whole request")
+		}
+		jobs, err = expandBatch(base, append(flash, modelSelection{"gemini-3-pro-image", 1}))
+		if resolution == "2K" {
+			if err != nil || len(jobs) != 3 {
+				t.Fatal("Gemini models should share 2K")
+			}
+		} else if err == nil || jobs != nil {
+			t.Fatal("Pro must reject unverified preset for the whole batch")
+		}
+	}
+}
+
 func TestExpandBatch(t *testing.T) {
 	base := job{Mode: "generate", Prompt: "共同提示词", Ratio: "auto", Resolution: "default"}
 	selections := []modelSelection{{"gpt-image-2", 2}, {"gemini-3.1-flash-image", 3}}

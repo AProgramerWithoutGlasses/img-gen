@@ -207,7 +207,13 @@ function updateControls() {
   $('#gpt-settings').hidden = !hasGPT || mixed || edit;
   $('#gemini-settings').hidden = !hasGemini || mixed || edit;
   if (edit || mixed || !hasGPT) setRatio('auto');
-  if (edit || mixed || !hasGemini) $('#gemini-preset').value = 'default';
+  const flashOnly = selections.length > 0 && selections.every(item => item.model === 'gemini-3.1-flash-image');
+  const preset = $('#gemini-preset');
+  $$('option', preset).forEach(option => {
+    option.disabled = ['1K', '4K'].includes(option.value) && !flashOnly;
+    option.hidden = option.disabled;
+  });
+  if (edit || mixed || !hasGemini || preset.selectedOptions[0]?.disabled) preset.value = 'default';
   const estimate = estimatedCredits();
   $('#generate').disabled = state.busy || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
   updateGenerationStatus(total, estimate);
@@ -217,7 +223,13 @@ function updateControls() {
   $('.count-note').textContent = multiple ? '每个模型 1–4 张，每批最多 20 张。每张单独请求、分别计费；失败不会自动重试。' : '每次 1–4 张。每张单独请求、分别计费；失败不会自动重试。';
   $('#mixed-model-help').hidden = !mixed;
   $('#size-note').hidden = mixed;
-  $('#size-note').textContent = edit ? '所有模型共用参考图与默认画面配置，不保证逐像素保留。' : hasGemini ? '2K 是接口档位；实测 2752 × 1536，非精确像素承诺。' : '所有模型共用比例提示；最终以实际图片尺寸为准。';
+  const sizeNotes = {
+    default: flashOnly ? '可选横向 16:9 的 1K、2K 或 4K；日常推荐 2K，放大或裁剪可选 4K。' : '可选默认画面或横向 16:9 + 2K；1K、4K 仅支持 Gemini Flash。',
+    '1K': '横向 16:9 · 实测 1376 × 768，适合预览；实际尺寸以生成结果为准。',
+    '2K': '横向 16:9 · 实测 2752 × 1536，日常推荐；实际尺寸以生成结果为准。',
+    '4K': '横向 16:9 · 实测 5504 × 3072，适合放大或裁剪；生成更慢、文件更大，实际尺寸以生成结果为准。'
+  };
+  $('#size-note').textContent = edit ? '所有模型共用参考图与默认画面配置，不保证逐像素保留。' : hasGemini ? sizeNotes[preset.value] : '所有模型共用比例提示；最终以实际图片尺寸为准。';
   $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '') + (edit ? ' 编辑仅支持 GPT Image 2 / Gemini Flash。' : '');
   $$('[data-mode]').forEach(button => button.classList.toggle('selected', button.dataset.mode === state.mode));
 }
@@ -355,6 +367,7 @@ async function reuseJob(j) {
   try {
     const file = j.mode === 'edit' ? await fetchImageFile(`/api/jobs/${j.id}/input`, 'reference') : null;
     state.mode = j.mode; selectSingleModel(j.model); updateControls(); setRatio(j.ratio); $('#gemini-preset').value = j.resolution;
+    updateControls();
     setReference(file); setView('studio'); setPrompt(j.prompt); $('#detail').close();
     toast('已填入参数，点击生成后才会发起新请求'); window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) { toast(error.message); }
@@ -376,7 +389,7 @@ $('#create-form').addEventListener('submit', async event => {
   if (!selections.length) { toast('请至少选择一个模型'); return; }
   const gemini = selections.every(item => item.model.startsWith('gemini-'));
   const resolution = gemini && state.mode !== 'edit' ? $('#gemini-preset').value : 'default';
-  const ratio = state.mode === 'edit' ? 'auto' : gemini ? resolution === '2K' ? '16:9' : 'auto' : state.ratio;
+  const ratio = state.mode === 'edit' ? 'auto' : gemini ? resolution !== 'default' ? '16:9' : 'auto' : state.ratio;
   const form = new FormData();
   for (const [key, value] of Object.entries({ mode: state.mode, models: JSON.stringify(selections), prompt: $('#prompt').value, ratio, resolution, expected_credits: estimatedCredits() })) form.append(key, value);
   if (state.mode === 'edit') form.append('image', state.reference);
@@ -414,6 +427,7 @@ $('#undo-polish').onclick = () => { if (polishUndo !== null && !polishing && !st
 $('#model-picker').addEventListener('change', updateControls);
 $('#single-model').addEventListener('change', updateControls);
 $('#single-count').addEventListener('change', updateControls);
+$('#gemini-preset').addEventListener('change', updateControls);
 let multiModelInitialized = false;
 $('#multi-model').addEventListener('toggle', () => {
   if ($('#multi-model').open && !multiModelInitialized) {

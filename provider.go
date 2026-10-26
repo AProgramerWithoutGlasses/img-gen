@@ -54,7 +54,7 @@ func validateJob(j *job) error {
 	if _, ok := ratioPrompts[j.Ratio]; !ok {
 		return errors.New("不支持的画面比例")
 	}
-	if j.Resolution != "default" && j.Resolution != "2K" {
+	if j.Resolution != "default" && j.Resolution != "1K" && j.Resolution != "2K" && j.Resolution != "4K" {
 		return errors.New("不支持的分辨率档位")
 	}
 	gemini := strings.HasPrefix(j.Model, "gemini-")
@@ -70,11 +70,13 @@ func validateJob(j *job) error {
 		}
 	}
 	if gemini {
-		if !((j.Ratio == "auto" && j.Resolution == "default") || (j.Ratio == "16:9" && j.Resolution == "2K")) {
-			return errors.New("Gemini 仅开放默认配置和已验证的 16:9 + 2K 组合")
+		// 1K and 4K were verified only with Flash; Pro retains its tested 2K preset.
+		preset := j.Resolution == "2K" || j.Model == "gemini-3.1-flash-image" && (j.Resolution == "1K" || j.Resolution == "4K")
+		if !((j.Ratio == "auto" && j.Resolution == "default") || (j.Ratio == "16:9" && preset)) {
+			return errors.New("Gemini 仅开放默认配置或横向 16:9 档位：Flash 支持 1K / 2K / 4K，Pro 支持 2K")
 		}
 	} else if j.Resolution != "default" {
-		return errors.New("GPT 没有已验证的 2K 档位")
+		return errors.New("GPT 仅支持默认分辨率，可通过提示词引导比例")
 	}
 	j.EffectivePrompt = j.Prompt
 	if !gemini && j.Ratio != "auto" {
@@ -106,8 +108,8 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 			parts = append(parts, map[string]any{"inlineData": map[string]any{"mimeType": j.InputMIME, "data": base64.StdEncoding.EncodeToString(j.Input)}})
 		}
 		config := map[string]any{"responseModalities": []string{"TEXT", "IMAGE"}}
-		if j.Resolution == "2K" {
-			config["imageConfig"] = map[string]string{"aspectRatio": "16:9", "imageSize": "2K"}
+		if j.Resolution == "1K" || j.Resolution == "2K" || j.Resolution == "4K" {
+			config["imageConfig"] = map[string]string{"aspectRatio": "16:9", "imageSize": j.Resolution}
 		}
 		_ = json.NewEncoder(&body).Encode(map[string]any{"contents": []any{map[string]any{"role": "user", "parts": parts}}, "generationConfig": config})
 	} else if j.Mode == "edit" {
