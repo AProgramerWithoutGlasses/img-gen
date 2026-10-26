@@ -80,7 +80,7 @@ func (a *app) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !validPassword(input.Password) {
-		apiError(w, 400, "密码须为 10–128 字节")
+		apiError(w, 400, "密码须为 4–128 字节")
 		return
 	}
 	if input.Role != "user" && input.Role != "admin" {
@@ -117,7 +117,7 @@ func (a *app) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if input.Password != nil && !validPassword(*input.Password) {
-		apiError(w, 400, "密码须为 10–128 字节")
+		apiError(w, 400, "密码须为 4–128 字节")
 		return
 	}
 	// Serialize administrator changes in this single-instance service.

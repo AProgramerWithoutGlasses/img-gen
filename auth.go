@@ -34,7 +34,7 @@ func currentUser(r *http.Request) user { u, _ := r.Context().Value(userContextKe
 
 var usernamePattern = regexp.MustCompile(`^[a-zA-Z0-9_][a-zA-Z0-9_.-]{2,31}$`)
 
-func validPassword(password string) bool { return len(password) >= 10 && len(password) <= 128 }
+func validPassword(password string) bool { return len(password) >= 4 && len(password) <= 128 }
 func hashPassword(password string) string {
 	salt := newID()
 	key, err := pbkdf2.Key(sha256.New, password, []byte(salt), 600000, 32)
@@ -69,7 +69,7 @@ func bootstrapAdmin(ctx context.Context, db *sql.DB, username, password string) 
 		return nil
 	}
 	if !usernamePattern.MatchString(username) || !validPassword(password) {
-		return errors.New("首次启动请设置 ADMIN_USERNAME（3–32 位字母、数字、_、.、-）和 ADMIN_PASSWORD（10–128 字节）；兼容使用 APP_PASSWORD 作为初始密码")
+		return errors.New("首次启动请设置 ADMIN_USERNAME（3–32 位字母、数字、_、.、-）和 ADMIN_PASSWORD（4–128 字节）；兼容使用 APP_PASSWORD 作为初始密码")
 	}
 	_, err := db.ExecContext(ctx, "INSERT INTO users(id,username,password_hash,role,active) VALUES(?,?,?,'admin',TRUE)", newID(), username, hashPassword(password))
 	return err
@@ -206,7 +206,7 @@ func (a *app) changePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !validPassword(input.Password) {
-		apiError(w, 400, "密码须为 10–128 字节")
+		apiError(w, 400, "密码须为 4–128 字节")
 		return
 	}
 	var old string
