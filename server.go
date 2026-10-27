@@ -28,6 +28,7 @@ type app struct {
 	workers       sync.WaitGroup
 	submit        sync.Mutex
 	polish        sync.Mutex
+	thumbnails    sync.Mutex
 }
 
 func newID() string {
@@ -88,6 +89,7 @@ func (a *app) routes(static fs.FS) http.Handler {
 	mux.HandleFunc("GET /api/jobs/{id}/input", a.getInput)
 	mux.HandleFunc("GET /api/jobs/{id}/reference", a.getInput)
 	mux.HandleFunc("GET /api/images/{id}", a.getImage)
+	mux.HandleFunc("GET /api/images/{id}/thumbnail/{version}", a.getThumbnail)
 	mux.Handle("GET /", http.FileServerFS(static))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -459,7 +461,7 @@ func (a *app) getImage(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="qiso-%s.%s"`, id, ext))
 	}
-	serveImage(w, data, mime)
+	serveCachedImage(w, r, data, mime)
 }
 func (a *app) getInput(w http.ResponseWriter, r *http.Request) {
 	columns := "input_image,input_mime"

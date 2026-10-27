@@ -259,7 +259,7 @@ function setEditImage(slot, file) {
 function card(j) {
   const image = j.images[0];
   let media;
-  if (image) media = `<img src="${image.url}" alt="${escapeHTML(j.prompt)}" loading="lazy"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
+  if (image) media = `<img src="${escapeHTML(image.thumbnail_url || image.url)}" alt="${escapeHTML(j.prompt)}" loading="lazy" decoding="async"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
   else if (j.status === 'failed') media = `<button type="button" class="error-mark retry-button" data-retry="${j.id}" aria-label="重试这张图片" title="按原参数重试这一张，重新计费">↻</button><small>生成失败 · ${escapeHTML(modelNames[j.model])}</small><p class="card-error-message">${escapeHTML(j.error?.trim() || '未返回具体错误信息，请稍后手动重试。')}</p>`;
   else media = `<span class="${j.status === 'running' ? 'spinner' : 'queued-icon'}">${j.status === 'running' ? '' : '◷'}</span><small>${statusNames[j.status]} · ${escapeHTML(modelNames[j.model])}</small>`;
   return `<article class="art-card" tabindex="0" role="button" aria-label="查看作品：${escapeHTML(j.prompt)}" data-job="${j.id}"><div class="card-media ${j.status === 'failed' ? 'card-error' : ''}">${media}</div><div class="card-info"><p>${escapeHTML(j.prompt)}</p><div class="card-meta"><span>${escapeHTML(dimensions(j))}</span><span>${dateText(j.created_at)}</span></div>${image ? `<button type="button" class="secondary card-edit" data-edit="${j.id}" title="载入原图，填写修改说明后开始编辑">▧ 一键修图</button>` : ''}</div></article>`;

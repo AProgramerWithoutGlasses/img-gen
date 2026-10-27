@@ -44,6 +44,13 @@ func migrate(ctx context.Context, db *sql.DB) error {
 			return err
 		}
 	}
+	if _, err := db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS image_thumbnails (
+		image_id CHAR(32) NOT NULL, version INT NOT NULL, content MEDIUMBLOB NOT NULL,
+		PRIMARY KEY(image_id,version),
+		FOREIGN KEY(image_id) REFERENCES images(id) ON DELETE CASCADE
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`); err != nil {
+		return err
+	}
 	// An additive migration preserves existing shared jobs without attributing them to a user.
 	var exists int
 	if err := db.QueryRowContext(ctx, `SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='jobs' AND column_name='user_id'`).Scan(&exists); err != nil {
@@ -96,13 +103,14 @@ type job struct {
 	ReferenceMIME   string     `json:"-"`
 }
 type picture struct {
-	ID      string `json:"id"`
-	URL     string `json:"url"`
-	MIME    string `json:"mime"`
-	Width   int    `json:"width"`
-	Height  int    `json:"height"`
-	Bytes   int    `json:"bytes"`
-	Content []byte `json:"-"`
+	ThumbnailURL string `json:"thumbnail_url"`
+	ID           string `json:"id"`
+	URL          string `json:"url"`
+	MIME         string `json:"mime"`
+	Width        int    `json:"width"`
+	Height       int    `json:"height"`
+	Bytes        int    `json:"bytes"`
+	Content      []byte `json:"-"`
 }
 
 const jobColumns = `id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,actual_model,quality,request_id,endpoint,created_at,started_at,finished_at,(input_image IS NOT NULL),COALESCE(user_id,''),COALESCE((SELECT username FROM users WHERE users.id=jobs.user_id),'历史共享记录'),credits_cost,credits_state,(reference_image IS NOT NULL)`
@@ -127,6 +135,7 @@ func (a *app) pictures(ctx context.Context, j *job) error {
 			return err
 		}
 		p.URL = "/api/images/" + p.ID
+		p.ThumbnailURL = p.URL + "/thumbnail/" + thumbnailVersion
 		j.Images = append(j.Images, p)
 	}
 	return rows.Err()

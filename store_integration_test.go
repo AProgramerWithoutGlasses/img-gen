@@ -46,7 +46,7 @@ func TestMySQLWorkflow(t *testing.T) {
 		t.Fatal("integration requires a completely empty dedicated database")
 	}
 	t.Cleanup(func() {
-		for _, table := range []string{"credit_ledger", "model_prices", "images", "jobs", "sessions", "users"} {
+		for _, table := range []string{"credit_ledger", "model_prices", "image_thumbnails", "images", "jobs", "sessions", "users"} {
 			if _, err := db.Exec("DROP TABLE IF EXISTS " + table); err != nil {
 				t.Error(err)
 			}
@@ -268,6 +268,26 @@ func TestMySQLWorkflow(t *testing.T) {
 		imageResponse := request("GET", j.Images[0].URL+"?download=1", nil, "")
 		if imageResponse.Code != 200 || !bytes.Equal(imageResponse.Body.Bytes(), testPNG()) || !strings.Contains(imageResponse.Header().Get("Content-Disposition"), "attachment") {
 			t.Fatal("original download mismatch")
+		}
+		if j.Images[0].ThumbnailURL == "" {
+			t.Fatal("missing thumbnail URL")
+		}
+		thumb := request("GET", j.Images[0].ThumbnailURL, nil, "")
+		if thumb.Code != 200 || thumb.Header().Get("Content-Type") != "image/webp" {
+			t.Fatalf("thumbnail: %d %s", thumb.Code, thumb.Body.String())
+		}
+		var saved []byte
+		if err := db.QueryRow("SELECT content FROM image_thumbnails WHERE image_id=? AND version=?", j.Images[0].ID, thumbnailVersion).Scan(&saved); err != nil || !bytes.Equal(saved, thumb.Body.Bytes()) {
+			t.Fatal("thumbnail was not persisted", err)
+		}
+		fresh := &app{db: db, upstream: a.upstream}
+		r := httptest.NewRequest("GET", j.Images[0].ThumbnailURL, nil)
+		r.AddCookie(&http.Cookie{Name: sessionCookie, Value: token})
+		r.Header.Set("If-None-Match", thumb.Header().Get("ETag"))
+		cached := httptest.NewRecorder()
+		fresh.routes(fstest.MapFS{}).ServeHTTP(cached, r)
+		if cached.Code != 304 || cached.Body.Len() != 0 {
+			t.Fatalf("thumbnail cache after restart: %d", cached.Code)
 		}
 	}
 	w := request("GET", "/api/jobs/"+failureIDs[0], nil, "")
