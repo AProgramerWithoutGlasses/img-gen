@@ -104,6 +104,7 @@ type job struct {
 }
 type picture struct {
 	ThumbnailURL string `json:"thumbnail_url"`
+	PreviewURL   string `json:"preview_url"`
 	ID           string `json:"id"`
 	URL          string `json:"url"`
 	MIME         string `json:"mime"`
@@ -136,6 +137,7 @@ func (a *app) pictures(ctx context.Context, j *job) error {
 		}
 		p.URL = "/api/images/" + p.ID
 		p.ThumbnailURL = p.URL + "/thumbnail/" + thumbnailVersion
+		p.PreviewURL = p.URL + "/preview/" + previewVersion
 		j.Images = append(j.Images, p)
 	}
 	return rows.Err()

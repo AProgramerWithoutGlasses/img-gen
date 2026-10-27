@@ -269,25 +269,31 @@ func TestMySQLWorkflow(t *testing.T) {
 		if imageResponse.Code != 200 || !bytes.Equal(imageResponse.Body.Bytes(), testPNG()) || !strings.Contains(imageResponse.Header().Get("Content-Disposition"), "attachment") {
 			t.Fatal("original download mismatch")
 		}
-		if j.Images[0].ThumbnailURL == "" {
-			t.Fatal("missing thumbnail URL")
+		for _, variant := range []struct{ url, version string }{{j.Images[0].ThumbnailURL, thumbnailVersion}, {j.Images[0].PreviewURL, previewCacheVersion}} {
+			if variant.url == "" {
+				t.Fatal("missing thumbnail URL")
+			}
+			thumb := request("GET", variant.url, nil, "")
+			if thumb.Code != 200 || thumb.Header().Get("Content-Type") != "image/webp" {
+				t.Fatalf("thumbnail: %d %s", thumb.Code, thumb.Body.String())
+			}
+			var saved []byte
+			if err := db.QueryRow("SELECT content FROM image_thumbnails WHERE image_id=? AND version=?", j.Images[0].ID, variant.version).Scan(&saved); err != nil || !bytes.Equal(saved, thumb.Body.Bytes()) {
+				t.Fatal("thumbnail was not persisted", err)
+			}
+			fresh := &app{db: db, upstream: a.upstream}
+			r := httptest.NewRequest("GET", variant.url, nil)
+			r.AddCookie(&http.Cookie{Name: sessionCookie, Value: token})
+			r.Header.Set("If-None-Match", thumb.Header().Get("ETag"))
+			cached := httptest.NewRecorder()
+			fresh.routes(fstest.MapFS{}).ServeHTTP(cached, r)
+			if cached.Code != 304 || cached.Body.Len() != 0 {
+				t.Fatalf("thumbnail cache after restart: %d", cached.Code)
+			}
 		}
-		thumb := request("GET", j.Images[0].ThumbnailURL, nil, "")
-		if thumb.Code != 200 || thumb.Header().Get("Content-Type") != "image/webp" {
-			t.Fatalf("thumbnail: %d %s", thumb.Code, thumb.Body.String())
-		}
-		var saved []byte
-		if err := db.QueryRow("SELECT content FROM image_thumbnails WHERE image_id=? AND version=?", j.Images[0].ID, thumbnailVersion).Scan(&saved); err != nil || !bytes.Equal(saved, thumb.Body.Bytes()) {
-			t.Fatal("thumbnail was not persisted", err)
-		}
-		fresh := &app{db: db, upstream: a.upstream}
-		r := httptest.NewRequest("GET", j.Images[0].ThumbnailURL, nil)
-		r.AddCookie(&http.Cookie{Name: sessionCookie, Value: token})
-		r.Header.Set("If-None-Match", thumb.Header().Get("ETag"))
-		cached := httptest.NewRecorder()
-		fresh.routes(fstest.MapFS{}).ServeHTTP(cached, r)
-		if cached.Code != 304 || cached.Body.Len() != 0 {
-			t.Fatalf("thumbnail cache after restart: %d", cached.Code)
+		var renditions int
+		if err := db.QueryRow("SELECT COUNT(*) FROM image_thumbnails WHERE image_id=?", j.Images[0].ID).Scan(&renditions); err != nil || renditions != 2 {
+			t.Fatal("thumbnail and preview must persist independently", renditions, err)
 		}
 	}
 	w := request("GET", "/api/jobs/"+failureIDs[0], nil, "")

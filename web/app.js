@@ -378,7 +378,7 @@ async function showDetail(id) {
   try {
     const j = await api(`/api/jobs/${id}`);
     const seconds = j.started_at && j.finished_at ? `${((new Date(j.finished_at) - new Date(j.started_at)) / 1000).toFixed(1)} 秒` : '—';
-    const pictures = j.images.map((p, index) => `<button type="button" class="detail-preview" data-preview="${index}" aria-label="查看大图${j.images.length > 1 ? ` ${index + 1}` : ''}"><img src="${escapeHTML(p.thumbnail_url)}" alt="${escapeHTML(j.prompt)}" decoding="async"><span>点击查看大图</span></button>`).join('');
+    const pictures = j.images.map((p, index) => `<button type="button" class="detail-preview" data-preview="${index}" aria-label="查看大图${j.images.length > 1 ? ` ${index + 1}` : ''}"><img src="${escapeHTML(p.preview_url)}" alt="${escapeHTML(j.prompt)}" decoding="async"><span>点击查看大图</span></button>`).join('');
     const metadata = [['用户', j.username || '历史共享记录'], ['消耗积分', creditText(j)], ['创作模式', j.mode === 'edit' ? '参考图编辑' : '文字生图'], ['请求模型', j.model], ['返回模型', j.actual_model || '—'], ['画面设定', j.ratio === 'auto' ? '自动 / 默认' : `${j.ratio} · ${j.resolution === 'default' ? '默认分辨率' : j.resolution}`], ['实际图片', j.images.map(p => `${p.width} × ${p.height} · ${p.mime.split('/')[1].toUpperCase()} · ${(p.bytes / 1048576).toFixed(2)} MB`).join('；') || '—'], ['生成耗时', seconds], ['创建时间', new Date(j.created_at).toLocaleString('zh-CN')], ['响应质量', j.quality || '—'], ['请求 ID', j.request_id || '—'], ['任务 ID', j.id]];
     $('#detail-body').innerHTML = `<div class="detail-layout"><div class="detail-image">${j.has_input ? `<figure><figcaption>基础图 · 待修改的画面</figcaption><img src="/api/jobs/${j.id}/input" alt="基础图"></figure>` : ''}${j.has_reference ? `<figure><figcaption>参考图 · 借用的对象或外观</figcaption><img src="/api/jobs/${j.id}/reference" alt="参考图"></figure>` : ''}${pictures ? '<span>生成结果</span>' : ''}${pictures || `<span class="queued-icon">${j.status === 'failed' ? '↻' : '◷'}</span><span>${statusNames[j.status]}</span>`}</div><div class="detail-info"><span class="eyebrow">${statusNames[j.status]}</span><h3>一瞬灵感，一张作品。</h3><p>${escapeHTML(j.prompt)}</p>${j.error ? `<div class="detail-error">${escapeHTML(j.error)}</div>` : ''}<dl class="detail-meta">${metadata.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHTML(v)}</dd>`).join('')}</dl><details><summary>实际发送的提示词与接口</summary><p>${escapeHTML(j.effective_prompt)}</p><p>${escapeHTML(j.endpoint || '尚未调用')}</p></details><div class="detail-actions">${j.images.map((p, index) => `<a class="primary" href="${p.url}?download=1" download>↓ 下载原图${j.images.length > 1 ? index + 1 : ''}</a>`).join('')}<button class="secondary" id="reuse-job">${j.status === 'failed' ? '重试这次创作' : '复用参数'}</button>${j.images.length ? '<button class="secondary" id="edit-result">▧ 继续编辑</button>' : ''}</div></div></div>`;
     if (!$('#detail').open) $('#detail').showModal();
@@ -405,16 +405,16 @@ function showImagePreview(picture, prompt) {
   const dialog = $('#image-preview'), img = $('#image-preview-picture');
   const button = $('#view-original'), status = $('#image-preview-status');
   const label = `查看原图（${(picture.bytes / 1048576).toFixed(2)} MB）`;
-  img.src = picture.thumbnail_url;
+  img.src = picture.preview_url;
   img.alt = prompt;
   button.textContent = label;
   button.disabled = false;
-  status.textContent = '当前展示缩略图';
+  status.textContent = '当前展示高清预览';
   button.onclick = () => {
     if (button.disabled) return;
     button.disabled = true;
     button.textContent = '正在加载原图…';
-    status.textContent = '原图加载中，暂时保留缩略图';
+    status.textContent = '原图加载中，暂时保留高清预览';
     const loader = new Image();
     originalLoader = loader;
     loader.onload = () => {
@@ -431,7 +431,7 @@ function showImagePreview(picture, prompt) {
       originalLoader = null;
       button.disabled = false;
       button.textContent = label;
-      status.textContent = '原图加载失败，仍展示缩略图，请点击按钮重试';
+      status.textContent = '原图加载失败，仍展示高清预览，请点击按钮重试';
     };
     loader.src = picture.url;
   };

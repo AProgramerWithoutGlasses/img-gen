@@ -90,6 +90,7 @@ func (a *app) routes(static fs.FS) http.Handler {
 	mux.HandleFunc("GET /api/jobs/{id}/reference", a.getInput)
 	mux.HandleFunc("GET /api/images/{id}", a.getImage)
 	mux.HandleFunc("GET /api/images/{id}/thumbnail/{version}", a.getThumbnail)
+	mux.HandleFunc("GET /api/images/{id}/preview/{version}", a.getPreview)
 	mux.Handle("GET /", http.FileServerFS(static))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
