@@ -12,6 +12,9 @@ const statusNames = { queued: '排队中', running: '正在创作', succeeded: '
 const retriedJobs = new Set();
 let retryingJob = null;
 let loadingEdit = false;
+const galleryImageType = 'application/x-qiso-image';
+let draggedPicture = null;
+let referenceLoad = null;
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const dateText = date => new Date(date).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 const dimensions = j => j.images.length ? `${j.images[0].width} × ${j.images[0].height}` : statusNames[j.status];
@@ -169,6 +172,8 @@ function updateGenerationStatus(total, estimate) {
   if ($('#generate').disabled) {
     if (state.busy) {
       label = '正在提交…'; message = '正在提交本次创作，请稍候，不要重复提交。';
+    } else if (referenceLoad && state.mode === 'edit') {
+      label = '正在读取参考图…'; message = '原图读取完成后即可开始编辑；可重新拖入、上传或移除。';
     } else if (polishing) {
       label = '提示词润色中…'; message = '润色完成后即可生成，请稍候。';
     } else if (!state.configured) {
@@ -217,7 +222,7 @@ function updateControls() {
   });
   if (edit || mixed || !hasGemini || preset.selectedOptions[0]?.disabled) preset.value = 'default';
   const estimate = estimatedCredits();
-  $('#generate').disabled = state.busy || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
+  $('#generate').disabled = state.busy || (state.mode === 'edit' && !!referenceLoad) || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
   updateGenerationStatus(total, estimate);
   $('#credit-estimate').textContent = estimate === null ? '正在读取积分价格…' : `预计冻结 ${estimate} 积分 · 可用 ${state.user?.credits ?? 0} 积分${state.user && state.user.credits < estimate ? '，余额不足，请联系管理员充值' : '；失败退还'}`;
   updatePromptActions();
@@ -246,6 +251,11 @@ function setMode(mode) {
 }
 function setEditImage(slot, file) {
   if (file && (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 12 * 1024 * 1024)) { toast('请选择 12 MB 以内的 PNG / JPEG 图片'); return false; }
+  if (slot === 'reference' && referenceLoad) {
+    referenceLoad.abort(); referenceLoad = null;
+    $('#drop-zone').removeAttribute('aria-busy');
+    updateControls();
+  }
   const base = slot === 'base', urlKey = base ? 'basePreviewURL' : 'previewURL';
   const input = $(base ? '#base-image' : '#reference'), preview = $(base ? '#base-preview' : '#reference-preview');
   if (state[urlKey]?.startsWith('blob:')) URL.revokeObjectURL(state[urlKey]);
@@ -259,7 +269,7 @@ function setEditImage(slot, file) {
 function card(j) {
   const image = j.images[0];
   let media;
-  if (image) media = `<img src="${escapeHTML(image.thumbnail_url || image.url)}" alt="${escapeHTML(j.prompt)}" loading="lazy" decoding="async"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
+  if (image) media = `<img src="${escapeHTML(image.thumbnail_url || image.url)}" alt="${escapeHTML(j.prompt)}" draggable="true" data-drag-image="${image.id}" title="拖入左侧基础图或参考图" loading="lazy" decoding="async"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
   else if (j.status === 'failed') media = `<button type="button" class="error-mark retry-button" data-retry="${j.id}" aria-label="重试这张图片" title="按原参数重试这一张，重新计费">↻</button><small>生成失败 · ${escapeHTML(modelNames[j.model])}</small><p class="card-error-message">${escapeHTML(j.error?.trim() || '未返回具体错误信息，请稍后手动重试。')}</p>`;
   else media = `<span class="${j.status === 'running' ? 'spinner' : 'queued-icon'}">${j.status === 'running' ? '' : '◷'}</span><small>${statusNames[j.status]} · ${escapeHTML(modelNames[j.model])}</small>`;
   return `<article class="art-card" tabindex="0" role="button" aria-label="查看作品：${escapeHTML(j.prompt)}" data-job="${j.id}"><div class="card-media ${j.status === 'failed' ? 'card-error' : ''}">${media}</div><div class="card-info"><p>${escapeHTML(j.prompt)}</p><div class="card-meta"><span>${escapeHTML(dimensions(j))}</span><span>${dateText(j.created_at)}</span></div>${image ? `<button type="button" class="secondary card-edit" data-edit="${j.id}" title="载入原图，填写修改说明后开始编辑">▧ 一键修图</button>` : ''}</div></article>`;
@@ -528,13 +538,72 @@ $('#multi-model').addEventListener('toggle', () => {
 });
 $('#inspire').onclick = () => setPrompt(ideas[Math.floor(Math.random() * ideas.length)]);
 $('#try-example').onclick = () => { setMode('generate'); setPrompt(ideas[0]); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); };
+document.addEventListener('dragstart', event => {
+  const image = event.target.closest('[data-drag-image]');
+  if (!image) return;
+  draggedPicture = [...state.currentJobs, ...state.recent, ...state.jobs].flatMap(job => job.images).find(picture => picture.id === image.dataset.dragImage);
+  if (state.busy || !draggedPicture) { event.preventDefault(); draggedPicture = null; return; }
+  event.dataTransfer.clearData();
+  event.dataTransfer.setData(galleryImageType, draggedPicture.id);
+  event.dataTransfer.effectAllowed = 'copy';
+  if (state.mode !== 'edit') setMode('edit');
+});
+document.addEventListener('dragend', () => {
+  draggedPicture = null;
+  $$('.upload-zone').forEach(zone => zone.classList.remove('dragging'));
+});
+async function dropGalleryImage(slot, picture) {
+  if (!/^[a-f0-9]{32}$/.test(picture.id) || !['image/png', 'image/jpeg'].includes(picture.mime) || picture.bytes > 12 * 1024 * 1024) {
+    toast('请选择 12 MB 以内的 PNG / JPEG 图片'); return;
+  }
+  if (slot === 'base') {
+    setEditImage('base', { sourceID: picture.id, url: picture.url, type: picture.mime, size: picture.bytes });
+    toast('已选为基础图，修改说明已保留'); return;
+  }
+  referenceLoad?.abort();
+  const controller = new AbortController();
+  referenceLoad = controller;
+  $('#drop-zone').setAttribute('aria-busy', 'true');
+  $('#clear-reference').hidden = false;
+  updateControls();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    // Read the original only on drop; never use the card's WebP thumbnail as edit input.
+    const response = await fetch(`/api/images/${picture.id}`, { signal: controller.signal });
+    if (!response.ok) throw new Error('读取参考图失败，请重新拖入');
+    const blob = await response.blob();
+    if (referenceLoad !== controller) return;
+    if (setEditImage('reference', new File([blob], `reference-${picture.id}`, { type: blob.type }))) toast('已选为参考图，修改说明已保留');
+  } catch (error) {
+    if (referenceLoad === controller) toast(error.name === 'AbortError' ? '读取参考图超时，请重新拖入' : error.message);
+  } finally {
+    clearTimeout(timeout);
+    if (referenceLoad === controller) {
+      referenceLoad = null;
+      $('#drop-zone').removeAttribute('aria-busy');
+      $('#clear-reference').hidden = !state.reference;
+      updateControls();
+    }
+  }
+}
 for (const [slot, inputID, dropID, clearID] of [['base', '#base-image', '#base-drop-zone', '#clear-base'], ['reference', '#reference', '#drop-zone', '#clear-reference']]) {
   $(inputID).onchange = event => { const file = event.target.files[0]; if (file && !setEditImage(slot, file)) event.target.value = ''; };
   $(clearID).onclick = () => setEditImage(slot, null);
   const zone = $(dropID);
-  zone.addEventListener('dragover', event => { event.preventDefault(); zone.classList.add('dragging'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
-  zone.addEventListener('drop', event => { event.preventDefault(); zone.classList.remove('dragging'); if (event.dataTransfer.files[0]) setEditImage(slot, event.dataTransfer.files[0]); });
+  zone.addEventListener('dragover', event => {
+    event.preventDefault();
+    const accepted = !state.busy && [...event.dataTransfer.types].some(type => type === 'Files' || (type === galleryImageType && draggedPicture));
+    event.dataTransfer.dropEffect = accepted ? 'copy' : 'none';
+    zone.classList.toggle('dragging', accepted);
+  });
+  zone.addEventListener('dragleave', event => { if (!zone.contains(event.relatedTarget)) zone.classList.remove('dragging'); });
+  zone.addEventListener('drop', event => {
+    event.preventDefault(); zone.classList.remove('dragging');
+    if (state.busy) return;
+    const id = event.dataTransfer.getData(galleryImageType);
+    if (id && draggedPicture?.id === id) { void dropGalleryImage(slot, draggedPicture); return; }
+    if (event.dataTransfer.files[0]) setEditImage(slot, event.dataTransfer.files[0]);
+  });
 }
 $('#choose-base-history').onclick = () => { setView('history'); toast('点击作品上的“一键修图”，将它用作基础图'); };
 $('#previous-page').onclick = () => { state.page--; refreshHistory().catch(showConnectionError); };
