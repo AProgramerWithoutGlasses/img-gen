@@ -68,7 +68,7 @@ func (a *app) polishPrompt(w http.ResponseWriter, r *http.Request) {
 func (p *provider) polish(ctx context.Context, prompt, mode string) (string, error) {
 	instructions := polishInstructions
 	if mode == "edit" {
-		instructions += "\n当前是参考图编辑：明确需要修改与保持不变的部分，仅优化用户描述的修改范围；你没有看到参考图，不要臆造原图内容，也不要把局部修改扩展为重新生成整幅画面。"
+		instructions += "\n当前是图片编辑：基础图是待修改的画面，参考图提供要借用的对象或外观，保留用户对两张图的指代关系。明确需要修改与保持不变的部分，仅优化用户描述的修改范围；你没有看到参考图，也没有看到基础图，不要臆造图片内容，也不要把局部修改扩展为重新生成整幅画面。"
 	} else {
 		instructions += "\n当前是文字生图：组织成完整、连贯的画面描述。"
 	}

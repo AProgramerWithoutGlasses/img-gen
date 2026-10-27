@@ -60,7 +60,7 @@ func TestSessionAndAdminProtection(t *testing.T) {
 			t.Errorf("non-admin %s: %d", path, w.Code)
 		}
 	}
-	for _, path := range []string{"/api/jobs/" + strings.Repeat("1", 32), "/api/jobs/" + strings.Repeat("1", 32) + "/input", "/api/images/" + strings.Repeat("2", 32) + "?download=1"} {
+	for _, path := range []string{"/api/jobs/" + strings.Repeat("1", 32), "/api/jobs/" + strings.Repeat("1", 32) + "/input", "/api/jobs/" + strings.Repeat("1", 32) + "/reference", "/api/images/" + strings.Repeat("2", 32) + "?download=1"} {
 		r := httptest.NewRequest("GET", path, nil)
 		w := httptest.NewRecorder()
 		a := app{}

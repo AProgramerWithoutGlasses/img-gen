@@ -54,6 +54,14 @@ func migrate(ctx context.Context, db *sql.DB) error {
 			return err
 		}
 	}
+	if err := db.QueryRowContext(ctx, `SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='jobs' AND column_name='reference_image'`).Scan(&exists); err != nil {
+		return err
+	}
+	if exists == 0 {
+		if _, err := db.ExecContext(ctx, `ALTER TABLE jobs ADD COLUMN reference_image LONGBLOB, ADD COLUMN reference_mime VARCHAR(32) NOT NULL DEFAULT ''`); err != nil {
+			return err
+		}
+	}
 	return migrateCredits(ctx, db)
 }
 
@@ -83,6 +91,9 @@ type job struct {
 	HasInput        bool       `json:"has_input"`
 	Input           []byte     `json:"-"`
 	InputMIME       string     `json:"-"`
+	HasReference    bool       `json:"has_reference"`
+	Reference       []byte     `json:"-"`
+	ReferenceMIME   string     `json:"-"`
 }
 type picture struct {
 	ID      string `json:"id"`
@@ -94,13 +105,13 @@ type picture struct {
 	Content []byte `json:"-"`
 }
 
-const jobColumns = `id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,actual_model,quality,request_id,endpoint,created_at,started_at,finished_at,(input_image IS NOT NULL),COALESCE(user_id,''),COALESCE((SELECT username FROM users WHERE users.id=jobs.user_id),'历史共享记录'),credits_cost,credits_state`
+const jobColumns = `id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,actual_model,quality,request_id,endpoint,created_at,started_at,finished_at,(input_image IS NOT NULL),COALESCE(user_id,''),COALESCE((SELECT username FROM users WHERE users.id=jobs.user_id),'历史共享记录'),credits_cost,credits_state,(reference_image IS NOT NULL)`
 
 type scanner interface{ Scan(...any) error }
 
 func scanJob(row scanner) (job, error) {
 	j := job{Images: []picture{}}
-	err := row.Scan(&j.ID, &j.BatchID, &j.Mode, &j.Model, &j.Prompt, &j.EffectivePrompt, &j.Ratio, &j.Resolution, &j.Status, &j.Error, &j.ActualModel, &j.Quality, &j.RequestID, &j.Endpoint, &j.CreatedAt, &j.StartedAt, &j.FinishedAt, &j.HasInput, &j.UserID, &j.Username, &j.CreditsCost, &j.CreditsState)
+	err := row.Scan(&j.ID, &j.BatchID, &j.Mode, &j.Model, &j.Prompt, &j.EffectivePrompt, &j.Ratio, &j.Resolution, &j.Status, &j.Error, &j.ActualModel, &j.Quality, &j.RequestID, &j.Endpoint, &j.CreatedAt, &j.StartedAt, &j.FinishedAt, &j.HasInput, &j.UserID, &j.Username, &j.CreditsCost, &j.CreditsState, &j.HasReference)
 	return j, err
 }
 

@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -55,6 +56,16 @@ func TestMySQLWorkflow(t *testing.T) {
 	if err = migrate(ctx, db); err != nil {
 		t.Fatal(err)
 	}
+	// Simulate upgrading the previous schema and running the additive migration twice.
+	if _, err = db.Exec("ALTER TABLE jobs DROP COLUMN reference_image, DROP COLUMN reference_mime"); err != nil {
+		t.Fatal(err)
+	}
+	if err = migrate(ctx, db); err != nil {
+		t.Fatal(err)
+	}
+	if err = migrate(ctx, db); err != nil {
+		t.Fatal(err)
+	}
 	var existing int
 	if err = db.QueryRow("SELECT COUNT(*) FROM jobs").Scan(&existing); err != nil || existing != 0 {
 		t.Fatal("integration requires an empty jobs table")
@@ -67,6 +78,24 @@ func TestMySQLWorkflow(t *testing.T) {
 				return
 			}
 			defer r.MultipartForm.RemoveAll()
+			if files := r.MultipartForm.File["image[]"]; len(files) > 0 {
+				if len(files) != 2 {
+					t.Error("dual-image worker lost an input")
+					return
+				}
+				for i, expected := range [][]byte{testPNG(), referencePNG()} {
+					file, err := files[i].Open()
+					if err != nil {
+						t.Error(err)
+						return
+					}
+					data, _ := io.ReadAll(file)
+					file.Close()
+					if !bytes.Equal(data, expected) {
+						t.Error("worker reversed or corrupted images")
+					}
+				}
+			}
 			data = map[string]any{"prompt": r.FormValue("prompt")}
 		} else {
 			_ = json.NewDecoder(r.Body).Decode(&data)
@@ -129,6 +158,8 @@ func TestMySQLWorkflow(t *testing.T) {
 			mode = "edit"
 			part, _ := writer.CreateFormFile("image", "sample.png")
 			_, _ = part.Write(testPNG())
+			ref, _ := writer.CreateFormFile("reference", "reference.png")
+			_, _ = ref.Write(referencePNG())
 		}
 		for k, v := range map[string]string{"model": "gpt-image-2", "prompt": prompt, "count": fmt.Sprint(count), "mode": mode, "ratio": "auto", "resolution": "default"} {
 			_ = writer.WriteField(k, v)
@@ -249,11 +280,24 @@ func TestMySQLWorkflow(t *testing.T) {
 	if !bytes.Equal(w.Body.Bytes(), testPNG()) {
 		t.Fatal("reference not persisted")
 	}
+	w = request("GET", "/api/jobs/"+editIDs[0]+"/reference", nil, "")
+	if w.Code != 200 || !bytes.Equal(w.Body.Bytes(), referencePNG()) {
+		t.Fatal("second image not persisted")
+	}
+	w = request("GET", "/api/jobs/"+editIDs[0], nil, "")
+	var edited job
+	if json.Unmarshal(w.Body.Bytes(), &edited) != nil || !edited.HasReference || !edited.HasInput || !strings.Contains(edited.EffectivePrompt, referenceEditPrompt) {
+		t.Fatal("dual-image metadata lost")
+	}
 	testAccountWorkflow(t, db, h, successIDs[0], editIDs[0], adminID, token)
 	testCreditsWorkflow(t, db, h, a, adminID, token)
 	// A fresh app instance reads the same saved history after the old workers stop.
 	a2 := &app{db: db, upstream: a.upstream}
 	h = a2.routes(fstest.MapFS{"index.html": {Data: []byte("studio")}})
+	w = request("GET", "/api/jobs/"+editIDs[0]+"/reference", nil, "")
+	if w.Code != 200 || !bytes.Equal(w.Body.Bytes(), referencePNG()) {
+		t.Fatal("second image lost across app restart")
+	}
 	w = request("GET", "/api/jobs?q=持久化&status=succeeded", nil, "")
 	var listing struct {
 		Total int   `json:"total"`

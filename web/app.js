@@ -1,7 +1,7 @@
 'use strict';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
+const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, pasteTarget: 'base', historyVersion: 0, refreshing: false };
 const ideas = [
   '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，石桌上摆着小茶壶，水彩插画风格，安静而松弛。',
   '雨后街角的一家小咖啡馆，暖黄色灯光透过玻璃，窗边放着一杯拿铁和一本翻开的书，电影感摄影，细腻光影。',
@@ -192,10 +192,10 @@ function updateControls() {
   const edit = state.mode === 'edit';
   const multiple = $('#multi-model').open;
   $('#single-model-controls').hidden = multiple;
-  for (const option of $('#single-model').options) option.disabled = edit && !['gpt-image-2', 'gemini-3.1-flash-image'].includes(option.value);
+  for (const option of $('#single-model').options) option.disabled = edit && option.value !== 'gpt-image-2';
   if ($('#single-model').selectedOptions[0].disabled) $('#single-model').value = 'gpt-image-2';
   $$('[name="selected-model"]').forEach(input => {
-    input.disabled = edit && !['gpt-image-2', 'gemini-3.1-flash-image'].includes(input.value);
+    input.disabled = edit && input.value !== 'gpt-image-2';
     $(`[data-count="${input.value}"]`).disabled = input.disabled || !input.checked;
     input.closest('.model-row').classList.toggle('unavailable', input.disabled);
   });
@@ -231,19 +231,34 @@ function updateControls() {
     '2K': '横向 16:9 · 实测 2752 × 1536，日常推荐；实际尺寸以生成结果为准。',
     '4K': '横向 16:9 · 实测 5504 × 3072，适合放大或裁剪；生成更慢、文件更大，实际尺寸以生成结果为准。'
   };
-  $('#size-note').textContent = edit ? '所有模型共用参考图与默认画面配置，不保证逐像素保留。' : hasGemini ? sizeNotes[preset.value] : '所有模型共用比例提示；最终以实际图片尺寸为准。';
-  $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '') + (edit ? ' 编辑仅支持 GPT Image 2 / Gemini Flash。' : '');
+  $('#size-note').textContent = edit ? '以基础图为画面，用参考图中的对象或外观进行修改；不保证逐像素保留。' : hasGemini ? sizeNotes[preset.value] : '所有模型共用比例提示；最终以实际图片尺寸为准。';
+  $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : edit ? '双图修图使用 GPT Image 2：基础图 + 参考图 + 修改说明。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '');
   $$('[data-mode]').forEach(button => button.classList.toggle('selected', button.dataset.mode === state.mode));
 }
-function setMode(mode) { if (state.mode !== mode) { promptVersion++; polishUndo = null; $('#polish-status').textContent = ''; } state.mode = mode; $('#prompt').placeholder = mode === 'edit' ? '描述你希望修改的内容，以及需要保留的部分…' : '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，水彩质感，安静而松弛……'; updateControls(); }
-function setReference(file) {
+function setMode(mode) {
+  if (state.mode !== mode) {
+    promptVersion++; polishUndo = null; $('#polish-status').textContent = ''; $('#form-error').hidden = true;
+    if (mode === 'edit' && !selectedModels().some(item => item.model === 'gpt-image-2')) selectSingleModel('gpt-image-2');
+  }
+  state.mode = mode;
+  $('#prompt').placeholder = mode === 'edit' ? '例如：把画面中间的小猫换成参考图里的小猫，保留基础图的背景和其他物体。' : '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，水彩质感，安静而松弛……';
+  updateControls();
+}
+function setPasteTarget(slot) {
+  state.pasteTarget = slot;
+  $$('[data-paste-target]').forEach(button => { const selected = button.dataset.pasteTarget === slot; button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', String(selected)); });
+}
+function setEditImage(slot, file) {
   if (file && (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 12 * 1024 * 1024)) { toast('请选择 12 MB 以内的 PNG / JPEG 图片'); return false; }
-  if (state.previewURL) URL.revokeObjectURL(state.previewURL);
-  state.reference = file; state.previewURL = file ? URL.createObjectURL(file) : null;
-  $('#reference').value = '';
+  const base = slot === 'base', urlKey = base ? 'basePreviewURL' : 'previewURL';
+  const input = $(base ? '#base-image' : '#reference'), preview = $(base ? '#base-preview' : '#reference-preview');
+  if (state[urlKey]) URL.revokeObjectURL(state[urlKey]);
+  state[slot] = file; state[urlKey] = file ? URL.createObjectURL(file) : null;
+  input.value = '';
   $('#form-error').hidden = true;
-  $('#reference-preview').hidden = !file; $('#upload-copy').hidden = !!file; $('#clear-reference').hidden = !file;
-  if (file) $('#reference-preview').src = state.previewURL; else { $('#reference-preview').removeAttribute('src'); $('#reference').value = ''; }
+  preview.hidden = !file; $(base ? '#base-upload-copy' : '#upload-copy').hidden = !!file; $(base ? '#clear-base' : '#clear-reference').hidden = !file;
+  if (file) preview.src = state[urlKey]; else preview.removeAttribute('src');
+  setPasteTarget(!state.base ? 'base' : 'reference');
   return true;
 }
 function card(j) {
@@ -281,7 +296,10 @@ async function retryJob(id) {
     if (!Number.isSafeInteger(price) || price < 0) throw new Error('暂时无法读取模型价格，请稍后再试');
     const form = new FormData();
     for (const [key, value] of Object.entries({ mode: j.mode, models: JSON.stringify([{ model: j.model, count: 1 }]), prompt: j.prompt, ratio: j.ratio, resolution: j.resolution, expected_credits: price })) form.append(key, value);
-    if (j.mode === 'edit') form.append('image', await fetchImageFile(`/api/jobs/${id}/input`, 'reference'));
+    if (j.mode === 'edit') {
+      form.append('image', await fetchImageFile(`/api/jobs/${id}/input`, 'base'));
+      if (j.has_reference) form.append('reference', await fetchImageFile(`/api/jobs/${id}/reference`, 'reference'));
+    }
     const data = await api('/api/jobs', { method: 'POST', body: form });
     retriedJobs.add(id);
     state.currentIDs = state.currentIDs.includes(id) ? state.currentIDs.flatMap(current => current === id ? data.ids : [current]) : data.ids;
@@ -357,7 +375,7 @@ async function showDetail(id) {
     const seconds = j.started_at && j.finished_at ? `${((new Date(j.finished_at) - new Date(j.started_at)) / 1000).toFixed(1)} 秒` : '—';
     const pictures = j.images.map(p => `<img src="${p.url}" alt="${escapeHTML(j.prompt)}">`).join('');
     const metadata = [['用户', j.username || '历史共享记录'], ['消耗积分', creditText(j)], ['创作模式', j.mode === 'edit' ? '参考图编辑' : '文字生图'], ['请求模型', j.model], ['返回模型', j.actual_model || '—'], ['画面设定', j.ratio === 'auto' ? '自动 / 默认' : `${j.ratio} · ${j.resolution === 'default' ? '默认分辨率' : j.resolution}`], ['实际图片', j.images.map(p => `${p.width} × ${p.height} · ${p.mime.split('/')[1].toUpperCase()} · ${(p.bytes / 1048576).toFixed(2)} MB`).join('；') || '—'], ['生成耗时', seconds], ['创建时间', new Date(j.created_at).toLocaleString('zh-CN')], ['响应质量', j.quality || '—'], ['请求 ID', j.request_id || '—'], ['任务 ID', j.id]];
-    $('#detail-body').innerHTML = `<div class="detail-layout"><div class="detail-image">${j.has_input ? `<figure><figcaption>输入参考图</figcaption><img src="/api/jobs/${j.id}/input" alt="输入参考图"></figure>` : ''}${pictures ? '<span>生成结果</span>' : ''}${pictures || `<span class="queued-icon">${j.status === 'failed' ? '↻' : '◷'}</span><span>${statusNames[j.status]}</span>`}</div><div class="detail-info"><span class="eyebrow">${statusNames[j.status]}</span><h3>一瞬灵感，一张作品。</h3><p>${escapeHTML(j.prompt)}</p>${j.error ? `<div class="detail-error">${escapeHTML(j.error)}</div>` : ''}<dl class="detail-meta">${metadata.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHTML(v)}</dd>`).join('')}</dl><details><summary>实际发送的提示词与接口</summary><p>${escapeHTML(j.effective_prompt)}</p><p>${escapeHTML(j.endpoint || '尚未调用')}</p></details><div class="detail-actions">${j.images.map((p, index) => `<a class="primary" href="${p.url}?download=1" download>↓ 下载原图${j.images.length > 1 ? index + 1 : ''}</a>`).join('')}<button class="secondary" id="reuse-job">${j.status === 'failed' ? '重试这次创作' : '复用参数'}</button>${j.images.length ? '<button class="secondary" id="edit-result">▧ 继续编辑</button>' : ''}</div></div></div>`;
+    $('#detail-body').innerHTML = `<div class="detail-layout"><div class="detail-image">${j.has_input ? `<figure><figcaption>基础图 · 待修改的画面</figcaption><img src="/api/jobs/${j.id}/input" alt="基础图"></figure>` : ''}${j.has_reference ? `<figure><figcaption>参考图 · 借用的对象或外观</figcaption><img src="/api/jobs/${j.id}/reference" alt="参考图"></figure>` : ''}${pictures ? '<span>生成结果</span>' : ''}${pictures || `<span class="queued-icon">${j.status === 'failed' ? '↻' : '◷'}</span><span>${statusNames[j.status]}</span>`}</div><div class="detail-info"><span class="eyebrow">${statusNames[j.status]}</span><h3>一瞬灵感，一张作品。</h3><p>${escapeHTML(j.prompt)}</p>${j.error ? `<div class="detail-error">${escapeHTML(j.error)}</div>` : ''}<dl class="detail-meta">${metadata.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHTML(v)}</dd>`).join('')}</dl><details><summary>实际发送的提示词与接口</summary><p>${escapeHTML(j.effective_prompt)}</p><p>${escapeHTML(j.endpoint || '尚未调用')}</p></details><div class="detail-actions">${j.images.map((p, index) => `<a class="primary" href="${p.url}?download=1" download>↓ 下载原图${j.images.length > 1 ? index + 1 : ''}</a>`).join('')}<button class="secondary" id="reuse-job">${j.status === 'failed' ? '重试这次创作' : '复用参数'}</button>${j.images.length ? '<button class="secondary" id="edit-result">▧ 继续编辑</button>' : ''}</div></div></div>`;
     if (!$('#detail').open) $('#detail').showModal();
     $('#reuse-job').onclick = () => reuseJob(j);
     if ($('#edit-result')) $('#edit-result').onclick = () => editResult(j);
@@ -369,10 +387,13 @@ async function fetchImageFile(url, name) {
 }
 async function reuseJob(j) {
   try {
-    const file = j.mode === 'edit' ? await fetchImageFile(`/api/jobs/${j.id}/input`, 'reference') : null;
+    const [base, reference] = await Promise.all([
+      j.mode === 'edit' ? fetchImageFile(`/api/jobs/${j.id}/input`, 'base') : null,
+      j.has_reference ? fetchImageFile(`/api/jobs/${j.id}/reference`, 'reference') : null
+    ]);
     selectSingleModel(j.model); setMode(j.mode); setRatio(j.ratio); $('#gemini-preset').value = j.resolution;
     updateControls();
-    setReference(file); setView('studio'); setPrompt(j.prompt); $('#detail').close();
+    setEditImage('base', base); setEditImage('reference', reference); setView('studio'); setPrompt(j.prompt); $('#detail').close();
     toast('已填入参数，点击生成后才会发起新请求'); window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) { toast(error.message); }
 }
@@ -381,18 +402,19 @@ async function editResult(j) {
   loadingEdit = true;
   try {
     if (typeof j === 'string') j = await api(`/api/jobs/${j}`);
-    const file = await fetchImageFile(j.images[0].url, 'reference');
-    if (!setReference(file)) return;
-    selectSingleModel(j.model.startsWith('gemini-') ? 'gemini-3.1-flash-image' : 'gpt-image-2');
-    setMode('edit'); setView('studio'); setPrompt('');
-    $('#detail').close(); toast('已载入参考图，请描述需要修改的内容');
+    const file = await fetchImageFile(j.images[0].url, 'base');
+    if (!setEditImage('base', file)) return;
+    selectSingleModel('gpt-image-2');
+    if (state.mode !== 'edit') setPrompt('');
+    setMode('edit'); setView('studio');
+    $('#detail').close(); toast(state.reference ? '已更换基础图，请填写修改说明' : '已载入基础图，请添加参考图并填写修改说明');
     $('#prompt').focus({ preventScroll: true }); $('#upload-group').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) { toast(error.message); } finally { loadingEdit = false; }
 }
 $('#create-form').addEventListener('submit', async event => {
   event.preventDefault(); if ($('#generate').disabled) return;
   $('#form-error').hidden = true;
-  if (state.mode === 'edit' && !state.reference) { $('#form-error').textContent = '请先上传参考图片'; $('#form-error').hidden = false; return; }
+  if (state.mode === 'edit' && (!state.base || !state.reference)) { $('#form-error').textContent = !state.base ? '请先上传基础图，或从历史作品选择' : '请添加参考图，说明要用其中的什么内容修改基础图'; $('#form-error').hidden = false; return; }
   const selections = selectedModels();
   if (!selections.length) { toast('请至少选择一个模型'); return; }
   const gemini = selections.every(item => item.model.startsWith('gemini-'));
@@ -400,7 +422,7 @@ $('#create-form').addEventListener('submit', async event => {
   const ratio = state.mode === 'edit' ? 'auto' : gemini ? resolution !== 'default' ? '16:9' : 'auto' : state.ratio;
   const form = new FormData();
   for (const [key, value] of Object.entries({ mode: state.mode, models: JSON.stringify(selections), prompt: $('#prompt').value, ratio, resolution, expected_credits: estimatedCredits() })) form.append(key, value);
-  if (state.mode === 'edit') form.append('image', state.reference);
+  if (state.mode === 'edit') { form.append('image', state.base); form.append('reference', state.reference); }
   const sources = captureGenerationSources(selections);
   state.busy = true; updateControls();
   try {
@@ -420,6 +442,7 @@ document.addEventListener('click', event => {
   const button = event.target.closest('button');
   if (button?.dataset.retry) { event.preventDefault(); event.stopPropagation(); retryJob(button.dataset.retry); return; }
   if (button?.dataset.edit) { event.preventDefault(); event.stopPropagation(); editResult(button.dataset.edit); return; }
+  if (button?.dataset.pasteTarget) setPasteTarget(button.dataset.pasteTarget);
   if (button?.dataset.view) setView(button.dataset.view);
   if (button?.dataset.mode) setMode(button.dataset.mode);
   if (button?.dataset.ratio) setRatio(button.dataset.ratio);
@@ -448,18 +471,25 @@ $('#multi-model').addEventListener('toggle', () => {
 });
 $('#inspire').onclick = () => setPrompt(ideas[Math.floor(Math.random() * ideas.length)]);
 $('#try-example').onclick = () => { setMode('generate'); setPrompt(ideas[0]); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); };
-$('#reference').onchange = event => { const file = event.target.files[0]; if (file && !setReference(file)) event.target.value = ''; };
-$('#clear-reference').onclick = () => setReference(null);
-$('#drop-zone').addEventListener('dragover', event => { event.preventDefault(); $('#drop-zone').classList.add('dragging'); });
-$('#drop-zone').addEventListener('dragleave', () => $('#drop-zone').classList.remove('dragging'));
-$('#drop-zone').addEventListener('drop', event => { event.preventDefault(); $('#drop-zone').classList.remove('dragging'); if (event.dataTransfer.files[0]) setReference(event.dataTransfer.files[0]); });
+for (const [slot, inputID, dropID, clearID] of [['base', '#base-image', '#base-drop-zone', '#clear-base'], ['reference', '#reference', '#drop-zone', '#clear-reference']]) {
+  $(inputID).onchange = event => { const file = event.target.files[0]; if (file && !setEditImage(slot, file)) event.target.value = ''; };
+  $(clearID).onclick = () => setEditImage(slot, null);
+  const zone = $(dropID);
+  zone.addEventListener('click', () => setPasteTarget(slot));
+  zone.addEventListener('focusin', () => setPasteTarget(slot));
+  zone.addEventListener('dragover', event => { event.preventDefault(); zone.classList.add('dragging'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
+  zone.addEventListener('drop', event => { event.preventDefault(); zone.classList.remove('dragging'); if (event.dataTransfer.files[0]) setEditImage(slot, event.dataTransfer.files[0]); });
+}
+$('#choose-base-history').onclick = () => { setView('history'); toast('点击作品上的“一键修图”，将它用作基础图'); };
 document.addEventListener('paste', event => {
   if (!state.user || state.view !== 'studio' || state.mode !== 'edit' || $('dialog[open]')) return;
   const item = [...(event.clipboardData?.items || [])].find(item => item.kind === 'file' && item.type.startsWith('image/'));
   const file = item?.getAsFile();
   if (!file) return;
   event.preventDefault();
-  if (setReference(file)) toast('已粘贴参考图，请填写修改说明后开始编辑');
+  const slot = state.pasteTarget;
+  if (setEditImage(slot, file)) toast(`已粘贴${slot === 'base' ? '基础图' : '参考图'}`);
 });
 $('#previous-page').onclick = () => { state.page--; refreshHistory().catch(showConnectionError); };
 $('#next-page').onclick = () => { state.page++; refreshHistory().catch(showConnectionError); };

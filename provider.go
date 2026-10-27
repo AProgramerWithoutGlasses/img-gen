@@ -13,6 +13,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"strings"
 )
 
@@ -40,6 +41,8 @@ var models = map[string]bool{
 	"gemini-3.1-flash-image": true, "gemini-3-pro-image": true,
 }
 
+const referenceEditPrompt = "第一张图片是基础图（待修改的画面），第二张图片是参考图（仅提供替换对象或外观）。请根据用户指令修改基础图，保留未要求修改的构图、主体、背景和风格；不要把参考图当作基础画面，不要输出拼图。用户修改指令："
+
 func validateJob(j *job) error {
 	j.Prompt = strings.TrimSpace(j.Prompt)
 	if j.Prompt == "" || len([]rune(j.Prompt)) > 6000 {
@@ -58,12 +61,15 @@ func validateJob(j *job) error {
 		return errors.New("不支持的分辨率档位")
 	}
 	gemini := strings.HasPrefix(j.Model, "gemini-")
+	if len(j.Reference) > 0 && (j.Mode != "edit" || j.Model != "gpt-image-2") {
+		return errors.New("基础图 + 参考图的双图编辑仅开放已测通的 GPT Image 2")
+	}
 	if j.Mode == "edit" {
 		if j.Model != "gpt-image-2" && j.Model != "gemini-3.1-flash-image" {
 			return errors.New("参考图编辑仅开放已测通的 GPT Image 2 和 Gemini Flash")
 		}
 		if len(j.Input) == 0 {
-			return errors.New("请上传 PNG 或 JPEG 参考图")
+			return errors.New("请上传 PNG 或 JPEG 基础图")
 		}
 		if j.Ratio != "auto" || j.Resolution != "default" {
 			return errors.New("编辑模式使用原图比例与默认分辨率")
@@ -79,6 +85,9 @@ func validateJob(j *job) error {
 		return errors.New("GPT 仅支持默认分辨率，可通过提示词引导比例")
 	}
 	j.EffectivePrompt = j.Prompt
+	if len(j.Reference) > 0 {
+		j.EffectivePrompt = referenceEditPrompt + j.Prompt
+	}
 	if !gemini && j.Ratio != "auto" {
 		j.EffectivePrompt += "。" + ratioPrompts[j.Ratio]
 	}
@@ -117,15 +126,26 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		writer := multipart.NewWriter(&body)
 		_ = writer.WriteField("model", j.Model)
 		_ = writer.WriteField("prompt", j.EffectivePrompt)
-		ext := "png"
-		if j.InputMIME == "image/jpeg" {
-			ext = "jpg"
+		field := "image"
+		inputs := []picture{{Content: j.Input, MIME: j.InputMIME}}
+		if len(j.Reference) > 0 {
+			field = "image[]"
+			inputs = append(inputs, picture{Content: j.Reference, MIME: j.ReferenceMIME})
 		}
-		part, err := writer.CreateFormFile("image", "reference."+ext)
-		if err != nil {
-			return generationResult{}, err
+		for i, input := range inputs {
+			ext := "png"
+			if input.MIME == "image/jpeg" {
+				ext = "jpg"
+			}
+			header := make(textproto.MIMEHeader)
+			header.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="input-%d.%s"`, field, i+1, ext))
+			header.Set("Content-Type", input.MIME)
+			part, err := writer.CreatePart(header)
+			if err != nil {
+				return generationResult{}, err
+			}
+			_, _ = part.Write(input.Content)
 		}
-		_, _ = part.Write(j.Input)
 		_ = writer.Close()
 		contentType = writer.FormDataContentType()
 	} else {

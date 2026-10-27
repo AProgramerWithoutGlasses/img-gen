@@ -86,6 +86,7 @@ func (a *app) routes(static fs.FS) http.Handler {
 	mux.HandleFunc("POST /api/prompt/polish", a.polishPrompt)
 	mux.HandleFunc("GET /api/jobs/{id}", a.getJob)
 	mux.HandleFunc("GET /api/jobs/{id}/input", a.getInput)
+	mux.HandleFunc("GET /api/jobs/{id}/reference", a.getInput)
 	mux.HandleFunc("GET /api/images/{id}", a.getImage)
 	mux.Handle("GET /", http.FileServerFS(static))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -127,9 +128,9 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 503, "请先在服务端 .env 配置 QISO_API_KEY 并重启")
 		return
 	}
-	r.Body = http.MaxBytesReader(w, r.Body, 13<<20)
+	r.Body = http.MaxBytesReader(w, r.Body, 25<<20)
 	if err := r.ParseMultipartForm(1 << 20); err != nil {
-		apiError(w, 400, "表单无效或上传超过 12 MB")
+		apiError(w, 400, "表单无效或过大；基础图和参考图各不能超过 12 MB")
 		return
 	}
 	defer r.MultipartForm.RemoveAll()
@@ -149,25 +150,23 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 		}
 		selections = []modelSelection{{Model: j.Model, Count: count}}
 	}
+	if j.Mode != "edit" && len(r.MultipartForm.File) > 0 {
+		apiError(w, 400, "上传图片请使用编辑模式")
+		return
+	}
 	if j.Mode == "edit" {
-		file, _, err := r.FormFile("image")
-		if err != nil {
-			apiError(w, 400, "请上传参考图")
-			return
-		}
-		defer file.Close()
-		data, err := io.ReadAll(io.LimitReader(file, (12<<20)+1))
-		if err != nil || len(data) > 12<<20 {
-			apiError(w, 400, "参考图不能超过 12 MB")
-			return
-		}
-		pic, err := decodePicture(data)
+		base, err := readEditUpload(r, "image", "基础图", true)
 		if err != nil {
 			apiError(w, 400, err.Error())
 			return
 		}
-		j.Input = data
-		j.InputMIME = pic.MIME
+		reference, err := readEditUpload(r, "reference", "参考图", false)
+		if err != nil {
+			apiError(w, 400, err.Error())
+			return
+		}
+		j.Input, j.InputMIME = base.Content, base.MIME
+		j.Reference, j.ReferenceMIME = reference.Content, reference.MIME
 	}
 	jobs, err := expandBatch(j, selections)
 	if err != nil {
@@ -216,7 +215,7 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
 	for _, j := range jobs {
 		id := newID()
-		_, err = tx.ExecContext(r.Context(), `INSERT INTO jobs(id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,input_image,input_mime,user_id,credits_cost,credits_state,created_at) VALUES(?,?,?,?,?,?,?,?,'queued','',?,?,?,?,'reserved',UTC_TIMESTAMP(3))`, id, batch, j.Mode, j.Model, j.Prompt, j.EffectivePrompt, j.Ratio, j.Resolution, j.Input, j.InputMIME, currentUser(r).ID, j.CreditsCost)
+		_, err = tx.ExecContext(r.Context(), `INSERT INTO jobs(id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,input_image,input_mime,reference_image,reference_mime,user_id,credits_cost,credits_state,created_at) VALUES(?,?,?,?,?,?,?,?,'queued','',?,?,?,?,?,?,'reserved',UTC_TIMESTAMP(3))`, id, batch, j.Mode, j.Model, j.Prompt, j.EffectivePrompt, j.Ratio, j.Resolution, j.Input, j.InputMIME, j.Reference, j.ReferenceMIME, currentUser(r).ID, j.CreditsCost)
 		if err != nil {
 			apiError(w, 500, "保存任务失败，请检查数据库磁盘与 max_allowed_packet")
 			return
@@ -233,6 +232,30 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonResponse(w, 202, map[string]any{"batch_id": batch, "ids": ids, "credits_reserved": reserved})
+}
+
+func readEditUpload(r *http.Request, field, label string, required bool) (picture, error) {
+	files := r.MultipartForm.File[field]
+	if len(files) == 0 && !required {
+		return picture{}, nil
+	} // Preserve legacy single-image API requests.
+	if len(files) != 1 {
+		return picture{}, fmt.Errorf("请上传一张%s", label)
+	}
+	file, err := files[0].Open()
+	if err != nil {
+		return picture{}, fmt.Errorf("读取%s失败", label)
+	}
+	defer file.Close()
+	data, err := io.ReadAll(io.LimitReader(file, (12<<20)+1))
+	if err != nil || len(data) > 12<<20 {
+		return picture{}, fmt.Errorf("%s不能超过 12 MB", label)
+	}
+	input, err := decodePicture(data)
+	if err != nil {
+		return picture{}, fmt.Errorf("%s：%w", label, err)
+	}
+	return input, nil
 }
 
 func (a *app) listJobs(w http.ResponseWriter, r *http.Request) {
@@ -411,6 +434,10 @@ func (a *app) getImage(w http.ResponseWriter, r *http.Request) {
 	serveImage(w, data, mime)
 }
 func (a *app) getInput(w http.ResponseWriter, r *http.Request) {
+	columns := "input_image,input_mime"
+	if strings.HasSuffix(r.URL.Path, "/reference") {
+		columns = "reference_image,reference_mime"
+	}
 	id := r.PathValue("id")
 	if !validID(id) {
 		apiError(w, 404, "参考图不存在")
@@ -419,7 +446,7 @@ func (a *app) getInput(w http.ResponseWriter, r *http.Request) {
 	var data []byte
 	var mime string
 	scope, args := ownerScope(r, "user_id")
-	err := a.db.QueryRowContext(r.Context(), "SELECT input_image,input_mime FROM jobs WHERE id=?"+scope, append([]any{id}, args...)...).Scan(&data, &mime)
+	err := a.db.QueryRowContext(r.Context(), "SELECT "+columns+" FROM jobs WHERE id=?"+scope, append([]any{id}, args...)...).Scan(&data, &mime)
 	if errors.Is(err, sql.ErrNoRows) || err == nil && len(data) == 0 {
 		apiError(w, 404, "参考图不存在")
 		return
@@ -446,7 +473,7 @@ func (a *app) claim(ctx context.Context) (job, error) {
 	if err != nil {
 		return job{}, err
 	}
-	if err = tx.QueryRowContext(ctx, "SELECT input_image,input_mime FROM jobs WHERE id=?", j.ID).Scan(&j.Input, &j.InputMIME); err != nil {
+	if err = tx.QueryRowContext(ctx, "SELECT input_image,input_mime,reference_image,reference_mime FROM jobs WHERE id=?", j.ID).Scan(&j.Input, &j.InputMIME, &j.Reference, &j.ReferenceMIME); err != nil {
 		return job{}, err
 	}
 	if _, err = tx.ExecContext(ctx, "UPDATE jobs SET status='running',started_at=UTC_TIMESTAMP(3) WHERE id=?", j.ID); err != nil {

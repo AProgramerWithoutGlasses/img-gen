@@ -480,6 +480,17 @@ textarea::placeholder {
 .reference-frame {
   position:relative
 }
+.image-slot-heading {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px
+}
+.image-slot-heading .text-button { font-size:11px; flex-shrink:0; }
+.paste-target { display:flex; align-items:center; gap:6px; margin-top:10px; flex-wrap:wrap; font-size:10px; color:var(--green); }
+.paste-target button { border:1px solid var(--line); border-radius:5px; padding:5px 8px; font-size:11px; color:inherit; background:transparent; }
+.paste-target button.selected { background:var(--green); color:#fff; }
+:root[data-theme="dark"] .paste-target button.selected { color:#1c261f; }
 #prompt-label {
   color:inherit;
   font-size:inherit

@@ -78,6 +78,7 @@ func testAccountWorkflow(t *testing.T, db *sql.DB, h http.Handler, jobID, editID
 		}
 		request("GET", "/api/jobs/"+jobID, "", token, 404)
 		request("GET", "/api/jobs/"+editID+"/input", "", token, 404)
+		request("GET", "/api/jobs/"+editID+"/reference", "", token, 404)
 	}
 	var imageID string
 	if err := db.QueryRow("SELECT id FROM images WHERE job_id=? LIMIT 1", jobID).Scan(&imageID); err != nil {
@@ -93,6 +94,8 @@ func testAccountWorkflow(t *testing.T, db *sql.DB, h http.Handler, jobID, editID
 	}
 	part, _ := writer.CreateFormFile("image", "input.png")
 	_, _ = part.Write(testPNG())
+	ref, _ := writer.CreateFormFile("reference", "reference.png")
+	_, _ = ref.Write(referencePNG())
 	_ = writer.Close()
 	r := httptest.NewRequest("POST", "http://localhost/api/jobs", &body)
 	r.Header.Set("Content-Type", writer.FormDataContentType())
@@ -123,6 +126,9 @@ func testAccountWorkflow(t *testing.T, db *sql.DB, h http.Handler, jobID, editID
 	request("GET", "/api/jobs/"+id, "", bob, 404)
 	request("GET", "/api/jobs/"+id+"/input", "", alice, 200)
 	request("GET", "/api/jobs/"+id+"/input", "", adminToken, 200)
+	request("GET", "/api/jobs/"+id+"/reference", "", alice, 200)
+	request("GET", "/api/jobs/"+id+"/reference", "", adminToken, 200)
+	request("GET", "/api/jobs/"+id+"/reference", "", bob, 404)
 	w = request("GET", "/api/jobs/"+id, "", adminToken, 200)
 	if err := json.Unmarshal(w.Body.Bytes(), &j); err != nil || len(j.Images) != 1 || j.Username != "alice" {
 		t.Fatal("admin missing owner or images")
