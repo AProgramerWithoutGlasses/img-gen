@@ -61,8 +61,8 @@ func validateJob(j *job) error {
 		return errors.New("不支持的分辨率档位")
 	}
 	gemini := strings.HasPrefix(j.Model, "gemini-")
-	if len(j.Reference) > 0 && (j.Mode != "edit" || j.Model != "gpt-image-2") {
-		return errors.New("基础图 + 参考图的双图编辑仅开放已测通的 GPT Image 2")
+	if len(j.Reference) > 0 && j.Mode != "edit" {
+		return errors.New("基础图 + 参考图仅用于编辑模式")
 	}
 	if j.Mode == "edit" {
 		if j.Model != "gpt-image-2" && j.Model != "gemini-3.1-flash-image" {
@@ -115,6 +115,9 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		parts := []any{map[string]any{"text": j.EffectivePrompt}}
 		if j.Mode == "edit" {
 			parts = append(parts, map[string]any{"inlineData": map[string]any{"mimeType": j.InputMIME, "data": base64.StdEncoding.EncodeToString(j.Input)}})
+			if len(j.Reference) > 0 {
+				parts = append(parts, map[string]any{"inlineData": map[string]any{"mimeType": j.ReferenceMIME, "data": base64.StdEncoding.EncodeToString(j.Reference)}})
+			}
 		}
 		config := map[string]any{"responseModalities": []string{"TEXT", "IMAGE"}}
 		if j.Resolution == "1K" || j.Resolution == "2K" || j.Resolution == "4K" {
@@ -192,7 +195,8 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 			Quality string `json:"quality"`
 		} `json:"data"`
 		Candidates []struct {
-			Content struct {
+			FinishReason string `json:"finishReason"`
+			Content      struct {
 				Parts []struct {
 					Thought    bool `json:"thought"`
 					InlineData *struct {
@@ -235,6 +239,16 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		}
 	}
 	if len(encoded) == 0 {
+		if gemini {
+			for _, candidate := range wire.Candidates {
+				switch candidate.FinishReason {
+				case "PROHIBITED_CONTENT":
+					return fail("上游内容检查拦截了本次请求（PROHIBITED_CONTENT），未返回图片；未自动重试")
+				case "SAFETY", "IMAGE_SAFETY":
+					return fail("上游安全检查拦截了本次图片输出，未返回图片；未自动重试")
+				}
+			}
+		}
 		return fail("上游没有返回图片，可能被过滤或响应格式已变化")
 	}
 	if len(encoded) > 8 {
