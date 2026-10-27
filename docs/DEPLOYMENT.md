@@ -2,6 +2,8 @@
 
 站点：`https://img.xunxun.me`，通过 `ssh me` 连接 Ubuntu 服务器。
 
+本机 OpenSSH 的 `~/.ssh/config` 使用 `Host me`，连接 `root@8.140.237.54`，指定 `~/.ssh/id_ed25519_aliyun_me` 和 `IdentitiesOnly yes`。专用公钥追加到服务器的授权列表，保留原有密钥；私钥仅保存在本机，不进入仓库。`ssh me` 是 SSH 主机别名，不依赖 PowerShell alias。
+
 ## 运行位置
 
 - 应用：`img-gen.service`，以 `imggen` 用户运行，监听 `127.0.0.1:18080`。
@@ -9,7 +11,7 @@
 - 应用配置：`/opt/img-gen/.env`，权限 `root:imggen 0640`；保留服务器原有 API Key、Base URL 和数据库连接。
 - HTTPS 会话需要 `COOKIE_SECURE=true`。首次账号迁移使用 `ADMIN_PASSWORD`，未设置时兼容原 `APP_PASSWORD`；已有账号不会被环境变量重置密码。
 - MySQL：独立容器 `img-gen-mysql`，数据卷 `img-gen-mysql-data`，监听 `127.0.0.1:13306`，数据库名 `imggen`。此部署沿用既有 MySQL 8.2 容器。
-- Nginx：`/etc/nginx/sites-available/img-gen`；证书由 `certbot.timer` 续期。
+- Nginx：`/etc/nginx/sites-available/img-gen`；`client_max_body_size 25m` 与应用双图编辑的整个表单上限一致；证书由 `certbot.timer` 续期。调整后先执行 `nginx -t`，通过后 reload。
 - 升级备份：`/opt/img-gen/backups/<UTC时间>/`，目录权限 `0700`，备份文件权限 `0600`。
 - 发布信息：`/opt/img-gen/release.json`，记录代码提交、二进制 SHA256、前一版本与备份位置，不保存密钥。
 
