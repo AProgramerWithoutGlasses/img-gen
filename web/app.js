@@ -11,6 +11,7 @@ const modelNames = { 'gpt-image-2': 'GPT Image 2', 'gpt-image-1.5': 'GPT Image 1
 const statusNames = { queued: '排队中', running: '正在创作', succeeded: '已完成', failed: '生成失败' };
 const retriedJobs = new Set();
 let retryingJob = null;
+let loadingEdit = false;
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const dateText = date => new Date(date).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 const dimensions = j => j.images.length ? `${j.images[0].width} × ${j.images[0].height}` : statusNames[j.status];
@@ -204,6 +205,7 @@ function updateControls() {
   const mixed = hasGPT && hasGemini;
   const total = selections.reduce((sum, item) => sum + item.count, 0);
   $('#upload-group').hidden = !edit;
+  $('#prompt-label').textContent = edit ? '描述你想修改的内容' : '描述你的画面';
   $('#gpt-settings').hidden = !hasGPT || mixed || edit;
   $('#gemini-settings').hidden = !hasGemini || mixed || edit;
   if (edit || mixed || !hasGPT) setRatio('auto');
@@ -238,6 +240,8 @@ function setReference(file) {
   if (file && (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 12 * 1024 * 1024)) { toast('请选择 12 MB 以内的 PNG / JPEG 图片'); return false; }
   if (state.previewURL) URL.revokeObjectURL(state.previewURL);
   state.reference = file; state.previewURL = file ? URL.createObjectURL(file) : null;
+  $('#reference').value = '';
+  $('#form-error').hidden = true;
   $('#reference-preview').hidden = !file; $('#upload-copy').hidden = !!file; $('#clear-reference').hidden = !file;
   if (file) $('#reference-preview').src = state.previewURL; else { $('#reference-preview').removeAttribute('src'); $('#reference').value = ''; }
   return true;
@@ -248,7 +252,7 @@ function card(j) {
   if (image) media = `<img src="${image.url}" alt="${escapeHTML(j.prompt)}" loading="lazy"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
   else if (j.status === 'failed') media = `<button type="button" class="error-mark retry-button" data-retry="${j.id}" aria-label="重试这张图片" title="按原参数重试这一张，重新计费">↻</button><small>生成失败 · ${escapeHTML(modelNames[j.model])}</small><p class="card-error-message">${escapeHTML(j.error?.trim() || '未返回具体错误信息，请稍后手动重试。')}</p>`;
   else media = `<span class="${j.status === 'running' ? 'spinner' : 'queued-icon'}">${j.status === 'running' ? '' : '◷'}</span><small>${statusNames[j.status]} · ${escapeHTML(modelNames[j.model])}</small>`;
-  return `<article class="art-card" tabindex="0" role="button" aria-label="查看作品：${escapeHTML(j.prompt)}" data-job="${j.id}"><div class="card-media ${j.status === 'failed' ? 'card-error' : ''}">${media}</div><div class="card-info"><p>${escapeHTML(j.prompt)}</p><div class="card-meta"><span>${escapeHTML(dimensions(j))}</span><span>${dateText(j.created_at)}</span></div></div></article>`;
+  return `<article class="art-card" tabindex="0" role="button" aria-label="查看作品：${escapeHTML(j.prompt)}" data-job="${j.id}"><div class="card-media ${j.status === 'failed' ? 'card-error' : ''}">${media}</div><div class="card-info"><p>${escapeHTML(j.prompt)}</p><div class="card-meta"><span>${escapeHTML(dimensions(j))}</span><span>${dateText(j.created_at)}</span></div>${image ? `<button type="button" class="secondary card-edit" data-edit="${j.id}" title="载入原图，填写修改说明后开始编辑">▧ 一键修图</button>` : ''}</div></article>`;
 }
 function renderGallery(target, jobs) {
   const node = $(target);
@@ -366,20 +370,24 @@ async function fetchImageFile(url, name) {
 async function reuseJob(j) {
   try {
     const file = j.mode === 'edit' ? await fetchImageFile(`/api/jobs/${j.id}/input`, 'reference') : null;
-    state.mode = j.mode; selectSingleModel(j.model); updateControls(); setRatio(j.ratio); $('#gemini-preset').value = j.resolution;
+    selectSingleModel(j.model); setMode(j.mode); setRatio(j.ratio); $('#gemini-preset').value = j.resolution;
     updateControls();
     setReference(file); setView('studio'); setPrompt(j.prompt); $('#detail').close();
     toast('已填入参数，点击生成后才会发起新请求'); window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) { toast(error.message); }
 }
 async function editResult(j) {
+  if (loadingEdit || state.busy) return;
+  loadingEdit = true;
   try {
+    if (typeof j === 'string') j = await api(`/api/jobs/${j}`);
     const file = await fetchImageFile(j.images[0].url, 'reference');
     if (!setReference(file)) return;
     selectSingleModel(j.model.startsWith('gemini-') ? 'gemini-3.1-flash-image' : 'gpt-image-2');
     setMode('edit'); setView('studio'); setPrompt('');
-    $('#detail').close(); toast('已载入参考图，请描述需要修改的内容'); window.scrollTo({ top: 0, behavior: 'smooth' });
-  } catch (error) { toast(error.message); }
+    $('#detail').close(); toast('已载入参考图，请描述需要修改的内容');
+    $('#prompt').focus({ preventScroll: true }); $('#upload-group').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (error) { toast(error.message); } finally { loadingEdit = false; }
 }
 $('#create-form').addEventListener('submit', async event => {
   event.preventDefault(); if ($('#generate').disabled) return;
@@ -411,6 +419,7 @@ $('#create-form').addEventListener('submit', async event => {
 document.addEventListener('click', event => {
   const button = event.target.closest('button');
   if (button?.dataset.retry) { event.preventDefault(); event.stopPropagation(); retryJob(button.dataset.retry); return; }
+  if (button?.dataset.edit) { event.preventDefault(); event.stopPropagation(); editResult(button.dataset.edit); return; }
   if (button?.dataset.view) setView(button.dataset.view);
   if (button?.dataset.mode) setMode(button.dataset.mode);
   if (button?.dataset.ratio) setRatio(button.dataset.ratio);
@@ -444,6 +453,14 @@ $('#clear-reference').onclick = () => setReference(null);
 $('#drop-zone').addEventListener('dragover', event => { event.preventDefault(); $('#drop-zone').classList.add('dragging'); });
 $('#drop-zone').addEventListener('dragleave', () => $('#drop-zone').classList.remove('dragging'));
 $('#drop-zone').addEventListener('drop', event => { event.preventDefault(); $('#drop-zone').classList.remove('dragging'); if (event.dataTransfer.files[0]) setReference(event.dataTransfer.files[0]); });
+document.addEventListener('paste', event => {
+  if (!state.user || state.view !== 'studio' || state.mode !== 'edit' || $('dialog[open]')) return;
+  const item = [...(event.clipboardData?.items || [])].find(item => item.kind === 'file' && item.type.startsWith('image/'));
+  const file = item?.getAsFile();
+  if (!file) return;
+  event.preventDefault();
+  if (setReference(file)) toast('已粘贴参考图，请填写修改说明后开始编辑');
+});
 $('#previous-page').onclick = () => { state.page--; refreshHistory().catch(showConnectionError); };
 $('#next-page').onclick = () => { state.page++; refreshHistory().catch(showConnectionError); };
 $('#history-model').replaceChildren(new Option('全部模型', ''), ...Object.entries(modelNames).map(([value, label]) => new Option(label, value)));

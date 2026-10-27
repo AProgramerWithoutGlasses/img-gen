@@ -480,6 +480,15 @@ textarea::placeholder {
 .reference-frame {
   position:relative
 }
+#prompt-label {
+  color:inherit;
+  font-size:inherit
+}
+.card-edit {
+  width:100%;
+  margin-top:12px;
+  min-height:36px
+}
 .reference-remove {
   position:absolute;
   top:6px;
