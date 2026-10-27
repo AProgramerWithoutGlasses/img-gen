@@ -1,7 +1,7 @@
 'use strict';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, pasteTarget: 'base', historyVersion: 0, refreshing: false };
+const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
 const ideas = [
   '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，石桌上摆着小茶壶，水彩插画风格，安静而松弛。',
   '雨后街角的一家小咖啡馆，暖黄色灯光透过玻璃，窗边放着一杯拿铁和一本翻开的书，电影感摄影，细腻光影。',
@@ -244,10 +244,6 @@ function setMode(mode) {
   $('#prompt').placeholder = mode === 'edit' ? '例如：把画面中间的小猫换成参考图里的小猫，保留基础图的背景和其他物体。' : '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，水彩质感，安静而松弛……';
   updateControls();
 }
-function setPasteTarget(slot) {
-  state.pasteTarget = slot;
-  $$('[data-paste-target]').forEach(button => { const selected = button.dataset.pasteTarget === slot; button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', String(selected)); });
-}
 function setEditImage(slot, file) {
   if (file && (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 12 * 1024 * 1024)) { toast('请选择 12 MB 以内的 PNG / JPEG 图片'); return false; }
   const base = slot === 'base', urlKey = base ? 'basePreviewURL' : 'previewURL';
@@ -258,7 +254,6 @@ function setEditImage(slot, file) {
   $('#form-error').hidden = true;
   preview.hidden = !file; $(base ? '#base-upload-copy' : '#upload-copy').hidden = !!file; $(base ? '#clear-base' : '#clear-reference').hidden = !file;
   if (file) preview.src = state[urlKey]; else preview.removeAttribute('src');
-  setPasteTarget(!state.base ? 'base' : 'reference');
   return true;
 }
 function card(j) {
@@ -442,7 +437,6 @@ document.addEventListener('click', event => {
   const button = event.target.closest('button');
   if (button?.dataset.retry) { event.preventDefault(); event.stopPropagation(); retryJob(button.dataset.retry); return; }
   if (button?.dataset.edit) { event.preventDefault(); event.stopPropagation(); editResult(button.dataset.edit); return; }
-  if (button?.dataset.pasteTarget) setPasteTarget(button.dataset.pasteTarget);
   if (button?.dataset.view) setView(button.dataset.view);
   if (button?.dataset.mode) setMode(button.dataset.mode);
   if (button?.dataset.ratio) setRatio(button.dataset.ratio);
@@ -475,22 +469,11 @@ for (const [slot, inputID, dropID, clearID] of [['base', '#base-image', '#base-d
   $(inputID).onchange = event => { const file = event.target.files[0]; if (file && !setEditImage(slot, file)) event.target.value = ''; };
   $(clearID).onclick = () => setEditImage(slot, null);
   const zone = $(dropID);
-  zone.addEventListener('click', () => setPasteTarget(slot));
-  zone.addEventListener('focusin', () => setPasteTarget(slot));
   zone.addEventListener('dragover', event => { event.preventDefault(); zone.classList.add('dragging'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
   zone.addEventListener('drop', event => { event.preventDefault(); zone.classList.remove('dragging'); if (event.dataTransfer.files[0]) setEditImage(slot, event.dataTransfer.files[0]); });
 }
 $('#choose-base-history').onclick = () => { setView('history'); toast('点击作品上的“一键修图”，将它用作基础图'); };
-document.addEventListener('paste', event => {
-  if (!state.user || state.view !== 'studio' || state.mode !== 'edit' || $('dialog[open]')) return;
-  const item = [...(event.clipboardData?.items || [])].find(item => item.kind === 'file' && item.type.startsWith('image/'));
-  const file = item?.getAsFile();
-  if (!file) return;
-  event.preventDefault();
-  const slot = state.pasteTarget;
-  if (setEditImage(slot, file)) toast(`已粘贴${slot === 'base' ? '基础图' : '参考图'}`);
-});
 $('#previous-page').onclick = () => { state.page--; refreshHistory().catch(showConnectionError); };
 $('#next-page').onclick = () => { state.page++; refreshHistory().catch(showConnectionError); };
 $('#history-model').replaceChildren(new Option('全部模型', ''), ...Object.entries(modelNames).map(([value, label]) => new Option(label, value)));
