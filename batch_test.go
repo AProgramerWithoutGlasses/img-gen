@@ -72,9 +72,6 @@ func TestExpandBatch(t *testing.T) {
 	if jobs, err := expandBatch(base, selections); err != nil || len(jobs) != 5 || len(jobs[4].Input) == 0 {
 		t.Fatalf("shared reference missing: %v", err)
 	}
-	if _, err := expandBatch(base, []modelSelection{{"gpt-image-1.5", 1}}); err == nil {
-		t.Fatal("unverified edit model accepted")
-	}
 	base.Mode = "generate"
 	all := []modelSelection{}
 	for model := range models {
@@ -82,5 +79,16 @@ func TestExpandBatch(t *testing.T) {
 	}
 	if jobs, err := expandBatch(base, all); err != nil || len(jobs) != maxBatchImages {
 		t.Fatalf("maximum batch: %d jobs, %v", len(jobs), err)
+	}
+	base.Mode = "edit"
+	base.Reference, base.ReferenceMIME = referencePNG(), "image/png"
+	jobs, err = expandBatch(base, all)
+	if err != nil || len(jobs) != maxBatchImages {
+		t.Fatalf("all-model edit batch: %d jobs, %v", len(jobs), err)
+	}
+	for _, j := range jobs {
+		if len(j.Input) != len(base.Input) || len(j.Reference) != len(base.Reference) || j.ReferenceMIME != base.ReferenceMIME {
+			t.Fatal("all-model edit batch lost image inputs")
+		}
 	}
 }

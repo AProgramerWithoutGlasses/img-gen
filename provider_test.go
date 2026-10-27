@@ -218,7 +218,7 @@ func TestResolutionBoundaries(t *testing.T) {
 						want = ratio == "auto" && resolution == "default" || ratio == "16:9" && (resolution == "2K" || model == "gemini-3.1-flash-image" && (resolution == "1K" || resolution == "4K"))
 					}
 					if mode == "edit" {
-						want = (model == "gpt-image-2" || model == "gemini-3.1-flash-image") && ratio == "auto" && resolution == "default"
+						want = ratio == "auto" && resolution == "default"
 					}
 					if got := validateJob(&j) == nil; got != want {
 						t.Errorf("%s/%s/%s/%s: allowed=%v, want %v", model, mode, ratio, resolution, got, want)
@@ -234,7 +234,7 @@ func TestRejectUnsupportedCombinations(t *testing.T) {
 		{Model: "fake", Mode: "generate", Prompt: "x", Ratio: "auto", Resolution: "default"},
 		{Model: "gpt-image-2", Mode: "generate", Prompt: "x", Ratio: "auto", Resolution: "2K"},
 		{Model: "gemini-3.1-flash-image", Mode: "generate", Prompt: "x", Ratio: "9:16", Resolution: "2K"},
-		{Model: "gemini-3-pro-image", Mode: "edit", Prompt: "x", Ratio: "auto", Resolution: "default", Input: testPNG()},
+		{Model: "fake", Mode: "edit", Prompt: "x", Ratio: "auto", Resolution: "default", Input: testPNG()},
 		{Model: "gpt-image-2", Mode: "edit", Prompt: "x", Ratio: "auto", Resolution: "default"},
 		{Model: "gpt-image-2", Mode: "generate", Prompt: "  ", Ratio: "auto", Resolution: "default"},
 	} {

@@ -27,7 +27,13 @@ func referencePNG() []byte {
 }
 
 func TestTwoImageEditProtocol(t *testing.T) {
-	j := job{Mode: "edit", Model: "gpt-image-2", Prompt: "把中间的小猫换成参考图里的小猫", Ratio: "auto", Resolution: "default", Input: testPNG(), InputMIME: "image/png", Reference: referencePNG(), ReferenceMIME: "image/png"}
+	for _, model := range []string{"gpt-image-2", "gpt-image-1.5", "gpt-image-2.5-sunburst"} {
+		t.Run(model, func(t *testing.T) { testGPTTwoImageEditProtocol(t, model) })
+	}
+}
+
+func testGPTTwoImageEditProtocol(t *testing.T, model string) {
+	j := job{Mode: "edit", Model: model, Prompt: "把中间的小猫换成参考图里的小猫", Ratio: "auto", Resolution: "default", Input: testPNG(), InputMIME: "image/png", Reference: referencePNG(), ReferenceMIME: "image/png"}
 	if err := validateJob(&j); err != nil {
 		t.Fatal(err)
 	}
@@ -82,9 +88,9 @@ func TestTwoImageEditProtocol(t *testing.T) {
 	if err != nil || len(jobs) != 2 || !bytes.Equal(jobs[1].Reference, j.Reference) {
 		t.Fatal("batch lost second image", err)
 	}
-	j.Model = "gemini-3-pro-image"
+	j.Model = "unknown-model"
 	if validateJob(&j) == nil {
-		t.Fatal("unverified dual-image Pro accepted")
+		t.Fatal("unknown dual-image model accepted")
 	}
 	j.Model = "gpt-image-2"
 	j.Mode = "generate"
@@ -94,15 +100,21 @@ func TestTwoImageEditProtocol(t *testing.T) {
 }
 
 func TestGeminiTwoImageEditProtocol(t *testing.T) {
-	j := job{Mode: "edit", Model: "gemini-3.1-flash-image", Prompt: "用参考图里的蓝色五边形替换橙色圆形", Ratio: "auto", Resolution: "default", Input: testPNG(), InputMIME: "image/png", Reference: referencePNG(), ReferenceMIME: "image/png"}
+	for _, model := range []string{"gemini-3.1-flash-image", "gemini-3-pro-image"} {
+		t.Run(model, func(t *testing.T) { testGeminiTwoImageEditProtocol(t, model) })
+	}
+}
+
+func testGeminiTwoImageEditProtocol(t *testing.T, model string) {
+	j := job{Mode: "edit", Model: model, Prompt: "用参考图里的蓝色五边形替换橙色圆形", Ratio: "auto", Resolution: "default", Input: testPNG(), InputMIME: "image/png", Reference: referencePNG(), ReferenceMIME: "image/png"}
 	if err := validateJob(&j); err != nil {
 		t.Fatal(err)
 	}
 	var calls atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
-		if r.URL.Path != "/v1beta/models/gemini-3.1-flash-image:generateContent" || r.Method != http.MethodPost {
-			t.Error("Flash editing must use the native route")
+		if r.URL.Path != "/v1beta/models/"+model+":generateContent" || r.Method != http.MethodPost {
+			t.Error("Gemini editing must use the selected model's native route")
 		}
 		var request struct {
 			Contents []struct {

@@ -8,7 +8,6 @@ const ideas = [
   '漂浮在云海之上的小岛，一座玻璃植物温室，螺旋阶梯连接星空，微缩景观，梦幻柔和的薄荷绿与奶油色。'
 ];
 const modelNames = { 'gpt-image-2': 'GPT Image 2', 'gpt-image-1.5': 'GPT Image 1.5', 'gpt-image-2.5-sunburst': 'GPT Image 2.5 Sunburst', 'gemini-3.1-flash-image': 'Gemini Flash', 'gemini-3-pro-image': 'Gemini Pro' };
-const editModels = new Set(['gpt-image-2', 'gemini-3.1-flash-image']);
 const statusNames = { queued: '排队中', running: '正在创作', succeeded: '已完成', failed: '生成失败' };
 const retriedJobs = new Set();
 let retryingJob = null;
@@ -198,12 +197,8 @@ function updateControls() {
   const edit = state.mode === 'edit';
   const multiple = $('#multi-model').open;
   $('#single-model-controls').hidden = multiple;
-  for (const option of $('#single-model').options) option.disabled = edit && !editModels.has(option.value);
-  if ($('#single-model').selectedOptions[0].disabled) $('#single-model').value = 'gpt-image-2';
   $$('[name="selected-model"]').forEach(input => {
-    input.disabled = edit && !editModels.has(input.value);
-    $(`[data-count="${input.value}"]`).disabled = input.disabled || !input.checked;
-    input.closest('.model-row').classList.toggle('unavailable', input.disabled);
+    $(`[data-count="${input.value}"]`).disabled = !input.checked;
   });
   const selections = selectedModels();
   const hasGPT = selections.some(item => !item.model.startsWith('gemini-'));
@@ -238,13 +233,12 @@ function updateControls() {
     '4K': '横向 16:9 · 实测 5504 × 3072，适合放大或裁剪；生成更慢、文件更大，实际尺寸以生成结果为准。'
   };
   $('#size-note').textContent = edit ? '以基础图为画面，用参考图中的对象或外观进行修改；不保证逐像素保留。' : hasGemini ? sizeNotes[preset.value] : '所有模型共用比例提示；最终以实际图片尺寸为准。';
-  $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : edit ? '双图修图可选 GPT Image 2 / Gemini Flash，使用默认配置；上游内容检查可能拦截部分请求。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '');
+  $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : edit ? '参考图编辑可选择全部 5 个模型，使用默认画面配置。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '');
   $$('[data-mode]').forEach(button => button.classList.toggle('selected', button.dataset.mode === state.mode));
 }
 function setMode(mode) {
   if (state.mode !== mode) {
     promptVersion++; polishUndo = null; $('#polish-status').textContent = ''; $('#form-error').hidden = true;
-    if (mode === 'edit' && !selectedModels().some(item => editModels.has(item.model))) selectSingleModel('gpt-image-2');
   }
   state.mode = mode;
   $('#prompt').placeholder = mode === 'edit' ? '例如：把画面中间的小猫换成参考图里的小猫，保留基础图的背景和其他物体。' : '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，水彩质感，安静而松弛……';
@@ -481,7 +475,7 @@ async function editResult(j) {
     if (!picture || !/^[a-f0-9]{32}$/.test(picture.id)) throw new Error('未找到可编辑的原图，请刷新作品列表');
     const file = { sourceID: picture.id, url: picture.url, type: picture.mime, size: picture.bytes };
     if (!setEditImage('base', file)) return;
-    if (state.mode !== 'edit') selectSingleModel(editModels.has(j.model) ? j.model : j.model.startsWith('gemini-') ? 'gemini-3.1-flash-image' : 'gpt-image-2');
+    if (state.mode !== 'edit') selectSingleModel(modelNames[j.model] ? j.model : 'gpt-image-2');
     if (state.mode !== 'edit') setPrompt('');
     setMode('edit'); setView('studio');
     $('#detail').close(); toast(state.reference ? '已更换基础图，请填写修改说明' : '已载入基础图，请添加参考图并填写修改说明');

@@ -65,9 +65,6 @@ func validateJob(j *job) error {
 		return errors.New("基础图 + 参考图仅用于编辑模式")
 	}
 	if j.Mode == "edit" {
-		if j.Model != "gpt-image-2" && j.Model != "gemini-3.1-flash-image" {
-			return errors.New("参考图编辑仅开放已测通的 GPT Image 2 和 Gemini Flash")
-		}
 		if len(j.Input) == 0 {
 			return errors.New("请上传 PNG 或 JPEG 基础图")
 		}
