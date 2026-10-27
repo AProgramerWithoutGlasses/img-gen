@@ -2,9 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
 	"testing/fstest"
 	"time"
@@ -95,17 +98,137 @@ func TestExpiredOrRevokedSession(t *testing.T) {
 
 func TestLoginLimiter(t *testing.T) {
 	var limiter loginLimiter
-	for i := 0; i < 20; i++ {
-		if !limiter.allow("ip") {
+	now := time.Now()
+	for i := 0; i < loginIPLimit; i++ {
+		if limiter.allow("ip", loginIPLimit, now) != 0 {
 			t.Fatal("limited too early")
 		}
 	}
-	if limiter.allow("ip") {
-		t.Fatal("login flooding allowed")
+	for _, elapsed := range []time.Duration{0, time.Second, 14 * time.Minute} {
+		if retry := limiter.allow("ip", loginIPLimit, now.Add(elapsed)); retry != loginWindow-elapsed {
+			t.Fatalf("wrong cooldown or rejection extended it: %v", retry)
+		}
 	}
-	limiter.entries["ip"] = loginAttempt{Count: 20, Until: time.Now().Add(-time.Second)}
-	if !limiter.allow("ip") {
+	if limiter.allow("ip", loginIPLimit, now.Add(loginWindow)) != 0 {
 		t.Fatal("limiter never expires")
+	}
+}
+
+func TestLoginLimiterConcurrentAndBounded(t *testing.T) {
+	var limiter loginLimiter
+	now := time.Now()
+	var admitted atomic.Int32
+	var wg sync.WaitGroup
+	for i := 0; i < 100; i++ {
+		wg.Go(func() {
+			if limiter.allow("account:admin", loginAccountLimit, now) == 0 {
+				admitted.Add(1)
+			}
+		})
+	}
+	wg.Wait()
+	if admitted.Load() != loginAccountLimit {
+		t.Fatalf("concurrent requests bypassed quota: %d", admitted.Load())
+	}
+	for i := 0; i < loginMaxEntries-1; i++ {
+		if limiter.allow(fmt.Sprint(i), loginIPLimit, now) != 0 {
+			t.Fatal("capacity reached too early")
+		}
+	}
+	if limiter.allow("overflow", loginIPLimit, now) <= 0 || len(limiter.entries) != loginMaxEntries {
+		t.Fatal("unbounded limiter")
+	}
+	if limiter.allow("account:admin", loginAccountLimit, now) <= 0 {
+		t.Fatal("capacity evicted a blocked account")
+	}
+	if limiter.allow("overflow", loginIPLimit, now.Add(loginWindow)) != 0 {
+		t.Fatal("expired entries did not free capacity")
+	}
+}
+
+func TestLoginAccountQuotaAcrossIPs(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	a := app{db: db}
+	h := a.routes(fstest.MapFS{})
+	// Unknown accounts receive exactly the same quota. Alternating case and
+	// whitespace and changing the source IP must not reset it.
+	for i := 0; i <= loginAccountLimit; i++ {
+		name := "Admin"
+		if i%2 == 0 {
+			name = " admin "
+		}
+		if i < loginAccountLimit {
+			mock.ExpectQuery("SELECT .* FROM users WHERE username").WithArgs(strings.TrimSpace(name)).WillReturnError(sql.ErrNoRows)
+		}
+		r := httptest.NewRequest("POST", "/api/auth/login", strings.NewReader(fmt.Sprintf(`{"username":%q,"password":"wrong-password"}`, name)))
+		r.RemoteAddr = fmt.Sprintf("192.0.2.%d:1234", i+1)
+		w := httptest.NewRecorder()
+		h.ServeHTTP(w, r)
+		want := 401
+		if i == loginAccountLimit {
+			want = 429
+		}
+		if w.Code != want {
+			t.Fatalf("attempt %d: %d want %d", i, w.Code, want)
+		}
+		if want == 429 && w.Header().Get("Retry-After") == "" {
+			t.Fatal("missing retry delay")
+		}
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestLoginIPQuotaIgnoresForwardedHeaders(t *testing.T) {
+	a := app{}
+	h := a.routes(fstest.MapFS{})
+	for i := 0; i <= loginIPLimit; i++ {
+		// Invalid JSON still consumes the source quota, without a database call.
+		r := httptest.NewRequest("POST", "/api/auth/login", strings.NewReader("{"))
+		r.RemoteAddr = "192.0.2.1:1234"
+		if i%2 == 0 {
+			r.RemoteAddr = "[::ffff:192.0.2.1]:5678"
+		}
+		r.Header.Set("X-Forwarded-For", fmt.Sprintf("198.51.100.%d", i))
+		r.Header.Set("X-Real-IP", fmt.Sprintf("198.51.100.%d", i))
+		w := httptest.NewRecorder()
+		h.ServeHTTP(w, r)
+		want := 400
+		if i == loginIPLimit {
+			want = 429
+		}
+		if w.Code != want {
+			t.Fatalf("attempt %d: %d want %d", i, w.Code, want)
+		}
+	}
+	if a.logins.inFlight != 0 {
+		t.Fatal("parse errors leaked concurrency slots")
+	}
+}
+
+func TestLoginConcurrentWorkIsRejected(t *testing.T) {
+	a := app{}
+	for i := 0; i < loginMaxConcurrent; i++ {
+		a.logins.begin()
+	}
+	r := httptest.NewRequest("POST", "/api/auth/login", strings.NewReader(`{"username":"admin","password":"test-password"}`))
+	w := httptest.NewRecorder()
+	a.routes(fstest.MapFS{}).ServeHTTP(w, r)
+	if w.Code != 429 || w.Header().Get("Retry-After") != "1" {
+		t.Fatalf("concurrent login was not rejected before DB access: %d", w.Code)
+	}
+	for i := 0; i < loginMaxConcurrent; i++ {
+		a.logins.end()
+	}
+	w = httptest.NewRecorder()
+	a.routes(fstest.MapFS{}).ServeHTTP(w, httptest.NewRequest("POST", "/api/auth/login", strings.NewReader("{")))
+	if w.Code != 400 {
+		t.Fatal("concurrency slots did not recover")
 	}
 }
 

@@ -13,8 +13,8 @@ import (
 	"net"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -90,51 +90,36 @@ func decodeJSON(w http.ResponseWriter, r *http.Request, value any) bool {
 	return true
 }
 
-// Single-instance, bounded login throttle. Do not trust forwarded client IPs.
-type loginAttempt struct {
-	Count int
-	Until time.Time
-}
-type loginLimiter struct {
-	sync.Mutex
-	entries map[string]loginAttempt
-}
-
-func (l *loginLimiter) allow(ip string) bool {
-	l.Lock()
-	defer l.Unlock()
-	now := time.Now()
-	if l.entries == nil {
-		l.entries = map[string]loginAttempt{}
-	}
-	for key, attempt := range l.entries {
-		if !now.Before(attempt.Until) {
-			delete(l.entries, key)
-		}
-	}
-	attempt := l.entries[ip]
-	if attempt.Count >= 20 || (attempt.Count == 0 && len(l.entries) >= 4096) {
-		return false
-	}
-	if attempt.Count == 0 {
-		attempt.Until = now.Add(15 * time.Minute)
-	}
-	attempt.Count++
-	l.entries[ip] = attempt
-	return true
-}
-
 func (a *app) login(w http.ResponseWriter, r *http.Request) {
 	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if !a.logins.allow(ip) {
-		apiError(w, 429, "登录过于频繁，请 15 分钟后再试")
+	if parsed := net.ParseIP(ip); parsed != nil {
+		ip = parsed.String() // IPv4 and IPv4-mapped IPv6 share a quota.
+	}
+	if retry := a.logins.allow("ip:"+ip, loginIPLimit, time.Now()); retry > 0 {
+		loginThrottled(w, retry)
 		return
 	}
+	if !a.logins.begin() {
+		loginThrottled(w, time.Second)
+		return
+	}
+	defer a.logins.end()
 	var input struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 	if !decodeJSON(w, r, &input) {
+		return
+	}
+	input.Username = strings.TrimSpace(input.Username)
+	// Restrict to the same ASCII alphabet as account creation so database
+	// collation aliases cannot bypass the account quota.
+	if !usernamePattern.MatchString(input.Username) || !validPassword(input.Password) {
+		apiError(w, 401, "用户名或密码错误，或账号已停用")
+		return
+	}
+	if retry := a.logins.allow("account:"+strings.ToLower(input.Username), loginAccountLimit, time.Now()); retry > 0 {
+		loginThrottled(w, retry)
 		return
 	}
 	var u user
@@ -168,6 +153,12 @@ func (a *app) login(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: token, Path: "/", HttpOnly: true, Secure: a.secureCookies || r.TLS != nil, SameSite: http.SameSiteStrictMode, MaxAge: 7 * 24 * 60 * 60})
 	jsonResponse(w, 200, u)
+}
+
+func loginThrottled(w http.ResponseWriter, retry time.Duration) {
+	seconds := int64((retry + time.Second - 1) / time.Second)
+	w.Header().Set("Retry-After", strconv.FormatInt(seconds, 10))
+	apiError(w, http.StatusTooManyRequests, "登录过于频繁，请 "+strconv.FormatInt(seconds, 10)+" 秒后再试")
 }
 func (a *app) authenticate(w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
 	c, err := r.Cookie(sessionCookie)
