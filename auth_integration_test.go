@@ -129,6 +129,12 @@ func testAccountWorkflow(t *testing.T, db *sql.DB, h http.Handler, jobID, editID
 	request("GET", "/api/jobs/"+id+"/reference", "", alice, 200)
 	request("GET", "/api/jobs/"+id+"/reference", "", adminToken, 200)
 	request("GET", "/api/jobs/"+id+"/reference", "", bob, 404)
+	for _, role := range []string{"input", "reference"} {
+		path := "/api/jobs/" + id + "/" + role + "/preview/1"
+		request("GET", path, "", alice, 200)
+		request("GET", path, "", adminToken, 200)
+		request("GET", path, "", bob, 404)
+	}
 	w = request("GET", "/api/jobs/"+id, "", adminToken, 200)
 	if err := json.Unmarshal(w.Body.Bytes(), &j); err != nil || len(j.Images) != 1 || j.Username != "alice" {
 		t.Fatal("admin missing owner or images")

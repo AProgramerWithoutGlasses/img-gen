@@ -88,6 +88,7 @@ func (a *app) routes(static fs.FS) http.Handler {
 	mux.HandleFunc("GET /api/jobs/{id}", a.getJob)
 	mux.HandleFunc("GET /api/jobs/{id}/input", a.getInput)
 	mux.HandleFunc("GET /api/jobs/{id}/reference", a.getInput)
+	mux.HandleFunc("GET /api/jobs/{id}/{role}/preview/{version}", a.getInputPreview)
 	mux.HandleFunc("GET /api/images/{id}", a.getImage)
 	mux.HandleFunc("GET /api/images/{id}/thumbnail/{version}", a.getThumbnail)
 	mux.HandleFunc("GET /api/images/{id}/preview/{version}", a.getPreview)
@@ -435,6 +436,10 @@ func (a *app) getJob(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取图片失败")
 		return
 	}
+	if err = a.inputPictures(r, &j); err != nil {
+		apiError(w, 500, "读取输入图片信息失败")
+		return
+	}
 	jsonResponse(w, 200, j)
 }
 func (a *app) getImage(w http.ResponseWriter, r *http.Request) {
@@ -486,14 +491,8 @@ func (a *app) getInput(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取参考图失败")
 		return
 	}
-	serveImage(w, data, mime)
+	serveCachedImage(w, r, data, mime)
 }
-func serveImage(w http.ResponseWriter, data []byte, mime string) {
-	w.Header().Set("Content-Type", mime)
-	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
-	_, _ = w.Write(data)
-}
-
 func (a *app) claim(ctx context.Context) (job, error) {
 	tx, err := a.db.BeginTx(ctx, nil)
 	if err != nil {

@@ -378,12 +378,19 @@ async function showDetail(id) {
   try {
     const j = await api(`/api/jobs/${id}`);
     const seconds = j.started_at && j.finished_at ? `${((new Date(j.finished_at) - new Date(j.started_at)) / 1000).toFixed(1)} 秒` : '—';
-    const pictures = j.images.map((p, index) => `<button type="button" class="detail-preview" data-preview="${index}" aria-label="查看大图${j.images.length > 1 ? ` ${index + 1}` : ''}"><img src="${escapeHTML(p.preview_url)}" alt="${escapeHTML(j.prompt)}" decoding="async"><span>点击查看大图</span></button>`).join('');
+    const previewButton = (p, key, alt, label) => `<button type="button" class="detail-preview" data-preview="${key}" aria-label="${escapeHTML(label)}"><img src="${escapeHTML(p.preview_url)}" alt="${escapeHTML(alt)}" decoding="async"><span>点击查看大图</span></button>`;
+    const pictures = j.images.map((p, index) => previewButton(p, index, j.prompt, `查看大图${j.images.length > 1 ? ` ${index + 1}` : ''}`)).join('');
+    const inputs = [[j.input_picture, 'input', '基础图', '待修改的画面'], [j.reference_picture, 'reference', '参考图', '借用的对象或外观']]
+      .filter(([p]) => p).map(([p, key, name, description]) => `<figure><figcaption>${name} · ${description}</figcaption>${previewButton(p, key, name, `查看${name}大图`)}</figure>`).join('');
     const metadata = [['用户', j.username || '历史共享记录'], ['消耗积分', creditText(j)], ['创作模式', j.mode === 'edit' ? '参考图编辑' : '文字生图'], ['请求模型', j.model], ['返回模型', j.actual_model || '—'], ['画面设定', j.ratio === 'auto' ? '自动 / 默认' : `${j.ratio} · ${j.resolution === 'default' ? '默认分辨率' : j.resolution}`], ['实际图片', j.images.map(p => `${p.width} × ${p.height} · ${p.mime.split('/')[1].toUpperCase()} · ${(p.bytes / 1048576).toFixed(2)} MB`).join('；') || '—'], ['生成耗时', seconds], ['创建时间', new Date(j.created_at).toLocaleString('zh-CN')], ['响应质量', j.quality || '—'], ['请求 ID', j.request_id || '—'], ['任务 ID', j.id]];
-    $('#detail-body').innerHTML = `<div class="detail-layout"><div class="detail-image">${j.has_input ? `<figure><figcaption>基础图 · 待修改的画面</figcaption><img src="/api/jobs/${j.id}/input" alt="基础图"></figure>` : ''}${j.has_reference ? `<figure><figcaption>参考图 · 借用的对象或外观</figcaption><img src="/api/jobs/${j.id}/reference" alt="参考图"></figure>` : ''}${pictures ? '<span>生成结果</span>' : ''}${pictures || `<span class="queued-icon">${j.status === 'failed' ? '↻' : '◷'}</span><span>${statusNames[j.status]}</span>`}</div><div class="detail-info"><span class="eyebrow">${statusNames[j.status]}</span><h3>一瞬灵感，一张作品。</h3><p>${escapeHTML(j.prompt)}</p>${j.error ? `<div class="detail-error">${escapeHTML(j.error)}</div>` : ''}<dl class="detail-meta">${metadata.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHTML(v)}</dd>`).join('')}</dl><details><summary>实际发送的提示词与接口</summary><p>${escapeHTML(j.effective_prompt)}</p><p>${escapeHTML(j.endpoint || '尚未调用')}</p></details><div class="detail-actions">${j.images.map((p, index) => `<a class="primary" href="${p.url}?download=1" download>↓ 下载原图${j.images.length > 1 ? index + 1 : ''}</a>`).join('')}<button class="secondary" id="reuse-job">${j.status === 'failed' ? '重试这次创作' : '复用参数'}</button>${j.images.length ? '<button class="secondary" id="edit-result">▧ 继续编辑</button>' : ''}</div></div></div>`;
+    $('#detail-body').innerHTML = `<div class="detail-layout"><div class="detail-image">${inputs}${pictures ? '<span>生成结果</span>' : ''}${pictures || `<span class="queued-icon">${j.status === 'failed' ? '↻' : '◷'}</span><span>${statusNames[j.status]}</span>`}</div><div class="detail-info"><span class="eyebrow">${statusNames[j.status]}</span><h3>一瞬灵感，一张作品。</h3><p>${escapeHTML(j.prompt)}</p>${j.error ? `<div class="detail-error">${escapeHTML(j.error)}</div>` : ''}<dl class="detail-meta">${metadata.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHTML(v)}</dd>`).join('')}</dl><details><summary>实际发送的提示词与接口</summary><p>${escapeHTML(j.effective_prompt)}</p><p>${escapeHTML(j.endpoint || '尚未调用')}</p></details><div class="detail-actions">${j.images.map((p, index) => `<a class="primary" href="${p.url}?download=1" download>↓ 下载原图${j.images.length > 1 ? index + 1 : ''}</a>`).join('')}<button class="secondary" id="reuse-job">${j.status === 'failed' ? '重试这次创作' : '复用参数'}</button>${j.images.length ? '<button class="secondary" id="edit-result">▧ 继续编辑</button>' : ''}</div></div></div>`;
     if (!$('#detail').open) $('#detail').showModal();
     $$('[data-preview]', $('#detail-body')).forEach(button => {
-      button.onclick = () => showImagePreview(j.images[Number(button.dataset.preview)], j.prompt);
+      button.onclick = () => {
+        const key = button.dataset.preview;
+        const picture = key === 'input' ? j.input_picture : key === 'reference' ? j.reference_picture : j.images[Number(key)];
+        showImagePreview(picture, key === 'input' ? '基础图' : key === 'reference' ? '参考图' : j.prompt);
+      };
     });
     $('#reuse-job').onclick = () => reuseJob(j);
     if ($('#edit-result')) $('#edit-result').onclick = () => editResult(j);
@@ -399,7 +406,10 @@ function clearImagePreview() {
   $('#image-preview-picture').removeAttribute('src');
   $('#view-original').onclick = null;
 }
-$('#image-preview').addEventListener('close', clearImagePreview);
+$('#image-preview').addEventListener('close', () => {
+  // A queued close event from the previous image must not clear a reopened preview.
+  if (!$('#image-preview').open) clearImagePreview();
+});
 function showImagePreview(picture, prompt) {
   clearImagePreview();
   const dialog = $('#image-preview'), img = $('#image-preview-picture');
@@ -419,6 +429,7 @@ function showImagePreview(picture, prompt) {
     originalLoader = loader;
     loader.onload = () => {
       if (originalLoader !== loader || !dialog.open) return;
+      loader.onload = loader.onerror = null;
       loader.id = img.id;
       loader.alt = prompt;
       img.replaceWith(loader);

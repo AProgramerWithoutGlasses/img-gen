@@ -69,38 +69,52 @@ func migrate(ctx context.Context, db *sql.DB) error {
 			return err
 		}
 	}
+	if _, err := db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS job_image_previews (
+		job_id CHAR(32) NOT NULL, role VARCHAR(16) NOT NULL, version INT NOT NULL,
+		content MEDIUMBLOB NOT NULL, PRIMARY KEY(job_id,role,version),
+		FOREIGN KEY(job_id) REFERENCES jobs(id) ON DELETE CASCADE
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`); err != nil {
+		return err
+	}
 	return migrateCredits(ctx, db)
 }
 
 type job struct {
-	CreditsCost     int64      `json:"credits_cost"`
-	CreditsState    string     `json:"credits_state"`
-	UserID          string     `json:"user_id"`
-	Username        string     `json:"username"`
-	ID              string     `json:"id"`
-	BatchID         string     `json:"batch_id"`
-	Mode            string     `json:"mode"`
-	Model           string     `json:"model"`
-	Prompt          string     `json:"prompt"`
-	EffectivePrompt string     `json:"effective_prompt"`
-	Ratio           string     `json:"ratio"`
-	Resolution      string     `json:"resolution"`
-	Status          string     `json:"status"`
-	Error           string     `json:"error"`
-	ActualModel     string     `json:"actual_model"`
-	Quality         string     `json:"quality"`
-	RequestID       string     `json:"request_id"`
-	Endpoint        string     `json:"endpoint"`
-	CreatedAt       time.Time  `json:"created_at"`
-	StartedAt       *time.Time `json:"started_at"`
-	FinishedAt      *time.Time `json:"finished_at"`
-	Images          []picture  `json:"images"`
-	HasInput        bool       `json:"has_input"`
-	Input           []byte     `json:"-"`
-	InputMIME       string     `json:"-"`
-	HasReference    bool       `json:"has_reference"`
-	Reference       []byte     `json:"-"`
-	ReferenceMIME   string     `json:"-"`
+	CreditsCost      int64          `json:"credits_cost"`
+	CreditsState     string         `json:"credits_state"`
+	UserID           string         `json:"user_id"`
+	Username         string         `json:"username"`
+	ID               string         `json:"id"`
+	BatchID          string         `json:"batch_id"`
+	Mode             string         `json:"mode"`
+	Model            string         `json:"model"`
+	Prompt           string         `json:"prompt"`
+	EffectivePrompt  string         `json:"effective_prompt"`
+	Ratio            string         `json:"ratio"`
+	Resolution       string         `json:"resolution"`
+	Status           string         `json:"status"`
+	Error            string         `json:"error"`
+	ActualModel      string         `json:"actual_model"`
+	Quality          string         `json:"quality"`
+	RequestID        string         `json:"request_id"`
+	Endpoint         string         `json:"endpoint"`
+	CreatedAt        time.Time      `json:"created_at"`
+	StartedAt        *time.Time     `json:"started_at"`
+	FinishedAt       *time.Time     `json:"finished_at"`
+	Images           []picture      `json:"images"`
+	HasInput         bool           `json:"has_input"`
+	Input            []byte         `json:"-"`
+	InputMIME        string         `json:"-"`
+	HasReference     bool           `json:"has_reference"`
+	Reference        []byte         `json:"-"`
+	ReferenceMIME    string         `json:"-"`
+	InputPicture     *sourcePicture `json:"input_picture,omitempty"`
+	ReferencePicture *sourcePicture `json:"reference_picture,omitempty"`
+}
+type sourcePicture struct {
+	URL        string `json:"url"`
+	PreviewURL string `json:"preview_url"`
+	Bytes      int    `json:"bytes"`
 }
 type picture struct {
 	ThumbnailURL string `json:"thumbnail_url"`

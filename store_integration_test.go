@@ -46,7 +46,7 @@ func TestMySQLWorkflow(t *testing.T) {
 		t.Fatal("integration requires a completely empty dedicated database")
 	}
 	t.Cleanup(func() {
-		for _, table := range []string{"credit_ledger", "model_prices", "image_thumbnails", "images", "jobs", "sessions", "users"} {
+		for _, table := range []string{"credit_ledger", "model_prices", "job_image_previews", "image_thumbnails", "images", "jobs", "sessions", "users"} {
 			if _, err := db.Exec("DROP TABLE IF EXISTS " + table); err != nil {
 				t.Error(err)
 			}
@@ -315,6 +315,39 @@ func TestMySQLWorkflow(t *testing.T) {
 	if json.Unmarshal(w.Body.Bytes(), &edited) != nil || !edited.HasReference || !edited.HasInput || !strings.Contains(edited.EffectivePrompt, referenceEditPrompt) {
 		t.Fatal("dual-image metadata lost")
 	}
+	for _, item := range []struct {
+		role     string
+		picture  *sourcePicture
+		original []byte
+	}{{"input", edited.InputPicture, testPNG()}, {"reference", edited.ReferencePicture, referencePNG()}} {
+		if item.picture == nil || item.picture.Bytes != len(item.original) || item.picture.URL != "/api/jobs/"+edited.ID+"/"+item.role || item.picture.PreviewURL != item.picture.URL+"/preview/1" {
+			t.Fatalf("wrong %s preview metadata: %+v", item.role, item.picture)
+		}
+		preview := request("GET", item.picture.PreviewURL, nil, "")
+		want, err := makePreview(item.original)
+		if err != nil || preview.Code != 200 || !bytes.Equal(preview.Body.Bytes(), want) {
+			t.Fatalf("%s preview mismatch: %d %v", item.role, preview.Code, err)
+		}
+		var saved []byte
+		if err := db.QueryRow("SELECT content FROM job_image_previews WHERE job_id=? AND role=? AND version=?", edited.ID, item.role, previewVersion).Scan(&saved); err != nil || !bytes.Equal(saved, want) {
+			t.Fatal("input preview not persisted independently", err)
+		}
+		fresh := &app{db: db}
+		for _, method := range []string{"GET", "HEAD"} {
+			r := httptest.NewRequest(method, item.picture.PreviewURL, nil)
+			r.AddCookie(&http.Cookie{Name: sessionCookie, Value: token})
+			r.Header.Set("If-None-Match", preview.Header().Get("ETag"))
+			cached := httptest.NewRecorder()
+			fresh.routes(fstest.MapFS{}).ServeHTTP(cached, r)
+			if cached.Code != 304 || cached.Body.Len() != 0 {
+				t.Fatalf("input preview cache after restart: %d", cached.Code)
+			}
+		}
+		original := request("GET", item.picture.URL, nil, "")
+		if !bytes.Equal(original.Body.Bytes(), item.original) {
+			t.Fatal("preview changed source bytes")
+		}
+	}
 	testAccountWorkflow(t, db, h, successIDs[0], editIDs[0], adminID, token)
 	testCreditsWorkflow(t, db, h, a, adminID, token)
 	// A fresh app instance reads the same saved history after the old workers stop.
@@ -367,5 +400,29 @@ func TestMySQLWorkflow(t *testing.T) {
 		if w.Code != 200 || !bytes.Equal(w.Body.Bytes(), expected) {
 			t.Fatalf("saved base image %s snapshot mismatch", endpoint)
 		}
+	}
+	// A legacy single-input task has a base preview but no reference preview.
+	legacy := newID()
+	if _, err := db.Exec(`INSERT INTO jobs(id,batch_id,user_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,input_image,input_mime)
+		VALUES(?,?,?,'edit','gpt-image-2','legacy input','legacy input','auto','default','failed','',?,'image/png')`, legacy, legacy, adminID, testPNG()); err != nil {
+		t.Fatal(err)
+	}
+	w = request("GET", "/api/jobs/"+legacy, nil, "")
+	var old job
+	if json.Unmarshal(w.Body.Bytes(), &old) != nil || old.InputPicture == nil || old.ReferencePicture != nil || old.HasReference {
+		t.Fatal("legacy input metadata incorrect")
+	}
+	if request("GET", old.InputPicture.PreviewURL, nil, "").Code != 200 {
+		t.Fatal("legacy preview failed")
+	}
+	if request("GET", "/api/jobs/"+legacy+"/reference/preview/1", nil, "").Code != 404 {
+		t.Fatal("missing reference preview must return 404")
+	}
+	if _, err := db.Exec("DELETE FROM jobs WHERE id=?", legacy); err != nil {
+		t.Fatal(err)
+	}
+	var count int
+	if err := db.QueryRow("SELECT COUNT(*) FROM job_image_previews WHERE job_id=?", legacy).Scan(&count); err != nil || count != 0 {
+		t.Fatal("preview cache not removed with job", err)
 	}
 }
