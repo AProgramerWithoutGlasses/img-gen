@@ -104,7 +104,7 @@ Compose 会启动 MySQL 8.4 并创建专用数据库，自动等待数据库就�
 
 基础图与参考图各最大 12 MB，PNG / JPEG，双图表单整体最大 25 MB；输出单张最大 24 MB、6400 万像素，上游响应整体最大 72 MB。保存图片失败时保留失败任务；上游可能已完成并计费，排查 `max_allowed_packet` 和磁盘空间后再决定重试。
 
-双图实测依据：[2026-10-27 双图修图测试](Qiso-双图修图接口实验-2026-10-27.md)。浏览器提交 `mode=edit`、`image`（基础图）、`reference`（参考图）及提示词；服务端为兼容旧客户端，仍接受不含 `reference` 的旧单图编辑请求。输入图片分别通过 `GET /api/jobs/{id}/input` 与 `GET /api/jobs/{id}/reference` 读取，两者使用同样的账号归属检查。迁移只新增 `reference_image` / `reference_mime` 列，不改写旧数据。
+双图实测依据：[2026-10-27 双图修图测试](Qiso-双图修图接口实验-2026-10-27.md)。浏览器提交 `mode=edit`、`image`（上传基础图）或 `base_image_id`（历史结果图片 ID，二选一）、`reference`（参考图）及提示词。“一键修图”立即切换到编辑界面，不再等待原图下载后重新上传；提交时服务端校验历史图片归属并保存独立的基础图快照。服务端为兼容旧客户端，仍接受不含 `reference` 的旧单图编辑请求。输入图片分别通过 `GET /api/jobs/{id}/input` 与 `GET /api/jobs/{id}/reference` 读取，两者使用同样的账号归属检查。迁移只新增 `reference_image` / `reference_mime` 列，不改写旧数据。
 
 排查顺序：`/healthz` → 服务日志 → 历史详情的任务 ID、请求 ID、调用路径、实际提示词。服务不记录密钥或完整上游错误体，前端不显示完整上游响应。
 

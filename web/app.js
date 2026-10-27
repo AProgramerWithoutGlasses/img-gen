@@ -248,8 +248,8 @@ function setEditImage(slot, file) {
   if (file && (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 12 * 1024 * 1024)) { toast('请选择 12 MB 以内的 PNG / JPEG 图片'); return false; }
   const base = slot === 'base', urlKey = base ? 'basePreviewURL' : 'previewURL';
   const input = $(base ? '#base-image' : '#reference'), preview = $(base ? '#base-preview' : '#reference-preview');
-  if (state[urlKey]) URL.revokeObjectURL(state[urlKey]);
-  state[slot] = file; state[urlKey] = file ? URL.createObjectURL(file) : null;
+  if (state[urlKey]?.startsWith('blob:')) URL.revokeObjectURL(state[urlKey]);
+  state[slot] = file; state[urlKey] = file ? file.sourceID ? file.url : URL.createObjectURL(file) : null;
   input.value = '';
   $('#form-error').hidden = true;
   preview.hidden = !file; $(base ? '#base-upload-copy' : '#upload-copy').hidden = !!file; $(base ? '#clear-base' : '#clear-reference').hidden = !file;
@@ -393,18 +393,27 @@ async function reuseJob(j) {
   } catch (error) { toast(error.message); }
 }
 async function editResult(j) {
-  if (loadingEdit || state.busy) return;
+  if (loadingEdit || state.busy) { toast(loadingEdit ? '正在读取作品，请稍候' : '正在提交创作，请稍后再选择基础图'); return; }
   loadingEdit = true;
   try {
-    if (typeof j === 'string') j = await api(`/api/jobs/${j}`);
-    const file = await fetchImageFile(j.images[0].url, 'base');
+    if (typeof j === 'string') {
+      const id = j;
+      j = [...state.currentJobs, ...state.recent, ...state.jobs].find(item => item.id === id);
+      if (!j) {
+        toast('正在读取作品…');
+        j = await api(`/api/jobs/${id}`, { signal: AbortSignal.timeout(15000) });
+      }
+    }
+    const picture = j.images?.[0];
+    if (!picture || !/^[a-f0-9]{32}$/.test(picture.id)) throw new Error('未找到可编辑的原图，请刷新作品列表');
+    const file = { sourceID: picture.id, url: picture.url, type: picture.mime, size: picture.bytes };
     if (!setEditImage('base', file)) return;
     selectSingleModel('gpt-image-2');
     if (state.mode !== 'edit') setPrompt('');
     setMode('edit'); setView('studio');
     $('#detail').close(); toast(state.reference ? '已更换基础图，请填写修改说明' : '已载入基础图，请添加参考图并填写修改说明');
     $('#prompt').focus({ preventScroll: true }); $('#upload-group').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } catch (error) { toast(error.message); } finally { loadingEdit = false; }
+  } catch (error) { toast(error.name === 'TimeoutError' ? '读取作品超时，请稍后重新点击' : error.message); } finally { loadingEdit = false; }
 }
 $('#create-form').addEventListener('submit', async event => {
   event.preventDefault(); if ($('#generate').disabled) return;
@@ -417,7 +426,10 @@ $('#create-form').addEventListener('submit', async event => {
   const ratio = state.mode === 'edit' ? 'auto' : gemini ? resolution !== 'default' ? '16:9' : 'auto' : state.ratio;
   const form = new FormData();
   for (const [key, value] of Object.entries({ mode: state.mode, models: JSON.stringify(selections), prompt: $('#prompt').value, ratio, resolution, expected_credits: estimatedCredits() })) form.append(key, value);
-  if (state.mode === 'edit') { form.append('image', state.base); form.append('reference', state.reference); }
+  if (state.mode === 'edit') {
+    if (state.base.sourceID) form.append('base_image_id', state.base.sourceID); else form.append('image', state.base);
+    form.append('reference', state.reference);
+  }
   const sources = captureGenerationSources(selections);
   state.busy = true; updateControls();
   try {

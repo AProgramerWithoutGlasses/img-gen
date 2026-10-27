@@ -150,12 +150,40 @@ func (a *app) createJobs(w http.ResponseWriter, r *http.Request) {
 		}
 		selections = []modelSelection{{Model: j.Model, Count: count}}
 	}
-	if j.Mode != "edit" && len(r.MultipartForm.File) > 0 {
+	_, hasSavedBase := r.MultipartForm.Value["base_image_id"]
+	if j.Mode != "edit" && (len(r.MultipartForm.File) > 0 || hasSavedBase) {
 		apiError(w, 400, "上传图片请使用编辑模式")
 		return
 	}
 	if j.Mode == "edit" {
-		base, err := readEditUpload(r, "image", "基础图", true)
+		var base picture
+		var err error
+		if hasSavedBase {
+			ids := r.MultipartForm.Value["base_image_id"]
+			if len(ids) != 1 || !validID(ids[0]) || len(r.MultipartForm.File["image"]) > 0 {
+				apiError(w, 400, "请选择一张历史基础图，或上传一张基础图，不能同时指定")
+				return
+			}
+			scope, args := ownerScope(r, "jobs.user_id")
+			var data []byte
+			var mime string
+			err = a.db.QueryRowContext(r.Context(), "SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=?"+scope, append([]any{ids[0]}, args...)...).Scan(&mime, &data)
+			if errors.Is(err, sql.ErrNoRows) {
+				apiError(w, 404, "基础图不存在或无权访问")
+				return
+			}
+			if err != nil {
+				apiError(w, 500, "读取历史基础图失败")
+				return
+			}
+			if len(data) > 12<<20 {
+				apiError(w, 400, "基础图不能超过 12 MB")
+				return
+			}
+			base, err = decodePicture(data)
+		} else {
+			base, err = readEditUpload(r, "image", "基础图", true)
+		}
 		if err != nil {
 			apiError(w, 400, err.Error())
 			return

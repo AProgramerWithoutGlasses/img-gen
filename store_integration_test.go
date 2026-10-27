@@ -314,4 +314,32 @@ func TestMySQLWorkflow(t *testing.T) {
 	if len(listing.Items) != 0 {
 		t.Fatal("pagination did not apply")
 	}
+	// Reuse a saved output without downloading and uploading it through the browser.
+	var sourceImageID string
+	if err := db.QueryRow("SELECT id FROM images WHERE job_id=?", successIDs[0]).Scan(&sourceImageID); err != nil {
+		t.Fatal(err)
+	}
+	var savedBody bytes.Buffer
+	savedWriter := multipart.NewWriter(&savedBody)
+	for k, v := range map[string]string{"mode": "edit", "model": "gpt-image-2", "prompt": "替换成参考图里的小猫", "count": "1", "ratio": "auto", "resolution": "default", "base_image_id": sourceImageID} {
+		_ = savedWriter.WriteField(k, v)
+	}
+	ref, _ := savedWriter.CreateFormFile("reference", "reference.png")
+	_, _ = ref.Write(referencePNG())
+	_ = savedWriter.Close()
+	w = request("POST", "/api/jobs", &savedBody, savedWriter.FormDataContentType())
+	if w.Code != 202 {
+		t.Fatalf("saved base image create: %d %s", w.Code, w.Body.String())
+	}
+	var saved struct{ IDs []string }
+	if err := json.Unmarshal(w.Body.Bytes(), &saved); err != nil || len(saved.IDs) != 1 {
+		t.Fatalf("saved base image response: %s", w.Body.String())
+	}
+	ids = append(ids, saved.IDs...)
+	for endpoint, expected := range map[string][]byte{"input": testPNG(), "reference": referencePNG()} {
+		w = request("GET", "/api/jobs/"+saved.IDs[0]+"/"+endpoint, nil, "")
+		if w.Code != 200 || !bytes.Equal(w.Body.Bytes(), expected) {
+			t.Fatalf("saved base image %s snapshot mismatch", endpoint)
+		}
+	}
 }
