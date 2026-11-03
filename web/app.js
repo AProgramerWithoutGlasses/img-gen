@@ -108,11 +108,13 @@ function setView(view) {
   if (view === 'history') refreshHistory().catch(showConnectionError);
   history.replaceState(null, '', view === 'studio' ? location.pathname : `#${view}`);
 }
+function draftChanged() { if (typeof saveDraft === 'function') saveDraft(); }
+function preserveDraft() { if (typeof rememberDraft === 'function') rememberDraft(); }
 function updateCount() {
   promptVersion++; polishUndo = null;
   $('#char-count').textContent = [...$('#prompt').value].length;
   $('#polish-status').textContent = ''; $('#polish-error').hidden = true;
-  updatePromptActions();
+  updatePromptActions(); draftChanged();
 }
 function updatePromptActions() {
   const prompt = $('#prompt').value.trim();
@@ -145,8 +147,8 @@ async function polishPrompt() {
     $('#polish-error').hidden = false;
   } finally { clearTimeout(timeout); polishing = false; updateControls(); }
 }
-function setPrompt(prompt) { $('#prompt').value = prompt; updateCount(); $('#prompt').focus(); }
-function setRatio(ratio) { state.ratio = ratio; $$('[data-ratio]').forEach(button => button.classList.toggle('selected', button.dataset.ratio === ratio)); }
+function setPrompt(prompt, preserve = true) { if (preserve) preserveDraft(); $('#prompt').value = prompt; updateCount(); $('#prompt').focus(); }
+function setRatio(ratio) { state.ratio = ratio; $$('[data-ratio]').forEach(button => button.classList.toggle('selected', button.dataset.ratio === ratio)); draftChanged(); }
 function selectedModels() {
   if (!$('#multi-model').open) return [{ model: $('#single-model').value, count: Number($('#single-count').value) }];
   return $$('[name="selected-model"]:checked').filter(input => !input.disabled).map(input => ({ model: input.value, count: Number($(`[data-count="${input.value}"]`).value) }));
@@ -234,7 +236,7 @@ function updateControls() {
   };
   $('#size-note').textContent = edit ? '以基础图为画面，用参考图中的对象或外观进行修改；不保证逐像素保留。' : hasGemini ? sizeNotes[preset.value] : '所有模型共用比例提示；最终以实际图片尺寸为准。';
   $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : edit ? '参考图编辑可选择全部 5 个模型，使用默认画面配置。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '');
-  $$('[data-mode]').forEach(button => button.classList.toggle('selected', button.dataset.mode === state.mode));
+  $$('[data-mode]').forEach(button => button.classList.toggle('selected', button.dataset.mode === state.mode)); draftChanged();
 }
 function setMode(mode) {
   if (state.mode !== mode) {
@@ -259,6 +261,7 @@ function setEditImage(slot, file) {
   $('#form-error').hidden = true;
   preview.hidden = !file; $(base ? '#base-upload-copy' : '#upload-copy').hidden = !!file; $(base ? '#clear-base' : '#clear-reference').hidden = !file;
   if (file) preview.src = state[urlKey]; else preview.removeAttribute('src');
+  draftChanged();
   return true;
 }
 function card(j) {
@@ -453,9 +456,10 @@ async function reuseJob(j) {
       j.mode === 'edit' ? fetchImageFile(`/api/jobs/${j.id}/input`, 'base') : null,
       j.has_reference ? fetchImageFile(`/api/jobs/${j.id}/reference`, 'reference') : null
     ]);
+    preserveDraft();
     selectSingleModel(j.model); setMode(j.mode); setRatio(j.ratio); $('#gemini-preset').value = j.resolution;
     updateControls();
-    setEditImage('base', base); setEditImage('reference', reference); setView('studio'); setPrompt(j.prompt); $('#detail').close();
+    setEditImage('base', base); setEditImage('reference', reference); setView('studio'); setPrompt(j.prompt, false); $('#detail').close();
     toast('已填入参数，点击生成后才会发起新请求'); window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) { toast(error.message); }
 }
@@ -474,9 +478,10 @@ async function editResult(j) {
     const picture = j.images?.[0];
     if (!picture || !/^[a-f0-9]{32}$/.test(picture.id)) throw new Error('未找到可编辑的原图，请刷新作品列表');
     const file = { sourceID: picture.id, url: picture.url, type: picture.mime, size: picture.bytes };
+    preserveDraft();
     if (!setEditImage('base', file)) return;
     if (state.mode !== 'edit') selectSingleModel(modelNames[j.model] ? j.model : 'gpt-image-2');
-    if (state.mode !== 'edit') setPrompt('');
+    if (state.mode !== 'edit') setPrompt('', false);
     setMode('edit'); setView('studio');
     $('#detail').close(); toast(state.reference ? '已更换基础图，请填写修改说明' : '已载入基础图，请添加参考图并填写修改说明');
     $('#prompt').focus({ preventScroll: true }); $('#upload-group').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -520,7 +525,7 @@ document.addEventListener('click', event => {
   if (button?.dataset.mode) setMode(button.dataset.mode);
   if (button?.dataset.ratio) setRatio(button.dataset.ratio);
   if (button?.dataset.style) { const prompt = $('#prompt'); prompt.value = `${prompt.value.trim()}${prompt.value.trim() ? '，' : ''}${button.dataset.style}`.slice(0, 6000); updateCount(); }
-  if (button?.dataset.idea !== undefined) { setView('studio'); setMode('generate'); setPrompt(ideas[Number(button.dataset.idea)]); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (button?.dataset.idea !== undefined) { preserveDraft(); setView('studio'); setMode('generate'); setPrompt(ideas[Number(button.dataset.idea)], false); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); }
   if (button?.dataset.filter !== undefined) { state.filter = button.dataset.filter; state.page = 1; $$('[data-filter]').forEach(b => b.classList.toggle('selected', b === button)); refreshHistory().catch(showConnectionError); }
   const art = event.target.closest('[data-job]'); if (art) showDetail(art.dataset.job);
   if (button?.classList.contains('dialog-close')) button.closest('dialog').close();
@@ -543,7 +548,7 @@ $('#multi-model').addEventListener('toggle', () => {
   updateControls();
 });
 $('#inspire').onclick = () => setPrompt(ideas[Math.floor(Math.random() * ideas.length)]);
-$('#try-example').onclick = () => { setMode('generate'); setPrompt(ideas[0]); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); };
+$('#try-example').onclick = () => { preserveDraft(); setMode('generate'); setPrompt(ideas[0], false); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); };
 document.addEventListener('dragstart', event => {
   const image = event.target.closest('[data-drag-image]');
   if (!image) return;
@@ -633,6 +638,7 @@ async function init() {
     $('#login-view').hidden = true;
     $('#admin-nav').hidden = state.user.role !== 'admin';
     renderAccount();
+    await restoreDraft();
     $('#password-username').value = state.user.username;
     $('#account-name').textContent = `${state.user.username} · ${state.user.role === 'admin' ? '管理员' : '普通用户'}`;
     const config = await api('/api/config'); state.configured = config.configured;
