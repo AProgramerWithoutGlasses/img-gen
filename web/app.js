@@ -1,7 +1,7 @@
 'use strict';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', preferredPreset: 'default', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
+const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', preferredPreset: 'default', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, configStatus: 'loading', recentLoaded: false, historyLoaded: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
 const ideas = [
   '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，石桌上摆着小茶壶，水彩插画风格，安静而松弛。',
   '雨后街角的一家小咖啡馆，暖黄色灯光透过玻璃，窗边放着一杯拿铁和一本翻开的书，电影感摄影，细腻光影。',
@@ -178,6 +178,10 @@ function updateGenerationStatus(total, estimate) {
       label = '正在读取图片…'; message = '原图读取完成后即可开始编辑；可重新拖入、上传或移除。';
     } else if (polishing) {
       label = '提示词润色中…'; message = '润色完成后即可生成，请稍候。';
+    } else if (state.configStatus === 'loading') {
+      label = '正在连接生图服务…'; message = '正在读取服务配置与积分价格，请稍候。';
+    } else if (state.configStatus === 'error') {
+      label = '服务信息读取失败'; message = '正在尝试重新连接，恢复后即可提交；也可刷新页面。';
     } else if (!state.configured) {
       label = '未配置生图服务'; message = '请联系管理员配置生图服务密钥，配置完成后即可生成。'; attention = true;
     } else if (!selectedModels().length) {
@@ -335,8 +339,11 @@ async function retryJob(id) {
 async function refreshHistory() {
   const version = ++state.historyVersion;
   const query = new URLSearchParams({ page: String(state.page), status: state.filter, model: state.historyModel, q: state.search });
-  const data = await api(`/api/jobs?${query}`);
+  let data;
+  try { data = await api(`/api/jobs?${query}`); }
+  catch (error) { if (version === state.historyVersion && !state.historyLoaded) $('#history-loading').textContent = '历史作品读取失败，正在尝试重新连接…'; throw error; }
   if (version !== state.historyVersion) return;
+  state.historyLoaded = true; $('#history-loading').hidden = true;
   state.jobs = data.items;
   renderGallery('#history-grid', data.items);
   $('#history-empty').hidden = !!data.items.length;
@@ -350,7 +357,9 @@ let recentVersion = 0;
 async function refreshRecent() {
   const version = ++recentVersion, ids = state.currentIDs;
   const currentIDs = new Set(ids);
-  const data = await api('/api/jobs');
+  let data;
+  try { data = await api('/api/jobs'); }
+  catch (error) { if (!state.recentLoaded) $('#recent-loading').textContent = '最近作品读取失败，正在尝试重新连接…'; throw error; }
   if (version !== recentVersion || ids !== state.currentIDs) return;
   const recent = data.items.filter(job => !currentIDs.has(job.id));
   // A full 20-image batch can leave fewer than six older works on page one.
@@ -359,6 +368,7 @@ async function refreshRecent() {
     if (version !== recentVersion || ids !== state.currentIDs) return;
     recent.push(...more.items.filter(job => !currentIDs.has(job.id)));
   }
+  state.recentLoaded = true; $('#recent-loading').hidden = true;
   state.recent = recent.slice(0, 6);
   renderGallery('#recent-grid', state.recent);
   $('#recent-empty').hidden = !!state.recent.length;
@@ -644,6 +654,11 @@ mixedHelp.addEventListener('keydown', event => {
   if (event.key === 'Escape') { mixedHelp.dataset.dismissed = 'true'; event.stopPropagation(); }
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+async function loadServiceConfig() {
+  try { const config = await api('/api/config'); state.configured = !!config.configured; state.configStatus = 'ready'; return config; }
+  catch (error) { state.configStatus = 'error'; throw error; }
+  finally { updateControls(); }
+}
 async function init() {
   try {
     state.user = await api('/api/auth/me');
@@ -654,14 +669,14 @@ async function init() {
     await restoreDraft();
     $('#password-username').value = state.user.username;
     $('#account-name').textContent = `${state.user.username} · ${state.user.role === 'admin' ? '管理员' : '普通用户'}`;
-    const config = await api('/api/config'); state.configured = config.configured;
+    const config = await loadServiceConfig();
     await refreshWallet();
     if (!config.configured) { $('#banner').textContent = '网站已就绪。请在服务端 .env 中配置 QISO_API_KEY 并重启，即可开始真实创作。'; $('#banner').hidden = false; }
     try { const ids = JSON.parse(localStorage.getItem(`qiso-current-jobs:${state.user.id}`) || '[]'); if (Array.isArray(ids)) state.currentIDs = ids.filter(id => /^[a-f0-9]{32}$/.test(id)).slice(0, 20); } catch { /* Ignore invalid local preferences. */ }
     if (state.currentIDs.length) { const results = await Promise.all(state.currentIDs.map(id => api(`/api/jobs/${id}`).then(() => id).catch(() => null))); state.currentIDs = results.filter(Boolean); }
     updateControls(); if (location.hash === '#history') setView('history'); if (location.hash === '#admin' && state.user.role === 'admin') setView('admin'); await refresh();
   } catch (error) { if (!state.user) { if (error.status !== 401) { $('#login-error').textContent = error.message; $('#login-error').hidden = false; } return; } showConnectionError(error); }
-  setInterval(async () => { if (!state.configured) { try { const config = await api('/api/config'); state.configured = config.configured; updateControls(); } catch {} } await refresh(); }, 4000);
+  setInterval(async () => { if (!state.configured) { try { await loadServiceConfig(); } catch {} } await refresh(); }, 4000);
 }
 updateControls();
 // Account UI starts initialization after its event handlers are installed.

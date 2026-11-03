@@ -1631,3 +1631,5 @@ dialog::backdrop {
 @media(max-width:640px) { .material-content { padding:36px 16px 20px; } .material-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } }
 
 #material-grid[aria-busy="true"] { pointer-events:none; opacity:.5; }
+
+.data-placeholder { padding:32px 20px; border:1px dashed var(--line); border-radius:12px; color:var(--muted); text-align:center; }
