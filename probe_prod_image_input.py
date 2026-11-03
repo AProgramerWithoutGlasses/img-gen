@@ -57,7 +57,7 @@ def jpeg_end(data):
 def transcode(data, resize):
     command = ['ffmpeg', '-v', 'error', '-threads', '1', '-f', 'image2pipe', '-i', 'pipe:0', '-frames:v', '1']
     if resize:
-        command += ['-vf', 'scale=2048:2048:force_original_aspect_ratio=decrease']
+        command += ['-vf', f'scale={resize}:{resize}:force_original_aspect_ratio=decrease']
     command += ['-map_metadata', '-1', '-c:v', 'mjpeg', '-q:v', '2', '-pix_fmt', 'yuvj420p', '-threads', '1', '-f', 'image2pipe', 'pipe:1']
     return subprocess.run(command, input=data, capture_output=True, check=True).stdout
 
@@ -75,7 +75,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--job', required=True)
     parser.add_argument('--case', required=True, choices=[
-        'original-dual', 'trim-dual', 'reencode-dual', 'resize2048-dual', 'original-single'])
+        'original-dual', 'trim-dual', 'reencode-dual', 'resize2048-dual',
+        'resize4096-dual', 'resize6144-dual', 'resize7680-dual',
+        'prepared-dual', 'original-single'])
+    parser.add_argument('--preprocessor', help='Server-local executable: original bytes on stdin, JPEG on stdout')
     parser.add_argument('--evidence-dir', required=True)
     args = parser.parse_args()
     if not re.fullmatch('[0-9a-f]{32}', args.job):
@@ -95,8 +98,14 @@ def main():
         raise SystemExit('This controlled experiment expects identical source images')
     if args.case == 'trim-dual':
         inputs = [data[:jpeg_end(data)] for data in inputs]
-    elif args.case in ('reencode-dual', 'resize2048-dual'):
-        converted = transcode(inputs[0], args.case == 'resize2048-dual')
+    elif args.case == 'reencode-dual' or args.case.startswith('resize'):
+        edge = int(args.case.split('-')[0][6:]) if args.case.startswith('resize') else 0
+        converted = transcode(inputs[0], edge)
+        inputs = [converted, converted]
+    elif args.case == 'prepared-dual':
+        if not args.preprocessor:
+            raise SystemExit('prepared-dual requires --preprocessor')
+        converted = subprocess.run([args.preprocessor], input=inputs[0], capture_output=True, check=True).stdout
         inputs = [converted, converted]
     elif args.case == 'original-single':
         inputs = inputs[:1]

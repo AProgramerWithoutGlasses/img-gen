@@ -103,6 +103,20 @@ func decodePicture(content []byte) (picture, error) {
 }
 
 func (p *provider) generate(ctx context.Context, j job) (generationResult, error) {
+	if j.Mode == "edit" {
+		input, err := prepareUpstreamInput(ctx, j.Input)
+		if err != nil {
+			return generationResult{}, fmt.Errorf("基础图预处理失败：%w", err)
+		}
+		j.Input, j.InputMIME = input.Content, input.MIME
+		if len(j.Reference) > 0 {
+			reference, err := prepareUpstreamInput(ctx, j.Reference)
+			if err != nil {
+				return generationResult{}, fmt.Errorf("参考图预处理失败：%w", err)
+			}
+			j.Reference, j.ReferenceMIME = reference.Content, reference.MIME
+		}
+	}
 	var body bytes.Buffer
 	contentType := "application/json"
 	endpoint := "/v1/images/generations"
