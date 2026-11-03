@@ -411,65 +411,13 @@ async function showDetail(id) {
       button.onclick = () => {
         const key = button.dataset.preview;
         const picture = key === 'input' ? j.input_picture : key === 'reference' ? j.reference_picture : j.images[Number(key)];
-        showImagePreview(picture, key === 'input' ? '基础图' : key === 'reference' ? '参考图' : j.prompt);
+        showImagePreview(picture, key === 'input' ? '基础图' : key === 'reference' ? '参考图' : j.prompt, previewItems(j, key));
       };
     });
     if ($('#copy-diagnostic')) $('#copy-diagnostic').onclick = () => copyDiagnostic(j);
     $('#reuse-job').onclick = () => reuseJob(j);
     if ($('#edit-result')) $('#edit-result').onclick = () => editResult(j);
   } catch (error) { toast(error.message); }
-}
-let originalLoader = null;
-function clearImagePreview() {
-  if (originalLoader) {
-    originalLoader.onload = originalLoader.onerror = null;
-    originalLoader.removeAttribute('src');
-    originalLoader = null;
-  }
-  $('#image-preview-picture').removeAttribute('src');
-  $('#view-original').onclick = null;
-}
-$('#image-preview').addEventListener('close', () => {
-  // A queued close event from the previous image must not clear a reopened preview.
-  if (!$('#image-preview').open) clearImagePreview();
-});
-function showImagePreview(picture, prompt) {
-  clearImagePreview();
-  const dialog = $('#image-preview'), img = $('#image-preview-picture');
-  const button = $('#view-original'), status = $('#image-preview-status');
-  const label = `查看原图（${(picture.bytes / 1048576).toFixed(2)} MB）`;
-  img.src = picture.preview_url;
-  img.alt = prompt;
-  button.textContent = label;
-  button.disabled = false;
-  status.textContent = '当前展示高清预览';
-  button.onclick = () => {
-    if (button.disabled) return;
-    button.disabled = true;
-    button.textContent = '正在加载原图…';
-    status.textContent = '原图加载中，暂时保留高清预览';
-    const loader = new Image();
-    originalLoader = loader;
-    loader.onload = () => {
-      if (originalLoader !== loader || !dialog.open) return;
-      loader.onload = loader.onerror = null;
-      loader.id = img.id;
-      loader.alt = prompt;
-      img.replaceWith(loader);
-      button.textContent = '已显示原图';
-      status.textContent = '当前展示原图';
-      originalLoader = null;
-    };
-    loader.onerror = () => {
-      if (originalLoader !== loader || !dialog.open) return;
-      originalLoader = null;
-      button.disabled = false;
-      button.textContent = label;
-      status.textContent = '原图加载失败，仍展示高清预览，请点击按钮重试';
-    };
-    loader.src = picture.url;
-  };
-  if (!dialog.open) dialog.showModal();
 }
 async function fetchImageFile(url, name) {
   const response = await fetch(url, { signal: AbortSignal.timeout(30000) }); if (!response.ok) throw new Error('读取图片失败');
