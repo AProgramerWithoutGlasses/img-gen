@@ -102,7 +102,7 @@ function paginate(prefix, data) {
 function adminTab(tab) {
   adminState.tab = tab;
   $('#admin-users').hidden = tab !== 'users'; $('#admin-requests').hidden = tab !== 'requests'; $('#admin-prices').hidden = tab !== 'prices';
-  $$('[data-admin-tab]').forEach(button => button.classList.toggle('selected', button.dataset.adminTab === tab));
+  $$('[data-admin-tab]').forEach(button => { const selected = button.dataset.adminTab === tab; button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', String(selected)); });
   refreshAdmin().catch(showAdminError);
 }
 async function refreshAdmin() {

@@ -104,7 +104,7 @@ function setView(view) {
   if (view === 'admin') refreshAdmin().catch(showAdminError);
   $('#studio-view').hidden = view !== 'studio'; $('#history-view').hidden = view !== 'history';
   document.body.classList.toggle('history-mode', view === 'history');
-  $$('.nav-button').forEach(button => button.classList.toggle('active', button.dataset.view === view));
+  $$('.nav-button').forEach(button => { const selected = button.dataset.view === view; button.classList.toggle('active', selected); if (selected) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); });
   if (view === 'history') refreshHistory().catch(showConnectionError);
   history.replaceState(null, '', view === 'studio' ? location.pathname : `#${view}`);
 }
@@ -148,7 +148,7 @@ async function polishPrompt() {
   } finally { clearTimeout(timeout); polishing = false; updateControls(); }
 }
 function setPrompt(prompt, preserve = true) { if (preserve) preserveDraft(); $('#prompt').value = prompt; updateCount(); $('#prompt').focus(); }
-function setRatio(ratio) { state.ratio = ratio; $$('[data-ratio]').forEach(button => button.classList.toggle('selected', button.dataset.ratio === ratio)); draftChanged(); }
+function setRatio(ratio) { state.ratio = ratio; $$('[data-ratio]').forEach(button => { const selected = button.dataset.ratio === ratio; button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', String(selected)); }); draftChanged(); }
 function selectedModels() {
   if (!$('#multi-model').open) return [{ model: $('#single-model').value, count: Number($('#single-count').value) }];
   return $$('[name="selected-model"]:checked').filter(input => !input.disabled).map(input => ({ model: input.value, count: Number($(`[data-count="${input.value}"]`).value) }));
@@ -254,7 +254,7 @@ function updateControls() {
   };
   $('#size-note').textContent = edit ? '以基础图为画面，用参考图中的对象或外观进行修改；不保证逐像素保留。' : hasGemini ? sizeNotes[preset.value] : '所有模型共用比例提示；最终以实际图片尺寸为准。';
   $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : edit ? '参考图编辑可选择全部 5 个模型，使用默认画面配置。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '');
-  $$('[data-mode]').forEach(button => button.classList.toggle('selected', button.dataset.mode === state.mode)); draftChanged();
+  $$('[data-mode]').forEach(button => { const selected = button.dataset.mode === state.mode; button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', String(selected)); }); draftChanged();
 }
 function setMode(mode) {
   if (state.mode !== mode) {
@@ -497,7 +497,7 @@ document.addEventListener('click', event => {
   if (button?.dataset.ratio) { setRatio(button.dataset.ratio); updateControls(); }
   if (button?.dataset.style) { const prompt = $('#prompt'); prompt.value = `${prompt.value.trim()}${prompt.value.trim() ? '，' : ''}${button.dataset.style}`.slice(0, 6000); updateCount(); }
   if (button?.dataset.idea !== undefined) { preserveDraft(); setView('studio'); setMode('generate'); setPrompt(ideas[Number(button.dataset.idea)], false); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  if (button?.dataset.filter !== undefined) { state.filter = button.dataset.filter; state.page = 1; $$('[data-filter]').forEach(b => b.classList.toggle('selected', b === button)); refreshHistory().catch(showConnectionError); }
+  if (button?.dataset.filter !== undefined) { state.filter = button.dataset.filter; state.page = 1; $$('[data-filter]').forEach(b => { b.classList.toggle('selected', b === button); b.setAttribute('aria-pressed', String(b === button)); }); refreshHistory().catch(showConnectionError); }
   const art = event.target.closest('[data-job]'); if (art) showDetail(art.dataset.job);
   if (button?.classList.contains('dialog-close')) button.closest('dialog').close();
 });
