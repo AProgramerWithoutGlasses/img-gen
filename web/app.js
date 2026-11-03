@@ -174,8 +174,8 @@ function updateGenerationStatus(total, estimate) {
   if ($('#generate').disabled) {
     if (state.busy) {
       label = '正在提交…'; message = '正在提交本次创作，请稍候，不要重复提交。';
-    } else if (referenceLoad && state.mode === 'edit') {
-      label = '正在读取参考图…'; message = '原图读取完成后即可开始编辑；可重新拖入、上传或移除。';
+    } else if ((referenceLoad || state.materialBusy) && state.mode === 'edit') {
+      label = '正在读取图片…'; message = '原图读取完成后即可开始编辑；可重新拖入、上传或移除。';
     } else if (polishing) {
       label = '提示词润色中…'; message = '润色完成后即可生成，请稍候。';
     } else if (!state.configured) {
@@ -233,7 +233,8 @@ function updateControls() {
   $('#settings-status').textContent = reason; $('#settings-status').hidden = !reason;
   $('#effective-summary').textContent = `最终画面：${effective.ratio === 'auto' ? '自动' : effective.ratio} / ${effective.resolution === 'default' ? '默认分辨率' : effective.resolution}${hasGPT && !mixed && !edit ? '（比例通过提示词引导）' : ''}`;
   const estimate = estimatedCredits();
-  $('#generate').disabled = state.busy || (state.mode === 'edit' && !!referenceLoad) || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
+  $('#swap-images').disabled = state.busy || state.materialBusy || !!referenceLoad || !state.base || !state.reference;
+  $('#generate').disabled = state.busy || state.materialBusy || (state.mode === 'edit' && !!referenceLoad) || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
   updateGenerationStatus(total, estimate);
   $('#credit-estimate').textContent = estimate === null ? '正在读取积分价格…' : `预计冻结 ${estimate} 积分 · 可用 ${state.user?.credits ?? 0} 积分${state.user && state.user.credits < estimate ? '，余额不足，请联系管理员充值' : '；失败退还'}`;
   updatePromptActions();
@@ -274,7 +275,7 @@ function setEditImage(slot, file) {
   $('#form-error').hidden = true;
   preview.hidden = !file; $(base ? '#base-upload-copy' : '#upload-copy').hidden = !!file; $(base ? '#clear-base' : '#clear-reference').hidden = !file;
   if (file) preview.src = state[urlKey]; else preview.removeAttribute('src');
-  draftChanged();
+  draftChanged(); updateControls();
   return true;
 }
 function card(j) {
@@ -461,7 +462,7 @@ function showImagePreview(picture, prompt) {
   if (!dialog.open) dialog.showModal();
 }
 async function fetchImageFile(url, name) {
-  const response = await fetch(url); if (!response.ok) throw new Error('读取参考图失败');
+  const response = await fetch(url, { signal: AbortSignal.timeout(30000) }); if (!response.ok) throw new Error('读取图片失败');
   const blob = await response.blob(); return new File([blob], name, { type: blob.type });
 }
 async function reuseJob(j) {
@@ -581,7 +582,7 @@ async function dropGalleryImage(slot, picture) {
   }
   if (slot === 'base') {
     setEditImage('base', { sourceID: picture.id, url: picture.url, type: picture.mime, size: picture.bytes });
-    toast('已选为基础图，修改说明已保留'); return;
+    toast('已选为基础图，修改说明已保留'); return true;
   }
   referenceLoad?.abort();
   const controller = new AbortController();
@@ -596,7 +597,7 @@ async function dropGalleryImage(slot, picture) {
     if (!response.ok) throw new Error('读取参考图失败，请重新拖入');
     const blob = await response.blob();
     if (referenceLoad !== controller) return;
-    if (setEditImage('reference', new File([blob], `reference-${picture.id}`, { type: blob.type }))) toast('已选为参考图，修改说明已保留');
+    if (setEditImage('reference', new File([blob], `reference-${picture.id}`, { type: blob.type }))) { toast('已选为参考图，修改说明已保留'); return true; }
   } catch (error) {
     if (referenceLoad === controller) toast(error.name === 'AbortError' ? '读取参考图超时，请重新拖入' : error.message);
   } finally {
