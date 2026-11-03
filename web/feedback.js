@@ -7,6 +7,9 @@ function failureAdvice(job) {
   else if ([401, 403].includes(status) || (!status && /认证失败|权限不足|密钥无效/i.test(error))) message = '上游认证或权限检查未通过，请联系管理员检查服务配置。';
   else if (status === 429 || (!status && /限流|请求过多/i.test(error))) message = '上游请求过于频繁。请稍后再手动提交，避免连续重复操作。';
   else if ([408, 504].includes(status) || /超时|timeout|deadline|重启|中断/i.test(error)) message = '请求超时或处理中断，无法确认上游是否已完成或计费。请先核对任务记录，再决定是否重新提交。';
+  else if (status === 413) message = '上游拒绝了过大的请求。请缩小图片或换用更小的素材后再手动提交。';
+  else if ((status === 400 && /拒绝了输入图片|Invalid input image file/i.test(error)) || (!status && /[基参].*图预处理失败|输入图片.*解码/i.test(error))) message = '输入图片未能通过检查。请重新导出 PNG / JPEG，或缩小图片后再手动提交；原图仍保留。';
+  else if (!status && /上游图片.*不完整|上游图片.*损坏/i.test(error)) message = '上游返回的图片不完整或已损坏，未保存为成功作品。上游可能已经计费，请先核对记录再决定是否重新提交。';
   else if (status === 400) message = '上游未接受本次请求，具体原因尚未确认。请检查图片和提示词，或将诊断摘要交给管理员；不要连续重复提交相同内容。';
   else if (status >= 500) message = '上游服务暂时未能完成请求，具体原因尚未确认。请稍后联系管理员核对处理结果，再决定是否重新提交。';
   else if (/保存.*失败|持久化|数据库|磁盘/i.test(error)) message = '结果保存失败，上游可能已经完成并计费。请联系管理员检查存储后再决定是否重新提交。';

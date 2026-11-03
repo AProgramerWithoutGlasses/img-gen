@@ -186,8 +186,17 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 	fail := func(message string) (generationResult, error) {
 		return generationResult{}, &upstreamError{Message: message, RequestID: requestID, Endpoint: endpoint}
 	}
-	// Never persist or log raw upstream error bodies: they can contain credentials or base64.
+	// Classify only known failure categories; never persist raw error bodies.
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		if response.StatusCode == 413 {
+			return fail("上游拒绝了过大的请求（HTTP 413）；请缩小输入图片，未自动重试")
+		}
+		if response.StatusCode == 400 {
+			diagnostic, _ := io.ReadAll(io.LimitReader(response.Body, 4096))
+			if bytes.Contains(diagnostic, []byte("Invalid input image file")) {
+				return fail("上游拒绝了输入图片（HTTP 400）；请重新导出 PNG / JPEG 或缩小图片后手动提交，未自动重试")
+			}
+		}
 		return fail(fmt.Sprintf("上游返回 HTTP %d；请凭请求 ID 检查渠道、余额或模型权限", response.StatusCode))
 	}
 	raw, err := io.ReadAll(io.LimitReader(response.Body, (72<<20)+1))
@@ -198,10 +207,13 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		return fail("上游响应超过 72 MB 限制")
 	}
 	var wire struct {
-		Model        string `json:"model"`
-		ModelVersion string `json:"modelVersion"`
-		Quality      string `json:"quality"`
-		Data         []struct {
+		Model          string `json:"model"`
+		ModelVersion   string `json:"modelVersion"`
+		Quality        string `json:"quality"`
+		PromptFeedback struct {
+			BlockReason string `json:"blockReason"`
+		} `json:"promptFeedback"`
+		Data []struct {
 			B64     string `json:"b64_json"`
 			Quality string `json:"quality"`
 		} `json:"data"`
@@ -232,9 +244,9 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 				if part.Thought {
 					continue
 				}
-				if part.InlineData != nil {
+				if part.InlineData != nil && part.InlineData.Data != "" {
 					encoded = append(encoded, part.InlineData.Data)
-				} else if part.InlineSnake != nil {
+				} else if part.InlineSnake != nil && part.InlineSnake.Data != "" {
 					encoded = append(encoded, part.InlineSnake.Data)
 				}
 			}
@@ -251,11 +263,14 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 	}
 	if len(encoded) == 0 {
 		if gemini {
+			if wire.PromptFeedback.BlockReason != "" {
+				return fail("上游内容检查拦截了输入，未返回图片；请调整图片或提示词，未自动重试")
+			}
 			for _, candidate := range wire.Candidates {
 				switch candidate.FinishReason {
 				case "PROHIBITED_CONTENT":
 					return fail("上游内容检查拦截了本次请求（PROHIBITED_CONTENT），未返回图片；未自动重试")
-				case "SAFETY", "IMAGE_SAFETY":
+				case "SAFETY", "IMAGE_SAFETY", "IMAGE_PROHIBITED_CONTENT":
 					return fail("上游安全检查拦截了本次图片输出，未返回图片；未自动重试")
 				}
 			}
@@ -266,12 +281,19 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		return fail("上游返回图片数量异常")
 	}
 	for _, b64 := range encoded {
+		encodedBytes := len(b64) - strings.Count(b64, "\r") - strings.Count(b64, "\n")
+		if base64.StdEncoding.DecodedLen(encodedBytes) > (24<<20)+2 {
+			return fail("上游图片超过 24 MB 限制")
+		}
 		data, err := base64.StdEncoding.DecodeString(b64)
 		if err != nil {
 			return fail("上游图片 base64 无效")
 		}
 		pic, err := decodePicture(data)
 		if err != nil {
+			return fail(err.Error())
+		}
+		if err := validateOutputPicture(ctx, data); err != nil {
 			return fail(err.Error())
 		}
 		result.Images = append(result.Images, pic)
@@ -283,4 +305,22 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		result.Quality = result.Quality[:40]
 	}
 	return result, nil
+}
+
+// A header alone is not a valid result. Decode before marking a paid job as
+// successful, sharing the input gate to avoid simultaneous full-size decodes.
+func validateOutputPicture(ctx context.Context, data []byte) error {
+	select {
+	case upstreamInputSlot <- struct{}{}:
+		defer func() { <-upstreamInputSlot }()
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if _, _, err := image.Decode(bytes.NewReader(data)); err != nil {
+		return errors.New("上游图片数据不完整或已损坏，未保存为成功作品；未自动重试")
+	}
+	return ctx.Err()
 }

@@ -32,3 +32,11 @@ test('HTTP status takes precedence over generic legacy permission hints',()=>{
  }
  for(const status of [401,403])assert.match(scope.failureAdvice({error:`上游返回 HTTP ${status}`}).message,/认证或权限/);
 });
+
+test('image boundary failures have actionable advice without overriding auth status',()=>{
+ assert.match(scope.failureAdvice({error:'上游拒绝了过大的请求（HTTP 413）'}).message,/过大的请求/);
+ assert.match(scope.failureAdvice({error:'上游拒绝了输入图片（HTTP 400）'}).message,/重新导出 PNG/);
+ assert.match(scope.failureAdvice({error:'参考图预处理失败：输入图片无法完整解码'}).message,/输入图片/);
+ assert.match(scope.failureAdvice({error:'上游图片数据不完整或已损坏，未保存为成功作品'}).message,/上游可能已经计费/);
+ assert.match(scope.failureAdvice({error:'HTTP 403 Invalid input image file'}).message,/认证或权限/);
+});
