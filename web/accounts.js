@@ -22,7 +22,7 @@ function chooseDays(days, refresh = true) {
 function requestRow(j) {
   const seconds = j.started_at && j.finished_at ? `${Math.max(0, (new Date(j.finished_at) - new Date(j.started_at)) / 1000).toFixed(1)} 秒` : '—';
   let result = `<span class="help">${escapeHTML(statusNames[j.status])}</span>`;
-  if (j.status === 'failed') result = `<div class="request-failure">${escapeHTML(j.error || '生成失败')}</div>`;
+  if (j.status === 'failed') result = `<div class="request-failure">${escapeHTML(failureAdvice(j).message)}</div>`;
   else if (j.images.length) result = `<div class="request-thumbnails">${j.images.map(p => `<button data-job="${j.id}" aria-label="查看生成图片"><img src="${p.url}" alt="生成结果缩略图" loading="lazy"></button>`).join('')}</div>`;
   return `<tr><td><strong>${escapeHTML(j.username)}</strong></td><td class="request-time">${escapeHTML(new Date(j.created_at).toLocaleString('zh-CN', {hour12:false}))}</td><td class="request-prompt"><button data-job="${j.id}" class="request-prompt-button" title="查看完整输入与结果">${escapeHTML(j.prompt)}</button><small>${escapeHTML(modelNames[j.model] || j.model)} · ${j.mode === 'edit' ? '参考图编辑' : '文字生图'}</small>${j.has_input ? `<button class="text-button" data-job="${j.id}">查看输入图片</button>` : ''}</td><td class="request-seconds">${seconds}</td><td class="request-credits">${escapeHTML(creditText(j))}</td><td><span class="request-status ${j.status}">${escapeHTML(statusNames[j.status])}</span></td><td class="request-result">${result}</td></tr>`;
 }
