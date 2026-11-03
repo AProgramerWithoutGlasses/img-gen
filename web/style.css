@@ -1633,3 +1633,5 @@ dialog::backdrop {
 #material-grid[aria-busy="true"] { pointer-events:none; opacity:.5; }
 
 .data-placeholder { padding:32px 20px; border:1px dashed var(--line); border-radius:12px; color:var(--muted); text-align:center; }
+
+.creation-actions { display:flex; flex-wrap:wrap; gap:10px; }

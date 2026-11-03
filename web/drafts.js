@@ -98,3 +98,13 @@ $('#undo-draft').onclick = () => {
 $('#create-form').addEventListener('input', saveDraft);
 $('#create-form').addEventListener('change', saveDraft);
 window.addEventListener('pagehide', saveDraft);
+
+$('#new-creation').onclick = () => {
+  if (state.busy || state.materialBusy || !draftReady) return;
+  preserveDraft();
+  applyDraft({ version: 1, prompt: '', mode: 'generate', ratio: 'auto', preset: 'default', model: 'gpt-image-2', count: '1',
+    multiple: false, selections: [{model: 'gpt-image-2', checked: true, count: '1'}], base: null, reference: null });
+  saveDraft(); setView('studio'); $('#prompt').focus();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  toast('已新建空白草稿，可点击“撤销替换”恢复上一份');
+};
