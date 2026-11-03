@@ -51,7 +51,7 @@ function closeAccountMenu() { $('#account-menu').hidden = true; $('#account-butt
 async function refreshLedger() {
   const data = await api(`/api/credits/ledger?page=${adminState.ledgerPage}`);
   const kinds = { reserve: '提交冻结', charge: '生成成功结算', refund: '失败退还', admin_adjustment: '管理员调整' };
-  $('#ledger-body').innerHTML = data.items.map(e => `<tr><td>${escapeHTML(new Date(e.created_at).toLocaleString('zh-CN'))}</td><td>${kinds[e.kind] || escapeHTML(e.kind)}<small>${escapeHTML(e.note || (e.kind === 'charge' ? '从冻结积分结算' : ''))}</small></td><td>${e.delta > 0 ? '+' : ''}${e.delta}</td><td>${e.balance_after}</td></tr>`).join('');
+  $('#ledger-body').innerHTML = data.items.map(e => `<tr><td data-label="时间">${escapeHTML(new Date(e.created_at).toLocaleString('zh-CN'))}</td><td data-label="类型 / 说明">${kinds[e.kind] || escapeHTML(e.kind)}<small>${escapeHTML(ledgerDescription(e))}</small>${e.job_id ? `<button type="button" class="text-button ledger-job" data-job="${escapeHTML(e.job_id)}">查看对应作品及结算 ↗</button>` : ''}</td><td data-label="可用变动">${e.delta > 0 ? '+' : ''}${e.delta}</td><td data-label="变动后余额">${e.balance_after}</td></tr>`).join('');
   $('#ledger-empty').hidden = data.items.length > 0; paginate('ledger', data);
 }
 function openCredits(u) {

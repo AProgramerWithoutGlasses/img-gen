@@ -135,3 +135,18 @@
   .mobile-request-card .request-owner { font-size:14px; }
   .mobile-request-card .request-status { font-size:13px; }
 }
+
+.job-credit-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:18px 0; }
+.job-credit-summary > div { padding:12px 8px; border:1px solid var(--line); border-radius:8px; }
+.job-credit-summary span { display:block; color:var(--muted); font-size:12px; margin-bottom:8px; }
+.job-credit-summary strong { font-size:15px; color:var(--green); }
+.ledger-job { display:block; margin-top:8px; text-align:left; }
+@media(max-width:640px) {
+  .ledger-table { min-width:0; }
+  .ledger-table thead { display:none; }
+  .ledger-table,.ledger-table tbody,.ledger-table tr,.ledger-table td { display:block; width:100%; }
+  .ledger-table tr { padding:10px; border-bottom:1px solid var(--line); }
+  .ledger-table td { padding:6px 4px; border:0; font-size:13px; }
+  .ledger-table td::before { content:attr(data-label); display:block; color:var(--muted); font-size:11px; margin-bottom:4px; }
+  .ledger-table small { max-width:none; }
+}

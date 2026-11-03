@@ -32,3 +32,15 @@ async function copyDiagnostic(job) {
     toast('请手动复制下方诊断摘要');
   }
 }
+
+function creditBreakdown(job) {
+  if (!['reserved','charged','refunded'].includes(job.credits_state)) return '<p class="help">历史任务未补扣积分。</p>';
+  const cost = Number(job.credits_cost) || 0;
+  return `<div class="job-credit-summary" aria-label="本次任务积分结算"><div><span>提交时冻结</span><strong>${cost} 积分</strong></div><div><span>实际消耗</span><strong>${job.credits_state === 'charged' ? cost : 0} 积分</strong></div><div><span>已退还</span><strong>${job.credits_state === 'refunded' ? cost : 0} 积分</strong></div></div>${job.credits_state === 'reserved' ? '<p class="help">积分仍在冻结中，任务完成后结算。</p>' : ''}`;
+}
+function ledgerDescription(entry) {
+  if (entry.kind === 'reserve') return `冻结 ${Math.abs(entry.delta)} 积分，等待任务结算`;
+  if (entry.kind === 'refund') return `退还 ${entry.delta} 积分至可用余额`;
+  if (entry.kind === 'charge') return '从之前冻结的积分结算，不再扣减可用余额；消耗金额见对应作品';
+  return entry.note || '';
+}

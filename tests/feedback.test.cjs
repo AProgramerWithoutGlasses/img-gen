@@ -14,3 +14,10 @@ test('diagnostic summary falls back to task id and excludes private content',()=
  const text=scope.diagnosticSummary({id:'task123',status:'failed',model:'test-model',mode:'edit',prompt:'private-prompt',error:'secret-response',input:'private-image',created_at:'2026-11-03'});
  assert.match(text,/任务 ID：task123/);assert.match(text,/上游未提供/);assert.doesNotMatch(text,/private|secret/);
 });
+
+test('charged and refunded tasks show separate frozen spent and returned amounts',()=>{
+ assert.match(scope.creditBreakdown({credits_state:'charged',credits_cost:3}),/实际消耗<\/span><strong>3 积分/);
+ assert.match(scope.creditBreakdown({credits_state:'refunded',credits_cost:3}),/已退还<\/span><strong>3 积分/);
+ assert.match(scope.creditBreakdown({credits_state:'refunded',credits_cost:3}),/实际消耗<\/span><strong>0 积分/);
+ assert.match(scope.ledgerDescription({kind:'charge',delta:0}),/不再扣减可用余额/);
+});
