@@ -21,3 +21,14 @@ test('charged and refunded tasks show separate frozen spent and returned amounts
  assert.match(scope.creditBreakdown({credits_state:'refunded',credits_cost:3}),/实际消耗<\/span><strong>0 积分/);
  assert.match(scope.ledgerDescription({kind:'charge',delta:0}),/不再扣减可用余额/);
 });
+
+test('HTTP status takes precedence over generic legacy permission hints',()=>{
+ for (const status of [429,500,502,503,504]) {
+  const advice=scope.failureAdvice({error:`上游返回 HTTP ${status}；请凭请求 ID 检查渠道、余额或模型权限`});
+  assert.doesNotMatch(advice.message,/认证或权限检查未通过/);
+  if(status===504)assert.match(advice.message,/请求超时/);
+  if(status===429)assert.match(advice.message,/过于频繁/);
+  if(status===503)assert.match(advice.message,/上游服务暂时/);
+ }
+ for(const status of [401,403])assert.match(scope.failureAdvice({error:`上游返回 HTTP ${status}`}).message,/认证或权限/);
+});
