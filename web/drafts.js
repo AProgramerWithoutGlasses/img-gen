@@ -23,7 +23,7 @@ async function imageDraft(key, value, write = false) {
 }
 function captureDraft() {
   return { version: 1, prompt: $('#prompt').value, mode: state.mode, ratio: state.ratio,
-    preset: $('#gemini-preset').value, model: $('#single-model').value, count: $('#single-count').value,
+    preset: state.preferredPreset, model: $('#single-model').value, count: $('#single-count').value,
     multiple: $('#multi-model').open, selections: $$('[name="selected-model"]').map(input => ({ model: input.value,
       checked: input.checked, count: $(`[data-count="${input.value}"]`).value })),
     base: state.base, reference: state.reference };
@@ -65,7 +65,7 @@ function applyDraft(draft) {
     $('#multi-model').open = !!draft.multiple;
     setMode(draft.mode === 'edit' ? 'edit' : 'generate');
     setRatio(['auto','1:1','16:9','9:16','3:2'].includes(draft.ratio) ? draft.ratio : 'auto');
-    $('#gemini-preset').value = ['default','1K','2K','4K'].includes(draft.preset) ? draft.preset : 'default';
+    state.preferredPreset = ['default','1K','2K','4K'].includes(draft.preset) ? draft.preset : 'default';
     $('#prompt').value = typeof draft.prompt === 'string' ? draft.prompt.slice(0, 6000) : '';
     setEditImage('base', draft.base || null); setEditImage('reference', draft.reference || null);
     updateCount(); updateControls();

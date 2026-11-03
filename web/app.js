@@ -1,7 +1,7 @@
 'use strict';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
+const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', preferredPreset: 'default', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
 const ideas = [
   '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，石桌上摆着小茶壶，水彩插画风格，安静而松弛。',
   '雨后街角的一家小咖啡馆，暖黄色灯光透过玻璃，窗边放着一杯拿铁和一本翻开的书，电影感摄影，细腻光影。',
@@ -194,6 +194,16 @@ function updateGenerationStatus(total, estimate) {
   status.textContent = message; status.hidden = !message;
   status.classList.toggle('inline-error', attention);
 }
+function effectiveSettings() {
+  const selections = selectedModels();
+  const hasGPT = selections.some(item => !item.model.startsWith('gemini-'));
+  const hasGemini = selections.some(item => item.model.startsWith('gemini-'));
+  if (state.mode === 'edit' || (hasGPT && hasGemini) || !selections.length) return { ratio: 'auto', resolution: 'default' };
+  if (hasGPT) return { ratio: state.ratio, resolution: 'default' };
+  const flashOnly = selections.every(item => item.model === 'gemini-3.1-flash-image');
+  const resolution = ['default', '2K', ...(flashOnly ? ['1K', '4K'] : [])].includes(state.preferredPreset) ? state.preferredPreset : 'default';
+  return { ratio: resolution === 'default' ? 'auto' : '16:9', resolution };
+}
 function updateControls() {
   updateRetryButtons();
   const edit = state.mode === 'edit';
@@ -211,14 +221,17 @@ function updateControls() {
   $('#prompt-label').textContent = edit ? '描述你想修改的内容' : '描述你的画面';
   $('#gpt-settings').hidden = !hasGPT || mixed || edit;
   $('#gemini-settings').hidden = !hasGemini || mixed || edit;
-  if (edit || mixed || !hasGPT) setRatio('auto');
   const flashOnly = selections.length > 0 && selections.every(item => item.model === 'gemini-3.1-flash-image');
   const preset = $('#gemini-preset');
   $$('option', preset).forEach(option => {
     option.disabled = ['1K', '4K'].includes(option.value) && !flashOnly;
     option.hidden = option.disabled;
   });
-  if (edit || mixed || !hasGemini || preset.selectedOptions[0]?.disabled) preset.value = 'default';
+  const effective = effectiveSettings();
+  preset.value = effective.resolution;
+  const reason = edit ? '参考图编辑使用自动画面 / 默认分辨率。生图设置已保留，切回后恢复。' : mixed ? 'GPT 与 Gemini 混选使用自动画面 / 默认分辨率。取消混选后恢复兼容的原设置。' : hasGemini && effective.resolution !== state.preferredPreset ? '当前模型组合不支持原清晰度，暂用默认分辨率；切回兼容组合后恢复。' : '';
+  $('#settings-status').textContent = reason; $('#settings-status').hidden = !reason;
+  $('#effective-summary').textContent = `最终画面：${effective.ratio === 'auto' ? '自动' : effective.ratio} / ${effective.resolution === 'default' ? '默认分辨率' : effective.resolution}${hasGPT && !mixed && !edit ? '（比例通过提示词引导）' : ''}`;
   const estimate = estimatedCredits();
   $('#generate').disabled = state.busy || (state.mode === 'edit' && !!referenceLoad) || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
   updateGenerationStatus(total, estimate);
@@ -457,7 +470,7 @@ async function reuseJob(j) {
       j.has_reference ? fetchImageFile(`/api/jobs/${j.id}/reference`, 'reference') : null
     ]);
     preserveDraft();
-    selectSingleModel(j.model); setMode(j.mode); setRatio(j.ratio); $('#gemini-preset').value = j.resolution;
+    selectSingleModel(j.model); setMode(j.mode); setRatio(j.ratio); state.preferredPreset = j.resolution;
     updateControls();
     setEditImage('base', base); setEditImage('reference', reference); setView('studio'); setPrompt(j.prompt, false); $('#detail').close();
     toast('已填入参数，点击生成后才会发起新请求'); window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -493,9 +506,7 @@ $('#create-form').addEventListener('submit', async event => {
   if (state.mode === 'edit' && (!state.base || !state.reference)) { $('#form-error').textContent = !state.base ? '请先上传基础图，或从历史作品选择' : '请添加参考图，说明要用其中的什么内容修改基础图'; $('#form-error').hidden = false; return; }
   const selections = selectedModels();
   if (!selections.length) { toast('请至少选择一个模型'); return; }
-  const gemini = selections.every(item => item.model.startsWith('gemini-'));
-  const resolution = gemini && state.mode !== 'edit' ? $('#gemini-preset').value : 'default';
-  const ratio = state.mode === 'edit' ? 'auto' : gemini ? resolution !== 'default' ? '16:9' : 'auto' : state.ratio;
+  const { ratio, resolution } = effectiveSettings();
   const form = new FormData();
   for (const [key, value] of Object.entries({ mode: state.mode, models: JSON.stringify(selections), prompt: $('#prompt').value, ratio, resolution, expected_credits: estimatedCredits() })) form.append(key, value);
   if (state.mode === 'edit') {
@@ -523,7 +534,7 @@ document.addEventListener('click', event => {
   if (button?.dataset.edit) { event.preventDefault(); event.stopPropagation(); editResult(button.dataset.edit); return; }
   if (button?.dataset.view) setView(button.dataset.view);
   if (button?.dataset.mode) setMode(button.dataset.mode);
-  if (button?.dataset.ratio) setRatio(button.dataset.ratio);
+  if (button?.dataset.ratio) { setRatio(button.dataset.ratio); updateControls(); }
   if (button?.dataset.style) { const prompt = $('#prompt'); prompt.value = `${prompt.value.trim()}${prompt.value.trim() ? '，' : ''}${button.dataset.style}`.slice(0, 6000); updateCount(); }
   if (button?.dataset.idea !== undefined) { preserveDraft(); setView('studio'); setMode('generate'); setPrompt(ideas[Number(button.dataset.idea)], false); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); }
   if (button?.dataset.filter !== undefined) { state.filter = button.dataset.filter; state.page = 1; $$('[data-filter]').forEach(b => b.classList.toggle('selected', b === button)); refreshHistory().catch(showConnectionError); }
@@ -537,7 +548,7 @@ $('#undo-polish').onclick = () => { if (polishUndo !== null && !polishing && !st
 $('#model-picker').addEventListener('change', updateControls);
 $('#single-model').addEventListener('change', updateControls);
 $('#single-count').addEventListener('change', updateControls);
-$('#gemini-preset').addEventListener('change', updateControls);
+$('#gemini-preset').addEventListener('change', () => { state.preferredPreset = $('#gemini-preset').value; updateControls(); });
 let multiModelInitialized = false;
 $('#multi-model').addEventListener('toggle', () => {
   if ($('#multi-model').open && !multiModelInitialized) {
