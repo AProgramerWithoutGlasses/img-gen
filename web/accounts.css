@@ -118,3 +118,20 @@
   .wallet-stats strong { font-size:20px; }
   .admin-tabs { gap:7px; }
 }
+
+#requests-mobile { display:none; }
+.mobile-request-body { padding:0 14px 16px; }
+.mobile-request-body > p { margin:0 0 12px; font-size:13px; }
+.mobile-request-facts { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; margin-bottom:12px; font-size:13px; }
+.mobile-request-card .request-thumbnails img { width:100%; height:auto; max-height:240px; }
+.mobile-request-card .request-thumbnails button { width:100%; }
+.mobile-request-card details { margin:12px 0; font-size:13px; }
+.mobile-request-card summary { padding:10px 0; cursor:pointer; }
+.mobile-request-card .mobile-prompt { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.7; }
+.mobile-request-card .request-failure { max-height:none; }
+@media(max-width:640px) {
+  .request-table-wrap { display:none; }
+  #requests-mobile { display:grid; gap:14px; }
+  .mobile-request-card .request-owner { font-size:14px; }
+  .mobile-request-card .request-status { font-size:13px; }
+}

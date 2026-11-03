@@ -26,6 +26,11 @@ function requestRow(j) {
   else if (j.images.length) result = `<div class="request-thumbnails">${j.images.map(p => `<button data-job="${j.id}" aria-label="查看生成图片"><img src="${p.url}" alt="生成结果缩略图" loading="lazy"></button>`).join('')}</div>`;
   return `<tr><td><strong>${escapeHTML(j.username)}</strong></td><td class="request-time">${escapeHTML(new Date(j.created_at).toLocaleString('zh-CN', {hour12:false}))}</td><td class="request-prompt"><button data-job="${j.id}" class="request-prompt-button" title="查看完整输入与结果">${escapeHTML(j.prompt)}</button><small>${escapeHTML(modelNames[j.model] || j.model)} · ${j.mode === 'edit' ? '参考图编辑' : '文字生图'}</small>${j.has_input ? `<button class="text-button" data-job="${j.id}">查看输入图片</button>` : ''}</td><td class="request-seconds">${seconds}</td><td class="request-credits">${escapeHTML(creditText(j))}</td><td><span class="request-status ${j.status}">${escapeHTML(statusNames[j.status])}</span></td><td class="request-result">${result}</td></tr>`;
 }
+function requestMobileCard(j) {
+  const seconds = j.started_at && j.finished_at ? `${Math.max(0, (new Date(j.finished_at) - new Date(j.started_at)) / 1000).toFixed(1)} 秒` : '尚未完成';
+  const pictures = j.images.map(p => `<button type="button" data-job="${j.id}" aria-label="查看生成图片"><img src="${escapeHTML(p.thumbnail_url || p.url)}" alt="生成结果缩略图" loading="lazy"></button>`).join('');
+  return `<article class="request-card mobile-request-card"><div class="request-owner"><strong>${escapeHTML(j.username)}</strong><span class="request-status ${j.status}">${escapeHTML(statusNames[j.status])}</span></div><div class="mobile-request-body"><p>${escapeHTML(modelNames[j.model] || j.model)} · ${j.mode === 'edit' ? '参考图编辑' : '文字生图'}</p><div class="mobile-request-facts"><span>耗时 ${seconds}</span><span>${escapeHTML(creditText(j))}</span></div>${pictures ? `<div class="request-thumbnails">${pictures}</div>` : ''}${j.status === 'failed' ? `<p class="request-failure">${escapeHTML(failureAdvice(j).message)}</p>` : ''}<details><summary>提示词与请求时间</summary><p class="mobile-prompt">${escapeHTML(j.prompt)}</p><p>${escapeHTML(new Date(j.created_at).toLocaleString('zh-CN', {hour12:false}))}</p></details><button type="button" class="secondary" data-job="${j.id}">查看完整详情${j.has_input ? '与输入图片' : ''}</button></div></article>`;
+}
 function renderAccount() {
   if (!state.user) return;
   $('#menu-username').textContent = state.user.username;
@@ -121,9 +126,11 @@ async function refreshAdmin() {
     const query = new URLSearchParams({ page: adminState.requestPage, username: $('#request-user').value, q: $('#request-query').value, status: $('#request-status').value, user_id: $('#request-scope').value || adminState.userID, start: range.start, end: range.end });
     const data = await api(`/api/admin/jobs?${query}`);
     if (version !== adminState.version) return;
+    adminState.requestJobs = data.items;
     const signature = JSON.stringify(data.items);
     if ($('#requests-body').dataset.signature !== signature) {
       $('#requests-body').innerHTML = data.items.map(requestRow).join('');
+      $('#requests-mobile').innerHTML = data.items.map(requestMobileCard).join('');
       $('#requests-body').dataset.signature = signature;
     }
     $('#requests-summary').textContent = `匹配 ${data.total} 条请求 · 已完成 ${data.stats.succeeded} · 处理中 ${data.stats.active} · 失败 ${data.stats.failed}。点击提示词或图片查看详情。`;
