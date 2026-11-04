@@ -13,9 +13,12 @@
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.themePreference = preference;
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = theme === 'dark' ? '#141b17' : '#f5f6f3';
+    if (meta) meta.content = theme === 'dark' ? '#191919' : '#F4F4F2';
     const picker = document.getElementById('theme-mode');
     if (picker) picker.value = preference;
+    document.querySelectorAll('[data-theme-choice]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.themeChoice === theme));
+    });
   }
 
   apply();
@@ -28,9 +31,16 @@
   });
   document.addEventListener('DOMContentLoaded', () => {
     const picker = document.getElementById('theme-mode');
-    picker.value = preference;
+    apply();
     picker.addEventListener('change', () => {
       preference = normalize(picker.value);
+      try { localStorage.setItem(key, preference); } catch { /* Keep the choice for this page. */ }
+      apply();
+    });
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-theme-choice]');
+      if (!button) return;
+      preference = normalize(button.dataset.themeChoice);
       try { localStorage.setItem(key, preference); } catch { /* Keep the choice for this page. */ }
       apply();
     });

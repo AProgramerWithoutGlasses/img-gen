@@ -38,6 +38,7 @@ function captureGenerationSources(selections) {
 }
 function playGenerationFlights(flights) {
   clearGenerationFlights();
+  if (document.body.classList.contains('ef-workspace')) return;
   if (reducedMotion.matches || document.hidden || state.view !== 'studio') return;
   const layer = document.createElement('div');
   layer.className = 'generation-flights';
@@ -107,6 +108,7 @@ function setView(view) {
   $$('.nav-button').forEach(button => { const selected = button.dataset.view === view; button.classList.toggle('active', selected); if (selected) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); });
   if (view === 'history') refreshHistory().catch(showConnectionError);
   history.replaceState(null, '', view === 'studio' ? location.pathname : `#${view}`);
+  document.dispatchEvent(new CustomEvent('studio:viewchange', { detail: { view } }));
 }
 function draftChanged() { if (typeof saveDraft === 'function') saveDraft(); }
 function preserveDraft() { if (typeof rememberDraft === 'function') rememberDraft(); }
@@ -114,7 +116,7 @@ function updateCount() {
   promptVersion++; polishUndo = null;
   $('#char-count').textContent = [...$('#prompt').value].length;
   $('#polish-status').textContent = ''; $('#polish-error').hidden = true;
-  updatePromptActions(); draftChanged();
+  updateControls();
 }
 function updatePromptActions() {
   const prompt = $('#prompt').value.trim();
@@ -186,6 +188,8 @@ function updateGenerationStatus(total, estimate) {
       label = '未配置生图服务'; message = '请联系管理员配置生图服务密钥，配置完成后即可生成。'; attention = true;
     } else if (!selectedModels().length) {
       label = '请先选择模型'; message = '请至少选择一个模型，再开始创作。'; attention = true;
+    } else if (!$('#prompt').value.trim()) {
+      label = '生成图片';
     } else if (estimate == null) {
       label = '积分价格未就绪'; message = '请等待价格读取完成；若持续未就绪，请查看页面顶部的连接提示。';
     } else {
@@ -238,7 +242,7 @@ function updateControls() {
   $('#effective-summary').textContent = `最终画面：${effective.ratio === 'auto' ? '自动' : effective.ratio} / ${effective.resolution === 'default' ? '默认分辨率' : effective.resolution}${hasGPT && !mixed && !edit ? '（比例通过提示词引导）' : ''}`;
   const estimate = estimatedCredits();
   $('#swap-images').disabled = state.busy || state.materialBusy || !!referenceLoad || !state.base || !state.reference;
-  $('#generate').disabled = state.busy || state.materialBusy || (state.mode === 'edit' && !!referenceLoad) || polishing || !state.configured || !selections.length || estimate === null || (state.user && state.user.credits < estimate);
+  $('#generate').disabled = state.busy || state.materialBusy || (state.mode === 'edit' && !!referenceLoad) || polishing || !state.configured || !selections.length || !$('#prompt').value.trim() || estimate === null || (state.user && state.user.credits < estimate);
   updateGenerationStatus(total, estimate);
   $('#credit-estimate').textContent = estimate === null ? '正在读取积分价格…' : `预计冻结 ${estimate} 积分 · 可用 ${state.user?.credits ?? 0} 积分${state.user && state.user.credits < estimate ? '，余额不足，请联系管理员充值' : '；失败退还'}`;
   updatePromptActions();
@@ -255,6 +259,7 @@ function updateControls() {
   $('#size-note').textContent = edit ? '以基础图为画面，用参考图中的对象或外观进行修改；不保证逐像素保留。' : hasGemini ? sizeNotes[preset.value] : '所有模型共用比例提示；最终以实际图片尺寸为准。';
   $('#model-note').textContent = !selections.length ? '请至少选择一个模型。' : edit ? '参考图编辑可选择全部 5 个模型，使用默认画面配置。' : (multiple ? '所有模型共用下方提示词与画面设定。' : '选择一个模型开始创作。') + (selections.some(item => item.model === 'gemini-3-pro-image') ? ' Pro 名称测试曾返回 Flash 版本，不能确认底层 Pro 身份。' : '');
   $$('[data-mode]').forEach(button => { const selected = button.dataset.mode === state.mode; button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', String(selected)); }); draftChanged();
+  document.dispatchEvent(new CustomEvent('studio:controlschange'));
 }
 function setMode(mode) {
   if (state.mode !== mode) {
@@ -285,7 +290,7 @@ function setEditImage(slot, file) {
 function card(j) {
   const image = j.images[0];
   let media;
-  if (image) media = `<img src="${escapeHTML(image.thumbnail_url || image.url)}" alt="${escapeHTML(j.prompt)}" draggable="true" data-drag-image="${image.id}" title="拖入左侧基础图或参考图" loading="lazy" decoding="async"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
+  if (image) media = `<img src="${escapeHTML(image.thumbnail_url || image.url)}" alt="${escapeHTML(j.prompt)}" draggable="true" data-drag-image="${image.id}" title="拖到“参考图”按钮展开上传区，再选择基础图或参考图位置" loading="lazy" decoding="async"><span class="card-badge">${escapeHTML(modelNames[j.model])}</span>`;
   else if (j.status === 'failed') media = `<button type="button" class="error-mark retry-button" data-retry="${j.id}" aria-label="按原参数重新提交这张图片（重新计费）" title="按原参数重试这一张，重新计费">↻</button><small>生成失败 · ${escapeHTML(modelNames[j.model])}</small><p class="card-error-message">${escapeHTML(failureAdvice(j).message)}</p><small>点击 ↻ 按原参数重新提交，将重新计费</small>`;
   else media = `<span class="${j.status === 'running' ? 'spinner' : 'queued-icon'}">${j.status === 'running' ? '' : '◷'}</span><small>${statusNames[j.status]} · ${escapeHTML(modelNames[j.model])}</small>`;
   return `<article class="art-card" tabindex="0" role="button" aria-label="查看作品：${escapeHTML(j.prompt)}" data-job="${j.id}"><div class="card-media ${j.status === 'failed' ? 'card-error' : ''}">${media}</div><div class="card-info"><p>${escapeHTML(j.prompt)}</p><div class="card-meta"><span>${escapeHTML(dimensions(j))}</span><span>${dateText(j.created_at)}</span></div>${image ? `<button type="button" class="secondary card-edit" data-edit="${j.id}" title="载入原图，填写修改说明后开始编辑">▧ 一键修图</button>` : ''}</div></article>`;
@@ -352,6 +357,7 @@ async function refreshHistory() {
   $('#previous-page').disabled = state.page <= 1; $('#next-page').disabled = state.page >= pages;
   for (const key of ['total', 'succeeded', 'active', 'failed']) $(`#stat-${key}`).textContent = data.stats[key];
   $('#nav-count').textContent = data.stats.total;
+  document.dispatchEvent(new CustomEvent('studio:jobschange'));
 }
 let recentVersion = 0;
 async function refreshRecent() {
@@ -375,6 +381,7 @@ async function refreshRecent() {
   const total = Math.max(0, data.total - currentIDs.size);
   $('#recent-count').textContent = total ? ` / ${total}` : '';
   $('#nav-count').textContent = data.stats.total;
+  document.dispatchEvent(new CustomEvent('studio:jobschange'));
 }
 async function refreshCurrent() {
   if (!state.currentIDs.length) return;
@@ -386,6 +393,7 @@ async function refreshCurrent() {
   $('#current-count').textContent = `${jobs.filter(j => j.status === 'succeeded').length} / ${jobs.length}`;
   renderGallery('#current-grid', jobs);
   if (pendingFlights?.ids === ids) playGenerationFlights(pendingFlights.flights);
+  document.dispatchEvent(new CustomEvent('studio:jobschange'));
 }
 function showConnectionError(error) { $('#banner').textContent = `读取服务失败：${error.message}。页面会自动重连。`; $('#banner').hidden = false; }
 async function refresh() {
