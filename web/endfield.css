@@ -323,7 +323,7 @@ body.ef-workspace.composer-expanded { --ef-composer-height: 360px; }
 :root body.ef-workspace #ef-reference { width: 80px; height: 72px; padding: 8px; flex-direction: column; gap: 4px; font-size: 13px; }
 :root body.ef-workspace #ef-reference :is(svg, span[aria-hidden]) { width: 20px; height: 20px; }
 :root body.ef-workspace .ef-prompt-field { position: relative; display: flex; flex-direction: column; height: 100%; min-height: 0; min-width: 0; }
-:root body.ef-workspace .ef-prompt-field > label { margin: 0 0 4px; padding-right: 208px; font-size: 13px; line-height: 20px; font-weight: 600; }
+:root body.ef-workspace .ef-prompt-field > label { margin: 0 0 4px; padding-right: 80px; font-size: 13px; line-height: 20px; font-weight: 600; }
 :root body.ef-workspace .ef-prompt-field > label > span:last-child:not(#prompt-label) { display: none; }
 :root body.ef-workspace .ef-prompt-field .prompt-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; border: 0; border-radius: 0; background: transparent; overflow: visible; box-shadow: none; }
 :root body.ef-workspace #prompt { display: block; flex: 1; width: 100%; height: 100%; min-height: 48px; max-height: none; margin: 0; padding: 0; resize: none; border: 0; color: var(--ef-text); background: transparent; font-size: 17px; line-height: 1.85; }
@@ -358,6 +358,7 @@ body.ef-workspace.composer-expanded { --ef-composer-height: 360px; }
 :root body.ef-workspace :is(#generate-status, #form-error) { flex: none; margin: 0; font-size: 13px; line-height: 1.5; }
 :root body.ef-workspace #create-form > .draft-tools { margin: 0; }
 :root body.ef-workspace .ef-composer-status { display: flex; flex-wrap: wrap; align-items: center; flex: none; gap: 8px 16px; min-height: 32px; }
+:root body.ef-workspace .ef-composer-status:not(:has(> :not([hidden]))) { display: none; }
 :root body.ef-workspace #ef-tools { flex: none; min-height: 32px; padding: 4px 12px; font-size: 13px; }
 :root body.ef-workspace #ef-tools > svg { width: 16px; height: 16px; }
 :root body.ef-workspace .ef-composer-status :is(#generate-status, #form-error) { flex: 1 1 320px; }
@@ -405,6 +406,150 @@ body.ef-workspace.composer-expanded { --ef-composer-height: 360px; }
 :root body.ef-workspace .ef-task-content h2 { margin: 0 48px 24px 0; font-size: 22px; }
 :root body.ef-workspace #ef-task-list { display: grid; gap: 8px; margin-bottom: 24px; }
 :root body.ef-workspace .ef-task-row { display: flex; justify-content: flex-start; width: 100%; padding: 12px; text-align: left; overflow-wrap: anywhere; }
+
+/* Match the Penpot family selector and its two native popover panels. */
+:root body.ef-workspace .ef-parameter-row #ef-model-trigger {
+  order: 1;
+  flex: 1 1 230px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 260px;
+  min-width: 190px;
+  max-width: 260px;
+  height: 40px;
+  min-height: 40px;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: none;
+}
+:root body.ef-workspace #ef-model-trigger > span { min-width: 0; white-space: nowrap; }
+:root body.ef-workspace #ef-model-trigger > :last-child:not(:first-child) { margin-left: auto; }
+:root body.ef-workspace #ef-model-menu {
+  position: fixed;
+  z-index: 1000;
+  inset: auto;
+  width: 264px;
+  height: 184px;
+  max-width: calc(100vw - 32px);
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  color: var(--ef-text);
+  background: transparent;
+  box-shadow: none;
+}
+:root body.ef-workspace #ef-model-menu:popover-open { display: block; }
+:root body.ef-workspace #ef-model-menu.is-open { display: block; }
+:root body.ef-workspace #ef-model-menu::backdrop { background: transparent; }
+:root body.ef-workspace #ef-model-menu:is([data-family="gpt"], [data-family="google"]) { width: 656px; }
+:root body.ef-workspace #ef-model-menu[data-family="gpt"] { height: 248px; }
+:root body.ef-workspace #ef-model-menu :is(.ef-model-families, .ef-model-options) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 264px;
+  height: 184px;
+  padding: 48px 8px 8px;
+  border: 0;
+  border-radius: 0;
+  background: var(--ef-surface);
+  color: var(--ef-text);
+  box-shadow: none;
+}
+:root body.ef-workspace #ef-model-menu :is(.ef-model-families, .ef-model-options)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--ef-control);
+  pointer-events: none;
+}
+:root body.ef-workspace #ef-model-menu .ef-model-options { left: 272px; width: 384px; }
+:root body.ef-workspace #ef-model-menu[data-family="gpt"] .ef-model-families { top: 64px; }
+:root body.ef-workspace #ef-model-menu[data-family="gpt"] .ef-model-options { height: 248px; }
+:root body.ef-workspace #ef-model-menu .ef-model-heading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 8px 16px;
+  color: var(--ef-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+:root body.ef-workspace #ef-model-menu .ef-model-families > .ef-model-heading::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  bottom: -1px;
+  left: 16px;
+  height: 1px;
+  background: var(--ef-line);
+}
+:root body.ef-workspace #ef-model-menu .ef-model-options > .ef-model-heading { height: 48px; color: var(--ef-text); font-size: 15px; }
+:root body.ef-workspace #ef-model-menu :is(.ef-model-family, .ef-model-option) {
+  --ef-button-fill: var(--ef-surface);
+  --ef-button-text: var(--ef-text);
+  --ef-model-secondary: var(--ef-secondary);
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: 64px;
+  min-height: 64px;
+  margin: 0;
+  padding: 8px;
+  border: 0;
+  color: var(--ef-text);
+  background: transparent;
+  font-size: 15px;
+  line-height: 24px;
+  text-align: left;
+  text-transform: none;
+  transition: none;
+}
+:root body.ef-workspace #ef-model-menu .ef-model-option { grid-template-columns: 44px minmax(0, 1fr) 20px; }
+:root body.ef-workspace #ef-model-menu :is(.ef-model-family, .ef-model-option)::before {
+  background: var(--ef-button-fill);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+}
+:root body.ef-workspace #ef-model-menu :is(.ef-model-family, .ef-model-option) > svg { justify-self: center; width: 24px; height: 24px; }
+:root body.ef-workspace #ef-model-menu .ef-model-family > svg:last-child,
+:root body.ef-workspace #ef-model-menu .ef-model-family > .chevron { justify-self: center; width: 16px; height: 20px; }
+:root body.ef-workspace #ef-model-menu :is(.ef-model-family, .ef-model-option) > span { min-width: 0; }
+:root body.ef-workspace #ef-model-menu .name { display: block; color: inherit; font-size: 15px; font-weight: 600; line-height: 24px; white-space: nowrap; text-transform: none; }
+:root body.ef-workspace #ef-model-menu .desc { display: block; color: var(--ef-model-secondary); font-size: 13px; font-weight: 400; line-height: 20px; white-space: nowrap; text-transform: none; }
+:root body.ef-workspace #ef-model-menu :is(.ef-model-family, .ef-model-option):hover:not(:disabled),
+:root body.ef-workspace #ef-model-menu .ef-model-family[aria-current]:not([aria-current="false"]),
+:root body.ef-workspace #ef-model-menu .ef-model-option[aria-checked="true"] {
+  --ef-button-fill: var(--ef-accent);
+  --ef-button-text: var(--ef-on-accent);
+  --ef-model-secondary: var(--ef-on-accent);
+  color: var(--ef-on-accent);
+  background: transparent;
+}
+:root body.ef-workspace #ef-model-menu .ef-model-option .check { justify-self: center; visibility: hidden; width: 20px; color: inherit; font-size: 15px; line-height: 24px; text-align: center; }
+:root body.ef-workspace #ef-model-menu .ef-model-option[aria-checked="true"] .check { visibility: visible; }
+@media (max-width: 687px) {
+  :root body.ef-workspace #ef-model-menu:is([data-family="gpt"], [data-family="google"]) { width: min(384px, calc(100vw - 32px)); height: auto; max-height: calc(100dvh - 32px); overflow: auto; }
+  :root body.ef-workspace #ef-model-menu:is([data-family="gpt"], [data-family="google"]):popover-open { display: flex; flex-direction: column; gap: 8px; }
+  :root body.ef-workspace #ef-model-menu:is([data-family="gpt"], [data-family="google"]) :is(.ef-model-families, .ef-model-options) { position: relative; top: auto; left: auto; flex: none; width: 100%; }
+}
 
 /* Image and Library surfaces remain driven by actual loading and task states. */
 :root body.ef-workspace .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; max-width: 1376px; margin: 0 auto; }

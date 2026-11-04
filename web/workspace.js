@@ -125,20 +125,18 @@
   const ratioControl = make('div', 'ef-ratio-control'); ratioControl.append(ratio);
   ratio.onchange = () => { setRatio(ratio.value); updateControls(); };
   const resolution = button('ef-resolution-label', '默认配置', null); resolution.disabled = true; resolution.title = 'GPT 使用默认分辨率';
-  const thinking = make('div', 'ef-thinking-control', '<select id="ef-thinking" aria-label="思考档位：尚未接入" aria-describedby="ef-thinking-note" disabled></select><span class="ef-unavailable" id="ef-thinking-note">思考档位尚未接入</span>');
+  const thinking = make('div', 'ef-thinking-control', '<select id="ef-thinking" aria-label="思考档位：尚未接入" title="思考档位尚未接入" disabled></select>');
   const clear = button('ef-clear', '清空提示词和参考图', 'clear'); clear.title = '清空提示词和参考图，可在参数面板撤销';
-  clear.onclick = () => { if (state.busy) return; preserveDraft(); setPrompt('', false); setEditImage('base', null); setEditImage('reference', null); toast('已清空，可在参数与工具中撤销替换'); };
-  const tools = button('ef-tools', '参数与工具', 'settings'); tools.onclick = () => options.showModal();
+  clear.onclick = () => { if (state.busy) return; preserveDraft(); setPrompt('', false); setEditImage('base', null); setEditImage('reference', null); toast('已清空'); };
   const estimate = make('span', 'ef-estimate', '待核算'); estimate.id = 'ef-estimate'; estimate.setAttribute('aria-live', 'polite');
   count.remove();
   row.append(single, ratioControl, resolution, gemini, thinking, count, clear, estimate, generate);
-  const status = make('div', 'ef-composer-status'); status.append(tools, $('#generate-status'), $('#form-error'));
+  const status = make('div', 'ef-composer-status'); status.append($('#generate-status'), $('#form-error'));
   form.append(main, row, status);
   // Controls in this modal still share the existing draft and submit implementation.
   options.addEventListener('input', () => saveDraft()); options.addEventListener('change', () => saveDraft());
   $('#gpt-settings').hidden = true;
   const oldGptSettings = $('#gpt-settings'); oldGptSettings.classList.add('ef-legacy-ratio');
-  $('#inspire').textContent = '填入灵感示例';
   $('.panel-heading').hidden = true;
 
   const focusDialog = make('dialog', '', '<button type="button" class="dialog-close" aria-label="关闭专注编辑">×</button><div class="ef-focus-content"><h2>提示词</h2><div class="ef-focus-field"></div><button type="button" class="primary" id="ef-focus-done">完成</button></div>');
@@ -147,7 +145,7 @@
   focus.onclick = () => { $('.ef-focus-field', focusDialog).append(field); focusDialog.showModal(); $('#prompt').focus(); };
   $('#ef-focus-done').onclick = () => focusDialog.close();
   focusDialog.addEventListener('close', () => { fieldMarker.after(field); focus.focus(); });
-  options.addEventListener('close', () => tools.focus());
+  options.addEventListener('close', () => reference.focus());
 
   const historyHeading = make('div', 'ef-library-toolbar', '<div class="ef-library-tabs" role="group" aria-label="资源分类"><button type="button" class="ef-library-tab selected" aria-pressed="true">全部资源</button><button type="button" class="ef-library-tab" disabled>文件夹 · 暂未开放</button><button type="button" class="ef-library-tab" disabled>未分类 · 暂未开放</button><button type="button" class="ef-library-tab" disabled>标签 · 暂未开放</button></div>');
   const reload = button('ef-library-refresh', '刷新资源', null); reload.textContent = '↻'; reload.onclick = () => refreshHistory().catch(showConnectionError); historyHeading.append(reload);

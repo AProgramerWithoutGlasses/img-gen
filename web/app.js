@@ -1,7 +1,7 @@
 'use strict';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', preferredPreset: 'default', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], recent: [], currentIDs: [], currentJobs: [], configured: false, configStatus: 'loading', recentLoaded: false, historyLoaded: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
+const state = { user: null, prices: null, mode: 'generate', ratio: 'auto', preferredPreset: 'default', view: 'studio', page: 1, filter: '', historyModel: '', search: '', jobs: [], currentIDs: [], currentJobs: [], configured: false, configStatus: 'loading', historyLoaded: false, busy: false, base: null, basePreviewURL: null, reference: null, previewURL: null, historyVersion: 0, refreshing: false };
 const ideas = [
   '一只在竹林里悠闲喝茶的熊猫，午后的光穿过竹叶，石桌上摆着小茶壶，水彩插画风格，安静而松弛。',
   '雨后街角的一家小咖啡馆，暖黄色灯光透过玻璃，窗边放着一杯拿铁和一本翻开的书，电影感摄影，细腻光影。',
@@ -332,7 +332,7 @@ async function retryJob(id) {
     try { localStorage.setItem(`qiso-current-jobs:${state.user.id}`, JSON.stringify(state.currentIDs)); } catch { /* Storage is optional. */ }
     setView('studio'); toast('已按原参数重试这一张图片，新任务已加入队列');
     // A refresh failure must not resubmit a task that was already accepted.
-    await Promise.all([refreshRecent(), refreshCurrent()]).catch(showConnectionError);
+    await Promise.all([refreshLibrarySummary(), refreshCurrent()]).catch(showConnectionError);
   } catch (error) {
     toast(`${error.message}（未自动重试；如提交结果不明，请先查看历史记录）`);
   } finally {
@@ -359,27 +359,11 @@ async function refreshHistory() {
   $('#nav-count').textContent = data.stats.total;
   document.dispatchEvent(new CustomEvent('studio:jobschange'));
 }
-let recentVersion = 0;
-async function refreshRecent() {
-  const version = ++recentVersion, ids = state.currentIDs;
-  const currentIDs = new Set(ids);
-  let data;
-  try { data = await api('/api/jobs'); }
-  catch (error) { if (!state.recentLoaded) $('#recent-loading').textContent = '最近作品读取失败，正在尝试重新连接…'; throw error; }
-  if (version !== recentVersion || ids !== state.currentIDs) return;
-  const recent = data.items.filter(job => !currentIDs.has(job.id));
-  // A full 20-image batch can leave fewer than six older works on page one.
-  for (let page = 2; recent.length < 6 && (page - 1) * data.page_size < data.total; page++) {
-    const more = await api(`/api/jobs?page=${page}`);
-    if (version !== recentVersion || ids !== state.currentIDs) return;
-    recent.push(...more.items.filter(job => !currentIDs.has(job.id)));
-  }
-  state.recentLoaded = true; $('#recent-loading').hidden = true;
-  state.recent = recent.slice(0, 6);
-  renderGallery('#recent-grid', state.recent);
-  $('#recent-empty').hidden = !!state.recent.length;
-  const total = Math.max(0, data.total - currentIDs.size);
-  $('#recent-count').textContent = total ? ` / ${total}` : '';
+let librarySummaryVersion = 0;
+async function refreshLibrarySummary() {
+  const version = ++librarySummaryVersion;
+  const data = await api('/api/jobs');
+  if (version !== librarySummaryVersion) return;
   $('#nav-count').textContent = data.stats.total;
   document.dispatchEvent(new CustomEvent('studio:jobschange'));
 }
@@ -400,7 +384,7 @@ async function refresh() {
   if (!state.user || state.refreshing || document.hidden) return;
   state.refreshing = true;
   try {
-    await Promise.all([refreshWallet(), refreshRecent(), refreshCurrent(), ...(state.view === 'history' ? [refreshHistory()] : [])]);
+    await Promise.all([refreshWallet(), refreshLibrarySummary(), refreshCurrent(), ...(state.view === 'history' ? [refreshHistory()] : [])]);
     if (state.configured) { $('#banner').hidden = true; }
   } catch (error) { showConnectionError(error); } finally { state.refreshing = false; }
 }
@@ -450,7 +434,7 @@ async function editResult(j) {
   try {
     if (typeof j === 'string') {
       const id = j;
-      j = [...state.currentJobs, ...state.recent, ...state.jobs].find(item => item.id === id);
+      j = [...state.currentJobs, ...state.jobs].find(item => item.id === id);
       if (!j) {
         toast('正在读取作品…');
         j = await api(`/api/jobs/${id}`, { signal: AbortSignal.timeout(15000) });
@@ -491,7 +475,7 @@ $('#create-form').addEventListener('submit', async event => {
     try { localStorage.setItem(`qiso-current-jobs:${state.user.id}`, JSON.stringify(data.ids)); } catch { /* Storage is optional. */ }
     setView('studio'); toast('创作已加入队列，历史记录已保存');
     // Refresh the new batch even if an older polling cycle is still in flight.
-    await Promise.all([refreshRecent(), refreshCurrent()]);
+    await Promise.all([refreshLibrarySummary(), refreshCurrent()]);
     if (innerWidth <= 640) $('#current-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) { $('#form-error').textContent = error.message; $('#form-error').hidden = false; }
   finally { state.busy = false; await refreshWallet().catch(() => {}); updateControls(); }
@@ -526,12 +510,11 @@ $('#multi-model').addEventListener('toggle', () => {
   }
   updateControls();
 });
-$('#inspire').onclick = () => setPrompt(ideas[Math.floor(Math.random() * ideas.length)]);
 $('#try-example').onclick = () => { preserveDraft(); setMode('generate'); setPrompt(ideas[0], false); if (innerWidth <= 640) window.scrollTo({ top: 0, behavior: 'smooth' }); };
 document.addEventListener('dragstart', event => {
   const image = event.target.closest('[data-drag-image]');
   if (!image) return;
-  draggedPicture = [...state.currentJobs, ...state.recent, ...state.jobs].flatMap(job => job.images).find(picture => picture.id === image.dataset.dragImage);
+  draggedPicture = [...state.currentJobs, ...state.jobs].flatMap(job => job.images).find(picture => picture.id === image.dataset.dragImage);
   if (state.busy || !draggedPicture) { event.preventDefault(); draggedPicture = null; return; }
   event.dataTransfer.clearData();
   event.dataTransfer.setData(galleryImageType, draggedPicture.id);
