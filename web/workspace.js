@@ -173,11 +173,20 @@
     const multiple = $('#multi-model').open;
     const model = $('#single-model').value;
     if (state.mode === 'generate') promptInput.placeholder = '描述你想生成的画面…';
-    count.hidden = multiple; ratioControl.hidden = !gpt || google || state.mode === 'edit';
-    ratio.value = effectiveSettings().ratio;
-    resolution.hidden = google && !gpt && state.mode !== 'edit';
+    const effective = effectiveSettings();
+    count.hidden = multiple; ratioControl.hidden = !selections.length || (gpt && google) || state.mode === 'edit';
+    ratio.value = effective.ratio;
+    ratio.disabled = google;
+    ratio.title = google ? '比例跟随当前画面配置' : '画面比例';
+    const configuration = effective.resolution === 'default' ? '默认配置' : `${effective.resolution} 配置`;
+    resolution.hidden = false;
+    resolution.querySelector('span').textContent = configuration;
+    resolution.setAttribute('aria-label', `画面配置：${configuration}`);
+    resolution.title = '当前画面配置';
+    // Keep the original preset state for drafts, while sharing the visible parameter row.
+    gemini.hidden = true;
     oldGptSettings.hidden = true;
-    thinking.hidden = !gpt || google || multiple;
+    thinking.hidden = !selections.length || multiple;
     if ($('#ef-thinking').dataset.model !== model) {
       const values = model === 'gpt-image-2.5-sunburst' ? ['Max', 'ExtraHigh', 'High', 'Medium', 'Low', 'Auto'] : ['High', 'Medium', 'Low'];
       $('#ef-thinking').replaceChildren(...values.map(value => new Option(value, value)));

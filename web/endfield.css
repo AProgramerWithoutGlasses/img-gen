@@ -338,7 +338,7 @@ body.ef-workspace.composer-expanded { --ef-composer-height: 360px; }
 :root body.ef-workspace .ef-ratio-control { order: 2; flex: 0 0 88px; min-width: 0; }
 :root body.ef-workspace #ef-ratio { width: 88px; }
 :root body.ef-workspace #gpt-settings { display: none; }
-:root body.ef-workspace #ef-resolution-label { order: 3; display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 8px 12px; background: var(--ef-neutral); font-size: 13px; }
+:root body.ef-workspace #ef-resolution-label { order: 3; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 112px; width: 112px; min-height: 40px; padding: 8px 12px; background: var(--ef-neutral); font-size: 13px; }
 :root body.ef-workspace #gemini-settings { order: 3; flex: 0 1 168px; min-width: 144px; }
 :root body.ef-workspace #gemini-preset { width: 100%; font-size: 13px; }
 :root body.ef-workspace #ef-thinking { order: 4; flex: 0 1 144px; width: 144px; min-width: 120px; font-size: 13px; }
