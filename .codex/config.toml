@@ -1,0 +1,58 @@
+# UI Studio 项目专用 OpenPencil 工具白名单。
+# 连接命令继承用户配置；仅在受信任的本项目中加载。
+# 修改后重新加载本项目的 Codex 会话；当前会话的工具目录不会自动缩减。
+[mcp_servers.open-pencil]
+enabled_tools = [
+  # 文件与页面
+  "list_documents",
+  "activate_document",
+  "open_file",
+  "save_file",
+  "list_pages",
+  "switch_page",
+  # 局部读取
+  "get_selection",
+  "get_page_tree",
+  "get_node",
+  "get_jsx",
+  "query_nodes",
+  # 批量生成与补丁
+  "render",
+  "batch_update",
+  "diff_show",
+  "diff_apply",
+  # 常用编辑
+  "update_node",
+  "delete_node",
+  "clone_node",
+  "reparent_node",
+  "set_layout",
+  "set_font",
+  "set_text_properties",
+  "set_image_fill",
+  "set_fill",
+  "set_stroke",
+  "set_effects",
+  # 矢量与图标
+  "import_svg",
+  "search_icons",
+  "fetch_icons",
+  "insert_icon",
+  # 基础组件复用
+  "get_components",
+  "create_component",
+  "create_instance",
+  # 导出与验收
+  "export_image",
+  "export_svg",
+  "analyze_overlaps",
+  "lint",
+  "get_font_status",
+  "list_available_fonts",
+  # 定位、撤销与代码衔接
+  "select_nodes",
+  "viewport_zoom_to_fit",
+  "undo",
+  "redo",
+  "get_codegen_prompt",
+]
