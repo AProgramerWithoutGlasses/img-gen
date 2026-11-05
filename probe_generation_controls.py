@@ -161,6 +161,11 @@ def run(name, endpoint, body, output, base, key, timeout):
                 record['metadata'][field] = payload[field]
         if payload.get('object') == 'response' and payload.get('id'):
             record['metadata']['response_id'] = payload['id']
+        if isinstance(payload.get('tools'), list):
+            record['metadata']['declared_image_tools'] = [
+                {field: item[field] for field in ('type', 'model', 'action', 'size', 'quality',
+                    'output_format', 'background') if field in item}
+                for item in payload['tools'] if item.get('type') == 'image_generation']
         if isinstance(payload.get('error'), dict):
             record['error'] = {k: str(payload['error'][k]).replace(key, '[REDACTED]')[:1000]
                                for k in ('type', 'code', 'message') if k in payload['error']}
