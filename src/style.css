@@ -1,0 +1,4 @@
+/* Only a viewport reset. Visual design starts from an empty canvas. */
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-height: 100%; }
+main { min-height: 100dvh; }
