@@ -1,67 +1,46 @@
-# 本地设计自动化与工具选择
+# FigCraft 自动化工作流
 
-核对日期：2026-11-05。已查阅官方文档、GitHub 仓库与 npm 包元数据；本文将已落地能力与后续建议分开记录。当前仍为空白项目，尚未开始界面设计。
+2026-11-06：主工具从 OpenPencil 切换为用户安装的 FigCraft 0.15.1。旧工作稿、配置、依赖锁和文档完整归档，见 [archive/README.md](../archive/README.md)。
 
-## 已完成：精简 OpenPencil MCP
+## 连接方式
 
-项目白名单在 [`.codex/config.toml`](../.codex/config.toml)，连接命令继承本机已有配置。
+[figcraft.config.json](../figcraft.config.json) 是可执行文件路径、工作稿和控制端口的唯一项目配置。MCP 通过 [scripts/figcraft-mcp.mjs](../scripts/figcraft-mcp.mjs) 启动：检查本地控制端口，启动或复用匹配的 FigCraft 桌面应用，再直接运行官方 `figcraft-cli mcp --attach`，不翻译或重写 MCP 协议。
 
-- 本次会话原有 132 个 OpenPencil 工具，项目白名单保留 44 个、移除 88 个，数量减少约 67%。这是工具数量变化，不是实测耗时或 token 降幅。
-- 保留文件与页面、局部读取、JSX render、batch_update、补丁、常用属性编辑、基础组件复用、SVG/图标、截图导出、重叠/可访问性/字体检查、撤销和视口定位。
-- 暂不暴露变量与主题管理、评论、组件库插入、原型行为、布尔与路径编辑、PDF 导出、编辑器设置及重复的单属性工具。后续任务确实需要时，只补所需工具。
-- 保留 `set_fill`、`set_stroke`、`set_effects` 等常用局部编辑，避免小改动也必须先生成补丁再应用。
-- 不开放通用 `eval`。首屏创建用 `render`；布局批改用 `batch_update`；复杂属性改动可用 `diff_show` / `diff_apply`。
+默认控制地址为 `127.0.0.1:47800`。若端口属于其他进程，或已有 FigCraft 的文件访问目录不同，启动器报错而不关闭用户应用。需要先保存后关闭该会话，或在配置中选择空闲端口。
 
-生效条件：Codex 必须从受信任的本项目加载配置。当前已启动会话的工具目录不会因编辑文件自动缩减，需要重新加载该项目会话。项目外配置仍保持原样。
+工具保留原生 19 项。确定性的重复操作通过官方 MCP JavaScript SDK 和 CLI 执行；不依赖逐个点击。命令语法以安装版 `list_commands {filter}` 为准。通用 `run_command` 能访问更多内部动作，19 个入口不等于只有 19 项设计能力。
 
-验证方式：
+## 日常流程
 
-```powershell
-cd C:\Users\13556\Documents\ui-studio
-codex mcp get open-pencil --json
-```
+1. 确定首个界面的用户、任务和设备，再开始设计。当前空白文件不是错误，不建立空白页视觉基准。
+2. `npm run design:open`；读取 `doc.list` 和指定文档的浅层 `inspect_document`，核对选区、脏状态。后续调用明确传 `document`。
+3. 查少量需要的命令参数，使用一次 `batch` 完成已确定的父子节点结构；用 `as/$ref` 连接步骤。复杂设计拆成可审阅的小批次。
+4. 编辑完成后 `save_file`。重复操作可写入 `design/commands/*.json`，用 `npm run design:batch -- design/commands/文件.json` 执行并保存。批次或保存报错时先检查当前文档，不自动重试。
+5. 运行 `npm run design:verify`，审计已保存文件，并按页导出 PNG。空页明确跳过；导出每次使用独立目录，`latest.json` 指向本次结果，避免混入旧截图。
+6. 需要检查未保存画布时用 `npm run design:snapshot -- [节点ID]`。只拿有关区域给 AI 审阅，减少全页图和节点输出。
+7. 实现网页后运行 `npm run verify`：保留 Playwright 的 1440×900、390×844 浏览器检查、报错/溢出/异常请求检测，并串联设计审计和导出。
+8. 审阅证据后本地提交。连接或脚本改动另跑 `npm run design:smoke`，临时测试内容只进入 `outputs/`。
 
-本次实际读取到 `enabled_tools` 为 44 项；与本机 OpenPencil MCP 0.16.0 的工具清单逐项核对，无重名、无未知名称。项目外同一命令的 `enabled_tools` 仍为 `null`。在线 MCP 也成功读取了 `design/start.fig` 的文档信息。
+## 文件与执行边界
 
-配置依据：[Codex MCP](https://developers.openai.com/codex/mcp/)、[配置参考](https://developers.openai.com/codex/config-reference/)、[配置优先级](https://developers.openai.com/codex/config-basic/)。
+- 画布主文件是 `design/start.figcraft`；不把实验性的 `.fig` 往返当作主存储路径。
+- GUI 与 CLI 使用同一安装目录中的二进制和本机字体。升级 FigCraft 后跑一次 `design:smoke`。
+- MCP 附加模式在 GUI 内执行；文件读写目录通过 GUI 启动参数设置。CLI 离线审计/导出也传入同样的目录参数。
+- 审计报告会记录版本、内容节点数、字体问题、修复提示、文件 SHA-256 和耗时。文件在审计期间发生改变会报错；有缺失字体或导入警告时返回非零。
+- 审计检查已保存文件。实时画布是否存在未保存编辑由 `inspect_document` 判断，不把磁盘结果解释为实时结果。
+- 原生 batch 的失败回滚与撤销粒度用于减少半完成状态；实际视觉质量仍需查看截图。
+- 当前没有与 OpenPencil 的同任务性能对照，不承诺切换后的速度倍数。
 
-## 哪些步骤交给程序
+## 按实际需要接入的成熟工具
 
-| 步骤 | 成熟方案 | 自动化内容与收益 | 本项目采用时机 |
-| --- | --- | --- | --- |
-| 浏览器验收与截图 | [Playwright](https://github.com/microsoft/playwright) | 一次命令覆盖多尺寸、加载/控制台错误、溢出、异常网络请求，自动产出截图与 JSON；省去逐页点击 | **已接入** `npm run verify`，覆盖 1440×900 和 390×844 |
-| 修改前后视觉比较 | [Playwright screenshot assertions](https://playwright.dev/docs/test-snapshots) | 自动生成实际图、基准图和差异图，定位局部样式回归 | 第一个画面审阅通过后建立基准；当前空白页不建立视觉基准 |
-| 可访问性初筛 | [axe-core / Playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) | 批量检查标签、名称、语义和可检测的对比度问题，减少反复人工排查 | 第一个有内容的界面加入现有浏览器检查；不替代键盘与人工体验检查 |
-| 设计稿统计、批改与导出 | [OpenPencil core / CLI](https://github.com/open-pencil/open-pencil/tree/master/packages/cli) | 程序统计节点、查询层级、批量导出和执行确定的编辑；MCP 的 JSX render / batch_update 合并已确认操作 | **已有** core 0.16.0 只读审计；常规设计用 MCP 批操作，出现多画面批处理需求时引入 CLI |
-| 组件状态预览与交互复现 | [Storybook React/Vite](https://storybook.js.org/docs/get-started/frameworks/react-vite) | 用 stories 保存默认、禁用、错误、长文本等状态；play 函数自动执行输入与点击 | 出现可复用组件时引入；无需先建一整套规范板 |
-| 图标查找与缓存 | [Iconify](https://github.com/iconify/iconify) + OpenPencil 内置工具 | 一次搜索、批量预取、批量插入矢量图标，避免逐个网络往返 | 选定视觉方向后选一套图标；代码侧使用本地 SVG/包，预览不依赖远程 API |
-| 截图拼板与资产处理 | [sharp](https://github.com/lovell/sharp) | 批量裁切、缩放、压缩、拼接设计/浏览器对照图，供一次审阅 | 截图变多时加入脚本，输出放 `outputs/` |
+| 步骤 | 方案 | 当前采用方式 |
+| --- | --- | --- |
+| 浏览器操作、截图、错误检查 | [Playwright](https://github.com/microsoft/playwright) | 已接入；有实际交互后添加点击/状态断言 |
+| 像素差异图 | [Playwright screenshot assertions](https://playwright.dev/docs/test-snapshots) | 首屏审阅通过后建基准，固定字体、视口和数据；不自动接受差异 |
+| 可访问性初筛 | [axe-core/Playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) | 首屏有内容后整合，仍需人工键盘检查 |
+| 组件状态与交互复现 | [Storybook](https://github.com/storybookjs/storybook) | 开始复用组件时加入，暂不建立大量规范板 |
+| 本地图标资产 | [Iconify](https://github.com/iconify/iconify) | 选定方向后固定一套 SVG/图标包；通过 FigCraft 文件导入 |
+| 截图对照拼板与压缩 | [sharp](https://github.com/lovell/sharp) | 画面增多时加入 |
+| MCP 客户端 | [官方 TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) | 已使用 SDK 1.32.2 进行连接、工具调用和连通性测试 |
 
-## 落地顺序
-
-1. **当前**：精简 MCP，复用 `verify` 和 `design:audit`，从截图/JSON 中集中读取结果。
-2. **确定首屏后**：先检查当前文档与选区，限定读取深度；用一次 JSX 创建已确定的结构。生成的示例数据固定种子或直接采用本地固定数据，便于重复截图。
-3. **首屏实现时**：给实际交互添加 Playwright 操作与状态断言，并整合 axe。检查打开菜单、错误提示等展开后的状态。
-4. **首屏审阅通过后**：固定浏览器、系统、字体、视口与测试数据，再建立视觉基准。基准更新单独执行，失败时不自动接受新截图；本地基准、差异图和报告统一放 `outputs/`。
-5. **组件开始复用时**：加入 Storybook，把状态矩阵放到组件 story 中；真实业务交互仍由浏览器断言验证。
-6. **画面数量增加后**：再接 CLI 批量导出、sharp 对照拼板。若采用设计变量，可先评估 OpenPencil 自带 token 导出，避免手动维护重复数值。
-
-AI 负责决定界面结构、阅读反馈、判断视觉与体验。程序负责重复执行、采集证据、计数与比较。截图和自动检查都不能独自证明设计好看或交互合理。
-
-## 对比后暂不采用
-
-- **[Histoire](https://github.com/histoire-dev/histoire)**：当前文档已支持 React 18/19、Vite 7/8，也有 MCP；可作为组件工作台备选。项目已经在收敛工具入口，优先选择文档与测试生态更完整的 Storybook，不同时引入两个工作台。
-- **[reg-suit](https://github.com/reg-viz/reg-suit)**：成熟的图像回归 CLI，也能本地比较；其仓库提供云端快照和通知插件。本项目已有 Playwright，先用内置截图比较即可，暂不增加另一套基准与报告流程。
-- **云端视觉审阅服务**：本项目只在本地工作，当前不需要上传设计或接外部发布流程。
-
-兼容性核对：查询时 `@storybook/react-vite` 10.6.5 的 peer dependencies 包含 React 19、Vite 8；`@axe-core/playwright` 4.14.0 支持 Playwright。这里只完成元数据核对，尚未安装或验证它们与本项目的组合。
-
-## 测量原则与边界
-
-- 未做 CLI/MCP 的同任务速度对比，不承诺 CLI 更快。CLI 本地文件模式与在线 RPC 模式也不能混为一谈。
-- 真正出现批处理需求时，用同一份设计文件副本、相同操作和相同输出测量；区分冷启动与暖运行，分别记录总耗时、调用次数、输出字节数与结果一致性。
-- CLI 文件模式的字体环境可能与桌面 App 不同；导出时核对字体，必要时使用 `--font-policy strict`。两端字体不一致会污染视觉差异结果。
-- `lint` 初期使用 accessibility 预设；间距、圆角、颜色变量等规范检查，等视觉方向确定后再配置，避免工具反向决定设计。
-- 所有截图、抓取的资料、诊断与本次白名单核对结果保存在 `outputs/`，不提交到 Git。配置与流程文档本地提交。
-
-补充来源：[CLI 检查与在线模式](https://openpencil.dev/programmable/cli/inspecting)、[CLI 脚本](https://openpencil.dev/programmable/cli/scripting)、[导出与字体策略](https://openpencil.dev/programmable/cli/exporting)、[Playwright 可访问性](https://playwright.dev/docs/accessibility-testing)、[Storybook play 函数](https://storybook.js.org/docs/writing-stories/play-function)。
+来源：[FigCraft MCP](https://github.com/storytold/figcraft/blob/main/docs/mcp.md)、[CLI](https://github.com/storytold/figcraft/blob/main/docs/cli.md)、[桌面控制协议](https://github.com/storytold/figcraft/blob/main/docs/control-protocol.md)、[Codex MCP 配置](https://developers.openai.com/codex/mcp/)。
