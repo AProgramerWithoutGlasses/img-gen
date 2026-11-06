@@ -2,6 +2,8 @@
 
 站点：`https://img.xunxun.me`，通过 `ssh me` 连接 Ubuntu 服务器。
 
+改动验证并提交后自动推送当前工作分支。部署须由用户明确确认；一次部署授权不延续到后续版本。
+
 本机 OpenSSH 的 `~/.ssh/config` 使用 `Host me`，连接 `root@8.140.237.54`，指定 `~/.ssh/id_ed25519_aliyun_me` 和 `IdentitiesOnly yes`。专用公钥追加到服务器的授权列表，保留原有密钥；私钥仅保存在本机，不进入仓库。`ssh me` 是 SSH 主机别名，不依赖 PowerShell alias。
 
 ## 运行位置
@@ -11,15 +13,15 @@
 - 应用配置：`/opt/img-gen/.env`，权限 `root:imggen 0640`；保留服务器原有 API Key、Base URL 和数据库连接。
 - HTTPS 会话需要 `COOKIE_SECURE=true`。首次账号迁移使用 `ADMIN_PASSWORD`，未设置时兼容原 `APP_PASSWORD`；已有账号不会被环境变量重置密码。
 - MySQL：独立容器 `img-gen-mysql`，数据卷 `img-gen-mysql-data`，监听 `127.0.0.1:13306`，数据库名 `imggen`。此部署沿用既有 MySQL 8.2 容器。
-- Nginx：`/etc/nginx/sites-available/img-gen`；`client_max_body_size 25m` 与应用双图编辑的整个表单上限一致；证书由 `certbot.timer` 续期。调整后先执行 `nginx -t`，通过后 reload。
+- Nginx：`/etc/nginx/sites-available/img-gen`；`client_max_body_size 25m` 覆盖新版每张附件20MB的独立上传及旧双图表单上限；证书由 `certbot.timer` 续期。调整后先执行 `nginx -t`，通过后 reload。
 - 升级备份：`/opt/img-gen/backups/<UTC时间>/`，目录权限 `0700`，备份文件权限 `0600`。
 - 发布信息：`/opt/img-gen/release.json`，记录代码提交、二进制 SHA256、前一版本与备份位置，不保存密钥。
 
 ## 升级顺序
 
 1. 等待同一项目其他会话完成，核对 `git status`、各分支及未推送提交；禁止将环境文件、数据库、日志或 `outputs/` 加入 Git。
-2. 执行 `go test ./...`、`go vet ./...`、`go build ./...`，并验证前端。MySQL 集成测试只能使用空的、名称以 `_test` 结尾的专用数据库。
-3. 将代码和维护文件提交到 Git，从干净的提交交叉编译 Linux amd64 二进制：`CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o <产物路径> .`。PowerShell 中通过 `$env:` 设置这些环境变量。
+2. 在frontend执行 `npm ci`、`npm run verify`、`npm run build:server`，再执行 `go test ./...`、`go vet ./...`、`go build ./...`。MySQL 集成测试只能使用空的、名称以 `_test` 结尾的专用数据库。已有同一代码版本的通过证据可沿用；必须确认生成的web/studio与待发布提交一致。
+3. 将代码和维护文件提交并推送到 Git，从干净的提交和已生成的 `web/studio` 交叉编译 Linux amd64 二进制：`CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o <产物路径> .`。PowerShell 中通过 `$env:` 设置这些环境变量。只执行go build而未生成新版前端会导致启动失败，不能遗漏前端构建。
 4. 上传到 `/opt/img-gen/releases/img-gen-<完整提交号>`，比较本机和服务器的 SHA256。
 5. 确认没有 `queued` / `running` 任务后停止应用，备份数据库和配置。不要重试不确定是否已经计费的任务。
 6. 原子切换 `current` 软链接，启动服务，等待 `/healthz` 返回成功。数据库兼容迁移由程序启动时执行。
