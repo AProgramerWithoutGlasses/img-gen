@@ -155,7 +155,12 @@ export default function CreationPage({
                         onClick={() => onPreview(image, images)}
                         aria-label={`查看${image.name}`}
                       >
-                        <img src={image.url} alt={image.name} />
+                        <img
+                          src={image.url}
+                          alt={image.name}
+                          width={image.width}
+                          height={image.height}
+                        />
                       </button>
                       <div className="result-actions">
                         <button onClick={() => downloadImage(image)}>
