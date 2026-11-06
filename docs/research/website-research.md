@@ -8,7 +8,7 @@
 
 | 来源 | 本次访问状态 | 完成的实际操作 | 尚未验证 |
 | --- | --- | --- | --- |
-| [ArtCraft](https://app.getartcraft.com/create-image) | 已登录，可访问 | 模型与参数菜单；五模型数量；单张及追加第二张参考图；展开附件区域 | 附件移除；真实生成、结果、失败、扣费 |
+| [ArtCraft](https://app.getartcraft.com/create-image) | 已登录，可访问 | 模型与参数菜单；五模型数量；单张及追加第二张参考图；展开附件区域；Prompt focus mode 展开及 Done／× 返回 | 附件移除；真实生成、结果、失败、扣费 |
 | [ImageAT](https://imageat.com/ai/image) | 已登录，可访问 | Sunburst 与 GPT Image 2 参数差异；先后上传两张；移除第二张 | 真实生成、结果、失败、扣费；未记录模型的完整配置 |
 | [Krea](https://www.krea.ai/image) | 已登录，可访问 | 模型弹窗；Sunburst 档位和清晰度；单张及追加第二张；上传中禁用发送 | 附件移除；真实生成、结果、失败、扣费 |
 | [Base Design](https://www.basedesign.com/) | 公开页面可访问 | Filter 展开；Larger 切换；Projects；进入 Chateau 项目详情 | 未逐一验证全部筛选条件；未将项目页视为原图灯箱 |
@@ -31,15 +31,21 @@
 - 上传前显示 Reference 按钮。上传一张后入口变为倾斜缩略图和加号；追加第二张后使用叠放缩略图表达多个附件。
 - 点击缩略图可展开附件区域。文件选择器的 `multiple` 为 `true`，单张及两张追加均已实际成功；附件移除未操作验证。
 - 五个模型的数量菜单逐一展开，均出现 1、2、3、4。Sunburst 与 GPT 系列有档位，两个 Nano Banana 模型没有独立质量档位。
+- 2026-11-06 补充实测输入框展开功能：在已登录的新调研标签中核验视口为 1440 × 900；默认无附件、空提示词、Nano Banana Pro 状态下，DOM 可见文字输入框约 40 px 高，整个输入容器约 139.6 px 高。这只记录该状态的尺寸，不推断长文本时的高度上限。
+- 点击输入框右上角 `Expand prompt to focus mode` 后，打开带背景遮罩的居中 `Prompt focus mode` 对话框，约 896 × 663.6 px。它包含 Prompt 标题、大文本编辑区、右上角 ×，以及底部 Reference、模型、比例、清晰度和 Done 按钮；不是仅把底部输入框原地拉高。
+- 在对话框输入专用测试文字并点击 Done 后，返回紧凑输入框，测试文字保留。再次打开后点击右上角 ×，也能返回紧凑输入状态。最后将测试文字清空；未触发生成、上传或付费。未测试 Escape、点击遮罩、长文本滚动或 × 对新编辑内容的保存规则。
 
 **设计建议**
 
 - 借鉴侧栏和工作区分离，以及底部保持稳定位置的输入区；它能为对话与结果保留主要空间。
 - 借鉴参数只展示当前值的紧凑方式。将模型、条件档位、比例、清晰度和数量组织成清晰的一组，不在默认画面展开全部选项。
-- 首稿建议直接显示已上传附件，不采用只有叠放缩略图的收起状态作为唯一表达；对参考图数量和归属更容易核对。折叠附件可作为后续空间优化建议。
+- 建议直接显示已上传附件，便于核对图片归属。当前项目已由用户明确为“有图显示、删光隐藏”，不引入附件手动折叠。
+- 默认输入框保持紧凑，右上角提供长提示词编辑入口；约 140 px 的实测容器可作为本项目约 144 px 默认输入框的布局参考。展开状态的尺寸与内容组织仍属于本项目设计选择，不能直接等同于原站实现。
 - 网站导航包含多种创作工具，本项目只保留已确认的图像创作和我的图片，不复制整个产品导航。
 
 证据：[默认页面](../../outputs/research/artcraft-default.jpg)、[上传一张](../../outputs/research/artcraft-upload-one.jpg)、[上传两张](../../outputs/research/artcraft-upload-two.jpg)、[两张附件文字快照](../../outputs/research/artcraft-upload-two.txt)。
+
+输入框展开补充证据：[紧凑空态](../../outputs/research/artcraft-focus-default.jpg)、[展开对话框](../../outputs/research/artcraft-focus-expanded.jpg)、[Done 后保留测试文字](../../outputs/research/artcraft-focus-done.jpg)、[× 返回并恢复空输入](../../outputs/research/artcraft-focus-returned.jpg)。这些截图均按 1440 × 900 保存。
 
 ## 3. ImageAT：显式档位与有编号的参考图
 
