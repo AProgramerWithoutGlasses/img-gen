@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "./components/Icon";
+import { AccountMenu } from "./components/AccountMenu";
 import { Modal } from "./components/Modal";
 import CreationPage from "./features/create/CreationPage";
 import LoginPage from "./features/auth/LoginPage";
@@ -28,6 +29,7 @@ function StudioApp() {
   const [route, setRoute] = useState(routeFromHash);
   const [collapsed, setCollapsed] = useState(false);
   const [accountMenu, setAccountMenu] = useState(false);
+  const accountTrigger = useRef<HTMLButtonElement>(null);
   const [folderModal, setFolderModal] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [folderError, setFolderError] = useState("");
@@ -308,10 +310,14 @@ function StudioApp() {
           )}
           <div className="account-menu-wrap">
             <button
+              ref={accountTrigger}
               className="account-trigger"
               aria-label="我的账户"
               aria-expanded={accountMenu}
               onClick={() => setAccountMenu(!accountMenu)}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") setAccountMenu(false);
+              }}
             >
               <span className="avatar">
                 {currentUser.username.charAt(0).toUpperCase()}
@@ -334,40 +340,22 @@ function StudioApp() {
                   aria-label="关闭账户菜单"
                   onClick={() => setAccountMenu(false)}
                 />
-                <div className="account-menu">
-                  <strong>{currentUser.username}</strong>
-                  <button onClick={() => navigate("/settings/account")}>
-                    <Icon name="settings" size={17} />
-                    设置
-                  </button>
-                  <button
-                    onClick={() => {
-                      void actions
-                        .setPreferences({
-                          theme:
-                            data.preferences.theme === "dark"
-                              ? "light"
-                              : "dark",
-                        })
-                        .catch((e) => notify(e.message));
-                    }}
-                  >
-                    <Icon name="moon" size={17} />
-                    {data.preferences.theme === "dark"
-                      ? "浅色主题"
-                      : "深色主题"}
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (dirty.current) setGuardTarget("__logout");
-                      else actions.signOut();
-                      setAccountMenu(false);
-                    }}
-                  >
-                    <Icon name="logout" size={17} />
-                    退出登录
-                  </button>
-                </div>
+                <AccountMenu
+                  onNavigate={(target) => {
+                    navigate(target);
+                    setAccountMenu(false);
+                  }}
+                  onClose={() => {
+                    setAccountMenu(false);
+                    accountTrigger.current?.focus();
+                  }}
+                  onSignOut={() => {
+                    if (dirty.current) setGuardTarget("__logout");
+                    else actions.signOut();
+                    setAccountMenu(false);
+                  }}
+                  notify={notify}
+                />
               </>
             )}
           </div>
