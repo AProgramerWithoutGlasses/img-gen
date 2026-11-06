@@ -325,6 +325,7 @@ function GalleryImage({
           src={image.thumbnailUrl ?? image.url}
           alt={image.name}
           loading="lazy"
+          decoding="async"
           draggable={false}
         />
       </button>

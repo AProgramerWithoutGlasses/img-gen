@@ -1038,7 +1038,7 @@ function Requests({
                           {request.imageIds.slice(0, 2).map((id) => {
                             const asset = data.assets.find((a) => a.id === id);
                             return asset ? (
-                              <img key={id} src={asset.url} alt="生成图片" />
+                              <img key={id} src={asset.thumbnailUrl ?? asset.url} alt="生成图片" loading="lazy" decoding="async" />
                             ) : null;
                           })}
                         </div>
@@ -1180,7 +1180,7 @@ function RequestDetail({
                 }}
                 aria-label={`查看 ${image.name}`}
               >
-                <img src={image.url} alt={image.name} />
+                <img src={image.previewUrl ?? image.url} alt={image.name} loading="lazy" decoding="async" />
               </button>
             ))}
           </div>

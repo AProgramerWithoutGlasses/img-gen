@@ -46,15 +46,22 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
     refreshQueue.current = task;
     return task;
   }
+  async function loadWorkspace() {
+    // Both endpoints authenticate. Wait for both reads to settle before showing
+    // login so a late initial 401 cannot clear a newly established session.
+    const reads = await Promise.allSettled([
+      api<ModelConfig[]>("/api/studio/models").then(setModels),
+      refresh(),
+    ]);
+    for (const read of reads) if (read.status === "rejected") throw read.reason;
+  }
   useEffect(() => {
     let active = true;
     const unauthorized = () => clear();
     addEventListener("studio:unauthorized", unauthorized);
     (async () => {
       try {
-        await api("/api/auth/me");
-        setModels(await api<ModelConfig[]>("/api/studio/models"));
-        await refresh();
+        await loadWorkspace();
       } catch (cause) {
         if (!(cause instanceof APIError && cause.status === 401) && active)
           setError(cause instanceof Error ? cause.message : "读取工作区失败");
@@ -171,8 +178,7 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
       async signIn(username, password) {
         await api("/api/auth/login", { method: "POST", body: JSON.stringify({ username, password }) });
         epoch.current++;
-        setModels(await api<ModelConfig[]>("/api/studio/models"));
-        await refresh();
+        await loadWorkspace();
       },
     };
   }, []);

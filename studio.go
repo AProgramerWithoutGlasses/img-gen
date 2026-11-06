@@ -209,8 +209,7 @@ func (a *app) getStudioAttachment(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取附件失败")
 		return
 	}
-	w.Header().Set("Content-Type", mime)
-	w.Write(content)
+	serveCachedImage(w, r, content, mime)
 }
 
 func (a *app) createStudioGeneration(w http.ResponseWriter, r *http.Request) {
@@ -575,15 +574,40 @@ func (a *app) studioState(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取归类失败")
 		return
 	}
-	generations, assets, err := a.studioHistory(ctx, jobs, opts, positions, attachments, memberships)
+	// Read image metadata once for the whole authorized snapshot. Querying once
+	// per job made startup and every poll slower as history accumulated.
+	rows, err = a.db.QueryContext(ctx, `SELECT images.job_id,images.id,images.mime,images.width,images.height,images.byte_size
+		FROM images JOIN jobs ON jobs.id=images.job_id WHERE 1=1`+scope+` ORDER BY images.job_id,images.id`, args...)
 	if err != nil {
 		apiError(w, 500, "读取图片失败")
 		return
 	}
+	pictures := map[string][]picture{}
+	for rows.Next() {
+		var jobID string
+		var p picture
+		if err = rows.Scan(&jobID, &p.ID, &p.MIME, &p.Width, &p.Height, &p.Bytes); err != nil {
+			break
+		}
+		p.URL = "/api/images/" + p.ID
+		p.ThumbnailURL = p.URL + "/thumbnail/" + thumbnailVersion
+		p.PreviewURL = p.URL + "/preview/" + previewVersion
+		pictures[jobID] = append(pictures[jobID], p)
+	}
+	err = errors.Join(err, rows.Err())
+	rows.Close()
+	if err != nil {
+		apiError(w, 500, "读取图片失败")
+		return
+	}
+	for i := range jobs {
+		jobs[i].Images = pictures[jobs[i].ID]
+	}
+	generations, assets := studioHistory(jobs, opts, positions, attachments, memberships)
 	jsonResponse(w, 200, map[string]any{"version": 1, "users": users, "currentUserId": actor.ID, "prices": prices, "priceVersions": versions, "priceUpdatedAt": updated, "assets": assets, "folders": folders, "generations": generations, "preferences": map[string]any{"theme": "system", "enterToSend": true}})
 }
 
-func (a *app) studioHistory(ctx context.Context, jobs []job, opts map[string]studioOptions, positions map[string]int, attachments map[string][]studioAttachment, memberships map[string][]string) ([]studioGeneration, []studioAsset, error) {
+func studioHistory(jobs []job, opts map[string]studioOptions, positions map[string]int, attachments map[string][]studioAttachment, memberships map[string][]string) ([]studioGeneration, []studioAsset) {
 	grouped := map[string][]job{}
 	keys := []string{}
 	for _, j := range jobs {
@@ -644,9 +668,6 @@ func (a *app) studioHistory(ctx context.Context, jobs []job, opts map[string]stu
 			if j.FinishedAt != nil && (finished == nil || j.FinishedAt.After(*finished)) {
 				finished = j.FinishedAt
 			}
-			if err := a.pictures(ctx, &j); err != nil {
-				return nil, nil, err
-			}
 			for _, p := range j.Images {
 				fids := memberships[p.ID]
 				if fids == nil {
@@ -677,7 +698,7 @@ func (a *app) studioHistory(ctx context.Context, jobs []job, opts map[string]stu
 		}
 		return assets[i].CreatedAt.After(assets[j].CreatedAt)
 	})
-	return generations, assets, nil
+	return generations, assets
 }
 
 func folderWriteError(w http.ResponseWriter, err error) {

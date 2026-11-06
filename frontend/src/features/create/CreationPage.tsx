@@ -119,7 +119,7 @@ export default function CreationPage({
                 {job.attachments.length > 0 && (
                   <div className="sent-attachments">
                     {job.attachments.map((a) => (
-                      <img src={a.url} alt={a.name} key={a.id} />
+                      <img src={a.url} alt={a.name} key={a.id} width={a.width} height={a.height} loading="lazy" decoding="async" />
                     ))}
                   </div>
                 )}
@@ -164,10 +164,14 @@ export default function CreationPage({
                         aria-label={`查看${image.name}`}
                       >
                         <img
-                          src={image.previewUrl ?? image.url}
+                          src={image.thumbnailUrl ?? image.previewUrl ?? image.url}
+                          srcSet={image.thumbnailUrl && image.previewUrl
+                            ? `${image.thumbnailUrl} 1x, ${image.previewUrl} 2x` : undefined}
                           alt={image.name}
                           width={image.width}
                           height={image.height}
+                          loading="lazy"
+                          decoding="async"
                         />
                       </button>
                       <div className="result-actions">

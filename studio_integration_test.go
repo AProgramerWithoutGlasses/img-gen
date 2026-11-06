@@ -337,6 +337,31 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 		}
 		t.Log(string(output))
 	}
+	// Bulk metadata must keep every image past one UI page and keep the same
+	// ownership boundary for both administrator and ordinary-user snapshots.
+	adminBefore := len(state(client).Assets)
+	for range 40 {
+		jid, iid := newID(), newID()
+		if _, err := db.Exec(`INSERT INTO jobs(id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,user_id)
+			VALUES(?,?,'generate','gpt-image-2','bulk fixture','bulk fixture','auto','default','succeeded','',?)`, jid, newID(), other.ID); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := db.Exec("INSERT INTO images(id,job_id,mime,width,height,byte_size,content) VALUES(?,?,'image/png',1,1,?,?)", iid, jid, len(testPNG()), testPNG()); err != nil {
+			t.Fatal(err)
+		}
+	}
+	personal := state(second)
+	if len(personal.Assets) != 40 || len(personal.Generations) != 40 {
+		t.Fatalf("bulk history lost images: %d assets, %d generations", len(personal.Assets), len(personal.Generations))
+	}
+	for _, asset := range personal.Assets {
+		if asset.UserID != other.ID || asset.ThumbnailURL == "" || asset.PreviewURL == "" {
+			t.Fatal("bulk history leaked ownership or lost rendition URLs")
+		}
+	}
+	if got := len(state(client).Assets); got != adminBefore+40 {
+		t.Fatalf("administrator history lost images: got %d want %d", got, adminBefore+40)
+	}
 	// Verify server-controlled password/session invalidation, not a local UI toggle.
 	request(second, "POST", "/api/auth/password", map[string]string{"current_password": "integration1234", "password": "replacement1234"}, 200)
 	request(second, "GET", "/api/studio/state", nil, 401)
