@@ -1,0 +1,1700 @@
+[
+  {
+    "command": "edit.duplicate",
+    "as": "createCopy",
+    "params": {
+      "ids": [
+        3081
+      ],
+      "dx": 0,
+      "dy": 1020,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "createCopy",
+          "field": "map/3081"
+        }
+      ],
+      "props": {
+        "name": "用户管理 · 创建用户 · 1440×900",
+        "x": 0,
+        "y": 2040
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "createMask",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "createCopy",
+        "field": "map/3081"
+      },
+      "name": "背景遮罩",
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#00000026"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "createDrawer",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "createCopy",
+        "field": "map/3081"
+      },
+      "name": "创建用户抽屉",
+      "x": 920,
+      "y": 0,
+      "width": 520,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 0,
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n1",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "创建用户",
+      "x": 32,
+      "y": 28,
+      "width": 400,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 22,
+        "fontStyle": "Bold",
+        "lineHeight": 32,
+        "textAutoResize": "none",
+        "fill": "#252525"
+      },
+      "text": "创建用户"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n2",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "设置账号的基本信息与初始登录密码。",
+      "x": 32,
+      "y": 76,
+      "width": 456,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "设置账号的基本信息与初始登录密码。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n3",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "按钮 / ×",
+      "x": 448,
+      "y": 24,
+      "width": 40,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n4",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n3"
+      },
+      "name": "×",
+      "x": 8,
+      "y": 9,
+      "width": 24,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "×"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n4"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n5",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 120,
+      "width": 520,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n6",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "用户名",
+      "x": 32,
+      "y": 146,
+      "width": 456,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "用户名"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n7",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "输入框 / 请输入用户名",
+      "x": 32,
+      "y": 178,
+      "width": 456,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n8",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n7"
+      },
+      "name": "请输入用户名",
+      "x": 12,
+      "y": 9,
+      "width": 432,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#999999"
+      },
+      "text": "请输入用户名"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n9",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "3–32 位；字母、数字、_、.、-。\n以字母、数字或 _ 开头",
+      "x": 32,
+      "y": 230,
+      "width": 456,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "3–32 位；字母、数字、_、.、-。\n以字母、数字或 _ 开头。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n10",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "角色",
+      "x": 32,
+      "y": 300,
+      "width": 456,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "角色"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n11",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "选择器 / 普通用户",
+      "x": 32,
+      "y": 332,
+      "width": 456,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n12",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n11"
+      },
+      "name": "普通用户",
+      "x": 12,
+      "y": 9,
+      "width": 412,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "普通用户"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n13",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n11"
+      },
+      "name": "展开",
+      "x": 432,
+      "y": 18,
+      "width": 10,
+      "height": 5,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 0 L5 5 L10 0"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n14",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "账号状态",
+      "x": 32,
+      "y": 404,
+      "width": 456,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "账号状态"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n15",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "选择器 / 启用",
+      "x": 32,
+      "y": 436,
+      "width": 456,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n16",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n15"
+      },
+      "name": "启用",
+      "x": 12,
+      "y": 9,
+      "width": 412,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "启用"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n17",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n15"
+      },
+      "name": "展开",
+      "x": 432,
+      "y": 18,
+      "width": 10,
+      "height": 5,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 0 L5 5 L10 0"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n18",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "初始密码",
+      "x": 32,
+      "y": 508,
+      "width": 456,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "初始密码"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n19",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "输入框 / 请输入初始密码",
+      "x": 32,
+      "y": 540,
+      "width": 456,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n20",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n19"
+      },
+      "name": "请输入初始密码",
+      "x": 12,
+      "y": 9,
+      "width": 432,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#999999"
+      },
+      "text": "请输入初始密码"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n21",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n19"
+      },
+      "name": "显示密码",
+      "x": 418,
+      "y": 14,
+      "width": 18,
+      "height": 12,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 6 Q9 -6 18 6 Q9 18 0 6 M7 6 A2 2 0 1 0 11 6 A2 2 0 1 0 7 6"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n22",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "密码长度为 4–128 字节。",
+      "x": 32,
+      "y": 592,
+      "width": 456,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "密码长度为 4–128 字节。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n23",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 812,
+      "width": 520,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n24",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "按钮 / 取消",
+      "x": 264,
+      "y": 836,
+      "width": 88,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n25",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n24"
+      },
+      "name": "取消",
+      "x": 8,
+      "y": 9,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "取消"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n25"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n26",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "createDrawer"
+      },
+      "name": "按钮 / 创建用户",
+      "x": 364,
+      "y": 836,
+      "width": 124,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#3C3C3C",
+        "stroke": "#3C3C3C",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 0.5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n27",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n26"
+      },
+      "name": "创建用户",
+      "x": 8,
+      "y": 9,
+      "width": 108,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#FFFFFF"
+      },
+      "text": "创建用户"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n27"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "createDrawer"
+        }
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "新建：用户名/初始密码必填；角色默认普通用户，状态默认启用。默认空表单创建按钮禁用。未展示任何真实密码；4–128为字节并非字符，编码规则待确定。角色/状态展开选项作为局部建议记录，不假定全部权限。失败和成功局部状态另见状态稿。更新既有账号导致会话失效的文案不出现在新建表单。"
+        }
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "requestDetailCopy",
+    "params": {
+      "ids": [
+        3281
+      ],
+      "dx": 0,
+      "dy": 1020,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requestDetailCopy",
+          "field": "map/3281"
+        }
+      ],
+      "props": {
+        "name": "请求记录 · 完整请求详情 · 1440×900",
+        "x": 1540,
+        "y": 2040
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "detailMask",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "requestDetailCopy",
+        "field": "map/3281"
+      },
+      "name": "背景遮罩",
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#00000026"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "requestDrawer",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestDetailCopy",
+        "field": "map/3281"
+      },
+      "name": "请求详情抽屉",
+      "x": 800,
+      "y": 0,
+      "width": 640,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 0,
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n28",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "请求详情",
+      "x": 32,
+      "y": 28,
+      "width": 490,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 22,
+        "fontStyle": "Bold",
+        "lineHeight": 32,
+        "textAutoResize": "none",
+        "fill": "#252525"
+      },
+      "text": "请求详情"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n29",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "按钮 / ×",
+      "x": 568,
+      "y": 24,
+      "width": 40,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n30",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n29"
+      },
+      "name": "×",
+      "x": 8,
+      "y": 9,
+      "width": 24,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "×"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n30"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n31",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "状态 / 已完成",
+      "x": 32,
+      "y": 82,
+      "width": 76,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fill": "#EFEFEF",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n32",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n31"
+      },
+      "name": "已完成",
+      "x": 4,
+      "y": 3,
+      "width": 68,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "text": "已完成"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n32"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n33",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "user1 · 2026/11/06 17:42:08",
+      "x": 124,
+      "y": 84,
+      "width": 484,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "user1 · 2026/11/06 17:42:08"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n34",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 130,
+      "width": 640,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n35",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "模型",
+      "x": 32,
+      "y": 154,
+      "width": 316,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "模型"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n36",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "GPT Image 2",
+      "x": 32,
+      "y": 181,
+      "width": 316,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "GPT Image 2"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n37",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "生成耗时",
+      "x": 376,
+      "y": 154,
+      "width": 232,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "生成耗时"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n38",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "12.8 秒",
+      "x": 376,
+      "y": 181,
+      "width": 232,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "12.8 秒"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n39",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "消耗积分",
+      "x": 32,
+      "y": 220,
+      "width": 316,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "消耗积分"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n40",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "2",
+      "x": 32,
+      "y": 247,
+      "width": 316,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "2"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n41",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "生成数量",
+      "x": 376,
+      "y": 220,
+      "width": 232,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "生成数量"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n42",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "2 张",
+      "x": 376,
+      "y": 247,
+      "width": 232,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "2 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n43",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "分隔线",
+      "x": 32,
+      "y": 290,
+      "width": 576,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n44",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "完整提示词",
+      "x": 32,
+      "y": 316,
+      "width": 576,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "完整提示词"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "fullPrompt",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "完整提示词内容",
+      "x": 32,
+      "y": 354,
+      "width": 576,
+      "height": 106,
+      "select": false,
+      "props": {
+        "fill": "#F8F8F8",
+        "cornerRadius": 6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n45",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "fullPrompt"
+      },
+      "name": "生成 2 张极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。\n",
+      "x": 16,
+      "y": 16,
+      "width": 544,
+      "height": 66,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "text": "生成 2 张极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。\n保持主体完整，使用 4:3 横向构图。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n46",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "生成图片",
+      "x": 32,
+      "y": 490,
+      "width": 576,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "生成图片"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n47",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "图片占位 / 生成图片 01 · 4:3",
+      "x": 32,
+      "y": 530,
+      "width": 280,
+      "height": 210,
+      "select": false,
+      "props": {
+        "fill": "#F1F1F1",
+        "cornerRadius": 4,
+        "stroke": "#D7D7D7",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n48",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n47"
+      },
+      "name": "图像示意",
+      "x": 125,
+      "y": 95,
+      "width": 30,
+      "height": 12,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 12 L8 3 L15 10 L21 0 L30 12"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n49",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n47"
+      },
+      "name": "生成图片 01 · 4:3",
+      "x": 6,
+      "y": 182,
+      "width": 268,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "生成图片 01 · 4:3"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n49"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n50",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "图片占位 / 生成图片 02 · 4:3",
+      "x": 328,
+      "y": 530,
+      "width": 280,
+      "height": 210,
+      "select": false,
+      "props": {
+        "fill": "#F1F1F1",
+        "cornerRadius": 4,
+        "stroke": "#D7D7D7",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n51",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n50"
+      },
+      "name": "图像示意",
+      "x": 125,
+      "y": 95,
+      "width": 30,
+      "height": 12,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 12 L8 3 L15 10 L21 0 L30 12"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n52",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n50"
+      },
+      "name": "生成图片 02 · 4:3",
+      "x": 6,
+      "y": 182,
+      "width": 268,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "生成图片 02 · 4:3"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n52"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n53",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestDrawer"
+      },
+      "name": "点击图片查看大图",
+      "x": 32,
+      "y": 760,
+      "width": 576,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "点击图片查看大图"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requestDrawer"
+        }
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "点击提示词或图片打开此详情。数据与列表中的完成记录一致，生成图为线框占位。大图可沿用已有图片查看模式，不给管理员额外增加下载/添加/删除能力。失败时结果区显示错误原因，不补造退款。"
+        }
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "normalAccountCopy",
+    "params": {
+      "ids": [
+        2261
+      ],
+      "dx": 3080,
+      "dy": 2040,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2261"
+        }
+      ],
+      "props": {
+        "name": "设置 · 普通用户账户 · 1440×900",
+        "x": 3080,
+        "y": 2040
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2281"
+        },
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2285"
+        },
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2289"
+        },
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2293"
+        },
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2294"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2298"
+        }
+      ],
+      "props": {
+        "characters": "U"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2299"
+        }
+      ],
+      "props": {
+        "characters": "user1"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2300"
+        }
+      ],
+      "props": {
+        "characters": "普通用户"
+      }
+    }
+  },
+  {
+    "command": "component.editProperty",
+    "params": {
+      "id": {
+        "$ref": "normalAccountCopy",
+        "field": "map/2312"
+      },
+      "name": "内容",
+      "default": "user1"
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2315"
+        }
+      ],
+      "properties": {
+        "内容": "普通用户"
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2321"
+        }
+      ],
+      "properties": {
+        "内容": "2026/10/26 22:54:11"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "normalAccountCopy",
+          "field": "map/2261"
+        }
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "普通用户：管理员组（用户管理、请求记录、模型价格及分组标题）全部隐藏。只读信息是当前普通用户。隐藏菜单不替代实际权限校验。账户状态启用，个人设置仍可访问。"
+        }
+      }
+    }
+  }
+]

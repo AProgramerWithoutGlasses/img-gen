@@ -1,0 +1,62 @@
+[
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        3940
+      ],
+      "props": {
+        "characters": "user1"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4111
+      ],
+      "props": {
+        "characters": "••••••••",
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4114
+      ],
+      "props": {
+        "characters": "••••••••",
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4117
+      ],
+      "props": {
+        "characters": "••••••••",
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4106
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "个人修改密码的建议表单；三个密码框仅用固定圆点表示已输入，没有实际密码数据。确认密码不一致时就近提示并禁用保存。个人改密长度策略与会话失效范围待确认。"
+        }
+      }
+    }
+  }
+]

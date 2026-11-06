@@ -1,0 +1,4121 @@
+[
+  {
+    "command": "edit.duplicate",
+    "as": "requestsCopy",
+    "params": {
+      "ids": [
+        2261
+      ],
+      "dx": 1540,
+      "dy": 1020,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requestsCopy",
+          "field": "map/2261"
+        }
+      ],
+      "props": {
+        "name": "请求记录 · 1440×900",
+        "x": 1540,
+        "y": 1020,
+        "pluginData": {
+          "designNotes": "静态可编辑线框；数值、账号、日期为示例。沿用已确认设置骨架；未实现真实业务操作。"
+        }
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requestsCopy",
+          "field": "map/2305"
+        }
+      ]
+    }
+  },
+  {
+    "command": "component.editProperty",
+    "params": {
+      "id": {
+        "$ref": "requestsCopy",
+        "field": "map/2269"
+      },
+      "name": "选中",
+      "default": false
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requestsCopy",
+          "field": "map/2285"
+        }
+      ],
+      "properties": {
+        "选中": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requestsCopy",
+          "field": "map/2303"
+        }
+      ],
+      "props": {
+        "characters": "管理员面板"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "requestsBody",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsCopy",
+        "field": "map/2261"
+      },
+      "name": "03 请求记录内容",
+      "x": 340,
+      "y": 112,
+      "width": 1040,
+      "height": 752,
+      "select": false,
+      "props": {
+        "fill": "none"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n1",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "请求记录",
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 34,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 24,
+        "fontStyle": "Bold",
+        "lineHeight": 34,
+        "textAutoResize": "none",
+        "fill": "#252525"
+      },
+      "text": "请求记录"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n2",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "按用户、输入内容与时间查找生成请求。",
+      "x": 0,
+      "y": 44,
+      "width": 1040,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "按用户、输入内容与时间查找生成请求。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "filters",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "请求筛选",
+      "x": 0,
+      "y": 96,
+      "width": 1040,
+      "height": 224,
+      "select": false,
+      "props": {
+        "fill": "#FAFAFA",
+        "cornerRadius": 6,
+        "stroke": "#DEDEDE",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n3",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "用户",
+      "x": 16,
+      "y": 12,
+      "width": 240,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "用户"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n4",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "输入框 / 搜索用户名",
+      "x": 16,
+      "y": 38,
+      "width": 240,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n5",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n4"
+      },
+      "name": "搜索用户名",
+      "x": 12,
+      "y": 9,
+      "width": 216,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#999999"
+      },
+      "text": "搜索用户名"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n6",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "提示词",
+      "x": 272,
+      "y": 12,
+      "width": 240,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "提示词"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n7",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "输入框 / 搜索输入内容",
+      "x": 272,
+      "y": 38,
+      "width": 240,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n8",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n7"
+      },
+      "name": "搜索输入内容",
+      "x": 12,
+      "y": 9,
+      "width": 216,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#999999"
+      },
+      "text": "搜索输入内容"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n9",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "状态",
+      "x": 528,
+      "y": 12,
+      "width": 240,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "状态"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n10",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "选择器 / 全部状态",
+      "x": 528,
+      "y": 38,
+      "width": 240,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n11",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n10"
+      },
+      "name": "全部状态",
+      "x": 12,
+      "y": 9,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "全部状态"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n12",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n10"
+      },
+      "name": "展开",
+      "x": 216,
+      "y": 18,
+      "width": 10,
+      "height": 5,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 0 L5 5 L10 0"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n13",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "记录范围",
+      "x": 784,
+      "y": 12,
+      "width": 240,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "记录范围"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n14",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "选择器 / 全部记录",
+      "x": 784,
+      "y": 38,
+      "width": 240,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n15",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n14"
+      },
+      "name": "全部记录",
+      "x": 12,
+      "y": 9,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "全部记录"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n16",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n14"
+      },
+      "name": "展开",
+      "x": 216,
+      "y": 18,
+      "width": 10,
+      "height": 5,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 0 L5 5 L10 0"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n17",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "请求时间",
+      "x": 16,
+      "y": 102,
+      "width": 78,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "请求时间"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n18",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "按钮 / 今天",
+      "x": 100,
+      "y": 94,
+      "width": 66,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#3C3C3C",
+        "stroke": "#3C3C3C",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n19",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n18"
+      },
+      "name": "今天",
+      "x": 8,
+      "y": 9,
+      "width": 50,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#FFFFFF"
+      },
+      "text": "今天"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n19"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n20",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "按钮 / 3 天",
+      "x": 174,
+      "y": 94,
+      "width": 66,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n21",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n20"
+      },
+      "name": "3 天",
+      "x": 8,
+      "y": 9,
+      "width": 50,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "3 天"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n21"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n22",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "按钮 / 7 天",
+      "x": 248,
+      "y": 94,
+      "width": 66,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n23",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n22"
+      },
+      "name": "7 天",
+      "x": 8,
+      "y": 9,
+      "width": 50,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "7 天"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n23"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n24",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "输入框 / 2026/11/06 00:00:00",
+      "x": 16,
+      "y": 146,
+      "width": 308,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n25",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n24"
+      },
+      "name": "2026/11/06 00:00:00",
+      "x": 12,
+      "y": 9,
+      "width": 284,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/11/06 00:00:00"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n26",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "至",
+      "x": 336,
+      "y": 155,
+      "width": 22,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "至"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n27",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "输入框 / 2026/11/06 18:00:00",
+      "x": 368,
+      "y": 146,
+      "width": 308,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n28",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n27"
+      },
+      "name": "2026/11/06 18:00:00",
+      "x": 12,
+      "y": 9,
+      "width": 284,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/11/06 18:00:00"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n29",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "按钮 / 筛选",
+      "x": 824,
+      "y": 146,
+      "width": 88,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#3C3C3C",
+        "stroke": "#3C3C3C",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n30",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n29"
+      },
+      "name": "筛选",
+      "x": 8,
+      "y": 9,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#FFFFFF"
+      },
+      "text": "筛选"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n30"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n31",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "按钮 / 清空",
+      "x": 924,
+      "y": 146,
+      "width": 100,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n32",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n31"
+      },
+      "name": "清空",
+      "x": 8,
+      "y": 9,
+      "width": 84,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "清空"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n32"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n33",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "filters"
+      },
+      "name": "浏览器时区：UTC+08:00 · 快捷范围包含今天",
+      "x": 16,
+      "y": 194,
+      "width": 780,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "浏览器时区：UTC+08:00 · 快捷范围包含今天"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n34",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "匹配 3 条请求",
+      "x": 0,
+      "y": 344,
+      "width": 240,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "匹配 3 条请求"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n35",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "已完成 1   ·   处理中 1   ·   失败 1",
+      "x": 280,
+      "y": 344,
+      "width": 760,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "已完成 1   ·   处理中 1   ·   失败 1"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "requestsTable",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "请求记录表",
+      "x": 0,
+      "y": 382,
+      "width": 1040,
+      "height": 288,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 6,
+        "stroke": "#DEDEDE",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n36",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "表头",
+      "x": 1,
+      "y": 1,
+      "width": 1038,
+      "height": 46,
+      "select": false,
+      "props": {
+        "fill": "#F5F5F5",
+        "cornerRadius": 5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n37",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "用户名",
+      "x": 16,
+      "y": 13,
+      "width": 80,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "用户名"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n38",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "请求时间",
+      "x": 104,
+      "y": 13,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "请求时间"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n39",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "输入 / 模型",
+      "x": 240,
+      "y": 13,
+      "width": 300,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "输入 / 模型"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n40",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "生成秒数",
+      "x": 548,
+      "y": 13,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "生成秒数"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n41",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "消耗积分",
+      "x": 630,
+      "y": 13,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "消耗积分"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n42",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "状态",
+      "x": 716,
+      "y": 13,
+      "width": 80,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "状态"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n43",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "生成图片 / 报错",
+      "x": 814,
+      "y": 13,
+      "width": 210,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "生成图片 / 报错"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n44",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 48,
+      "width": 1040,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n45",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "user1",
+      "x": 16,
+      "y": 74,
+      "width": 80,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "user1"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n46",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "2026/11/06",
+      "x": 104,
+      "y": 64,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/11/06"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n47",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "17:42:08",
+      "x": 104,
+      "y": 88,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "17:42:08"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n48",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "白色护肤品，浅灰背景与柔和侧光",
+      "x": 240,
+      "y": 63,
+      "width": 296,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "白色护肤品，浅灰背景与柔和侧光"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n49",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "GPT Image 2",
+      "x": 240,
+      "y": 90,
+      "width": 296,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "GPT Image 2"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n50",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "12.8",
+      "x": 548,
+      "y": 74,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "12.8"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n51",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "2",
+      "x": 630,
+      "y": 74,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n52",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "状态 / 已完成",
+      "x": 716,
+      "y": 72,
+      "width": 72,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fill": "#EFEFEF",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n53",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n52"
+      },
+      "name": "已完成",
+      "x": 4,
+      "y": 3,
+      "width": 64,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "text": "已完成"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n53"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n54",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "图片占位 / 01",
+      "x": 814,
+      "y": 60,
+      "width": 84,
+      "height": 56,
+      "select": false,
+      "props": {
+        "fill": "#F1F1F1",
+        "cornerRadius": 4,
+        "stroke": "#D7D7D7",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n55",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n54"
+      },
+      "name": "图像示意",
+      "x": 27,
+      "y": 18,
+      "width": 30,
+      "height": 12,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 12 L8 3 L15 10 L21 0 L30 12"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n56",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n54"
+      },
+      "name": "01",
+      "x": 6,
+      "y": 28,
+      "width": 72,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "01"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n56"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n57",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "图片占位 / 02",
+      "x": 908,
+      "y": 60,
+      "width": 84,
+      "height": 56,
+      "select": false,
+      "props": {
+        "fill": "#F1F1F1",
+        "cornerRadius": 4,
+        "stroke": "#D7D7D7",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n58",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "n57"
+      },
+      "name": "图像示意",
+      "x": 27,
+      "y": 18,
+      "width": 30,
+      "height": 12,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3
+      },
+      "path": "M0 12 L8 3 L15 10 L21 0 L30 12"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n59",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n57"
+      },
+      "name": "02",
+      "x": 6,
+      "y": 28,
+      "width": 72,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "02"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n59"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n60",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 128,
+      "width": 1040,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n61",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "jyh",
+      "x": 16,
+      "y": 154,
+      "width": 80,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "jyh"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n62",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "2026/11/06",
+      "x": 104,
+      "y": 144,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/11/06"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n63",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "17:40:21",
+      "x": 104,
+      "y": 168,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "17:40:21"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n64",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "一座漂浮在云层中的玻璃温室",
+      "x": 240,
+      "y": 143,
+      "width": 296,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "一座漂浮在云层中的玻璃温室"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n65",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "Gemini 3 Pro Image",
+      "x": 240,
+      "y": 170,
+      "width": 296,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "Gemini 3 Pro Image"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n66",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "—",
+      "x": 548,
+      "y": 154,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "—"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n67",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "—",
+      "x": 630,
+      "y": 154,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "—"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n68",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "状态 / 处理中",
+      "x": 716,
+      "y": 152,
+      "width": 72,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fill": "#EFEFEF",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n69",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n68"
+      },
+      "name": "处理中",
+      "x": 4,
+      "y": 3,
+      "width": 64,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "text": "处理中"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n69"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n70",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "正在生成…",
+      "x": 814,
+      "y": 154,
+      "width": 204,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "正在生成…"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n71",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 208,
+      "width": 1040,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n72",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "admin",
+      "x": 16,
+      "y": 234,
+      "width": 80,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "admin"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n73",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "2026/11/06",
+      "x": 104,
+      "y": 224,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/11/06"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n74",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "17:36:54",
+      "x": 104,
+      "y": 248,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "17:36:54"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n75",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "黑白城市街景，雨后的路面反光",
+      "x": 240,
+      "y": 223,
+      "width": 296,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "黑白城市街景，雨后的路面反光"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n76",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "GPT Image 1.5",
+      "x": 240,
+      "y": 250,
+      "width": 296,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "GPT Image 1.5"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n77",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "—",
+      "x": 548,
+      "y": 234,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "—"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n78",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "—",
+      "x": 630,
+      "y": 234,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "—"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n79",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "状态 / 失败",
+      "x": 716,
+      "y": 232,
+      "width": 72,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fill": "#EFEFEF",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n80",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n79"
+      },
+      "name": "失败",
+      "x": 4,
+      "y": 3,
+      "width": 64,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "text": "失败"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n80"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n81",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "服务暂时不可用",
+      "x": 814,
+      "y": 223,
+      "width": 204,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "服务暂时不可用"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n82",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsTable"
+      },
+      "name": "查看详情 ↗",
+      "x": 814,
+      "y": 251,
+      "width": 204,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "查看详情 ↗"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n83",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "共 3 条",
+      "x": 0,
+      "y": 696,
+      "width": 500,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "共 3 条"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n84",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "按钮 / ‹",
+      "x": 888,
+      "y": 688,
+      "width": 40,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 0.5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n85",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n84"
+      },
+      "name": "‹",
+      "x": 8,
+      "y": 9,
+      "width": 24,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "‹"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n85"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n86",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "按钮 / 1",
+      "x": 940,
+      "y": 688,
+      "width": 40,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n87",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n86"
+      },
+      "name": "1",
+      "x": 8,
+      "y": 9,
+      "width": 24,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "1"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n87"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n88",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "requestsBody"
+      },
+      "name": "按钮 / ›",
+      "x": 992,
+      "y": 688,
+      "width": 40,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 0.5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n89",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n88"
+      },
+      "name": "›",
+      "x": 8,
+      "y": 9,
+      "width": 24,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "›"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n89"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "filters"
+        }
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "筛选控件仅绘制关闭态。记录范围其他选项未知；不编造枚举。状态支持全部/已完成/处理中/失败。时间范围按浏览器时区，结束时间更新时机待定义；时间与记录均为示例。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requestsTable"
+        }
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "静态示例，所有账号、时间、耗时、积分均非真实记录。完成记录点击提示词或图片查看详情。处理中和失败积分未知，使用 —，不承诺扣费或退款。"
+        }
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "pricesCopy",
+    "params": {
+      "ids": [
+        2261
+      ],
+      "dx": 3080,
+      "dy": 1020,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "pricesCopy",
+          "field": "map/2261"
+        }
+      ],
+      "props": {
+        "name": "模型价格 · 1440×900",
+        "x": 3080,
+        "y": 1020,
+        "pluginData": {
+          "designNotes": "静态可编辑线框；数值、账号、日期为示例。沿用已确认设置骨架；未实现真实业务操作。"
+        }
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "pricesCopy",
+          "field": "map/2305"
+        }
+      ]
+    }
+  },
+  {
+    "command": "component.editProperty",
+    "params": {
+      "id": {
+        "$ref": "pricesCopy",
+        "field": "map/2269"
+      },
+      "name": "选中",
+      "default": false
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "pricesCopy",
+          "field": "map/2289"
+        }
+      ],
+      "properties": {
+        "选中": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "pricesCopy",
+          "field": "map/2303"
+        }
+      ],
+      "props": {
+        "characters": "管理员面板"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pricesBody",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "pricesCopy",
+        "field": "map/2261"
+      },
+      "name": "03 模型价格内容",
+      "x": 340,
+      "y": 112,
+      "width": 1040,
+      "height": 752,
+      "select": false,
+      "props": {
+        "fill": "none"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n90",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pricesBody"
+      },
+      "name": "模型价格",
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 34,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 24,
+        "fontStyle": "Bold",
+        "lineHeight": 34,
+        "textAutoResize": "none",
+        "fill": "#252525"
+      },
+      "text": "模型价格"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n91",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pricesBody"
+      },
+      "name": "管理每张图片的积分单价。",
+      "x": 0,
+      "y": 44,
+      "width": 1040,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "管理每张图片的积分单价。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n92",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "pricesBody"
+      },
+      "name": "按钮 / 刷新价格",
+      "x": 904,
+      "y": 0,
+      "width": 136,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n93",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n92"
+      },
+      "name": "刷新价格",
+      "x": 8,
+      "y": 9,
+      "width": 120,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "刷新价格"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n93"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "rules",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "pricesBody"
+      },
+      "name": "价格生效说明",
+      "x": 0,
+      "y": 96,
+      "width": 1040,
+      "height": 92,
+      "select": false,
+      "props": {
+        "fill": "#F8F8F8",
+        "cornerRadius": 6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n94",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "rules"
+      },
+      "name": "价格为非负整数积分，0 表示免费；同一模型的生成与编辑使用同一价",
+      "x": 20,
+      "y": 16,
+      "width": 1000,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#666666"
+      },
+      "text": "价格为非负整数积分，0 表示免费；同一模型的生成与编辑使用同一价格。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n95",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "rules"
+      },
+      "name": "修改只影响之后提交的任务，已提交任务保留原价。当前价格以已保存的",
+      "x": 20,
+      "y": 50,
+      "width": 1000,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#666666"
+      },
+      "text": "修改只影响之后提交的任务，已提交任务保留原价。当前价格以已保存的值为准。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "priceTable",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "pricesBody"
+      },
+      "name": "模型价格表",
+      "x": 0,
+      "y": 212,
+      "width": 1040,
+      "height": 468,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 6,
+        "stroke": "#DEDEDE",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n96",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "表头",
+      "x": 1,
+      "y": 1,
+      "width": 1038,
+      "height": 46,
+      "select": false,
+      "props": {
+        "fill": "#F5F5F5",
+        "cornerRadius": 5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n97",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "模型",
+      "x": 24,
+      "y": 13,
+      "width": 360,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "模型"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n98",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "单张积分",
+      "x": 420,
+      "y": 13,
+      "width": 156,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "单张积分"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n99",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "最近修改",
+      "x": 600,
+      "y": 13,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "最近修改"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n100",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "操作",
+      "x": 872,
+      "y": 13,
+      "width": 144,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "操作"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n101",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 48,
+      "width": 1040,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n102",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "Gemini 3 Pro Image",
+      "x": 24,
+      "y": 64,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "Gemini 3 Pro Image"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n103",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "gemini-3-pro-image",
+      "x": 24,
+      "y": 94,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "gemini-3-pro-image"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n104",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "输入框 / 2",
+      "x": 420,
+      "y": 60,
+      "width": 100,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n105",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n104"
+      },
+      "name": "2",
+      "x": 12,
+      "y": 9,
+      "width": 76,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n106",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "已保存：1",
+      "x": 420,
+      "y": 104,
+      "width": 156,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "已保存：1"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n107",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "2026/10/26",
+      "x": 600,
+      "y": 64,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/10/26"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n108",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "02:12:57",
+      "x": 600,
+      "y": 90,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "02:12:57"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n109",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "按钮 / 保存价格",
+      "x": 872,
+      "y": 68,
+      "width": 144,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#3C3C3C",
+        "stroke": "#3C3C3C",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n110",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n109"
+      },
+      "name": "保存价格",
+      "x": 8,
+      "y": 9,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#FFFFFF"
+      },
+      "text": "保存价格"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n110"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n111",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 132,
+      "width": 1040,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n112",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "Gemini 3.1 Flash Image",
+      "x": 24,
+      "y": 148,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "Gemini 3.1 Flash Image"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n113",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "gemini-3.1-flash-image",
+      "x": 24,
+      "y": 178,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "gemini-3.1-flash-image"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n114",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "输入框 / 1",
+      "x": 420,
+      "y": 144,
+      "width": 100,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n115",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n114"
+      },
+      "name": "1",
+      "x": 12,
+      "y": 9,
+      "width": 76,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "1"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n116",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "2026/10/26",
+      "x": 600,
+      "y": 148,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/10/26"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n117",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "02:12:57",
+      "x": 600,
+      "y": 174,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "02:12:57"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n118",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "按钮 / 保存价格",
+      "x": 872,
+      "y": 152,
+      "width": 144,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 0.5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n119",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n118"
+      },
+      "name": "保存价格",
+      "x": 8,
+      "y": 9,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "保存价格"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n119"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n120",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 216,
+      "width": 1040,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n121",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "GPT Image 1.5",
+      "x": 24,
+      "y": 232,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "GPT Image 1.5"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n122",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "gpt-image-1.5",
+      "x": 24,
+      "y": 262,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "gpt-image-1.5"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n123",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "输入框 / 1",
+      "x": 420,
+      "y": 228,
+      "width": 100,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n124",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n123"
+      },
+      "name": "1",
+      "x": 12,
+      "y": 9,
+      "width": 76,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "1"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n125",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "2026/10/26",
+      "x": 600,
+      "y": 232,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/10/26"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n126",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "02:12:57",
+      "x": 600,
+      "y": 258,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "02:12:57"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n127",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "按钮 / 保存价格",
+      "x": 872,
+      "y": 236,
+      "width": 144,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 0.5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n128",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n127"
+      },
+      "name": "保存价格",
+      "x": 8,
+      "y": 9,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "保存价格"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n128"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n129",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 300,
+      "width": 1040,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n130",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "GPT Image 2",
+      "x": 24,
+      "y": 316,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "GPT Image 2"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n131",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "gpt-image-2",
+      "x": 24,
+      "y": 346,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "gpt-image-2"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n132",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "输入框 / 1",
+      "x": 420,
+      "y": 312,
+      "width": 100,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n133",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n132"
+      },
+      "name": "1",
+      "x": 12,
+      "y": 9,
+      "width": 76,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "1"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n134",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "2026/10/26",
+      "x": 600,
+      "y": 316,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/10/26"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n135",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "02:12:57",
+      "x": 600,
+      "y": 342,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "02:12:57"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n136",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "按钮 / 保存价格",
+      "x": 872,
+      "y": 320,
+      "width": 144,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 0.5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n137",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n136"
+      },
+      "name": "保存价格",
+      "x": 8,
+      "y": 9,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "保存价格"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n137"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n138",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 384,
+      "width": 1040,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n139",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "GPT Image 2.5 Sunburst",
+      "x": 24,
+      "y": 400,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "GPT Image 2.5 Sunburst"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n140",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "gpt-image-2.5-sunburst",
+      "x": 24,
+      "y": 430,
+      "width": 368,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "gpt-image-2.5-sunburst"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n141",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "输入框 / 1",
+      "x": 420,
+      "y": 396,
+      "width": 100,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 5,
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n142",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n141"
+      },
+      "name": "1",
+      "x": 12,
+      "y": 9,
+      "width": 76,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "1"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n143",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "2026/10/26",
+      "x": 600,
+      "y": 400,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "2026/10/26"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n144",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "02:12:57",
+      "x": 600,
+      "y": 426,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "02:12:57"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n145",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "priceTable"
+      },
+      "name": "按钮 / 保存价格",
+      "x": 872,
+      "y": 404,
+      "width": 144,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "opacity": 0.5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n146",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "n145"
+      },
+      "name": "保存价格",
+      "x": 8,
+      "y": 9,
+      "width": 128,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "保存价格"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "n146"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "n147",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pricesBody"
+      },
+      "name": "有 1 项价格尚未保存",
+      "x": 0,
+      "y": 702,
+      "width": 760,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#666666"
+      },
+      "text": "有 1 项价格尚未保存"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "priceTable"
+        }
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "首行从 1 改为 2，尚未提交；实际有效值仍为 1。其余四行无改动，保存按钮禁用。修改时间不随本地输入变化。刷新或离开前提示处理未保存修改。保存中/失败/成功的局部状态见状态稿。五模型单价只是演示值。"
+        }
+      }
+    }
+  }
+]
