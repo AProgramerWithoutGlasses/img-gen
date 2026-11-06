@@ -2,7 +2,7 @@
 
 - 用中文沟通，少讲说明，优先展示设计与截图。
 - 界面不额外放设计说明或规则标注；用户需要时再加。小改动优先局部截图或交给用户目视检查，不重复整套验证。
-- 这是独立的本地 UI 设计项目，从空白开始；不继承 img-gen 的规范、主题、token、组件皮肤或业务页面。React/Vite 只是预览基础。
+- 这是独立的本地 UI 项目；不继承 img-gen 的规范、主题、token、组件皮肤或业务页面。已按用户授权进入 React/Vite 前端实现阶段，沿用当前线框布局，不重新做视觉设计。
 - 主设计工具使用 FigCraft，工作稿是 `design/start.figcraft`。程序使用 `C:\Program Files\ArtCraft\FigCraft` 中的安装版，路径和端口统一在 `figcraft.config.json`。
 - OpenPencil 旧项目仅作备份，位于 `archive/openpencil-2026-11-06.zip`；不对旧稿继续设计。
 - 仅本地运行，不同步业务数据、不接后端、不 push、不部署。

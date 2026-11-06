@@ -20,7 +20,8 @@
     "design:batch": "node scripts/figcraft.mjs batch",
     "design:smoke": "node scripts/figcraft-smoke.mjs",
     "design:verify": "npm run design:audit && npm run design:export",
-    "verify": "npm run check && npm run build && npm run preview:check && npm run design:verify"
+    "verify:frontend": "npm run check && npm run build && npm run preview:check",
+    "verify": "npm run verify:frontend && npm run design:verify"
   },
   "dependencies": {
     "react": "19.3.1",

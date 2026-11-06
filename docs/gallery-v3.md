@@ -1,5 +1,7 @@
 # 我的图片 · 图库与文件夹 v3
 
+> 后续审阅已移除“有新图片 · 更新”和“最新生成在前”。下面保留初版设计过程；当前前端直接显示已完成图片，不恢复这两个控件。前端接入说明见 [backend-handoff.md](backend-handoff.md)。
+
 日期：2026-11-06。可编辑工作稿：[design/start.figcraft](../design/start.figcraft)。本次更新第 **02 · 我的图片** 设计页，共 **8 张 1440 × 900 静态画框**。创作页沿用已审阅的结构；其他并行设计页不属于本轮图库交付。
 
 [调研报告](research/gallery-organization.md) · [截图总览](../outputs/gallery-v3/overview.png) · [实时截图索引](../outputs/gallery-v3/manifest.json)
