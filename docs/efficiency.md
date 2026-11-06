@@ -1,5 +1,7 @@
 # FigCraft 自动化工作流
 
+> 当前入口说明（2026-11-07）：设计稿已有完整内容；下文“当前空白文件”是迁移初期的描述。现在 `npm run verify` 只执行前端检查，设计审计和导出使用独立的 `npm run design:verify`，仅在相关设计改动后运行。日常开发和发布以 [固定工作流程](workflow.md) 为准，项目现状见 [盘点报表](project-report-2026-11-07.md)。
+
 2026-11-06：主工具从 OpenPencil 切换为用户安装的 FigCraft 0.15.1。旧工作稿、配置、依赖锁和文档完整归档，见 [archive/README.md](../archive/README.md)。
 
 ## 连接方式

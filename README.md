@@ -1,5 +1,7 @@
 # UI Studio
 
+项目总览、设计原稿、版本状态、目录体积与后续整理建议见 [项目盘点报表（2026-11-07）](docs/project-report-2026-11-07.md)。
+
 后续统一在 `C:\Users\13556\Documents\ui-studio` 开发，根目录 `main` 跟踪原GitHub仓库 `AProgramerWithoutGlasses/img-gen` 的 `main`。保留这个远程地址及网站，`img-gen`仅是沿用的远程/服务名称，不再代表需要切换的本地开发项目。
 
 当前前后端与设计稿均在此目录：页面源码 `frontend/`，FigCraft稿 `design/start.figcraft`。首次安装分别执行根目录与frontend的 `npm ci`；根目录 `npm run dev` 启动真实前端联调，`npm run dev:preview` 启动独立模拟预览，`npm run design:open` 打开设计稿，`npm run build` 构建Go所需的静态资源。推送及部署仍分别等待用户授权。
