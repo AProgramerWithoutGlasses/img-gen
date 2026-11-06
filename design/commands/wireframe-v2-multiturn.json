@@ -1,0 +1,735 @@
+[
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        611
+      ],
+      "dx": 3120,
+      "dy": 1040,
+      "map": true
+    },
+    "as": "turnsState"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "turnsState",
+          "field": "map/611"
+        }
+      ],
+      "props": {
+        "name": "创作 · 多轮对话与生成中 · 1440×900"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "turnsState",
+          "field": "map/644"
+        },
+        {
+          "$ref": "turnsState",
+          "field": "map/726"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "turnsState",
+          "field": "map/694"
+        }
+      ],
+      "props": {
+        "characters": "描述下一次创作…",
+        "fill": "#999999"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "turnsState",
+          "field": "map/718"
+        }
+      ],
+      "props": {
+        "fill": "#CFCFCF"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "turnsState",
+          "field": "map/717"
+        }
+      ],
+      "props": {
+        "characters": "预计 — 积分"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "对话 / 第1轮",
+      "parent": {
+        "$ref": "turnsState",
+        "field": "map/611"
+      },
+      "x": 340,
+      "y": 104,
+      "width": 1040,
+      "height": 296,
+      "select": false,
+      "props": {
+        "fill": "none"
+      }
+    },
+    "as": "round1"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "第1轮用户",
+      "parent": {
+        "$ref": "round1"
+      },
+      "x": 978,
+      "y": 0,
+      "width": 62,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Bold",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "你"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "第1轮 / 用户消息",
+      "parent": {
+        "$ref": "round1"
+      },
+      "x": 208,
+      "y": 26,
+      "width": 832,
+      "height": 60,
+      "select": false,
+      "props": {
+        "fill": "#F2F2F2",
+        "cornerRadius": 6
+      }
+    },
+    "as": "round1Prompt"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "第1轮提示词",
+      "parent": {
+        "$ref": "round1Prompt"
+      },
+      "x": 20,
+      "y": 16,
+      "width": 792,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "生成一张白色护肤品瓶的产品图，浅灰背景，柔和侧光。"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "第1轮结果标题",
+      "parent": {
+        "$ref": "round1"
+      },
+      "x": 0,
+      "y": 104,
+      "width": 160,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#444444",
+        "textAlign": "left"
+      },
+      "text": "生成结果"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "第1轮历史参数",
+      "parent": {
+        "$ref": "round1"
+      },
+      "x": 110,
+      "y": 106,
+      "width": 720,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "GPT Image 2.5 Sunburst   /   高   /   4:3   /   1K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "第1轮 / 图片01",
+      "parent": {
+        "$ref": "round1"
+      },
+      "x": 0,
+      "y": 142,
+      "width": 176,
+      "height": 132,
+      "select": false,
+      "props": {
+        "fill": "#EFEFEF",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "cornerRadius": 4
+      }
+    },
+    "as": "round1Image"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "第1轮图片占位",
+      "parent": {
+        "$ref": "round1Image"
+      },
+      "x": 0,
+      "y": 48,
+      "width": 176,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "text": "生成图片 01"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "第1轮图片比例",
+      "parent": {
+        "$ref": "round1Image"
+      },
+      "x": 0,
+      "y": 78,
+      "width": 176,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#AAAAAA",
+        "textAlign": "center"
+      },
+      "text": "4:3"
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        733
+      ],
+      "map": true
+    },
+    "as": "roundDownload"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "roundDownload",
+          "field": "ids/0"
+        }
+      ],
+      "parent": {
+        "$ref": "round1"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "roundDownload",
+          "field": "ids/0"
+        }
+      ],
+      "props": {
+        "x": 0,
+        "y": 276
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        739
+      ],
+      "map": true
+    },
+    "as": "roundAdd"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "roundAdd",
+          "field": "ids/0"
+        }
+      ],
+      "parent": {
+        "$ref": "round1"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "roundAdd",
+          "field": "ids/0"
+        }
+      ],
+      "props": {
+        "x": 88,
+        "y": 276
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "对话 / 第2轮",
+      "parent": {
+        "$ref": "turnsState",
+        "field": "map/611"
+      },
+      "x": 340,
+      "y": 426,
+      "width": 1040,
+      "height": 276,
+      "select": false,
+      "props": {
+        "fill": "none"
+      }
+    },
+    "as": "round2"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "第2轮用户",
+      "parent": {
+        "$ref": "round2"
+      },
+      "x": 978,
+      "y": 0,
+      "width": 62,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Bold",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "你"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "第2轮 / 用户消息与参考图",
+      "parent": {
+        "$ref": "round2"
+      },
+      "x": 208,
+      "y": 26,
+      "width": 832,
+      "height": 80,
+      "select": false,
+      "props": {
+        "fill": "#F2F2F2",
+        "cornerRadius": 6
+      }
+    },
+    "as": "round2Prompt"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "第2轮提示词",
+      "parent": {
+        "$ref": "round2Prompt"
+      },
+      "x": 20,
+      "y": 10,
+      "width": 792,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "保留瓶身形状，换成傍晚光线，再给我两张。"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "第2轮 / 已发送参考图",
+      "parent": {
+        "$ref": "round2Prompt"
+      },
+      "x": 20,
+      "y": 45,
+      "width": 208,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1,
+        "cornerRadius": 4
+      }
+    },
+    "as": "sentAttachment"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "已发送附件名",
+      "parent": {
+        "$ref": "sentAttachment"
+      },
+      "x": 10,
+      "y": 3,
+      "width": 190,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "▧  生成图片01.png"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "生成中标题",
+      "parent": {
+        "$ref": "round2"
+      },
+      "x": 0,
+      "y": 126,
+      "width": 280,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "正在生成"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "生成中参数",
+      "parent": {
+        "$ref": "round2"
+      },
+      "x": 110,
+      "y": 128,
+      "width": 760,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "GPT Image 2.5 Sunburst   /   高   /   4:3   /   1K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "第2轮 / 结果占位1",
+      "parent": {
+        "$ref": "round2"
+      },
+      "x": 0,
+      "y": 162,
+      "width": 176,
+      "height": 132,
+      "select": false,
+      "props": {
+        "fill": "#F6F6F6",
+        "stroke": "#E0E0E0",
+        "strokeWeight": 1,
+        "cornerRadius": 4
+      }
+    },
+    "as": "pending0"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "name": "静态等待点",
+      "parent": {
+        "$ref": "pending0"
+      },
+      "x": 66,
+      "y": 62,
+      "width": 8,
+      "height": 8,
+      "select": false,
+      "props": {
+        "fill": "#CFCFCF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "name": "静态等待点",
+      "parent": {
+        "$ref": "pending0"
+      },
+      "x": 84,
+      "y": 62,
+      "width": 8,
+      "height": 8,
+      "select": false,
+      "props": {
+        "fill": "#CFCFCF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "name": "静态等待点",
+      "parent": {
+        "$ref": "pending0"
+      },
+      "x": 102,
+      "y": 62,
+      "width": 8,
+      "height": 8,
+      "select": false,
+      "props": {
+        "fill": "#CFCFCF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "第2轮 / 结果占位2",
+      "parent": {
+        "$ref": "round2"
+      },
+      "x": 192,
+      "y": 162,
+      "width": 176,
+      "height": 132,
+      "select": false,
+      "props": {
+        "fill": "#F6F6F6",
+        "stroke": "#E0E0E0",
+        "strokeWeight": 1,
+        "cornerRadius": 4
+      }
+    },
+    "as": "pending1"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "name": "静态等待点",
+      "parent": {
+        "$ref": "pending1"
+      },
+      "x": 66,
+      "y": 62,
+      "width": 8,
+      "height": 8,
+      "select": false,
+      "props": {
+        "fill": "#CFCFCF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "name": "静态等待点",
+      "parent": {
+        "$ref": "pending1"
+      },
+      "x": 84,
+      "y": 62,
+      "width": 8,
+      "height": 8,
+      "select": false,
+      "props": {
+        "fill": "#CFCFCF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "name": "静态等待点",
+      "parent": {
+        "$ref": "pending1"
+      },
+      "x": 102,
+      "y": 62,
+      "width": 8,
+      "height": 8,
+      "select": false,
+      "props": {
+        "fill": "#CFCFCF"
+      }
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 2,
+      "anchor": {
+        "$ref": "round2"
+      },
+      "x": 4480,
+      "y": 1490,
+      "author": "设计标注",
+      "text": "多轮以独立容器关联每条用户消息、该条参考图和对应结果。第2轮以第1轮图片作为参考，来源明确。生成中为设计建议状态：不显示下载/添加，避免虚构耗时或进度百分比；未执行付费生成。"
+    }
+  },
+  {
+    "command": "page.add",
+    "params": {
+      "name": "03 · 组件与状态"
+    },
+    "as": "statePage"
+  }
+]

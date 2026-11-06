@@ -1,0 +1,2454 @@
+[
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "参数切换与菜单 · 1440×900",
+      "parent": 1833,
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#FAFAFA"
+      }
+    },
+    "as": "parameterBoard"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "参数状态标题",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 28,
+      "width": 1200,
+      "height": 36,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 24,
+        "fontStyle": "Bold",
+        "lineHeight": 36,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "left"
+      },
+      "text": "模型参数与显示条件"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "参数状态说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 76,
+      "width": 1320,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "局部静态状态 · 参数配置统一参考 ArtCraft，差异与来源见模型参数表"
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        696
+      ],
+      "map": true
+    },
+    "as": "parameterRow0"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/696"
+        }
+      ],
+      "parent": {
+        "$ref": "parameterBoard"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/696"
+        }
+      ],
+      "props": {
+        "x": 40,
+        "y": 124,
+        "width": 712,
+        "height": 44,
+        "name": "参数示例 / GPT Image 2"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/691"
+        },
+        {
+          "$ref": "parameterRow0",
+          "field": "map/717"
+        },
+        {
+          "$ref": "parameterRow0",
+          "field": "map/718"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/697"
+        }
+      ],
+      "props": {
+        "x": 0
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/699"
+        }
+      ],
+      "props": {
+        "characters": "GPT Image 2"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/701"
+        }
+      ],
+      "props": {
+        "x": 260,
+        "visible": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/705"
+        }
+      ],
+      "props": {
+        "x": 372
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/709"
+        }
+      ],
+      "props": {
+        "x": 484,
+        "visible": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow0",
+          "field": "map/713"
+        }
+      ],
+      "props": {
+        "x": 596
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "条件说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 122,
+      "width": 600,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "显示档位与清晰度"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "支持项说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 152,
+      "width": 600,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "低 / 中 / 高；清晰度 1K / 2K / 3K / 4K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "模型行分隔",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 188,
+      "width": 1360,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        696
+      ],
+      "map": true
+    },
+    "as": "parameterRow1"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/696"
+        }
+      ],
+      "parent": {
+        "$ref": "parameterBoard"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/696"
+        }
+      ],
+      "props": {
+        "x": 40,
+        "y": 216,
+        "width": 712,
+        "height": 44,
+        "name": "参数示例 / GPT Image 1.5"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/691"
+        },
+        {
+          "$ref": "parameterRow1",
+          "field": "map/717"
+        },
+        {
+          "$ref": "parameterRow1",
+          "field": "map/718"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/697"
+        }
+      ],
+      "props": {
+        "x": 0
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/699"
+        }
+      ],
+      "props": {
+        "characters": "GPT Image 1.5"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/701"
+        }
+      ],
+      "props": {
+        "x": 260,
+        "visible": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/705"
+        }
+      ],
+      "props": {
+        "x": 372
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/709"
+        }
+      ],
+      "props": {
+        "x": 484,
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/713"
+        }
+      ],
+      "props": {
+        "x": 484
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow1",
+          "field": "map/705"
+        }
+      ],
+      "properties": {
+        "当前值": "3:2"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "条件说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 214,
+      "width": 600,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "隐藏独立清晰度"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "支持项说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 244,
+      "width": 600,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "比例 Square / 3:2 / 2:3；档位 低 / 中 / 高"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "模型行分隔",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 280,
+      "width": 1360,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        696
+      ],
+      "map": true
+    },
+    "as": "parameterRow2"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/696"
+        }
+      ],
+      "parent": {
+        "$ref": "parameterBoard"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/696"
+        }
+      ],
+      "props": {
+        "x": 40,
+        "y": 308,
+        "width": 712,
+        "height": 44,
+        "name": "参数示例 / GPT Image 2.5 Sunburst"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/691"
+        },
+        {
+          "$ref": "parameterRow2",
+          "field": "map/717"
+        },
+        {
+          "$ref": "parameterRow2",
+          "field": "map/718"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/697"
+        }
+      ],
+      "props": {
+        "x": 0
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/699"
+        }
+      ],
+      "props": {
+        "characters": "GPT Image 2.5 Sunburst"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/701"
+        }
+      ],
+      "props": {
+        "x": 260,
+        "visible": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/705"
+        }
+      ],
+      "props": {
+        "x": 372
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/709"
+        }
+      ],
+      "props": {
+        "x": 484,
+        "visible": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow2",
+          "field": "map/713"
+        }
+      ],
+      "props": {
+        "x": 596
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "条件说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 306,
+      "width": 600,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "显示档位与清晰度"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "支持项说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 336,
+      "width": 600,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "自动 / 最高 / 超高 / 高 / 中 / 低；清晰度 1K–4K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "模型行分隔",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 372,
+      "width": 1360,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        696
+      ],
+      "map": true
+    },
+    "as": "parameterRow3"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/696"
+        }
+      ],
+      "parent": {
+        "$ref": "parameterBoard"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/696"
+        }
+      ],
+      "props": {
+        "x": 40,
+        "y": 400,
+        "width": 712,
+        "height": 44,
+        "name": "参数示例 / Gemini 3.1 Flash Image"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/691"
+        },
+        {
+          "$ref": "parameterRow3",
+          "field": "map/717"
+        },
+        {
+          "$ref": "parameterRow3",
+          "field": "map/718"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/697"
+        }
+      ],
+      "props": {
+        "x": 0
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/699"
+        }
+      ],
+      "props": {
+        "characters": "Gemini 3.1 Flash Image"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/701"
+        }
+      ],
+      "props": {
+        "x": 260,
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/705"
+        }
+      ],
+      "props": {
+        "x": 260
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/709"
+        }
+      ],
+      "props": {
+        "x": 372,
+        "visible": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow3",
+          "field": "map/713"
+        }
+      ],
+      "props": {
+        "x": 484
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "条件说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 398,
+      "width": 600,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "隐藏档位"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "支持项说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 428,
+      "width": 600,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "清晰度 0.5K / 1K / 2K / 4K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "模型行分隔",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 464,
+      "width": 1360,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        696
+      ],
+      "map": true
+    },
+    "as": "parameterRow4"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/696"
+        }
+      ],
+      "parent": {
+        "$ref": "parameterBoard"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/696"
+        }
+      ],
+      "props": {
+        "x": 40,
+        "y": 492,
+        "width": 712,
+        "height": 44,
+        "name": "参数示例 / Gemini 3 Pro Image"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/691"
+        },
+        {
+          "$ref": "parameterRow4",
+          "field": "map/717"
+        },
+        {
+          "$ref": "parameterRow4",
+          "field": "map/718"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/697"
+        }
+      ],
+      "props": {
+        "x": 0
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/699"
+        }
+      ],
+      "props": {
+        "characters": "Gemini 3 Pro Image"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/701"
+        }
+      ],
+      "props": {
+        "x": 260,
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/705"
+        }
+      ],
+      "props": {
+        "x": 260
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/709"
+        }
+      ],
+      "props": {
+        "x": 372,
+        "visible": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "parameterRow4",
+          "field": "map/713"
+        }
+      ],
+      "props": {
+        "x": 484
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "条件说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 490,
+      "width": 600,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "隐藏档位"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "支持项说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 800,
+      "y": 520,
+      "width": 600,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "清晰度 1K / 2K / 4K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "模型行分隔",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 556,
+      "width": 1360,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "展开菜单标题",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 570,
+      "width": 1300,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "展开菜单示例"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "参数菜单 / Sunburst 档位",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 40,
+      "y": 608,
+      "width": 200,
+      "height": 264,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D2D2D2",
+        "strokeWeight": 1,
+        "cornerRadius": 5
+      }
+    },
+    "as": "tierMenu"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "菜单分组",
+      "parent": {
+        "$ref": "tierMenu"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 176,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "Sunburst 档位"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 自动",
+      "parent": {
+        "$ref": "tierMenu"
+      },
+      "x": 6,
+      "y": 36,
+      "width": 188,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "tierMenu0"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "tierMenu0"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 148,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "自动"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 最高",
+      "parent": {
+        "$ref": "tierMenu"
+      },
+      "x": 6,
+      "y": 66,
+      "width": 188,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "tierMenu1"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "tierMenu1"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 148,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "最高"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 超高",
+      "parent": {
+        "$ref": "tierMenu"
+      },
+      "x": 6,
+      "y": 96,
+      "width": 188,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "tierMenu2"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "tierMenu2"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 148,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "超高"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 高",
+      "parent": {
+        "$ref": "tierMenu"
+      },
+      "x": 6,
+      "y": 126,
+      "width": 188,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "#EAEAEA",
+        "cornerRadius": 3
+      }
+    },
+    "as": "tierMenu3"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "tierMenu3"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 148,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "高"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选中",
+      "parent": {
+        "$ref": "tierMenu3"
+      },
+      "x": 158,
+      "y": 4,
+      "width": 20,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 中",
+      "parent": {
+        "$ref": "tierMenu"
+      },
+      "x": 6,
+      "y": 156,
+      "width": 188,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "tierMenu4"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "tierMenu4"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 148,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "中"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 低",
+      "parent": {
+        "$ref": "tierMenu"
+      },
+      "x": 6,
+      "y": 186,
+      "width": 188,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "tierMenu5"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "tierMenu5"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 148,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "低"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "参数菜单 / 比例",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 256,
+      "y": 608,
+      "width": 248,
+      "height": 264,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D2D2D2",
+        "strokeWeight": 1,
+        "cornerRadius": 5
+      }
+    },
+    "as": "ratioMenu"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "菜单分组",
+      "parent": {
+        "$ref": "ratioMenu"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 224,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "比例"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / Auto",
+      "parent": {
+        "$ref": "ratioMenu"
+      },
+      "x": 6,
+      "y": 36,
+      "width": 236,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "ratioMenu0"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "ratioMenu0"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "Auto"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / Square",
+      "parent": {
+        "$ref": "ratioMenu"
+      },
+      "x": 6,
+      "y": 66,
+      "width": 236,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "ratioMenu1"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "ratioMenu1"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "Square"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / Square (HD)",
+      "parent": {
+        "$ref": "ratioMenu"
+      },
+      "x": 6,
+      "y": 96,
+      "width": 236,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "ratioMenu2"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "ratioMenu2"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "Square (HD)"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 3:4",
+      "parent": {
+        "$ref": "ratioMenu"
+      },
+      "x": 6,
+      "y": 126,
+      "width": 236,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "ratioMenu3"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "ratioMenu3"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "3:4"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 9:16",
+      "parent": {
+        "$ref": "ratioMenu"
+      },
+      "x": 6,
+      "y": 156,
+      "width": 236,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "ratioMenu4"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "ratioMenu4"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "9:16"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 4:3",
+      "parent": {
+        "$ref": "ratioMenu"
+      },
+      "x": 6,
+      "y": 186,
+      "width": 236,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "#EAEAEA",
+        "cornerRadius": 3
+      }
+    },
+    "as": "ratioMenu5"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "ratioMenu5"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "4:3"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选中",
+      "parent": {
+        "$ref": "ratioMenu5"
+      },
+      "x": 206,
+      "y": 4,
+      "width": 20,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 16:9",
+      "parent": {
+        "$ref": "ratioMenu"
+      },
+      "x": 6,
+      "y": 216,
+      "width": 236,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "ratioMenu6"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "ratioMenu6"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 196,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "16:9"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "参数菜单 / 清晰度",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 520,
+      "y": 608,
+      "width": 184,
+      "height": 264,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D2D2D2",
+        "strokeWeight": 1,
+        "cornerRadius": 5
+      }
+    },
+    "as": "resolutionMenu"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "菜单分组",
+      "parent": {
+        "$ref": "resolutionMenu"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 160,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "清晰度"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 1K",
+      "parent": {
+        "$ref": "resolutionMenu"
+      },
+      "x": 6,
+      "y": 36,
+      "width": 172,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "#EAEAEA",
+        "cornerRadius": 3
+      }
+    },
+    "as": "resolutionMenu0"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "resolutionMenu0"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 132,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "1K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选中",
+      "parent": {
+        "$ref": "resolutionMenu0"
+      },
+      "x": 142,
+      "y": 4,
+      "width": 20,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 2K",
+      "parent": {
+        "$ref": "resolutionMenu"
+      },
+      "x": 6,
+      "y": 66,
+      "width": 172,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "resolutionMenu1"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "resolutionMenu1"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 132,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "2K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 3K",
+      "parent": {
+        "$ref": "resolutionMenu"
+      },
+      "x": 6,
+      "y": 96,
+      "width": 172,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "resolutionMenu2"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "resolutionMenu2"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 132,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "3K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 4K",
+      "parent": {
+        "$ref": "resolutionMenu"
+      },
+      "x": 6,
+      "y": 126,
+      "width": 172,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "resolutionMenu3"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "resolutionMenu3"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 132,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "4K"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "参数菜单 / 数量",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 720,
+      "y": 608,
+      "width": 184,
+      "height": 264,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D2D2D2",
+        "strokeWeight": 1,
+        "cornerRadius": 5
+      }
+    },
+    "as": "countMenu"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "菜单分组",
+      "parent": {
+        "$ref": "countMenu"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 160,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "数量"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 1 张",
+      "parent": {
+        "$ref": "countMenu"
+      },
+      "x": 6,
+      "y": 36,
+      "width": 172,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "countMenu0"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "countMenu0"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 132,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "1 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 2 张",
+      "parent": {
+        "$ref": "countMenu"
+      },
+      "x": 6,
+      "y": 66,
+      "width": 172,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "#EAEAEA",
+        "cornerRadius": 3
+      }
+    },
+    "as": "countMenu1"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "countMenu1"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 132,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "2 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选中",
+      "parent": {
+        "$ref": "countMenu1"
+      },
+      "x": 142,
+      "y": 4,
+      "width": 20,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 3 张",
+      "parent": {
+        "$ref": "countMenu"
+      },
+      "x": 6,
+      "y": 96,
+      "width": 172,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "countMenu2"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "countMenu2"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 132,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "3 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "选项 / 4 张",
+      "parent": {
+        "$ref": "countMenu"
+      },
+      "x": 6,
+      "y": 126,
+      "width": 172,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 3
+      }
+    },
+    "as": "countMenu3"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "选项值",
+      "parent": {
+        "$ref": "countMenu3"
+      },
+      "x": 10,
+      "y": 4,
+      "width": 132,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "4 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "参数补充说明",
+      "parent": {
+        "$ref": "parameterBoard"
+      },
+      "x": 944,
+      "y": 620,
+      "width": 450,
+      "height": 220,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "切换模型时，仅显示支持的控件。\n\n已有结果保留当时的生成参数。\n\n不支持的旧值回到有效默认值。\n预计积分随下一次配置更新。\n\nSquare (HD) 保留来源原名，像素规格未核实。"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 1833,
+      "anchor": {
+        "$ref": "parameterBoard"
+      },
+      "x": 1400,
+      "y": 76,
+      "author": "设计标注",
+      "text": "参数显示状态与菜单来自已实测的ArtCraft配置；模型切换后的默认值重置是本项目建议。该页为局部状态对照，不是额外产品页面，不代表后台已支持全部参数组合。"
+    }
+  }
+]
