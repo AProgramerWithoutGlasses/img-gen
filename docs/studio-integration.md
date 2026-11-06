@@ -14,7 +14,7 @@ cd ..
 go run .
 ```
 
-Go 默认提供新前端，需要已有 MySQL 和服务端环境变量。未构建前端时启动明确报错，不回落到旧首页。`web/studio/` 是忽略提交的构建产物；旧 `web/` 文件只为旧接口测试和历史参考保留。Docker 增加 Node 构建阶段，复制 dist 到 Go 的嵌入资源；本轮未执行远程部署。
+Go 默认提供当前前端，需要已有 MySQL 和服务端环境变量。未构建前端时启动明确报错。`web/studio/` 是忽略提交的构建产物；旧 HTML/CSS/JavaScript 和字体已清除，`web/README.md` 说明嵌入目录用途。Docker 的 Node 阶段复制 dist 到 Go 的嵌入资源。
 
 开发时 `frontend/npm run dev` 同源代理到本机 8080，Cookie 仍由服务端设置，未放宽 CORS、Origin 或 CSP。`npm run dev:preview` 才使用原有 IndexedDB 模拟预览。生产构建剔除模拟 provider、公开演示密码与 seed。
 

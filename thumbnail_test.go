@@ -56,7 +56,7 @@ func TestThumbnailResizeAndAlpha(t *testing.T) {
 }
 
 func TestThumbnailSampleCompression(t *testing.T) {
-	original, err := os.ReadFile("web/sample.jpg")
+	original, err := os.ReadFile("testdata/thumbnail-sample.jpg")
 	if err != nil {
 		t.Fatal(err)
 	}

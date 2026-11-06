@@ -9,6 +9,7 @@ bin
 data
 *.md
 !README.md
+!web/README.md
 **/node_modules/
 frontend/dist/
 frontend/outputs/
