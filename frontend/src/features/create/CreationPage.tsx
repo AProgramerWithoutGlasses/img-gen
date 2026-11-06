@@ -39,6 +39,10 @@ export default function CreationPage({
   const composing = useRef(false);
   const lastAttachment = useRef("");
   const model = MODELS.find((m) => m.id === options.modelId)!;
+  const editing = attachments.length > 0;
+  useEffect(() => {
+    setOptions(previous => normalizeOptions(previous, editing));
+  }, [editing]);
   const history = data.generations.filter((j) => j.userId === currentUser.id);
   const cost = data.prices[options.modelId] * options.count;
   const addAttachment = (image: Attachment) =>
@@ -62,7 +66,7 @@ export default function CreationPage({
     if (sending || uploading || !prompt.trim()) return;
     setSending(true);
     try {
-      await actions.generate(prompt, attachments, options);
+      await actions.generate(prompt, attachments, normalizeOptions(options, editing));
       setPrompt("");
       setAttachments([]);
     } catch (error) {
@@ -90,7 +94,7 @@ export default function CreationPage({
     }
   }
   const updateOption = (patch: Partial<GenerationOptions>) =>
-    setOptions((previous) => normalizeOptions({ ...previous, ...patch }));
+    setOptions((previous) => normalizeOptions({ ...previous, ...patch }, editing));
   return (
     <section className="creation-page" hidden={!active} aria-label="图像创作">
       <div className="conversation">
@@ -295,7 +299,7 @@ export default function CreationPage({
                 </option>
               ))}
             </select>
-            {model.qualities.length > 0 && (
+            {!editing && model.qualities.length > 0 && (
               <select
                 aria-label="档位"
                 disabled={sending}
@@ -307,7 +311,7 @@ export default function CreationPage({
                 ))}
               </select>
             )}
-            <select
+            {!editing && <select
               aria-label="图像比例"
               disabled={sending}
               value={options.ratio}
@@ -316,8 +320,8 @@ export default function CreationPage({
               {model.ratios.map((x) => (
                 <option key={x}>{x}</option>
               ))}
-            </select>
-            {model.resolutions.length > 0 && (
+            </select>}
+            {!editing && model.resolutions.length > 0 && (
               <select
                 aria-label="清晰度"
                 disabled={sending}

@@ -116,17 +116,17 @@ func (a *app) studioRoutes(mux *http.ServeMux) {
 }
 
 func studioModels() []map[string]any {
-	gptRatios := []string{"自动", "1:1", "1:1 HD", "3:4", "9:16", "4:3", "16:9"}
-	geminiRatios := []string{"自动", "21:9", "16:9", "3:2", "4:3", "5:4", "1:1", "4:5", "3:4", "2:3", "9:16"}
+	gptRatios := []string{"自动", "1:1", "16:9", "9:16", "3:2"}
+	geminiRatios := []string{"自动", "21:9", "16:9", "4:3", "1:1", "9:16"}
 	return []map[string]any{
-		{"id": "gpt-image-2", "name": "GPT Image 2", "qualities": []string{"高", "中", "低"}, "resolutions": []string{"1K", "2K", "3K", "4K"}, "ratios": gptRatios},
-		{"id": "gpt-image-1.5", "name": "GPT Image 1.5", "qualities": []string{"高", "中", "低"}, "resolutions": []string{}, "ratios": []string{"1:1", "3:2", "2:3"}},
-		{"id": "gpt-image-2.5-sunburst", "name": "GPT Image 2.5 Sunburst", "qualities": []string{"自动", "最高", "超高", "高", "中", "低"}, "resolutions": []string{"1K", "2K", "3K", "4K"}, "ratios": gptRatios},
+		{"id": "gpt-image-2", "name": "GPT Image 2", "qualities": []string{}, "resolutions": []string{}, "ratios": gptRatios},
+		{"id": "gpt-image-1.5", "name": "GPT Image 1.5", "qualities": []string{}, "resolutions": []string{}, "ratios": gptRatios},
+		{"id": "gpt-image-2.5-sunburst", "name": "GPT Image 2.5 Sunburst", "qualities": []string{}, "resolutions": []string{}, "ratios": gptRatios},
 		{"id": "gemini-3.1-flash-image", "name": "Gemini 3.1 Flash Image", "qualities": []string{}, "resolutions": []string{"0.5K", "1K", "2K", "4K"}, "ratios": geminiRatios},
-		{"id": "gemini-3-pro-image", "name": "Gemini 3 Pro Image", "qualities": []string{}, "resolutions": []string{"1K", "2K", "4K"}, "ratios": geminiRatios},
+		{"id": "gemini-3-pro-image", "name": "Gemini 3 Pro Image", "qualities": []string{}, "resolutions": []string{"0.5K", "1K", "2K", "4K"}, "ratios": []string{"自动", "1:1", "9:16", "16:9"}},
 	}
 }
-func validateStudioOptions(o studioOptions) error {
+func validateStudioOptions(o studioOptions, editing bool) error {
 	if o.Count < 1 || o.Count > 4 {
 		return errors.New("每次可生成 1–4 张图片")
 	}
@@ -136,6 +136,9 @@ func validateStudioOptions(o studioOptions) error {
 		}
 		for _, field := range []struct{ k, v string }{{"ratios", o.Ratio}, {"qualities", o.Quality}, {"resolutions", o.Resolution}} {
 			values := m[field.k].([]string)
+			if editing && field.k == "resolutions" {
+				values = []string{}
+			}
 			valid := len(values) == 0 && field.v == ""
 			for _, v := range values {
 				valid = valid || v == field.v
@@ -231,8 +234,12 @@ func (a *app) createStudioGeneration(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 400, "请填写提示词、有效参数和最多 6 张附件")
 		return
 	}
-	if err := validateStudioOptions(input.Options); err != nil {
+	if err := validateStudioOptions(input.Options, len(input.AttachmentIDs) > 0); err != nil {
 		apiError(w, 400, err.Error())
+		return
+	}
+	if len(input.AttachmentIDs) > 0 && (input.Options.Ratio != "自动" || input.Options.Quality != "" || input.Options.Resolution != "") {
+		apiError(w, 400, "参考图编辑使用原图比例和默认清晰度")
 		return
 	}
 	seen := map[string]bool{}

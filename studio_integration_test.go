@@ -89,7 +89,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 			}
 			prompt = payload.Contents[0].Parts[0].Text
 			if strings.Contains(prompt, "six-inputs") {
-				if len(payload.Contents[0].Parts) != 7 || payload.Config.Image["imageSize"] != "512" || payload.Config.Image["aspectRatio"] != "21:9" {
+				if len(payload.Contents[0].Parts) != 7 || len(payload.Config.Image) != 0 {
 					t.Error("Gemini lost requested inputs/controls")
 				}
 			}
@@ -100,7 +100,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 			}
 			defer r.MultipartForm.RemoveAll()
 			prompt = r.FormValue("prompt")
-			if strings.Contains(prompt, "six-inputs") && (len(r.MultipartForm.File["image[]"]) != 6 || r.FormValue("quality") != "high" || r.FormValue("size") == "") {
+			if strings.Contains(prompt, "six-inputs") && (len(r.MultipartForm.File["image[]"]) != 6 || r.FormValue("quality") != "" || r.FormValue("size") != "") {
 				t.Error("GPT lost requested inputs/controls")
 			}
 		} else {
@@ -109,7 +109,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 				t.Error(err)
 			}
 			prompt = payload["prompt"]
-			if strings.Contains(prompt, "partial") && (payload["quality"] != "high" || payload["size"] != "1024x768") {
+			if strings.Contains(prompt, "partial") && (payload["quality"] != "" || payload["size"] != "") {
 				t.Error("GPT controls not forwarded")
 			}
 		}
@@ -187,7 +187,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 	}
 	request(client, "GET", "/api/studio/state", nil, 401)
 	request(client, "POST", "/api/auth/login", map[string]string{"username": "admin", "password": "integration1234"}, 200)
-	opts := studioOptions{ModelID: "gpt-image-2", Quality: "高", Resolution: "1K", Ratio: "4:3", Count: 2}
+	opts := studioOptions{ModelID: "gpt-image-2", Ratio: "自动", Count: 2}
 	bid := newID()
 	body := map[string]any{"prompt": "partial", "attachmentIds": []string{}, "options": opts, "requestId": bid, "expectedCredits": 2}
 	request(client, "POST", "/api/studio/generations", body, 202)
@@ -276,13 +276,13 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 		json.Unmarshal(raw, &att)
 		attachmentIDs = append(attachmentIDs, att.ID)
 	}
-	opts = studioOptions{ModelID: "gemini-3.1-flash-image", Resolution: "0.5K", Ratio: "21:9", Count: 1}
+	opts = studioOptions{ModelID: "gemini-3.1-flash-image", Ratio: "自动", Count: 1}
 	six := map[string]any{"prompt": "six-inputs", "attachmentIds": attachmentIDs, "options": opts, "requestId": newID(), "expectedCredits": 1}
 	request(client, "POST", "/api/studio/generations", six, 202)
 	six["requestId"] = newID()
 	request(second, "POST", "/api/studio/generations", six, 404)
 	request(second, "GET", "/api/studio/attachments/"+attachmentIDs[0], nil, 404)
-	opts = studioOptions{ModelID: "gpt-image-2", Quality: "高", Resolution: "1K", Ratio: "4:3", Count: 2}
+	opts = studioOptions{ModelID: "gpt-image-2", Ratio: "自动", Count: 2}
 	six["options"] = opts
 	six["requestId"] = newID()
 	six["expectedCredits"] = 2

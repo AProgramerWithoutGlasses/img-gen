@@ -1,7 +1,10 @@
 .gallery-page {
-  width: min(1040px, calc(100% - 80px));
-  margin: 0 auto;
-  padding: 30px 0 100px;
+  width: 100%;
+  margin: 0;
+  padding: 30px 40px 100px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 .gallery-heading {
   display: flex;
@@ -315,7 +318,7 @@
 }
 @media (max-width: 1120px) {
   .gallery-page {
-    width: calc(100% - 48px);
+    padding-inline: 24px;
   }
   .gallery-selection-toolbar {
     gap: 8px;

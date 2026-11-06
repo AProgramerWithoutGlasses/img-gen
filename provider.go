@@ -169,8 +169,12 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		_ = writer.WriteField("model", j.Model)
 		_ = writer.WriteField("prompt", j.EffectivePrompt)
 		if j.Studio != nil {
-			_ = writer.WriteField("quality", studioQuality(*j.Studio))
-			_ = writer.WriteField("size", studioSize(*j.Studio))
+			if quality := studioQuality(*j.Studio); quality != "" {
+				_ = writer.WriteField("quality", quality)
+			}
+			if j.Studio.Resolution != "" {
+				_ = writer.WriteField("size", studioSize(*j.Studio))
+			}
 		}
 		field := "image"
 		inputs := []picture{{Content: j.Input, MIME: j.InputMIME}}
@@ -203,8 +207,12 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 	} else {
 		payload := map[string]string{"model": j.Model, "prompt": j.EffectivePrompt}
 		if j.Studio != nil {
-			payload["quality"] = studioQuality(*j.Studio)
-			payload["size"] = studioSize(*j.Studio)
+			if quality := studioQuality(*j.Studio); quality != "" {
+				payload["quality"] = quality
+			}
+			if j.Studio.Resolution != "" {
+				payload["size"] = studioSize(*j.Studio)
+			}
 		}
 		_ = json.NewEncoder(&body).Encode(payload)
 	}

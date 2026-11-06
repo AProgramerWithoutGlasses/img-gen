@@ -108,7 +108,7 @@ export default function PreviewStudioProvider({ children }: { children: ReactNod
     };
     return {
       async generate(prompt, attachments, options) {
-        const normalized = normalizeOptions(options);
+        const normalized = normalizeOptions(options, attachments.length > 0);
         if (!prompt.trim()) throw new Error("请输入提示词");
         const job = await update<Generation>((d) => {
           const user = actor(d);

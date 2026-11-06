@@ -243,11 +243,11 @@ function StudioApp() {
                 <Icon name="image" />
                 {!collapsed && <span>我的图片</span>}
               </button>
-              {isGallery && !collapsed && (
+              {!collapsed && (
                 <div className="folder-navigation">
                   <button
                     aria-label="全部图片"
-                    className={`folder-nav-item ${activeFolder === "all" ? "active" : ""}`}
+                    className={`folder-nav-item ${isGallery && activeFolder === "all" ? "active" : ""}`}
                     onClick={() => navigate("/gallery")}
                   >
                     <Icon name="grid" />
@@ -256,7 +256,7 @@ function StudioApp() {
                   </button>
                   <button
                     aria-label="未分类"
-                    className={`folder-nav-item ${activeFolder === "unfiled" ? "active" : ""}`}
+                    className={`folder-nav-item ${isGallery && activeFolder === "unfiled" ? "active" : ""}`}
                     onClick={() => navigate("/gallery/unfiled")}
                   >
                     <Icon name="grid" />
@@ -280,7 +280,7 @@ function StudioApp() {
                       <button
                         key={f.id}
                         aria-label={f.name}
-                        className={`folder-nav-item ${activeFolder === f.id ? "active" : ""}`}
+                        className={`folder-nav-item ${isGallery && activeFolder === f.id ? "active" : ""}`}
                         onClick={() => navigate("/gallery/" + f.id)}
                       >
                         <Icon name="folder" />

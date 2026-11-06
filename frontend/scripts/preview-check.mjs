@@ -115,7 +115,7 @@ async function verifyCreation() {
   await model.selectOption("gpt-image-1.5");
   await expect(
     creation.getByRole("combobox", { name: "档位", exact: true }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   await expect(
     creation.getByRole("combobox", { name: "清晰度", exact: true }),
   ).toHaveCount(0);
