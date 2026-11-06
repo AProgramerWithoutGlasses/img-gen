@@ -40,4 +40,4 @@ npm run dev
 
 设计稿审计和批量导出读取磁盘文件，编辑后须先保存。交互验证在 `scripts/preview-check.mjs`，截图和结果保存在不提交的 `outputs/preview/`。
 
-本项目只有本地 Git 仓库，不同步、不 push、不部署。自动化读目录限制在项目内，写目录为 `design/` 和 `outputs/`；该模式也关闭 FigCraft 的在线共享命令。旧业务项目仍在 `D:\workspace\img-gen`。
+本项目绑定远程 Git 仓库，验证并提交后默认推送当前分支；不自动部署，不同步业务数据。自动化读目录限制在项目内，写目录为 `design/` 和 `outputs/`；该模式也关闭 FigCraft 的在线共享命令。旧业务项目仍在 `D:\workspace\img-gen`。
