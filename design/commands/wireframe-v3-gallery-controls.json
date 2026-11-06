@@ -1,0 +1,1423 @@
+[
+  {
+    "command": "node.create",
+    "as": "folderMore",
+    "params": {
+      "type": "component",
+      "parent": 2368,
+      "name": "操作 / ⋯",
+      "x": 1338,
+      "y": 101,
+      "width": 42,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CFCFCF",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "⋯"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "folderMoreT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "folderMore"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 18,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "⋯"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "folderMenu",
+    "params": {
+      "type": "component",
+      "parent": 2368,
+      "name": "文件夹 / 更多菜单",
+      "x": 1182,
+      "y": 151,
+      "width": 198,
+      "height": 100,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D1D1D1",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "仅管理当前文件夹。重命名打开名称表单；删除打开保留图片的确认框。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameItem",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "folderMenu"
+      },
+      "name": "重命名入口",
+      "x": 16,
+      "y": 14,
+      "width": 160,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "重命名"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "menuSep",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "folderMenu"
+      },
+      "name": "分隔",
+      "x": 12,
+      "y": 49,
+      "width": 174,
+      "height": 1,
+      "props": {
+        "fill": "#E7E7E7"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteItem",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "folderMenu"
+      },
+      "name": "删除文件夹入口",
+      "x": 16,
+      "y": 62,
+      "width": 166,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "删除文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "emptyTitle",
+    "params": {
+      "type": "text",
+      "parent": 2634,
+      "name": "空文件夹标题",
+      "x": 570,
+      "y": 344,
+      "width": 580,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 22,
+        "lineHeight": 30,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "这个文件夹还没有图片"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "emptyDesc",
+    "params": {
+      "type": "text",
+      "parent": 2634,
+      "name": "空文件夹说明",
+      "x": 570,
+      "y": 392,
+      "width": 580,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "从图库选择图片，加入这个文件夹。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "emptyAdd",
+    "params": {
+      "type": "component",
+      "parent": 2634,
+      "name": "操作 / 从图库选择",
+      "x": 570,
+      "y": 446,
+      "width": 148,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CFCFCF",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "从图库选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "emptyAddT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "emptyAdd"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 124,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "从图库选择"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "detailFoldersLabel",
+    "params": {
+      "type": "text",
+      "parent": 1268,
+      "name": "文件夹标签",
+      "x": 0,
+      "y": 424,
+      "width": 270,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#888888",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "所在文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "detailFoldersValue",
+    "params": {
+      "type": "text",
+      "parent": 1268,
+      "name": "图片的多个归属",
+      "x": 0,
+      "y": 454,
+      "width": 276,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "项目灵感 · 海报探索"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "detailDownload",
+    "params": {
+      "type": "component",
+      "parent": 1268,
+      "name": "操作 / ↓ 下载",
+      "x": 0,
+      "y": 552,
+      "width": 112,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CFCFCF",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "↓ 下载"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "detailDownloadT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "detailDownload"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 88,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "↓ 下载"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "detailOrganize",
+    "params": {
+      "type": "component",
+      "parent": 1268,
+      "name": "操作 / 加入文件夹",
+      "x": 124,
+      "y": 552,
+      "width": 152,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CFCFCF",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "加入文件夹"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "detailOrganizeT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "detailOrganize"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 128,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "加入文件夹"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1254
+      ],
+      "props": {
+        "characters": "图片预览 · 全部图片"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2565
+      ],
+      "props": {
+        "stroke": "#454545",
+        "strokeWeight": 2
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel990",
+    "params": {
+      "type": "component",
+      "parent": 2565,
+      "name": "选择框 / 已选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#454545",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel990T",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "sel990"
+      },
+      "name": "选择状态",
+      "x": 3,
+      "y": -1,
+      "width": 16,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2570
+      ],
+      "props": {
+        "stroke": "#454545",
+        "strokeWeight": 2
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel995",
+    "params": {
+      "type": "component",
+      "parent": 2570,
+      "name": "选择框 / 已选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#454545",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel995T",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "sel995"
+      },
+      "name": "选择状态",
+      "x": 3,
+      "y": -1,
+      "width": 16,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2585
+      ],
+      "props": {
+        "stroke": "#454545",
+        "strokeWeight": 2
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1010",
+    "params": {
+      "type": "component",
+      "parent": 2585,
+      "name": "选择框 / 已选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#454545",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1010T",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "sel1010"
+      },
+      "name": "选择状态",
+      "x": 3,
+      "y": -1,
+      "width": 16,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1000",
+    "params": {
+      "type": "component",
+      "parent": 2575,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1005",
+    "params": {
+      "type": "component",
+      "parent": 2580,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1015",
+    "params": {
+      "type": "component",
+      "parent": 2590,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1020",
+    "params": {
+      "type": "component",
+      "parent": 2595,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1025",
+    "params": {
+      "type": "component",
+      "parent": 2600,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1030",
+    "params": {
+      "type": "component",
+      "parent": 2605,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1035",
+    "params": {
+      "type": "component",
+      "parent": 2610,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1040",
+    "params": {
+      "type": "component",
+      "parent": 2615,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sel1045",
+    "params": {
+      "type": "component",
+      "parent": 2620,
+      "name": "选择框 / 未选",
+      "x": 12,
+      "y": 12,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "selectedToolbar",
+    "params": {
+      "type": "component",
+      "parent": 2501,
+      "name": "图库 / 选择后工具栏",
+      "x": 540,
+      "y": 808,
+      "width": 640,
+      "height": 64,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#C9C9C9",
+        "strokeWeight": 1,
+        "cornerRadius": 8,
+        "description": "只在有选中图片时显示；加入文件夹可批量新增关联，无图片删除。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "selectedCount",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "selectedToolbar"
+      },
+      "name": "选中数量",
+      "x": 22,
+      "y": 20,
+      "width": 120,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "已选 3 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "selectedCancel",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "selectedToolbar"
+      },
+      "name": "操作 / 取消选择",
+      "x": 340,
+      "y": 12,
+      "width": 112,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CFCFCF",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "取消选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "selectedCancelT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "selectedCancel"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 88,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "取消选择"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "selectedAdd",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "selectedToolbar"
+      },
+      "name": "操作 / 加入文件夹",
+      "x": 468,
+      "y": 12,
+      "width": 150,
+      "height": 40,
+      "props": {
+        "fill": "#3D3D3D",
+        "stroke": "#3D3D3D",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "加入文件夹"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "selectedAddT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "selectedAdd"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 126,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "加入文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "folderPicker",
+    "params": {
+      "type": "component",
+      "parent": 2501,
+      "name": "归类 / 多目标选择面板",
+      "x": 884,
+      "y": 412,
+      "width": 496,
+      "height": 376,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#BEBEBE",
+        "strokeWeight": 1,
+        "cornerRadius": 8,
+        "description": "只新增文件夹关联；全部已加入目标置灰且不可重复添加。部分已加入显示横杠，勾选后补齐所选图片。未勾选不会移除已有归属；提交后关闭并保留选择，提示成功。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pickerTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "folderPicker"
+      },
+      "name": "标题",
+      "x": 24,
+      "y": 20,
+      "width": 280,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 20,
+        "lineHeight": 28,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "加入文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pickerHint",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "folderPicker"
+      },
+      "name": "关联规则",
+      "x": 24,
+      "y": 55,
+      "width": 444,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "已有归属保留，勾选后加入所选图片。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "projectRow",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "folderPicker"
+      },
+      "name": "目标文件夹 / 项目灵感",
+      "x": 16,
+      "y": 99,
+      "width": 464,
+      "height": 44,
+      "props": {
+        "fill": "#F4F4F4",
+        "cornerRadius": 4
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "projectCheck",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "projectRow"
+      },
+      "name": "选择框 / 已选",
+      "x": 10,
+      "y": 11,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#454545",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "projectCheckT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "projectCheck"
+      },
+      "name": "选择状态",
+      "x": 3,
+      "y": -1,
+      "width": 16,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "projectName",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "projectRow"
+      },
+      "name": "文件夹名称",
+      "x": 44,
+      "y": 10,
+      "width": 210,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#999999",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "项目灵感"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "projectN",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "projectRow"
+      },
+      "name": "已有归属数量",
+      "x": 286,
+      "y": 12,
+      "width": 164,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#888888",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "3 / 3 张已加入"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterRow",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "folderPicker"
+      },
+      "name": "目标文件夹 / 海报探索",
+      "x": 16,
+      "y": 151,
+      "width": 464,
+      "height": 44,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 4
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterCheck",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "posterRow"
+      },
+      "name": "选择框 / 部分已加入",
+      "x": 10,
+      "y": 11,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "部分图片已加入，选择该目标会补齐本次选中图片"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterCheckT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "posterCheck"
+      },
+      "name": "选择状态",
+      "x": 3,
+      "y": -1,
+      "width": 16,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#444444",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "−"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterName",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "posterRow"
+      },
+      "name": "文件夹名称",
+      "x": 44,
+      "y": 10,
+      "width": 210,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "海报探索"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterN",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "posterRow"
+      },
+      "name": "已有归属数量",
+      "x": 286,
+      "y": 12,
+      "width": 164,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#888888",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "1 / 3 张已加入"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pendingRow",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "folderPicker"
+      },
+      "name": "目标文件夹 / 待整理",
+      "x": 16,
+      "y": 203,
+      "width": 464,
+      "height": 44,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 4
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pendingCheck",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "pendingRow"
+      },
+      "name": "选择框 / 已选",
+      "x": 10,
+      "y": 11,
+      "width": 22,
+      "height": 22,
+      "props": {
+        "fill": "#454545",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 3,
+        "description": "选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pendingCheckT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pendingCheck"
+      },
+      "name": "选择状态",
+      "x": 3,
+      "y": -1,
+      "width": 16,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pendingName",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pendingRow"
+      },
+      "name": "文件夹名称",
+      "x": 44,
+      "y": 10,
+      "width": 210,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "待整理"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pendingN",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pendingRow"
+      },
+      "name": "已有归属数量",
+      "x": 286,
+      "y": 12,
+      "width": 164,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#888888",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "0 / 3 张已加入"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pickerNew",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "folderPicker"
+      },
+      "name": "操作 / ＋ 新建文件夹",
+      "x": 24,
+      "y": 265,
+      "width": 160,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CFCFCF",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "＋ 新建文件夹"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pickerNewT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pickerNew"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 136,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "＋ 新建文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pickerCancel",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "folderPicker"
+      },
+      "name": "操作 / 取消",
+      "x": 276,
+      "y": 316,
+      "width": 80,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CFCFCF",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "取消"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pickerCancelT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pickerCancel"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 56,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "取消"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pickerApply",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "folderPicker"
+      },
+      "name": "操作 / 加入",
+      "x": 368,
+      "y": 316,
+      "width": 104,
+      "height": 40,
+      "props": {
+        "fill": "#3D3D3D",
+        "stroke": "#3D3D3D",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "加入"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "pickerApplyT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "pickerApply"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 8,
+      "width": 80,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "加入"
+    }
+  }
+]

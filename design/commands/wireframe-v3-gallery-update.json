@@ -1,0 +1,1084 @@
+[
+  {
+    "command": "node.create",
+    "as": "allImageMore",
+    "params": {
+      "type": "component",
+      "parent": 990,
+      "name": "图库图片 / 更多入口（悬停或聚焦）",
+      "x": 231,
+      "y": 12,
+      "width": 32,
+      "height": 32,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D0D0D0",
+        "strokeWeight": 1,
+        "cornerRadius": 4,
+        "description": "图上悬停或键盘聚焦时显示。打开单图菜单；文件夹内含移出，全部图片不含移出。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "allImageMoreT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "allImageMore"
+      },
+      "name": "更多图标",
+      "x": 7,
+      "y": 2,
+      "width": 22,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 18,
+        "lineHeight": 26,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "⋯"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "folderImageMore",
+    "params": {
+      "type": "component",
+      "parent": 2432,
+      "name": "图库图片 / 更多入口（悬停或聚焦）",
+      "x": 231,
+      "y": 12,
+      "width": 32,
+      "height": 32,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D0D0D0",
+        "strokeWeight": 1,
+        "cornerRadius": 4,
+        "description": "图上悬停或键盘聚焦时显示。打开单图菜单；文件夹内含移出，全部图片不含移出。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "folderImageMoreT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "folderImageMore"
+      },
+      "name": "更多图标",
+      "x": 7,
+      "y": 2,
+      "width": 22,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 18,
+        "lineHeight": 26,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "⋯"
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "updated",
+    "params": {
+      "ids": [
+        868
+      ],
+      "dx": 1560,
+      "dy": 2080,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/868"
+        }
+      ],
+      "props": {
+        "name": "我的图片 · 更新后新图在前 · 1440×900",
+        "pluginData": {
+          "designNotes": "对应“有2张新图片·更新”点击后的建议状态。图库14张，未分类7张。新入库13、14同批4:3排前，原图片01—12相对顺序保持。当前可见前10张，昨天4张在下方滚动区。更新后回顶部，日期分组和网格重新排布。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/2340"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/2334"
+        }
+      ],
+      "props": {
+        "characters": "14 张"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/2346"
+        }
+      ],
+      "props": {
+        "characters": "14"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/2350"
+        }
+      ],
+      "props": {
+        "characters": "7"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/2336"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1040"
+        },
+        {
+          "$ref": "updated",
+          "field": "map/1045"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/990"
+        }
+      ],
+      "props": {
+        "x": 0,
+        "y": 0,
+        "width": 267.73333333333335,
+        "height": 200.8
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/991"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L267.73333333333335 200.8 M267.73333333333335 0 L0 200.8",
+        "width": 267.73333333333335,
+        "height": 200.8
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/992"
+        }
+      ],
+      "props": {
+        "x": 79.86666666666667,
+        "y": 76.4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/993"
+        }
+      ],
+      "props": {
+        "characters": "图片 13"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/994"
+        }
+      ],
+      "props": {
+        "characters": "4:3"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/995"
+        }
+      ],
+      "props": {
+        "x": 279.73333333333335,
+        "y": 0,
+        "width": 267.73333333333335,
+        "height": 200.8
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/996"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L267.73333333333335 200.8 M267.73333333333335 0 L0 200.8",
+        "width": 267.73333333333335,
+        "height": 200.8
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/997"
+        }
+      ],
+      "props": {
+        "x": 79.86666666666667,
+        "y": 76.4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/998"
+        }
+      ],
+      "props": {
+        "characters": "图片 14"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/999"
+        }
+      ],
+      "props": {
+        "characters": "4:3"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1000"
+        }
+      ],
+      "props": {
+        "x": 559.4666666666667,
+        "y": 0,
+        "width": 267.73333333333335,
+        "height": 200.8
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1001"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L267.73333333333335 200.8 M267.73333333333335 0 L0 200.8",
+        "width": 267.73333333333335,
+        "height": 200.8
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1002"
+        }
+      ],
+      "props": {
+        "x": 79.86666666666667,
+        "y": 76.4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1003"
+        }
+      ],
+      "props": {
+        "characters": "图片 01"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1004"
+        }
+      ],
+      "props": {
+        "characters": "4:3"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1005"
+        }
+      ],
+      "props": {
+        "x": 839.2,
+        "y": 0,
+        "width": 200.8,
+        "height": 200.8
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1006"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L200.8 200.8 M200.8 0 L0 200.8",
+        "width": 200.8,
+        "height": 200.8
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1007"
+        }
+      ],
+      "props": {
+        "x": 46.400000000000006,
+        "y": 76.4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1008"
+        }
+      ],
+      "props": {
+        "characters": "图片 02"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1009"
+        }
+      ],
+      "props": {
+        "characters": "1:1"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1010"
+        }
+      ],
+      "props": {
+        "x": 0,
+        "y": 212.8,
+        "width": 154.90285714285716,
+        "height": 206.53714285714287
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1011"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L154.90285714285716 206.53714285714287 M154.90285714285716 0 L0 206.53714285714287",
+        "width": 154.90285714285716,
+        "height": 206.53714285714287
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1012"
+        }
+      ],
+      "props": {
+        "x": 23.45142857142858,
+        "y": 79.26857142857143
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1013"
+        }
+      ],
+      "props": {
+        "characters": "图片 03"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1014"
+        }
+      ],
+      "props": {
+        "characters": "3:4"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1015"
+        }
+      ],
+      "props": {
+        "x": 166.90285714285716,
+        "y": 212.8,
+        "width": 367.1771428571429,
+        "height": 206.53714285714287
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1016"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L367.1771428571429 206.53714285714287 M367.1771428571429 0 L0 206.53714285714287",
+        "width": 367.1771428571429,
+        "height": 206.53714285714287
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1017"
+        }
+      ],
+      "props": {
+        "x": 129.58857142857144,
+        "y": 79.26857142857143
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1018"
+        }
+      ],
+      "props": {
+        "characters": "图片 04"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1019"
+        }
+      ],
+      "props": {
+        "characters": "16:9"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1020"
+        }
+      ],
+      "props": {
+        "x": 546.08,
+        "y": 212.8,
+        "width": 206.53714285714287,
+        "height": 206.53714285714287
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1021"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L206.53714285714287 206.53714285714287 M206.53714285714287 0 L0 206.53714285714287",
+        "width": 206.53714285714287,
+        "height": 206.53714285714287
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1022"
+        }
+      ],
+      "props": {
+        "x": 49.268571428571434,
+        "y": 79.26857142857143
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1023"
+        }
+      ],
+      "props": {
+        "characters": "图片 05"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1024"
+        }
+      ],
+      "props": {
+        "characters": "1:1"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1025"
+        }
+      ],
+      "props": {
+        "x": 764.6171428571429,
+        "y": 212.8,
+        "width": 275.3828571428571,
+        "height": 206.53714285714287
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1026"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L275.3828571428571 206.53714285714287 M275.3828571428571 0 L0 206.53714285714287",
+        "width": 275.3828571428571,
+        "height": 206.53714285714287
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1027"
+        }
+      ],
+      "props": {
+        "x": 83.69142857142856,
+        "y": 79.26857142857143
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1028"
+        }
+      ],
+      "props": {
+        "characters": "图片 06"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1029"
+        }
+      ],
+      "props": {
+        "characters": "4:3"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1030"
+        }
+      ],
+      "props": {
+        "x": 0,
+        "y": 431.34,
+        "width": 310.5,
+        "height": 207
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1031"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L310.5 207 M310.5 0 L0 207",
+        "width": 310.5,
+        "height": 207
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1032"
+        }
+      ],
+      "props": {
+        "x": 101.25,
+        "y": 79.5
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1033"
+        }
+      ],
+      "props": {
+        "characters": "图片 07"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1034"
+        }
+      ],
+      "props": {
+        "characters": "3:2"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1035"
+        }
+      ],
+      "props": {
+        "x": 322.5,
+        "y": 431.34,
+        "width": 207,
+        "height": 207
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1036"
+        }
+      ],
+      "props": {
+        "path": "M0 0 L207 207 M207 0 L0 207",
+        "width": 207,
+        "height": 207
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1037"
+        }
+      ],
+      "props": {
+        "x": 49.5,
+        "y": 79.5
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1038"
+        }
+      ],
+      "props": {
+        "characters": "图片 08"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "updated",
+          "field": "map/1039"
+        }
+      ],
+      "props": {
+        "characters": "1:1"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newBadge990",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "updated",
+        "field": "map/990"
+      },
+      "name": "新入库 / 标记",
+      "x": 12,
+      "y": 12,
+      "width": 40,
+      "height": 28,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#BEBEBE",
+        "strokeWeight": 1,
+        "cornerRadius": 4,
+        "description": "本次更新新增图片的临时标记，重新进入图库后不显示。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newBadgeT990",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "newBadge990"
+      },
+      "name": "新图标识",
+      "x": 10,
+      "y": 2,
+      "width": 24,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "新"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newBadge995",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "updated",
+        "field": "map/995"
+      },
+      "name": "新入库 / 标记",
+      "x": 12,
+      "y": 12,
+      "width": 40,
+      "height": 28,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#BEBEBE",
+        "strokeWeight": 1,
+        "cornerRadius": 4,
+        "description": "本次更新新增图片的临时标记，重新进入图库后不显示。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newBadgeT995",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "newBadge995"
+      },
+      "name": "新图标识",
+      "x": 10,
+      "y": 2,
+      "width": 24,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "新"
+    }
+  },
+  {
+    "command": "comment.edit",
+    "params": {
+      "id": 11,
+      "author": "设计标注",
+      "text": "图库已扩展自定义文件夹。已确认：一图多文件夹、归类不复制；允许删文件夹，不提供图片删除或回收站。建议：一次生成结束后成功图成组入库，新批在前、批内按输出编号；新图进入全部图片及未分类。浏览中保持位置，点击更新后回顶部重排，旧图相对顺序保留。ArtCraft/Krea文件夹经实测，精确入库与刷新仍为本项目建议。"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 867,
+      "anchor": 2501,
+      "x": 4480,
+      "y": 450,
+      "author": "设计标注",
+      "text": "批量加入文件夹只新增关联，已有3/3目标置灰。部分1/3目标可勾选补齐；未勾选不移除已有归属。移出操作仅在自定义文件夹内提供。新建文件夹时保留图片选择；取消面板不改变任何关系。所有画面为静态状态，无实际交互。"
+    }
+  }
+]

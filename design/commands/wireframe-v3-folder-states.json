@@ -1,0 +1,1391 @@
+[
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2858
+      ],
+      "props": {
+        "fill": "#BBBBBB",
+        "stroke": "#BBBBBB"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2871
+      ],
+      "props": {
+        "characters": "将加入 3 张"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "board",
+    "params": {
+      "type": "frame",
+      "parent": 867,
+      "name": "图库 · 文件夹表单与移出状态 · 1440×900",
+      "x": 0,
+      "y": 2080,
+      "width": 1440,
+      "height": 900,
+      "props": {
+        "fill": "#F7F7F7",
+        "pluginData": {
+          "designNotes": "独立局部状态，非实际页面并排弹窗。新建/重命名/删除对话框建议居中遮罩；这里只展示组件形态。已确认允许删除文件夹但不删除图片。字段校验、保留图片语义、成功提示等为本项目建议。"
+        }
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "boardTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "画框标题",
+      "x": 48,
+      "y": 34,
+      "width": 1100,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 26,
+        "lineHeight": 34,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "文件夹管理 · 静态状态"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "boardDesc",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "状态说明",
+      "x": 48,
+      "y": 82,
+      "width": 1290,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "以下为独立状态示意；表单打开时居中显示，同一时间只显示一个。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "createDialogLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "状态标题",
+      "x": 48,
+      "y": 130,
+      "width": 416,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "01 · 新建文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "createDialog",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "文件夹 / 01 · 新建文件夹",
+      "x": 48,
+      "y": 168,
+      "width": 416,
+      "height": 314,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D0D0D0",
+        "strokeWeight": 1,
+        "cornerRadius": 8,
+        "description": "01 · 新建文件夹"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameDialogLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "状态标题",
+      "x": 512,
+      "y": 130,
+      "width": 416,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "02 · 重命名与校验"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameDialog",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "文件夹 / 02 · 重命名与校验",
+      "x": 512,
+      "y": 168,
+      "width": 416,
+      "height": 314,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D0D0D0",
+        "strokeWeight": 1,
+        "cornerRadius": 8,
+        "description": "02 · 重命名与校验"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteDialogLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "状态标题",
+      "x": 976,
+      "y": 130,
+      "width": 416,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "03 · 删除文件夹确认"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteDialog",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "文件夹 / 03 · 删除文件夹确认",
+      "x": 976,
+      "y": 168,
+      "width": 416,
+      "height": 314,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D0D0D0",
+        "strokeWeight": 1,
+        "cornerRadius": 8,
+        "description": "03 · 删除文件夹确认"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDialog"
+      },
+      "name": "标题",
+      "x": 24,
+      "y": 20,
+      "width": 340,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 20,
+        "lineHeight": 28,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "新建文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newClose",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDialog"
+      },
+      "name": "关闭",
+      "x": 369,
+      "y": 16,
+      "width": 26,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 22,
+        "lineHeight": 30,
+        "fill": "#888888",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "×"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newFieldLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDialog"
+      },
+      "name": "字段标签",
+      "x": 24,
+      "y": 76,
+      "width": 344,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "文件夹名称"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newField",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "createDialog"
+      },
+      "name": "名称输入框 / 已输入",
+      "x": 24,
+      "y": 106,
+      "width": 368,
+      "height": 46,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#888888",
+        "strokeWeight": 1,
+        "cornerRadius": 5,
+        "description": "空名称禁用创建；去除首尾空格；重名校验建议。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newInput",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "newField"
+      },
+      "name": "输入值",
+      "x": 12,
+      "y": 10,
+      "width": 332,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "产品方案"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newHint",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "createDialog"
+      },
+      "name": "信息提示",
+      "x": 24,
+      "y": 170,
+      "width": 368,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#888888",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "创建后可从图库加入图片。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newCancel",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "createDialog"
+      },
+      "name": "按钮 / 取消",
+      "x": 188,
+      "y": 250,
+      "width": 88,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "取消"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newCancelT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "newCancel"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 64,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "取消"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newApply",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "createDialog"
+      },
+      "name": "按钮 / 创建",
+      "x": 292,
+      "y": 250,
+      "width": 100,
+      "height": 40,
+      "props": {
+        "fill": "#3D3D3D",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "创建"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newApplyT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "newApply"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 76,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "创建"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "renameDialog"
+      },
+      "name": "标题",
+      "x": 24,
+      "y": 20,
+      "width": 340,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 20,
+        "lineHeight": 28,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "重命名文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameClose",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "renameDialog"
+      },
+      "name": "关闭",
+      "x": 369,
+      "y": 16,
+      "width": 26,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 22,
+        "lineHeight": 30,
+        "fill": "#888888",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "×"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameFieldLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "renameDialog"
+      },
+      "name": "字段标签",
+      "x": 24,
+      "y": 76,
+      "width": 344,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "文件夹名称"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameField",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "renameDialog"
+      },
+      "name": "名称输入框 / 重名",
+      "x": 24,
+      "y": 106,
+      "width": 368,
+      "height": 46,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#555555",
+        "strokeWeight": 1.5,
+        "cornerRadius": 5,
+        "description": "重名错误；就地提示、保留输入，保存禁用。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameInput",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "renameField"
+      },
+      "name": "输入值",
+      "x": 12,
+      "y": 10,
+      "width": 332,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "海报探索"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameError",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "renameDialog"
+      },
+      "name": "校验消息",
+      "x": 24,
+      "y": 166,
+      "width": 368,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "此名称已被使用，请换一个名称。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameCancel",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "renameDialog"
+      },
+      "name": "按钮 / 取消",
+      "x": 188,
+      "y": 250,
+      "width": 88,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "取消"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameCancelT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "renameCancel"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 64,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "取消"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameApply",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "renameDialog"
+      },
+      "name": "按钮 / 保存",
+      "x": 292,
+      "y": 250,
+      "width": 100,
+      "height": 40,
+      "props": {
+        "fill": "#EEEEEE",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "保存"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "renameApplyT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "renameApply"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 76,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#AAAAAA",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "保存"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "deleteDialog"
+      },
+      "name": "标题",
+      "x": 24,
+      "y": 20,
+      "width": 368,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 20,
+        "lineHeight": 28,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "删除“项目灵感”？"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteBody",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "deleteDialog"
+      },
+      "name": "删除影响",
+      "x": 24,
+      "y": 78,
+      "width": 368,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "只删除这个文件夹。\n其中 6 张图片仍保留在“全部图片”\n及其所属的其他文件夹中。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteNoOther",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "deleteDialog"
+      },
+      "name": "未分类去向",
+      "x": 24,
+      "y": 172,
+      "width": 368,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "没有其他归属的图片将回到“未分类”。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteCancel",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "deleteDialog"
+      },
+      "name": "按钮 / 取消",
+      "x": 136,
+      "y": 250,
+      "width": 88,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "取消"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteCancelT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "deleteCancel"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 64,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "取消"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteApply",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "deleteDialog"
+      },
+      "name": "按钮 / 删除文件夹",
+      "x": 240,
+      "y": 250,
+      "width": 152,
+      "height": 40,
+      "props": {
+        "fill": "#3D3D3D",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "删除文件夹"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "deleteApplyT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "deleteApply"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 128,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#FFFFFF",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "删除文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "singleLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "状态标题",
+      "x": 48,
+      "y": 520,
+      "width": 416,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "04 · 文件夹内的单图菜单"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "singleMenu",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "图库图片 / 更多菜单",
+      "x": 48,
+      "y": 558,
+      "width": 300,
+      "height": 184,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D0D0D0",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "仅自定义文件夹内出现“从此文件夹移出”；全部图片与未分类不出现。菜单来自图片右上角更多入口。没有图片删除。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "singleView",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "singleMenu"
+      },
+      "name": "查看大图",
+      "x": 20,
+      "y": 15,
+      "width": 260,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "查看大图"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "singleDownload",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "singleMenu"
+      },
+      "name": "下载",
+      "x": 20,
+      "y": 57,
+      "width": 260,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "下载"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "singleAdd",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "singleMenu"
+      },
+      "name": "加入文件夹",
+      "x": 20,
+      "y": 99,
+      "width": 260,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "加入文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "singleRemove",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "singleMenu"
+      },
+      "name": "移出当前集合",
+      "x": 20,
+      "y": 141,
+      "width": 260,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "从此文件夹移出"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "singleNote",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "移出行为标注",
+      "x": 48,
+      "y": 768,
+      "width": 416,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "移出只解除当前关联；图片仍在图库。\n操作后若无其他归属，出现在“未分类”。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulkLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "状态标题",
+      "x": 512,
+      "y": 520,
+      "width": 880,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "05 · 文件夹内多选与操作反馈"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulk",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "文件夹 / 多选工具栏",
+      "x": 512,
+      "y": 558,
+      "width": 880,
+      "height": 64,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D0D0D0",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "仅自定义文件夹内选择图片时提供“移出此文件夹”。其他集合仅提供加入文件夹。操作完成清空本次选择。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulkSelected",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "bulk"
+      },
+      "name": "已选数量",
+      "x": 20,
+      "y": 20,
+      "width": 120,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "已选 3 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulkCancel",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "bulk"
+      },
+      "name": "按钮 / 取消选择",
+      "x": 416,
+      "y": 12,
+      "width": 112,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "取消选择"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulkCancelT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "bulkCancel"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 88,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "取消选择"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulkAdd",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "bulk"
+      },
+      "name": "按钮 / 加入文件夹",
+      "x": 540,
+      "y": 12,
+      "width": 132,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "加入文件夹"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulkAddT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "bulkAdd"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "加入文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulkRemove",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "bulk"
+      },
+      "name": "按钮 / 移出此文件夹",
+      "x": 684,
+      "y": 12,
+      "width": 176,
+      "height": 40,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "移出此文件夹"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "bulkRemoveT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "bulkRemove"
+      },
+      "name": "文字",
+      "x": 12,
+      "y": 8,
+      "width": 152,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "移出此文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "toastMove",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "反馈 / 已移出",
+      "x": 512,
+      "y": 652,
+      "width": 880,
+      "height": 48,
+      "props": {
+        "fill": "#EEEEEE",
+        "cornerRadius": 6,
+        "description": "操作成功后出现；撤销恢复本次移出的关联。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "toastMoveText",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "toastMove"
+      },
+      "name": "消息",
+      "x": 16,
+      "y": 12,
+      "width": 720,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "已将 3 张图片移出“项目灵感”，图片仍保留在图库。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "toastUndo",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "toastMove"
+      },
+      "name": "撤销入口",
+      "x": 800,
+      "y": 12,
+      "width": 64,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "撤销"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "toastDelete",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "反馈 / 文件夹已删除",
+      "x": 512,
+      "y": 716,
+      "width": 880,
+      "height": 48,
+      "props": {
+        "fill": "#EEEEEE",
+        "cornerRadius": 6,
+        "description": "删除当前文件夹后返回全部图片；此反馈不是图片删除。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "toastDeleteText",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "toastDelete"
+      },
+      "name": "消息",
+      "x": 16,
+      "y": 12,
+      "width": 840,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "已删除文件夹“项目灵感”，其中的图片已保留。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "notes",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "board"
+      },
+      "name": "状态关系标注",
+      "x": 512,
+      "y": 794,
+      "width": 880,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "新建完成：侧栏出现文件夹；从归类面板新建时，保留选中的图片。\n重命名完成：列表、标题与归属信息同步更新。"
+    }
+  }
+]

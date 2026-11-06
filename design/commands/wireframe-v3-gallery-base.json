@@ -1,0 +1,865 @@
+[
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        868
+      ],
+      "props": {
+        "name": "我的图片 · 全部与新图提示 · 1440×900",
+        "pluginData": {
+          "designNotes": "本轮新增文件夹管理。已确认：一图多文件夹；归类不复制；仅删除文件夹不删除图片。建议：生成任务结束后成功图作为一组入库，新组在前，同组按输出编号。浏览时提示新图，用户更新后重排。上传参考图、生成中和失败不进入图库。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        988
+      ],
+      "props": {
+        "characters": "全部图片",
+        "fontSize": 24,
+        "lineHeight": 32,
+        "y": 104,
+        "width": 220
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        904
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        989
+      ],
+      "props": {
+        "y": 184,
+        "height": 684
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1030
+      ],
+      "props": {
+        "y": 478
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1035
+      ],
+      "props": {
+        "y": 478
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1040
+      ],
+      "props": {
+        "y": 478
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1045
+      ],
+      "props": {
+        "y": 478
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "count",
+    "params": {
+      "type": "text",
+      "parent": 868,
+      "name": "当前已显示数量",
+      "x": 458,
+      "y": 110,
+      "width": 72,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "12 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "today",
+    "params": {
+      "type": "text",
+      "parent": 868,
+      "name": "日期分组 / 今天",
+      "x": 340,
+      "y": 153,
+      "width": 220,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "今天 · 11 月 6 日"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "yesterday",
+    "params": {
+      "type": "text",
+      "parent": 868,
+      "name": "日期分组 / 昨天",
+      "x": 340,
+      "y": 632,
+      "width": 220,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "昨天 · 11 月 5 日"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sort",
+    "params": {
+      "type": "text",
+      "parent": 868,
+      "name": "当前排序",
+      "x": 1110,
+      "y": 111,
+      "width": 140,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "最新生成在前"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "selectImages",
+    "params": {
+      "type": "component",
+      "parent": 868,
+      "name": "选择图片",
+      "x": 1260,
+      "y": 101,
+      "width": 120,
+      "height": 38,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D1D1D1",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "选择图片"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "selectImagesT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "selectImages"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 7,
+      "width": 96,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "选择图片"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newImages",
+    "params": {
+      "type": "component",
+      "parent": 868,
+      "name": "有 2 张新图片 · 更新",
+      "x": 816,
+      "y": 101,
+      "width": 220,
+      "height": 38,
+      "props": {
+        "fill": "#F3F3F3",
+        "stroke": "#D1D1D1",
+        "strokeWeight": 1,
+        "cornerRadius": 6,
+        "description": "有 2 张新图片 · 更新"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newImagesT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "newImages"
+      },
+      "name": "按钮文字",
+      "x": 12,
+      "y": 7,
+      "width": 196,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 23,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "有 2 张新图片 · 更新"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "newImages"
+        }
+      ],
+      "props": {
+        "description": "设计建议。仅当前浏览期间有新入库图时显示，点击后以最新完整集合刷新并回到顶部；不强行改变正在看的图片位置。新图未分类，不写入正在浏览的文件夹。"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "libraryNav",
+    "params": {
+      "type": "frame",
+      "parent": 869,
+      "name": "图库 / 分类导航",
+      "x": 24,
+      "y": 218,
+      "width": 232,
+      "height": 418,
+      "props": {},
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "allNav",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "libraryNav"
+      },
+      "name": "图库导航 / 全部图片",
+      "x": 0,
+      "y": 0,
+      "width": 232,
+      "height": 38,
+      "props": {
+        "fill": "#E6E6E6",
+        "cornerRadius": 5,
+        "description": "全部图片"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "allNavI",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "allNav"
+      },
+      "name": "图标",
+      "x": 12,
+      "y": 10,
+      "width": 18,
+      "height": 18,
+      "path": "M0 0 L7 0 L7 7 L0 7 Z M11 0 L18 0 L18 7 L11 7 Z M0 11 L7 11 L7 18 L0 18 Z M11 11 L18 11 L18 18 L11 18 Z",
+      "props": {
+        "fill": "none",
+        "stroke": "#666666",
+        "strokeWeight": 1.5
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "allNavT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "allNav"
+      },
+      "name": "名称",
+      "x": 40,
+      "y": 7,
+      "width": 146,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "全部图片"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "allNavC",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "allNav"
+      },
+      "name": "图片数量",
+      "x": 192,
+      "y": 8,
+      "width": 28,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "12"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "unsortedNav",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "libraryNav"
+      },
+      "name": "图库导航 / 未分类",
+      "x": 0,
+      "y": 42,
+      "width": 232,
+      "height": 38,
+      "props": {
+        "fill": "#F7F7F7",
+        "cornerRadius": 5,
+        "description": "未分类"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "unsortedNavI",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "unsortedNav"
+      },
+      "name": "图标",
+      "x": 12,
+      "y": 10,
+      "width": 18,
+      "height": 18,
+      "path": "M0 0 L7 0 L7 7 L0 7 Z M11 0 L18 0 L18 7 L11 7 Z M0 11 L7 11 L7 18 L0 18 Z M11 11 L18 11 L18 18 L11 18 Z",
+      "props": {
+        "fill": "none",
+        "stroke": "#666666",
+        "strokeWeight": 1.5
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "unsortedNavT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "unsortedNav"
+      },
+      "name": "名称",
+      "x": 40,
+      "y": 7,
+      "width": 146,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "未分类"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "unsortedNavC",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "unsortedNav"
+      },
+      "name": "图片数量",
+      "x": 192,
+      "y": 8,
+      "width": 28,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "5"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "navLine",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "libraryNav"
+      },
+      "name": "分组分隔",
+      "x": 0,
+      "y": 94,
+      "width": 232,
+      "height": 1,
+      "props": {
+        "fill": "#DDDDDD"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "foldersLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "libraryNav"
+      },
+      "name": "文件夹分组",
+      "x": 12,
+      "y": 111,
+      "width": 160,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "lineHeight": 20,
+        "fill": "#858585",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "我的文件夹"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newFolderPlus",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "libraryNav"
+      },
+      "name": "文件夹 / 新建入口",
+      "x": 198,
+      "y": 103,
+      "width": 32,
+      "height": 32,
+      "props": {
+        "description": "打开新建文件夹对话框。单层文件夹。"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "newFolderPlusT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "newFolderPlus"
+      },
+      "name": "加号",
+      "x": 6,
+      "y": 0,
+      "width": 22,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 22,
+        "lineHeight": 30,
+        "fill": "#555555",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "＋"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "inspirationNav",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "libraryNav"
+      },
+      "name": "图库导航 / 项目灵感",
+      "x": 0,
+      "y": 146,
+      "width": 232,
+      "height": 38,
+      "props": {
+        "fill": "#F7F7F7",
+        "cornerRadius": 5,
+        "description": "项目灵感"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "inspirationNavI",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "inspirationNav"
+      },
+      "name": "图标",
+      "x": 12,
+      "y": 10,
+      "width": 18,
+      "height": 18,
+      "path": "M0 3 L7 3 L9 6 L18 6 L18 17 L0 17 Z",
+      "props": {
+        "fill": "none",
+        "stroke": "#666666",
+        "strokeWeight": 1.5
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "inspirationNavT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "inspirationNav"
+      },
+      "name": "名称",
+      "x": 40,
+      "y": 7,
+      "width": 146,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "项目灵感"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "inspirationNavC",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "inspirationNav"
+      },
+      "name": "图片数量",
+      "x": 192,
+      "y": 8,
+      "width": 28,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "6"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterNav",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "libraryNav"
+      },
+      "name": "图库导航 / 海报探索",
+      "x": 0,
+      "y": 188,
+      "width": 232,
+      "height": 38,
+      "props": {
+        "fill": "#F7F7F7",
+        "cornerRadius": 5,
+        "description": "海报探索"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterNavI",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "posterNav"
+      },
+      "name": "图标",
+      "x": 12,
+      "y": 10,
+      "width": 18,
+      "height": 18,
+      "path": "M0 3 L7 3 L9 6 L18 6 L18 17 L0 17 Z",
+      "props": {
+        "fill": "none",
+        "stroke": "#666666",
+        "strokeWeight": 1.5
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterNavT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "posterNav"
+      },
+      "name": "名称",
+      "x": 40,
+      "y": 7,
+      "width": 146,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "海报探索"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "posterNavC",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "posterNav"
+      },
+      "name": "图片数量",
+      "x": 192,
+      "y": 8,
+      "width": 28,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "4"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "emptyNav",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "libraryNav"
+      },
+      "name": "图库导航 / 待整理",
+      "x": 0,
+      "y": 230,
+      "width": 232,
+      "height": 38,
+      "props": {
+        "fill": "#F7F7F7",
+        "cornerRadius": 5,
+        "description": "待整理"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "emptyNavI",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "emptyNav"
+      },
+      "name": "图标",
+      "x": 12,
+      "y": 10,
+      "width": 18,
+      "height": 18,
+      "path": "M0 3 L7 3 L9 6 L18 6 L18 17 L0 17 Z",
+      "props": {
+        "fill": "none",
+        "stroke": "#666666",
+        "strokeWeight": 1.5
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "emptyNavT",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "emptyNav"
+      },
+      "name": "名称",
+      "x": 40,
+      "y": 7,
+      "width": 146,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "lineHeight": 22,
+        "fill": "#333333",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "待整理"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "emptyNavC",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "emptyNav"
+      },
+      "name": "图片数量",
+      "x": 192,
+      "y": 8,
+      "width": 28,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 21,
+        "fill": "#777777",
+        "textAutoResize": "height"
+      },
+      "select": false,
+      "text": "0"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "manageNote",
+    "params": {
+      "type": "frame",
+      "parent": 868,
+      "name": "图库 / 交互规则（不渲染）",
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "props": {
+        "visible": false,
+        "pluginData": {
+          "designNotes": "点击图片进入当前集合预览；选择模式下点击图片切换选中。归类使用“加入文件夹”，允许多选目标；已有归属不被其他新选择覆盖。移出仅解绑当前文件夹。文件夹列表建议按名称排序，不随最新图片跳动；首版单层。"
+        }
+      },
+      "select": false
+    }
+  }
+]
