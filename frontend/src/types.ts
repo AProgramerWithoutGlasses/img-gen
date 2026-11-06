@@ -34,6 +34,8 @@ export interface Attachment {
   height: number;
 }
 export interface ImageAsset extends Attachment {
+  thumbnailUrl?: string;
+  previewUrl?: string;
   userId: string;
   createdAt: string;
   batchId: string;
@@ -84,6 +86,7 @@ export interface StudioData {
   currentUserId: string;
   prices: Record<ModelId, number>;
   priceUpdatedAt: Partial<Record<ModelId, string>>;
+  priceVersions?: Partial<Record<ModelId, number>>;
   preferences: Preferences;
 }
 export type Notify = (
@@ -118,7 +121,8 @@ export interface StudioActions {
     patch: Pick<StudioUser, "role" | "status">,
   ) => Promise<void>;
   adjustCredits: (id: string, amount: number) => Promise<void>;
-  savePrice: (id: ModelId, amount: number) => Promise<void>;
+  savePrice: (id: ModelId, amount: number, version?: number) => Promise<void>;
+  refreshData?: () => Promise<StudioData>;
   changePassword: (current: string, next: string) => Promise<void>;
   signOut: () => void;
   signIn: (username: string, password: string) => Promise<void>;

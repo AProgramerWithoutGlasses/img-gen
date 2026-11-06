@@ -30,7 +30,7 @@ export default function LoginPage({ onLogin }: Props) {
 
   return (
     <main className="login-page">
-      <span className="preview-badge login-preview-badge">本地预览</span>
+      {import.meta.env.MODE === "preview" && <span className="preview-badge login-preview-badge">本地预览</span>}
       <section className="login-card" aria-labelledby="login-title">
         <div className="brand login-brand">
           <span className="brand-mark" aria-hidden="true">

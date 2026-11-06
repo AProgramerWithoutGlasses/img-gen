@@ -126,6 +126,10 @@ func run() error {
 		return err
 	}
 	static, _ := fs.Sub(webFiles, "web")
+	if _, err := fs.Stat(static, "studio/index.html"); err != nil {
+		return errors.New("新版前端尚未构建，请先在 frontend 执行 npm ci 和 npm run build:server")
+	}
+	static, _ = fs.Sub(static, "studio")
 	mux := a.routes(static)
 	server := &http.Server{Addr: addr, Handler: mux, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 45 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 90 * time.Second, MaxHeaderBytes: 16 << 10}
 	workerCtx, cancelWorkers := context.WithCancel(context.Background())

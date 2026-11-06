@@ -76,10 +76,15 @@ func migrate(ctx context.Context, db *sql.DB) error {
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`); err != nil {
 		return err
 	}
-	return migrateCredits(ctx, db)
+	if err := migrateCredits(ctx, db); err != nil {
+		return err
+	}
+	return migrateStudio(ctx, db)
 }
 
 type job struct {
+	Studio           *studioOptions `json:"-"`
+	StudioInputs     []picture      `json:"-"`
 	CreditsCost      int64          `json:"credits_cost"`
 	CreditsState     string         `json:"credits_state"`
 	UserID           string         `json:"user_id"`

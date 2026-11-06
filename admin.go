@@ -70,6 +70,7 @@ func (a *app) createUser(w http.ResponseWriter, r *http.Request) {
 		Username string `json:"username"`
 		Password string `json:"password"`
 		Role     string `json:"role"`
+		Active   *bool  `json:"active"`
 	}
 	if !decodeJSON(w, r, &input) {
 		return
@@ -88,7 +89,11 @@ func (a *app) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := newID()
-	if _, err := a.db.ExecContext(r.Context(), "INSERT INTO users(id,username,password_hash,role,active) VALUES(?,?,?,?,TRUE)", id, input.Username, hashPassword(input.Password), input.Role); err != nil {
+	active := true
+	if input.Active != nil {
+		active = *input.Active
+	}
+	if _, err := a.db.ExecContext(r.Context(), "INSERT INTO users(id,username,password_hash,role,active) VALUES(?,?,?,?,?)", id, input.Username, hashPassword(input.Password), input.Role, active); err != nil {
 		userWriteError(w, err)
 		return
 	}

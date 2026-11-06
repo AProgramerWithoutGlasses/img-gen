@@ -1,355 +1,190 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { createSeed } from "../data/seed";
-import { normalizeOptions } from "../config/models";
-import { placeholderImage } from "../lib/images";
-import { loadData, persistData } from "../services/persistence";
-import { acceptsPreviewCredentials } from "../services/previewAuth";
-import type {
-  Folder,
-  Generation,
-  ImageAsset,
-  StudioActions,
-  StudioData,
-  StudioUser,
-} from "../types";
+import { MODELS, setModels } from "../config/models";
+import type { Attachment, ModelConfig, Preferences, StudioActions, StudioData, StudioUser } from "../types";
+import { api, apiBlob, APIError, requestID } from "../services/api";
+import { Context } from "./context";
+export { useStudio } from "./context";
 
-interface StudioContextValue {
-  data: StudioData;
-  currentUser: StudioUser;
-  actions: StudioActions;
+const PreviewProvider = import.meta.env.MODE === "preview"
+  ? lazy(() => import("./PreviewStudioProvider")) : null;
+type ServerData = StudioData & { priceVersions: Record<string, number> };
+const defaults: Preferences = { theme: "system", enterToSend: true };
+function emptyData(): ServerData {
+  return { version: 1, assets: [], folders: [], generations: [], users: [], currentUserId: "",
+    prices: Object.fromEntries(MODELS.map(m => [m.id, 0])) as StudioData["prices"],
+    priceUpdatedAt: {}, priceVersions: {}, preferences: defaults };
 }
-const Context = createContext<StudioContextValue | null>(null);
-export function useStudio() {
-  const ctx = useContext(Context);
-  if (!ctx) throw new Error("StudioProvider is required");
-  return ctx;
+function preferences(userId: string): Preferences {
+  try {
+    const saved = JSON.parse(localStorage.getItem("studio-preferences:" + userId) ?? "null");
+    return { theme: ["light", "dark", "system"].includes(saved?.theme) ? saved.theme : "system",
+      enterToSend: typeof saved?.enterToSend === "boolean" ? saved.enterToSend : true };
+  } catch { return defaults; }
 }
-const id = () => crypto.randomUUID();
-export function StudioProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<StudioData>(createSeed);
-  const ref = useRef(data);
+function RemoteStudioProvider({ children }: { children: ReactNode }) {
+  const [data, setData] = useState<ServerData>(emptyData);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
-  const queue = useRef<Promise<unknown>>(Promise.resolve());
-  const boot = useRef<Promise<StudioData> | null>(null);
+  const ref = useRef(data);
+  const epoch = useRef(0);
+  const refreshQueue = useRef<Promise<void>>(Promise.resolve());
+  const pendingSubmission = useRef<{ signature: string; id: string } | null>(null);
+  const legacyAttachments = useRef(new Map<string, string>());
+  const creditRequests = useRef(new Map<string, string>());
+  function publish(next: ServerData) { ref.current = next; setData(next); }
+  function clear() { epoch.current++; pendingSubmission.current = null; legacyAttachments.current.clear(); creditRequests.current.clear(); publish(emptyData()); }
+  function refresh() {
+    const generation = epoch.current;
+    const task = refreshQueue.current.catch(() => undefined).then(async () => {
+      if (generation !== epoch.current) return;
+      const next = await api<ServerData>("/api/studio/state");
+      if (generation !== epoch.current) return;
+      next.preferences = preferences(next.currentUserId);
+      publish(next);
+    });
+    refreshQueue.current = task;
+    return task;
+  }
   useEffect(() => {
     let active = true;
-    boot.current ??= (async () => {
-      const loaded = (await loadData()) ?? createSeed();
-      // A browser refresh ends simulated work; keep completed assets and refund only its local reservation.
-      for (const job of loaded.generations.filter(
-        (j) => j.status === "processing",
-      )) {
-        job.status = "failed";
-        job.error = "本地预览已重新加载，请重新发送。";
-        const user = loaded.users.find((u) => u.id === job.userId);
-        if (user) user.balance += job.cost;
-        job.cost = 0;
-      }
-      await persistData(loaded);
-      return loaded;
+    const unauthorized = () => clear();
+    addEventListener("studio:unauthorized", unauthorized);
+    (async () => {
+      try {
+        await api("/api/auth/me");
+        setModels(await api<ModelConfig[]>("/api/studio/models"));
+        await refresh();
+      } catch (cause) {
+        if (!(cause instanceof APIError && cause.status === 401) && active)
+          setError(cause instanceof Error ? cause.message : "读取工作区失败");
+      } finally { if (active) setReady(true); }
     })();
-    boot.current
-      .then((loaded) => {
-        if (active) {
-          ref.current = loaded;
-          setData(loaded);
-          setReady(true);
-        }
-      })
-      .catch((e) => active && setError(String(e.message)));
-    return () => {
-      active = false;
-    };
+    return () => { active = false; removeEventListener("studio:unauthorized", unauthorized); };
   }, []);
+  useEffect(() => {
+    if (!ready || !data.currentUserId) return;
+    let active = true;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      try { await refresh(); }
+      catch (cause) {
+        if (active && !(cause instanceof APIError && cause.status === 401))
+          window.dispatchEvent(new CustomEvent("studio:error", { detail: cause instanceof Error ? cause.message : "更新失败" }));
+      }
+      if (active) timer = setTimeout(poll, ref.current.generations.some(g => g.status === "processing") ? 1500 : 15000);
+    };
+    timer = setTimeout(poll, data.generations.some(g => g.status === "processing") ? 1500 : 15000);
+    return () => { active = false; clearTimeout(timer); };
+  }, [ready, data.currentUserId, data.generations.some(g => g.status === "processing")]);
   const actions = useMemo<StudioActions>(() => {
-    function update<T>(fn: (draft: StudioData) => T): Promise<T> {
-      const task = queue.current.then(async () => {
-        const next = structuredClone(ref.current);
-        const result = fn(next);
-        await persistData(next);
-        ref.current = next;
-        setData(next);
-        return result;
-      });
-      queue.current = task.catch(() => undefined);
-      return task;
+    async function mutate<T>(path: string, method: string, body?: unknown): Promise<T> {
+      const result = await api<T>(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
+      // A failed subsequent read must not turn a successful mutation into a retry.
+      try { await refresh(); } catch {
+        window.dispatchEvent(new CustomEvent("studio:error", { detail: "操作已提交，更新列表失败，请刷新核对。" }));
+      }
+      return result;
     }
-    const actor = (d: StudioData) => {
-      const user = d.users.find((u) => u.id === d.currentUserId);
-      if (!user || user.status !== "enabled")
-        throw new Error("请先进入一个启用的预览账号");
-      return user;
-    };
-    const admin = (d: StudioData) => {
-      const user = actor(d);
-      if (user.role !== "admin") throw new Error("没有管理员权限");
-      return user;
-    };
-    const folder = (d: StudioData, folderId: string) => {
-      const user = actor(d);
-      const item = d.folders.find(
-        (f) => f.id === folderId && f.userId === user.id,
-      );
-      if (!item) throw new Error("文件夹不存在");
-      return item;
-    };
-    const validName = (d: StudioData, name: string, exceptId?: string) => {
-      const user = actor(d);
-      const clean = name.trim();
-      if (!clean || clean.length > 60)
-        throw new Error("请输入 1–60 个字符的文件夹名称");
-      if (
-        d.folders.some(
-          (f) =>
-            f.userId === user.id &&
-            f.id !== exceptId &&
-            f.name.toLocaleLowerCase() === clean.toLocaleLowerCase(),
-        )
-      )
-        throw new Error("此名称已被使用，请换一个名称");
-      return clean;
-    };
     return {
       async generate(prompt, attachments, options) {
-        const normalized = normalizeOptions(options);
-        if (!prompt.trim()) throw new Error("请输入提示词");
-        const job = await update<Generation>((d) => {
-          const user = actor(d);
-          const cost = d.prices[normalized.modelId] * normalized.count;
-          if (user.balance < cost) throw new Error("积分不足，请先充值");
-          const record: Generation = {
-            id: id(),
-            userId: user.id,
-            username: user.username,
-            prompt: prompt.trim(),
-            attachments: structuredClone(attachments),
-            options: normalized,
-            status: "processing",
-            imageIds: [],
-            createdAt: new Date().toISOString(),
-            cost,
-          };
-          user.balance -= cost;
-          d.generations.push(record);
-          return record;
-        });
-        await new Promise((resolve) => setTimeout(resolve, 1300));
+        const attachmentIds: string[] = [];
+        for (const attachment of attachments) {
+          const foreignResult = "userId" in attachment && attachment.userId !== ref.current.currentUserId;
+          if (/^[a-f0-9]{32}$/.test(attachment.id) && !foreignResult) { attachmentIds.push(attachment.id); continue; }
+          let uploaded = legacyAttachments.current.get(attachment.id);
+          if (!uploaded) {
+            const blob = await apiBlob(attachment.url);
+            const body = new FormData(); body.append("image", blob, attachment.name);
+            uploaded = (await api<Attachment>("/api/studio/attachments", { method: "POST", body })).id;
+            legacyAttachments.current.set(attachment.id, uploaded);
+          }
+          attachmentIds.push(uploaded);
+        }
+        const payload = { prompt, attachmentIds, options,
+          expectedCredits: ref.current.prices[options.modelId] * options.count };
+        const signature = JSON.stringify(payload);
+        if (pendingSubmission.current?.signature !== signature) pendingSubmission.current = { signature, id: requestID() };
+        const id = pendingSubmission.current.id;
         try {
-          return await update<Generation>((d) => {
-            const record = d.generations.find((j) => j.id === job.id)!;
-            const ratio = normalized.ratio.replace(" HD", "");
-            const [rw, rh] = ratio.includes(":")
-              ? ratio.split(":").map(Number)
-              : [1, 1];
-            const width = Math.round((1024 * rw) / rh),
-              height = 1024,
-              date = new Date().toISOString();
-            const images: ImageAsset[] = Array.from(
-              { length: normalized.count },
-              (_, outputIndex) => ({
-                id: id(),
-                userId: job.userId,
-                name: `生成图片-${outputIndex + 1}.svg`,
-                url: placeholderImage(
-                  `生成图片 ${outputIndex + 1}`,
-                  width,
-                  height,
-                ),
-                width,
-                height,
-                createdAt: date,
-                batchId: job.id,
-                outputIndex,
-                prompt: job.prompt,
-                options: normalized,
-                folderIds: [],
-              }),
-            );
-            d.assets.unshift(...images);
-            record.status = "completed";
-            record.completedAt = date;
-            record.durationMs = Date.now() - new Date(job.createdAt).getTime();
-            record.imageIds = images.map((a) => a.id);
-            return record;
+          await api("/api/studio/generations", { method: "POST", body: JSON.stringify({ ...payload, requestId: id }) });
+        } catch (cause) {
+          await refresh().catch(() => undefined);
+          const accepted = ref.current.generations.find(g => g.id === id);
+          if (accepted) { pendingSubmission.current = null; return accepted; }
+          if (cause instanceof APIError && cause.status >= 400 && cause.status < 500) pendingSubmission.current = null;
+          throw cause;
+        }
+        pendingSubmission.current = null;
+        try { await refresh(); } catch {
+          window.dispatchEvent(new CustomEvent("studio:error", { detail: "任务已提交，读取状态失败，请刷新查看，避免重复提交。" }));
+        }
+        return ref.current.generations.find(g => g.id === id) ?? {
+          id, userId: ref.current.currentUserId, username: "", prompt, attachments, options,
+          status: "processing", imageIds: [], createdAt: new Date().toISOString(), cost: 0,
+        };
+      },
+      createFolder: name => mutate("/api/studio/folders", "POST", { name }),
+      renameFolder: (id, name) => mutate("/api/studio/folders/" + id, "PATCH", { name }),
+      deleteFolder: id => mutate("/api/studio/folders/" + id, "DELETE"),
+      addToFolders: (imageIds, folderIds) => mutate("/api/studio/folder-memberships", "POST", { imageIds, folderIds, remove: false }),
+      removeFromFolder: (imageIds, folderId) => mutate("/api/studio/folder-memberships", "POST", { imageIds, folderIds: [folderId], remove: true }),
+      async setPreferences(patch) {
+        const next = { ...ref.current.preferences, ...patch };
+        localStorage.setItem("studio-preferences:" + ref.current.currentUserId, JSON.stringify(next));
+        publish({ ...ref.current, preferences: next });
+      },
+      async createUser(input) {
+        const result = await mutate<{ id: string }>("/api/admin/users", "POST", {
+          username: input.username, password: input.password, role: input.role, active: input.status === "enabled",
+        });
+        return ref.current.users.find(u => u.id === result.id) ?? { id: result.id, username: input.username,
+          role: input.role, status: input.status, balance: 0, createdAt: new Date().toISOString() };
+      },
+      updateUser: (id, patch) => mutate("/api/admin/users/" + id, "PATCH", { role: patch.role, active: patch.status === "enabled" }),
+      async adjustCredits(id, amount) {
+        const key = id + ":" + amount;
+        if (!creditRequests.current.has(key)) creditRequests.current.set(key, requestID());
+        try {
+          await mutate("/api/admin/users/" + id + "/credits", "POST", {
+            delta: amount, note: "管理员通过工作室调整积分", request_id: creditRequests.current.get(key),
           });
-        } catch (e) {
-          await update((d) => {
-            const record = d.generations.find((j) => j.id === job.id)!;
-            record.status = "failed";
-            record.error = "保存结果失败，请重试";
-            const user = d.users.find((u) => u.id === job.userId);
-            if (user) user.balance += record.cost;
-            record.cost = 0;
-          }).catch(() => undefined);
-          throw e;
+          creditRequests.current.delete(key);
+        } catch (cause) {
+          if (cause instanceof APIError && cause.status >= 400 && cause.status < 500) creditRequests.current.delete(key);
+          throw cause;
         }
       },
-      createFolder: (name) =>
-        update<Folder>((d) => {
-          const item: Folder = {
-            id: id(),
-            userId: actor(d).id,
-            name: validName(d, name),
-            createdAt: new Date().toISOString(),
-          };
-          d.folders.push(item);
-          return item;
-        }),
-      renameFolder: (folderId, name) =>
-        update((d) => {
-          const item = folder(d, folderId);
-          item.name = validName(d, name, folderId);
-        }),
-      deleteFolder: (folderId) =>
-        update((d) => {
-          folder(d, folderId);
-          d.folders = d.folders.filter((f) => f.id !== folderId);
-          d.assets.forEach((a) => {
-            a.folderIds = a.folderIds.filter((f) => f !== folderId);
-          });
-        }),
-      addToFolders: (imageIds, folderIds) =>
-        update((d) => {
-          const user = actor(d);
-          folderIds.forEach((f) => folder(d, f));
-          const assets = imageIds.map((i) =>
-            d.assets.find((a) => a.id === i && a.userId === user.id),
-          );
-          if (assets.some((a) => !a)) throw new Error("图片不存在");
-          assets.forEach((a) => {
-            a!.folderIds = [...new Set([...a!.folderIds, ...folderIds])];
-          });
-        }),
-      removeFromFolder: (imageIds, folderId) =>
-        update((d) => {
-          folder(d, folderId);
-          const user = actor(d);
-          d.assets
-            .filter((a) => a.userId === user.id && imageIds.includes(a.id))
-            .forEach((a) => {
-              a.folderIds = a.folderIds.filter((f) => f !== folderId);
-            });
-        }),
-      setPreferences: (patch) =>
-        update((d) => {
-          actor(d);
-          d.preferences = { ...d.preferences, ...patch };
-        }),
-      createUser: (input) =>
-        update((d) => {
-          admin(d);
-          const username = input.username.trim();
-          if (!/^[a-zA-Z0-9_][a-zA-Z0-9_.-]{2,31}$/.test(username))
-            throw new Error("用户名格式不正确");
-          if (
-            d.users.some(
-              (u) => u.username.toLowerCase() === username.toLowerCase(),
-            )
-          )
-            throw new Error("用户名已存在");
-          const bytes = new TextEncoder().encode(input.password).length;
-          if (bytes < 4 || bytes > 128)
-            throw new Error("初始密码应为 4–128 字节");
-          const user: StudioUser = {
-            id: id(),
-            username,
-            role: input.role,
-            status: input.status,
-            balance: 0,
-            createdAt: new Date().toISOString(),
-          };
-          d.users.push(user);
-          return user;
-        }),
-      updateUser: (userId, patch) =>
-        update((d) => {
-          const current = admin(d);
-          const user = d.users.find((u) => u.id === userId);
-          if (!user) throw new Error("用户不存在");
-          if (
-            user.id === current.id &&
-            (patch.role !== "admin" || patch.status !== "enabled")
-          )
-            throw new Error("不能停用或降低当前账号的权限");
-          Object.assign(user, patch);
-        }),
-      adjustCredits: (userId, amount) =>
-        update((d) => {
-          admin(d);
-          const user = d.users.find((u) => u.id === userId);
-          if (!user) throw new Error("用户不存在");
-          if (
-            !Number.isSafeInteger(amount) ||
-            !Number.isSafeInteger(user.balance + amount) ||
-            user.balance + amount < 0
-          )
-            throw new Error("调整后积分应为非负整数");
-          user.balance += amount;
-        }),
-      savePrice: (modelId, amount) =>
-        update((d) => {
-          admin(d);
-          if (!Number.isSafeInteger(amount) || amount < 0)
-            throw new Error("价格必须为非负整数");
-          d.prices[modelId] = amount;
-          d.priceUpdatedAt[modelId] = new Date().toISOString();
-        }),
-      changePassword: async () => {
-        throw new Error("本地预览尚未接入认证服务，密码未修改。");
+      refreshData: async () => { await refresh(); return ref.current; },
+      async savePrice(id, amount, version) {
+        try { await mutate("/api/admin/prices/" + id, "PATCH", { credits: amount, version: version ?? ref.current.priceVersions[id] }); }
+        catch (cause) { if (cause instanceof APIError && cause.status === 409) await refresh().catch(() => undefined); throw cause; }
       },
-      signOut: () => {
-        void update((d) => {
-          d.currentUserId = "";
-        }).catch((e) => setError(e.message));
+      async changePassword(current, next) {
+        await api("/api/auth/password", { method: "POST", body: JSON.stringify({ current_password: current, password: next }) });
+        clear(); location.hash = "/login";
       },
-      signIn: (username, password) =>
-        update((d) => {
-          const user = d.users.find(
-            (u) => u.username === username && u.status === "enabled",
-          );
-          if (!user || !acceptsPreviewCredentials(username, password)) {
-            throw new Error("用户名或密码不正确");
-          }
-          d.currentUserId = user.id;
-        }),
+      signOut() {
+        void api("/api/auth/logout", { method: "POST" }).then(() => { clear(); location.hash = "/login"; })
+          .catch(cause => window.dispatchEvent(new CustomEvent("studio:error", { detail: cause.message })));
+      },
+      async signIn(username, password) {
+        await api("/api/auth/login", { method: "POST", body: JSON.stringify({ username, password }) });
+        epoch.current++;
+        setModels(await api<ModelConfig[]>("/api/studio/models"));
+        await refresh();
+      },
     };
   }, []);
-  if (error)
-    return (
-      <div className="boot-error">
-        <h1>无法读取本地预览</h1>
-        <p>{error}</p>
-        <button className="btn" onClick={() => location.reload()}>
-          重试
-        </button>
-      </div>
-    );
-  if (!ready)
-    return (
-      <div className="boot-error" role="status">
-        正在载入…
-      </div>
-    );
-  const currentUser = data.users.find((u) => u.id === data.currentUserId) ?? {
-    id: "",
-    username: "",
-    role: "user" as const,
-    status: "disabled" as const,
-    balance: 0,
-    createdAt: "",
+  if (error) return <div className="boot-error"><h1>无法读取工作区</h1><p>{error}</p><button className="btn" onClick={() => location.reload()}>重试</button></div>;
+  if (!ready) return <div className="boot-error" role="status">正在载入…</div>;
+  const currentUser: StudioUser = data.users.find(u => u.id === data.currentUserId) ?? {
+    id: "", username: "", role: "user", status: "disabled", balance: 0, createdAt: "",
   };
-  return (
-    <Context.Provider value={{ data, currentUser, actions }}>
-      {children}
-    </Context.Provider>
-  );
+  return <Context.Provider value={{ data, currentUser, actions }}>{children}</Context.Provider>;
+}
+export function StudioProvider({ children }: { children: ReactNode }) {
+  return PreviewProvider
+    ? <Suspense fallback={null}><PreviewProvider>{children}</PreviewProvider></Suspense>
+    : <RemoteStudioProvider>{children}</RemoteStudioProvider>;
 }

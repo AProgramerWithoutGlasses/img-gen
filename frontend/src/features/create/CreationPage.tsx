@@ -139,7 +139,7 @@ export default function CreationPage({
                       disabled={sending}
                       onClick={() => {
                         setPrompt(job.prompt);
-                        setOptions(job.options);
+                        setOptions(normalizeOptions(job.options));
                         setAttachments(job.attachments);
                       }}
                     >
@@ -160,7 +160,7 @@ export default function CreationPage({
                         aria-label={`查看${image.name}`}
                       >
                         <img
-                          src={image.url}
+                          src={image.previewUrl ?? image.url}
                           alt={image.name}
                           width={image.width}
                           height={image.height}

@@ -14,7 +14,7 @@ const geminiRatios = [
   "2:3",
   "9:16",
 ];
-export const MODELS: ModelConfig[] = [
+export let MODELS: ModelConfig[] = [
   {
     id: "gpt-image-2",
     name: "GPT Image 2",
@@ -58,6 +58,10 @@ export const DEFAULT_OPTIONS: GenerationOptions = {
   ratio: "4:3",
   count: 2,
 };
+export function setModels(models: ModelConfig[]) {
+  if (!models.length) throw new Error("服务端未提供可用模型");
+  MODELS = models;
+}
 export function normalizeOptions(
   options: GenerationOptions,
 ): GenerationOptions {

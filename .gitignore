@@ -11,3 +11,4 @@ outputs/
 *.log
 *.exe
 coverage.out
+web/studio/

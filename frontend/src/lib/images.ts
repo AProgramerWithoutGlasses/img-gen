@@ -1,4 +1,5 @@
 import type { Attachment } from "../types";
+import { api } from "../services/api";
 
 export function placeholderImage(
   label: string,
@@ -13,6 +14,7 @@ export function placeholderImage(
 export function downloadImage(image: Pick<Attachment, "url" | "name">): void {
   const anchor = document.createElement("a");
   anchor.href = image.url;
+  if (image.url.startsWith("/api/images/")) anchor.href = image.url + "?download=1";
   anchor.download = image.url.startsWith("data:image/svg")
     ? image.name.replace(/\.[^.]+$/, "") + ".svg"
     : image.name;
@@ -27,6 +29,11 @@ export async function readImageFile(file: File): Promise<Attachment> {
   )
     throw new Error("请选择 PNG、JPG、WebP 或 GIF 图片");
   if (file.size > 20 * 1024 * 1024) throw new Error("单张图片不能超过 20 MB");
+  if (import.meta.env.MODE !== "preview") {
+    const body = new FormData();
+    body.append("image", file);
+    return api<Attachment>("/api/studio/attachments", { method: "POST", body });
+  }
   const url = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));

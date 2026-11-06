@@ -322,7 +322,7 @@ function GalleryImage({
         onClick={selecting ? onToggle : () => onPreview(image, collection)}
       >
         <img
-          src={image.url}
+          src={image.thumbnailUrl ?? image.url}
           alt={image.name}
           loading="lazy"
           draggable={false}

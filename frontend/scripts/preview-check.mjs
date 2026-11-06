@@ -8,6 +8,7 @@ const output = new URL("../outputs/preview/", import.meta.url);
 const origin = "http://127.0.0.1:5175";
 await mkdir(output, { recursive: true });
 const server = await createServer({
+  mode: "preview",
   root,
   server: { port: 5175, strictPort: true, host: "127.0.0.1" },
 });

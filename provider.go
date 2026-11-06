@@ -103,7 +103,16 @@ func decodePicture(content []byte) (picture, error) {
 }
 
 func (p *provider) generate(ctx context.Context, j job) (generationResult, error) {
-	if j.Mode == "edit" {
+	if j.Studio != nil {
+		var err error
+		j.StudioInputs, err = prepareStudioInputs(ctx, j.StudioInputs)
+		if err != nil {
+			return generationResult{}, err
+		}
+		if j.Studio.Ratio != "自动" {
+			j.EffectivePrompt += "。请使用 " + strings.TrimSuffix(j.Studio.Ratio, " HD") + " 画布比例。"
+		}
+	} else if j.Mode == "edit" {
 		input, err := prepareUpstreamInput(ctx, j.Input)
 		if err != nil {
 			return generationResult{}, fmt.Errorf("基础图预处理失败：%w", err)
@@ -124,14 +133,33 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 	if gemini {
 		endpoint = "/v1beta/models/" + j.Model + ":generateContent"
 		parts := []any{map[string]any{"text": j.EffectivePrompt}}
-		if j.Mode == "edit" {
+		if j.Studio != nil {
+			for _, input := range j.StudioInputs {
+				parts = append(parts, map[string]any{"inlineData": map[string]any{"mimeType": input.MIME, "data": base64.StdEncoding.EncodeToString(input.Content)}})
+			}
+		} else if j.Mode == "edit" {
 			parts = append(parts, map[string]any{"inlineData": map[string]any{"mimeType": j.InputMIME, "data": base64.StdEncoding.EncodeToString(j.Input)}})
 			if len(j.Reference) > 0 {
 				parts = append(parts, map[string]any{"inlineData": map[string]any{"mimeType": j.ReferenceMIME, "data": base64.StdEncoding.EncodeToString(j.Reference)}})
 			}
 		}
 		config := map[string]any{"responseModalities": []string{"TEXT", "IMAGE"}}
-		if j.Resolution == "1K" || j.Resolution == "2K" || j.Resolution == "4K" {
+		if j.Studio != nil {
+			imageConfig := map[string]string{}
+			if j.Studio.Ratio != "自动" {
+				imageConfig["aspectRatio"] = j.Studio.Ratio
+			}
+			if j.Studio.Resolution != "" {
+				size := j.Studio.Resolution
+				if size == "0.5K" {
+					size = "512"
+				}
+				imageConfig["imageSize"] = size
+			}
+			if len(imageConfig) > 0 {
+				config["imageConfig"] = imageConfig
+			}
+		} else if j.Resolution == "1K" || j.Resolution == "2K" || j.Resolution == "4K" {
 			config["imageConfig"] = map[string]string{"aspectRatio": "16:9", "imageSize": j.Resolution}
 		}
 		_ = json.NewEncoder(&body).Encode(map[string]any{"contents": []any{map[string]any{"role": "user", "parts": parts}}, "generationConfig": config})
@@ -140,11 +168,21 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		writer := multipart.NewWriter(&body)
 		_ = writer.WriteField("model", j.Model)
 		_ = writer.WriteField("prompt", j.EffectivePrompt)
+		if j.Studio != nil {
+			_ = writer.WriteField("quality", studioQuality(*j.Studio))
+			_ = writer.WriteField("size", studioSize(*j.Studio))
+		}
 		field := "image"
 		inputs := []picture{{Content: j.Input, MIME: j.InputMIME}}
 		if len(j.Reference) > 0 {
 			field = "image[]"
 			inputs = append(inputs, picture{Content: j.Reference, MIME: j.ReferenceMIME})
+		}
+		if j.Studio != nil {
+			inputs = j.StudioInputs
+			if len(inputs) > 1 {
+				field = "image[]"
+			}
 		}
 		for i, input := range inputs {
 			ext := "png"
@@ -163,7 +201,12 @@ func (p *provider) generate(ctx context.Context, j job) (generationResult, error
 		_ = writer.Close()
 		contentType = writer.FormDataContentType()
 	} else {
-		_ = json.NewEncoder(&body).Encode(map[string]string{"model": j.Model, "prompt": j.EffectivePrompt})
+		payload := map[string]string{"model": j.Model, "prompt": j.EffectivePrompt}
+		if j.Studio != nil {
+			payload["quality"] = studioQuality(*j.Studio)
+			payload["size"] = studioSize(*j.Studio)
+		}
+		_ = json.NewEncoder(&body).Encode(payload)
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, p.base+endpoint, &body)
 	if err != nil {

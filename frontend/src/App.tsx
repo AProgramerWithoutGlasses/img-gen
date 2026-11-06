@@ -54,6 +54,11 @@ function StudioApp() {
     [],
   );
   const isSettings = route.startsWith("/settings");
+  useEffect(() => {
+    const handler = (event: Event) => notify((event as CustomEvent<string>).detail);
+    addEventListener("studio:error", handler);
+    return () => removeEventListener("studio:error", handler);
+  }, [notify]);
   const isGallery = route.startsWith("/gallery");
   const sectionKey = route.split("/")[2] || "account";
   const settingsSection = (
@@ -382,7 +387,7 @@ function StudioApp() {
                 ? "我的图片"
                 : "图像创作"}
           </h1>
-          <span className="preview-badge">本地预览</span>
+          {import.meta.env.MODE === "preview" && <span className="preview-badge">本地预览</span>}
         </header>
         <CreationPage
           key={currentUser.id}
@@ -478,7 +483,7 @@ function StudioApp() {
         >
           <div className="preview-grid">
             <div className="preview-stage">
-              <img src={selectedImage.url} alt={selectedImage.name} />
+              <img src={selectedImage.previewUrl ?? selectedImage.url} alt={selectedImage.name} />
               <button
                 className="icon-button preview-prev"
                 aria-label="上一张"

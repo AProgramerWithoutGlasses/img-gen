@@ -56,6 +56,7 @@ func validID(s string) bool {
 
 func (a *app) routes(static fs.FS) http.Handler {
 	mux := http.NewServeMux()
+	a.studioRoutes(mux)
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 		defer cancel()
@@ -529,7 +530,11 @@ func (a *app) worker(ctx context.Context) {
 				continue
 			}
 		}
-		result, err := a.upstream.generate(ctx, j)
+		err = a.loadStudioJob(ctx, &j)
+		var result generationResult
+		if err == nil {
+			result, err = a.upstream.generate(ctx, j)
+		}
 		// Save cancellation/failure with a fresh bounded context during shutdown.
 		saveCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		if err != nil {

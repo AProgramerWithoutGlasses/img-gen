@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { useStudio } from "../../state/StudioContext";
 import { Modal } from "../../components/Modal";
@@ -1021,7 +1021,7 @@ function Requests({
                       ? `${(request.durationMs / 1000).toFixed(1)} 秒`
                       : "—"}
                   </td>
-                  <td>{request.status === "completed" ? request.cost : "—"}</td>
+                  <td>{request.status !== "processing" ? request.cost : "—"}</td>
                   <td>
                     <span className={`status-chip ${request.status}`}>
                       {statusLabel(request.status)}
@@ -1146,7 +1146,7 @@ function RequestDetail({
               : "—"}
           </dd>
           <dt>消耗积分</dt>
-          <dd>{request.status === "completed" ? request.cost : "—"}</dd>
+          <dd>{request.status !== "processing" ? request.cost : "—"}</dd>
         </dl>
       </div>
       <section>
@@ -1208,6 +1208,7 @@ function Prices({
   const [saving, setSaving] = useState<ModelId | null>(null);
   const [error, setError] = useState<Partial<Record<ModelId, string>>>({});
   const [confirmRefresh, setConfirmRefresh] = useState(false);
+  const priceVersions = useRef({ ...data.priceVersions });
   const dirtyCount = MODELS.filter(
     (model) => draft[model.id] !== String(data.prices[model.id]),
   ).length;
@@ -1224,10 +1225,14 @@ function Prices({
     window.addEventListener("beforeunload", prevent);
     return () => window.removeEventListener("beforeunload", prevent);
   }, [dirtyCount]);
-  function refresh() {
+  async function refresh() {
+    let latest = data;
+    try { latest = (await actions.refreshData?.()) ?? data; }
+    catch (cause) { notify(messageOf(cause)); return; }
+    priceVersions.current = { ...latest.priceVersions };
     setDraft(
       Object.fromEntries(
-        MODELS.map((model) => [model.id, String(data.prices[model.id])]),
+        MODELS.map((model) => [model.id, String(latest.prices[model.id])]),
       ) as Record<ModelId, string>,
     );
     setError({});
@@ -1240,7 +1245,9 @@ function Prices({
     setSaving(id);
     setError((previous) => ({ ...previous, [id]: undefined }));
     try {
-      await actions.savePrice(id, amount);
+      const version = priceVersions.current?.[id];
+      await actions.savePrice(id, amount, version);
+      if (version !== undefined && priceVersions.current) priceVersions.current[id] = version + 1;
       setDraft((previous) => ({ ...previous, [id]: String(amount) }));
       notify("价格已保存");
     } catch (cause) {
