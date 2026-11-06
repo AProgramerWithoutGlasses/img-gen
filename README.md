@@ -1,8 +1,9 @@
 # UI Studio
 
-独立的本地 UI 设计项目。首张创作页已获认可；当前 FigCraft 工作稿包含创作、我的图片、组件与状态共 3 页、12 张 1440×900 静态画框。React/Vite 预览仍为空白。
+独立的本地 UI 设计项目。首张创作页已获认可；当前 FigCraft 工作稿包含创作、我的图片、组件与状态、设置与管理共 4 页、13 张 1440×900 静态画框。设置首张待审阅；React/Vite 预览仍为空白。
 
 - [当前交付与编辑说明](docs/wireframe-v2.md) · [关键状态覆盖清单](docs/state-coverage.md)
+- [设置首张交付](docs/settings-v1.md) · [设置与管理员行动报告](docs/settings-admin-action-plan.md) · [设置补充调研](docs/research/settings-research.md)
 - [首稿历史说明](docs/wireframe-v1.md)
 - [四站调研报告](docs/research/website-research.md) · [五模型参数表](docs/research/model-parameters.md)
 - [本地参考图分析](docs/research/local-references.md) · [成熟组件模式](docs/research/component-patterns.md)
