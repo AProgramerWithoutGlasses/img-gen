@@ -2,6 +2,8 @@
 
 Go + MySQL 后端与 React/TypeScript/Vite 前端。当前界面源码统一位于 `frontend/`；接口与运行方式见 [前后端适配说明](docs/studio-integration.md)，目录和分支说明见 [仓库说明](docs/repository-layout.md)。旧前端已从当前代码中清除，历史版本仍可通过 Git 找回。
 
+日常使用固定本地检出目录；推送、部署分别须用户同意。[工作流程](docs/workflow.md) 包含聊天归档衔接和本地发布缓存。`node scripts/prepare-release.mjs` 仅准备本地产物，不推送或部署。
+
 新版支持服务端账号登录、对话式创作、六附件、任务轮询、原图下载、图库多文件夹归类、个人设置、用户管理、请求记录和模型按张定价。保留当前界面，没有恢复旧双图角色面板、润色或多模型流程。
 
 ## 本地运行
