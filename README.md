@@ -1,6 +1,10 @@
 # UI Studio
 
-独立的本地 UI 设计项目。当前 FigCraft 中有 ArtCraft Create Image 的 1920×1080、1440×900 两张可编辑参考基底；React/Vite 预览仍为空白。
+独立的本地 UI 设计项目。当前 FigCraft 工作稿为一张 1440×900 对话式 AI 图像创作静态线框，等待首轮审阅；React/Vite 预览仍为空白。
+
+- [首稿交付与编辑说明](docs/wireframe-v1.md)
+- [四站调研报告](docs/research/website-research.md) · [五模型参数表](docs/research/model-parameters.md)
+- [本地参考图分析](docs/research/local-references.md) · [成熟组件模式](docs/research/component-patterns.md)
 
 ```powershell
 cd C:\Users\13556\Documents\ui-studio
@@ -12,7 +16,7 @@ npm run dev
 预览：[http://127.0.0.1:5174/](http://127.0.0.1:5174/)。本轮只制作设计稿，网页预览尚未实现参考界面。
 
 - 工作稿：`design/start.figcraft`。
-- 参考页面、素材和复刻方式：[design/assets/artcraft/README.md](design/assets/artcraft/README.md)。
+- 历史 ArtCraft 参考素材：[design/assets/artcraft/README.md](design/assets/artcraft/README.md)，不作为当前线框的视觉主题。
 - FigCraft 安装路径：`C:\Program Files\ArtCraft\FigCraft`，统一配置见 [figcraft.config.json](figcraft.config.json)。
 - MCP：[.codex/config.toml](.codex/config.toml) 保留 FigCraft 的 19 个工具，禁用本项目的 OpenPencil。启动器自动复用或打开 FigCraft，再由官方 CLI 连接桌面；重新加载本项目 Codex 会话后采用新工具目录。
 - 代码入口：`src/App.tsx`、`src/style.css`。
