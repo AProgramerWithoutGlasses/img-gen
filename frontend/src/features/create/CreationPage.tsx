@@ -349,9 +349,16 @@ export default function CreationPage({
                 </option>
               ))}
             </select>
-            <span className="estimated-cost">
-              {uploading ? "读取中…" : `预计 ${cost} 积分`}
-            </span>
+            <button
+              className="btn estimated-cost"
+              type="button"
+              aria-label={`预计 ${cost} 积分`}
+              title={`预计消耗 ${cost} 积分`}
+              onClick={() => notify(`本次预计消耗 ${cost} 积分，可用 ${currentUser.balance.toLocaleString("zh-CN")} 积分。`)}
+            >
+              <Icon name="coins" size={16} />
+              <span>{cost.toLocaleString("zh-CN")}</span>
+            </button>
             <button
               className="btn btn-primary send-button"
               disabled={!prompt.trim() || sending || uploading}

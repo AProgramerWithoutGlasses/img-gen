@@ -264,25 +264,14 @@
   margin-top: 12px;
   font-weight: 600;
 }
-.credit-prices {
-  margin-top: 28px;
+.credit-history .settings-table-wrap {
+  margin-top: 24px;
 }
-.credit-prices > div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  padding: 17px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 14px;
+.credit-history-table {
+  min-width: 640px;
 }
-.credit-prices > div:last-child {
-  border-bottom: 0;
-}
-.credit-prices dd {
-  margin: 0;
+.credit-history-table td:nth-child(n + 3) {
   white-space: nowrap;
-  color: var(--muted);
 }
 .settings-toolbar {
   display: flex;

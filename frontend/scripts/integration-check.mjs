@@ -3,6 +3,7 @@
 import { chromium, expect } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { randomBytes } from 'node:crypto';
 
 const origin = process.argv[2];
 if (!origin?.startsWith('http://127.0.0.1:')) throw new Error('requires the local Go test server');
@@ -37,6 +38,10 @@ try {
   expect(response.headers()['content-security-policy']).toContain("style-src 'self'");
   await login('admin');
   expect(await page.locator('.preview-badge').count()).toBe(0);
+  await expect(page.locator('.balance-card')).toHaveCount(0);
+  const estimate = page.getByRole('button', { name: '预计 2 积分', exact: true });
+  await expect(estimate).toHaveText('2');
+  await expect(estimate.locator('svg')).toHaveCount(1);
   await shot('01-authenticated');
   const creation = page.getByRole('region', { name: '图像创作', exact: true });
   const before = await creation.getByTestId('generation-turn').count();
@@ -67,6 +72,60 @@ try {
   expect(download.suggestedFilename()).toMatch(/\.png$/);
   expect(await download.failure()).toBeNull();
   await shot('03-generated-and-download');
+  // Exercise real persisted personal usage, including partial settlement and pagination.
+  const readState = async () => {
+    const response = await context.request.get(origin + '/api/studio/state');
+    expect(response.status()).toBe(200);
+    return response.json();
+  };
+  let snapshot = await readState();
+  const ownHistory = state => state.generations.filter(g => g.userId === state.currentUserId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id));
+  for (let i = ownHistory(snapshot).length; i < 11; i++) {
+    const response = await context.request.post(origin + '/api/studio/generations', { data: {
+      prompt: 'usage history browser fixture', attachmentIds: [],
+      options: { modelId: 'gpt-image-2', ratio: '自动', count: 1 },
+      requestId: randomBytes(16).toString('hex'), expectedCredits: snapshot.prices['gpt-image-2'],
+    } });
+    expect(response.status()).toBe(202);
+  }
+  await expect.poll(async () => {
+    snapshot = await readState();
+    return ownHistory(snapshot).some(g => g.status === 'processing');
+  }, { timeout: 15000 }).toBe(false);
+  await page.getByRole('button', { name: '我的账户', exact: true }).click();
+  await page.getByRole('button', { name: '管理账户', exact: true }).click();
+  const submenu = page.locator('#account-management-submenu');
+  await expect(submenu.locator('svg')).toHaveCount(0);
+  await expect(submenu.getByRole('button', { name: '账号设置', exact: true })).toBeVisible();
+  await shot('07-account-history-menu');
+  await submenu.getByRole('button', { name: '积分历史', exact: true }).click();
+  await page.reload();
+  await expect(page.locator('.settings-heading').getByRole('heading', { name: '积分历史', exact: true })).toBeVisible();
+  const usage = page.getByRole('region', { name: '历史用量', exact: true });
+  const expectedHistory = ownHistory(snapshot);
+  const usageRows = usage.locator('tbody tr');
+  await expect(usageRows).toHaveCount(10);
+  for (let i = 0; i < 10; i++) {
+    await expect(usageRows.nth(i).getByRole('cell').nth(2)).toHaveText(`${expectedHistory[i].imageIds.length} 张`);
+    await expect(usageRows.nth(i).getByRole('cell').nth(3)).toHaveText(`${expectedHistory[i].cost} 积分`);
+  }
+  await expect(page.getByText('图片生成价格', { exact: true })).toHaveCount(0);
+  await shot('08-personal-history-first-page');
+  await usage.getByRole('button', { name: '下一页用量', exact: true }).click();
+  await expect(usageRows).toHaveCount(1);
+  await expect(usageRows.first().getByRole('cell').nth(3)).toHaveText(`${expectedHistory[10].cost} 积分`);
+  await expect(usage.getByRole('button', { name: '下一页用量', exact: true })).toBeDisabled();
+  await shot('09-personal-history-second-page');
+  await usage.getByRole('button', { name: '上一页用量', exact: true }).click();
+  await expect(usageRows).toHaveCount(10);
+  const partialIndex = expectedHistory.findIndex(g => g.status === 'failed' && g.imageIds.length > 0);
+  expect(partialIndex).toBeGreaterThanOrEqual(0);
+  if (partialIndex >= 10) await usage.getByRole('button', { name: '下一页用量', exact: true }).click();
+  const partialRow = usageRows.nth(partialIndex % 10);
+  await expect(partialRow).toContainText('部分完成');
+  await expect(partialRow.getByRole('cell').nth(3)).toHaveText('1 积分');
+  await page.getByRole('button', { name: '返回创作', exact: true }).click();
   await page.getByRole('button', { name: '我的图片', exact: true }).click();
   const gallery = page.getByRole('region', { name: '我的图片', exact: true });
   const originalCount = await gallery.locator('.gallery-tile').count();
@@ -131,6 +190,12 @@ try {
   await shot('05-admin-users');
   await logout();
   await login('browser_user', 'browser-password');
+  await page.goto(origin + '/#/settings/credits');
+  await expect(page.locator('.settings-heading').getByRole('heading', { name: '积分历史', exact: true })).toBeVisible();
+  await expect(usage).toContainText('暂无用量记录');
+  await expect(usage).toContainText('共 0 条记录');
+  await expect(usage.getByRole('button', { name: '下一页用量', exact: true })).toBeDisabled();
+  await shot('10-personal-history-empty-account');
   await page.goto(origin + '/#/settings/users');
   await expect(page.getByRole('heading', { name: '没有访问权限', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '返回账户设置', exact: true }).click();

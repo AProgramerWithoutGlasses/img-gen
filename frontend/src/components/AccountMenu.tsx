@@ -96,10 +96,10 @@ export function AccountMenu({
           {submenu === "account" && (
             <div className="account-submenu" id="account-management-submenu" aria-label="管理账户">
               <button onClick={() => onNavigate("/settings/account")}>
-                <span>账号设置</span><Icon name="chevronRight" size={14} />
+                <span>账号设置</span>
               </button>
               <button onClick={() => onNavigate("/settings/credits")}>
-                <span>用量管理</span><Icon name="chevronRight" size={14} />
+                <span>积分历史</span>
               </button>
             </div>
           )}

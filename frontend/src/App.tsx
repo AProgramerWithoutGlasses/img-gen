@@ -16,7 +16,7 @@ import "./features/settings/settings.css";
 const settingsLabels: Record<SettingsSection, string> = {
   account: "账户与安全",
   appearance: "外观与输入",
-  credits: "积分",
+  credits: "积分历史",
   users: "用户管理",
   requests: "请求记录",
   prices: "模型价格",
@@ -302,17 +302,6 @@ function StudioApp() {
           )}
         </nav>
         <div className="sidebar-bottom">
-          {(!collapsed || isSettings) && (
-            <div className="balance-card">
-              <div>
-                <small>积分余额</small>
-                <strong>{currentUser.balance.toLocaleString()}</strong>
-              </div>
-              <button className="btn" onClick={() => notify("充值入口待接入")}>
-                充值
-              </button>
-            </div>
-          )}
           <div className="account-menu-wrap">
             <button
               ref={accountTrigger}

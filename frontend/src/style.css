@@ -245,29 +245,6 @@ small {
   padding: 16px;
   flex: none;
 }
-.balance-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface-alt);
-  padding: 12px 14px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-}
-.balance-card small {
-  font-size: 11px;
-  display: block;
-}
-.balance-card strong {
-  display: block;
-  font-size: 20px;
-  line-height: 26px;
-}
-.balance-card .btn {
-  padding: 4px 12px;
-  min-height: 30px;
-  font-size: 12px;
-}
 .account-trigger {
   display: flex;
   gap: 12px;
@@ -693,6 +670,10 @@ small {
   color: var(--muted);
   font-size: 12px;
   white-space: nowrap;
+  min-width: 60px;
+  height: 40px;
+  padding: 8px 12px;
+  gap: 7px;
 }
 .send-button {
   min-width: 84px;
