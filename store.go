@@ -133,7 +133,10 @@ type picture struct {
 	Content      []byte `json:"-"`
 }
 
-const jobColumns = `id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,actual_model,quality,request_id,endpoint,created_at,started_at,finished_at,(input_image IS NOT NULL),COALESCE(user_id,''),COALESCE((SELECT username FROM users WHERE users.id=jobs.user_id),'历史共享记录'),credits_cost,credits_state,(reference_image IS NOT NULL)`
+// Input bytes and MIME are always persisted together. Read the small MIME
+// columns for presence: testing an off-page LONGBLOB for NULL makes MySQL load
+// that BLOB, turning a metadata snapshot into hundreds of MB of disk reads.
+const jobColumns = `id,batch_id,mode,model,prompt,effective_prompt,ratio,resolution,status,error,actual_model,quality,request_id,endpoint,created_at,started_at,finished_at,(input_mime<>''),COALESCE(user_id,''),COALESCE((SELECT username FROM users WHERE users.id=jobs.user_id),'历史共享记录'),credits_cost,credits_state,(reference_mime<>'')`
 
 type scanner interface{ Scan(...any) error }
 
