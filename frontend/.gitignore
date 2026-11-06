@@ -1,0 +1,10 @@
+node_modules/
+dist/
+outputs/
+.env
+.env.*
+*.local
+*.tsbuildinfo
+# The root data/ rule excludes runtime data; these are frontend source fixtures.
+!src/data/
+!src/data/**
