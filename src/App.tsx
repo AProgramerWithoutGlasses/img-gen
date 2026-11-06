@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "./components/Icon";
 import { Modal } from "./components/Modal";
 import CreationPage from "./features/create/CreationPage";
+import LoginPage from "./features/auth/LoginPage";
 import GalleryPage, { FolderPicker } from "./features/gallery/GalleryPage";
 import SettingsPage from "./features/settings/SettingsPage";
 import { StudioProvider, useStudio } from "./state/StudioContext";
@@ -135,36 +136,14 @@ function StudioApp() {
       setSavingFolder(false);
     }
   }
-  if (!currentUser.id)
+  if (!currentUser.id || route === "/login")
     return (
-      <main className="login-page">
-        <div className="login-card">
-          <div className="brand">
-            <span className="brand-mark">△</span>
-            <strong>AI 图像</strong>
-          </div>
-          <h1>本地预览</h1>
-          <p>选择一个预览账号</p>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              actions.signIn("admin");
-              navigate("/create");
-            }}
-          >
-            管理员预览
-          </button>
-          <button
-            className="btn"
-            onClick={() => {
-              actions.signIn("user");
-              navigate("/create");
-            }}
-          >
-            普通用户预览
-          </button>
-        </div>
-      </main>
+      <LoginPage
+        onLogin={async (username, password) => {
+          await actions.signIn(username, password);
+          navigate(route === "/login" ? "/create" : route);
+        }}
+      />
     );
   return (
     <div

@@ -106,7 +106,7 @@ export function createSeed(): StudioData {
         createdAt: "2026-11-05T08:00:00.000Z",
       },
     ],
-    currentUserId: "admin",
+    currentUserId: "",
     prices: Object.fromEntries(
       MODELS.map((m, i) => [m.id, [2, 2, 3, 1, 1][i]]),
     ) as StudioData["prices"],

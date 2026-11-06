@@ -58,6 +58,47 @@ async function attachGuards(context) {
   });
 }
 
+async function signInAs(username) {
+  await page.getByLabel("用户名", { exact: true }).fill(username);
+  await page.getByLabel("密码", { exact: true }).fill("preview1234");
+  await page.getByRole("button", { name: "登录", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "登录", exact: true }),
+  ).not.toBeVisible();
+}
+
+async function verifyLogin() {
+  const username = page.getByLabel("用户名", { exact: true });
+  const password = page.getByLabel("密码", { exact: true });
+  const submit = page.getByRole("button", { name: "登录", exact: true });
+  await expect(username).toBeVisible();
+  await expect(password).toHaveAttribute("type", "password");
+  if (await submit.isEnabled()) await submit.click();
+  await expect(username).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "主导航" })).toHaveCount(0);
+  await username.fill("admin");
+  if (await submit.isEnabled()) await submit.click();
+  await expect(username).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "主导航" })).toHaveCount(0);
+  await screenshot("login-empty-password");
+
+  await password.fill("wrong-preview-password");
+  await page.getByRole("button", { name: "显示密码", exact: true }).click();
+  await expect(password).toHaveAttribute("type", "text");
+  await expect(password).toHaveValue("wrong-preview-password");
+  await page.getByRole("button", { name: "隐藏密码", exact: true }).click();
+  await expect(password).toHaveAttribute("type", "password");
+  await submit.click();
+  await expect(page.getByRole("alert")).toContainText(/用户名|密码/);
+  await expect(page.getByRole("navigation", { name: "主导航" })).toHaveCount(0);
+  await expect(username).toBeVisible();
+  await screenshot("login-invalid-password");
+  await signInAs("admin");
+  await expect(
+    page.getByRole("textbox", { name: "提示词", exact: true }),
+  ).toBeVisible();
+}
+
 async function verifyCreation() {
   const creation = page.getByRole("region", { name: "图像创作", exact: true });
   const model = creation.getByRole("combobox", { name: "模型", exact: true });
@@ -265,9 +306,9 @@ async function verifyRoleBoundary() {
   await page.getByRole("button", { name: "退出登录", exact: true }).click();
   await guard.getByRole("button", { name: "放弃修改", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "管理员预览", exact: true }),
+    page.getByRole("button", { name: "登录", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "普通用户预览", exact: true }).click();
+  await signInAs("user1");
   await page.getByRole("button", { name: "我的图片", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "还没有生成的图片", exact: true }),
@@ -484,6 +525,7 @@ try {
   expect(response?.ok()).toBe(true);
   await page.locator("#root > *").first().waitFor();
   await page.evaluate(() => document.fonts.ready);
+  await check("login-form", verifyLogin);
   await check("creation-generation-and-attachments", verifyCreation);
   await check("gallery-folder-memberships", verifyGallery);
   await check("settings-preferences-and-prices", verifySettings);
@@ -495,6 +537,7 @@ try {
   await attachGuards(desktop);
   page = await desktop.newPage();
   await page.goto(origin);
+  await signInAs("admin");
   await check("desktop-1280", async () => {
     await expect(
       page.getByRole("textbox", { name: "提示词", exact: true }),

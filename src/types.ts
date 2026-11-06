@@ -121,5 +121,5 @@ export interface StudioActions {
   savePrice: (id: ModelId, amount: number) => Promise<void>;
   changePassword: (current: string, next: string) => Promise<void>;
   signOut: () => void;
-  signIn: (role: StudioUser["role"]) => void;
+  signIn: (username: string, password: string) => Promise<void>;
 }

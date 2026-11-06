@@ -11,6 +11,7 @@ import { createSeed } from "../data/seed";
 import { normalizeOptions } from "../config/models";
 import { placeholderImage } from "../lib/images";
 import { loadData, persistData } from "../services/persistence";
+import { acceptsPreviewCredentials } from "../services/previewAuth";
 import type {
   Folder,
   Generation,
@@ -310,15 +311,16 @@ export function StudioProvider({ children }: { children: ReactNode }) {
           d.currentUserId = "";
         }).catch((e) => setError(e.message));
       },
-      signIn: (role) => {
-        void update((d) => {
+      signIn: (username, password) =>
+        update((d) => {
           const user = d.users.find(
-            (u) => u.role === role && u.status === "enabled",
+            (u) => u.username === username && u.status === "enabled",
           );
-          if (!user) throw new Error("没有可用账号");
+          if (!user || !acceptsPreviewCredentials(username, password)) {
+            throw new Error("用户名或密码不正确");
+          }
           d.currentUserId = user.id;
-        }).catch((e) => setError(e.message));
-      },
+        }),
     };
   }, []);
   if (error)

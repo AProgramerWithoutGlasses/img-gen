@@ -832,11 +832,12 @@ small {
 .login-card {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  width: 360px;
-  padding: 32px;
+  gap: 28px;
+  width: min(420px, calc(100% - 48px));
+  padding: 40px;
   border: 1px solid var(--border);
   border-radius: 10px;
+  background: var(--surface);
 }
 .brand {
   display: flex;
@@ -844,8 +845,66 @@ small {
   align-items: center;
   margin-bottom: 12px;
 }
-.login-card p {
+.login-page {
+  background: var(--sidebar);
+  padding: 32px 0;
+  overflow: auto;
+}
+.login-preview-badge {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+}
+.login-brand {
+  justify-content: center;
+  margin-bottom: 0;
+  font-size: 18px;
+}
+.login-card h1 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+}
+.login-field input {
+  width: 100%;
+  height: 46px;
+}
+.login-password {
+  position: relative;
+  display: flex;
+}
+.login-password input {
+  padding-right: 68px;
+}
+.login-password button {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  height: 32px;
+  padding: 0 9px;
+  font-size: 13px;
   color: var(--muted);
+  border-radius: 4px;
+}
+.login-password button:hover {
+  background: var(--surface-alt);
+}
+.login-submit {
+  width: 100%;
+  height: 46px;
+  margin-top: 6px;
+  font-size: 16px;
 }
 .app-shell {
   --sidebar-width: 280px;
