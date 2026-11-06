@@ -1,49 +1,56 @@
 # UI Studio
 
-项目总览、设计原稿、版本状态、目录体积与后续整理建议见 [项目盘点报表（2026-11-07）](docs/project-report-2026-11-07.md)。
+私有生图工作室：React / TypeScript / Vite 前端，Go + MySQL 后端，静态前端嵌入 Go 二进制。保留现有创作、我的图片、设置和管理员页面。
 
-后续统一在 `C:\Users\13556\Documents\ui-studio` 开发，根目录 `main` 跟踪原GitHub仓库 `AProgramerWithoutGlasses/img-gen` 的 `main`。保留这个远程地址及网站，`img-gen`仅是沿用的远程/服务名称，不再代表需要切换的本地开发项目。
+唯一开发目录：`C:\Users\13556\Documents\ui-studio`。`main` 跟踪 GitHub [`AProgramerWithoutGlasses/img-gen`](https://github.com/AProgramerWithoutGlasses/img-gen)；仓库和服务继续沿用 `img-gen` 名称，网站为 [`img.xunxun.me`](https://img.xunxun.me)。
 
-当前前后端与设计稿均在此目录：页面源码 `frontend/`，FigCraft稿 `design/start.figcraft`。首次安装分别执行根目录与frontend的 `npm ci`；根目录 `npm run dev` 启动真实前端联调，`npm run dev:preview` 启动独立模拟预览，`npm run design:open` 打开设计稿，`npm run build` 构建Go所需的静态资源。推送及部署仍分别等待用户授权。
+## 从这里开始
 
-Go + MySQL 后端与 React/TypeScript/Vite 前端。当前界面源码统一位于 `frontend/`；接口与运行方式见 [前后端适配说明](docs/studio-integration.md)，目录和分支说明见 [仓库说明](docs/repository-layout.md)。旧前端已从当前代码中清除，历史版本仍可通过 Git 找回。
+| 要做什么 | 入口 |
+| --- | --- |
+| 查看分支、未提交改动、依赖和原稿状态 | `npm run status`；需要实时查 GitHub 时用 `npm run status:remote` |
+| 日常开发、选择检查范围 | [工作流程](docs/workflow.md) |
+| 查看现行说明与历史资料分类 | [文档导航](docs/README.md) |
+| 修改接口、模型控件或图片处理 | [服务端适配与能力边界](docs/studio-integration.md) |
+| 发布或回滚 | [部署说明](docs/DEPLOYMENT.md) |
+| 编辑设计原稿 | `npm run design:open`；[设计工具说明](docs/efficiency.md) |
 
-日常使用固定本地检出目录；推送、部署分别须用户同意。[工作流程](docs/workflow.md) 包含聊天归档衔接和本地发布缓存。`node scripts/prepare-release.mjs` 仅准备本地产物，不推送或部署。
+## 首次运行
 
-新版支持服务端账号登录、对话式创作、六附件、任务轮询、原图下载、图库多文件夹归类、个人设置、用户管理、请求记录和模型按张定价。保留当前界面，没有恢复旧双图角色面板、润色或多模型流程。
-
-## 本地运行
-
-需要 Go 1.25+、Node.js 22.12+、MySQL 8.0+（推荐8.4）。沿用服务端 MYSQL_DSN、QISO_API_KEY、QISO_BASE_URL、ADMIN_USERNAME、ADMIN_PASSWORD 环境变量或本地 .env；密钥不进入前端。首次运行仅在用户表为空时建立管理员。
+需要 Node.js 22.12+、Go 1.25+、MySQL 8.0+（新环境推荐 8.4）。从项目根目录执行：
 
 ```powershell
-cd frontend
 npm ci
-npm run build:server
-cd ..
+npm --prefix frontend ci
+# 按 .env.example 在本地配置 MySQL 和上游凭据，不能使用生产数据库。
+npm run build
 go run .
 ```
 
-打开 http://127.0.0.1:8080 。先构建前端再构建/启动 Go；生成的 web/studio 不提交。Dockerfile 也自动完成 Node → Go 构建，不需预先提交静态产物。线上发布步骤见 [部署说明](docs/DEPLOYMENT.md)；提交并推送不会自动部署。
+访问 `http://127.0.0.1:8080`。`.env` 仅留本地，已有依赖不必每次重装。初次启动只在用户表为空时创建管理员，所需配置见 `.env.example`。
 
-联调：在 Go 运行时执行 frontend/npm run dev，5174端口通过同源代理访问本地8080。纯模拟预览需明确使用 npm run dev:preview；真实模式不接受公开演示账号或使用 IndexedDB 业务数据。充值服务仍未接入。
+## 常用命令
 
-## 检查
+| 命令 | 用途 |
+| --- | --- |
+| `npm run dev` | 前端热更新，5174 端口同源代理本地 Go 8080；Go 需另行运行 |
+| `npm run dev:preview` | 独立模拟预览，不需要后端，不写入真实业务数据 |
+| `npm run build` | 构建前端并同步到 `web/studio/`，供 Go 嵌入 |
+| `npm run check:docs` | 检查现行文档入口的本地文件链接 |
+| `npm run check:tools` | 工具语法、状态命令测试、现行文档链接检查 |
+| `npm run check` | 前端类型和脚本检查，加上本地工具检查；不构建 |
+| `npm run verify` | 前端构建及原有 7 条模拟浏览器流程；不连真实上游 |
+| `npm run verify:all` | 工具检查、一次前端构建、模拟浏览器检查、产物同步及 Go test/vet/build |
+| `npm run release:prepare` | 从干净提交准备并缓存本地 Linux 发布包；不推送、不部署 |
 
-```powershell
-cd frontend
-npm run verify
-npm run build:server
-cd ..
-go test ./...
-go vet ./...
-go build ./...
-```
+仅改文档运行 `check:docs` 即可。其他改动按 [检查矩阵](docs/workflow.md#按改动选择检查) 执行；真实 MySQL/Go 浏览器联调另需专用空 `_test` 数据库，不能把模拟检查当作真实渠道验证。
 
-设置 TEST_MYSQL_DSN 为**空的、名称以_test结尾的专用数据库**可运行真实数据库检查；再设置 STUDIO_BROWSER_CHECK=1，将在真实 Go/MySQL 上跑浏览器操作。详见 [适配验证](docs/studio-integration.md#验证)。上游仅使用协议fixture，不进行付费调用。
+## 源码和资料
 
-新增数据库迁移只建立批次/附件/文件夹关联表，保留已有账号、积分和图片。每张输出单独调用、冻结和结算，失败或中断不自动重试。输入压缩、预览压缩和原图下载设定保留。
+- 当前前端：`frontend/`；后端：根目录 Go 文件。旧根 `src/` 不再是开发入口。
+- 设计原稿：[`design/start.figcraft`](design/start.figcraft)；原生成控件图：[`docs/design/`](docs/design/README.md)。
+- 当前目录职责见 [仓库结构](docs/repository-layout.md)；2026-11-07 的静态盘点见 [项目报表](docs/project-report-2026-11-07.md)，即时版本以状态命令和服务器实际记录为准。
 
-模型控件按当前渠道实测能力显示；实际尺寸、质量和底层模型仍取决于渠道。现有GPT链路不能可靠兑现size/quality，因此不展示这些控件；六图编辑和部分组合未完成真实上游验证。不能把本地协议验证当作能力认证。原有Qiso探测报告、探测脚本和后端旧接口兼容测试均保留。
+每张图片单独调用，失败和中断不自动重试。模型参数以上游实测边界为准；充值未接入。不要把 `.env`、数据库、缓存、日志或 `outputs/` 提交到 Git。
 
-当前为单实例私有工作室，工作区读取授权范围内的全量元数据，图片按私有URL加载；大规模历史的分页适配边界见说明文档。
+推送和部署分别需要用户对本次工作明确同意。本地提交、状态查询、构建和发布准备均不会自动发布网站。

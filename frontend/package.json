@@ -11,10 +11,11 @@
     "dev:preview": "vite --mode preview",
     "check": "tsc --noEmit && node scripts/check-scripts.mjs",
     "build": "tsc --noEmit && vite build",
-    "build:server": "npm run build && node scripts/sync-server.mjs",
+    "sync:server": "node scripts/sync-server.mjs",
+    "build:server": "npm run build && npm run sync:server",
     "preview": "vite preview",
     "preview:check": "node scripts/preview-check.mjs",
-    "verify:frontend": "npm run check && npm run build && npm run preview:check",
+    "verify:frontend": "node scripts/check-scripts.mjs && npm run build && npm run preview:check",
     "verify": "npm run verify:frontend"
   },
   "dependencies": {

@@ -1,48 +1,34 @@
-# FigCraft 自动化工作流
+# FigCraft 设计工具流程
 
-> 当前入口说明（2026-11-07）：设计稿已有完整内容；下文“当前空白文件”是迁移初期的描述。现在 `npm run verify` 只执行前端检查，设计审计和导出使用独立的 `npm run design:verify`，仅在相关设计改动后运行。日常开发和发布以 [固定工作流程](workflow.md) 为准，项目现状见 [盘点报表](project-report-2026-11-07.md)。
+当前工作稿是 `design/start.figcraft`，已有创作、我的图片、组件状态、设置与管理内容。旧 OpenPencil 文件仅在 [迁移归档](../archive/README.md) 中保留，不覆盖当前稿。
 
-2026-11-06：主工具从 OpenPencil 切换为用户安装的 FigCraft 0.15.1。旧工作稿、配置、依赖锁和文档完整归档，见 [archive/README.md](../archive/README.md)。
+## 配置与连接
 
-## 连接方式
+`figcraft.config.json` 是应用、CLI、工作稿和控制端口的配置入口；项目 `.codex/config.toml` 通过 `scripts/figcraft-mcp.mjs` 连接。启动器检查并复用匹配的 FigCraft 进程，再使用官方 `figcraft-cli mcp --attach`，不翻译协议。
 
-[figcraft.config.json](../figcraft.config.json) 是可执行文件路径、工作稿和控制端口的唯一项目配置。MCP 通过 [scripts/figcraft-mcp.mjs](../scripts/figcraft-mcp.mjs) 启动：检查本地控制端口，启动或复用匹配的 FigCraft 桌面应用，再直接运行官方 `figcraft-cli mcp --attach`，不翻译或重写 MCP 协议。
+当前配置为安装版 FigCraft、`127.0.0.1:47800`。若端口属于其他应用，或已有 FigCraft 的读写根目录不匹配，启动器报错，不关闭用户进程。先保存后处理冲突，或显式调整配置。普通开发状态查询无需连接 FigCraft。
 
-默认控制地址为 `127.0.0.1:47800`。若端口属于其他进程，或已有 FigCraft 的文件访问目录不同，启动器报错而不关闭用户应用。需要先保存后关闭该会话，或在配置中选择空闲端口。
+## 编辑一次设计
 
-工具保留原生 19 项。确定性的重复操作通过官方 MCP JavaScript SDK 和 CLI 执行；不依赖逐个点击。命令语法以安装版 `list_commands {filter}` 为准。通用 `run_command` 能访问更多内部动作，19 个入口不等于只有 19 项设计能力。
+1. `npm run design:open` 打开工作稿，使用 `doc.list` 和指定文档的 `inspect_document` 核对文档、选区和未保存状态。
+2. 少量查询 `list_commands`，确定参数后用 `batch` 完成相关父子节点操作。明确指定 `document`；复杂操作分成可审阅批次。
+3. 编辑后保存。可复用操作放入 `design/commands/*.json`，以 `npm run design:batch -- design/commands/文件.json` 执行；报错先检查当前状态，不自动重试。
+4. `npm run design:verify` 审计已保存稿并导出页面；只查看本次相关画面。需要未保存画布截图时使用 `npm run design:snapshot -- 节点ID`。
+5. 工具连接或自动化实现改变后才运行 `npm run design:smoke`，不为普通前端小改重跑它。
 
-## 日常流程
+| 命令 | 结果与边界 |
+| --- | --- |
+| `design:status` | 查询版本、工具和打开文档；会连接设计应用 |
+| `design:audit` | 检查已保存稿、字体和诊断，输出到 `outputs/design-audit/`；文件检查前后变化时报错 |
+| `design:export` | 按页导出到独立目录，`latest.json` 指向本次结果；空页明确跳过 |
+| `design:snapshot` | 截取指定节点或画布；不把旧截图当作新结果 |
+| `design:verify` | 审计加导出，不是网页业务测试 |
+| `design:smoke` | 临时文档中的真实 MCP 连通、批次、回滚、保存重开等检查 |
 
-1. 确定首个界面的用户、任务和设备，再开始设计。当前空白文件不是错误，不建立空白页视觉基准。
-2. `npm run design:open`；读取 `doc.list` 和指定文档的浅层 `inspect_document`，核对选区、脏状态。后续调用明确传 `document`。
-3. 查少量需要的命令参数，使用一次 `batch` 完成已确定的父子节点结构；用 `as/$ref` 连接步骤。复杂设计拆成可审阅的小批次。
-4. 编辑完成后 `save_file`。重复操作可写入 `design/commands/*.json`，用 `npm run design:batch -- design/commands/文件.json` 执行并保存。批次或保存报错时先检查当前文档，不自动重试。
-5. 运行 `npm run design:verify`，审计已保存文件，并按页导出 PNG。空页明确跳过；导出每次使用独立目录，`latest.json` 指向本次结果，避免混入旧截图。
-6. 需要检查未保存画布时用 `npm run design:snapshot -- [节点ID]`。只拿有关区域给 AI 审阅，减少全页图和节点输出。
-7. 实现网页后运行 `npm run verify`：保留 Playwright 的 1440×900、390×844 浏览器检查、报错/溢出/异常请求检测，并串联设计审计和导出。
-8. 审阅证据后本地提交。连接或脚本改动另跑 `npm run design:smoke`，临时测试内容只进入 `outputs/`。
+`npm run verify` 仅验证前端，不再附带设计审计；业务检查选择见 [工作流程](workflow.md)。
 
-## 文件与执行边界
+## 保留和验证边界
 
-- 画布主文件是 `design/start.figcraft`；不把实验性的 `.fig` 往返当作主存储路径。
-- GUI 与 CLI 使用同一安装目录中的二进制和本机字体。升级 FigCraft 后跑一次 `design:smoke`。
-- MCP 附加模式在 GUI 内执行；文件读写目录通过 GUI 启动参数设置。CLI 离线审计/导出也传入同样的目录参数。
-- 审计报告会记录版本、内容节点数、字体问题、修复提示、文件 SHA-256 和耗时。文件在审计期间发生改变会报错；有缺失字体或导入警告时返回非零。
-- 审计检查已保存文件。实时画布是否存在未保存编辑由 `inspect_document` 判断，不把磁盘结果解释为实时结果。
-- 原生 batch 的失败回滚与撤销粒度用于减少半完成状态；实际视觉质量仍需查看截图。
-- 当前没有与 OpenPencil 的同任务性能对照，不承诺切换后的速度倍数。
+已保存文件的审计不代表桌面没有未保存编辑；静态画框不代表业务交互已实现。GUI/CLI 使用相同安装版与字体，升级工具后执行一次 smoke 检查。不承诺未经同任务测量的性能倍数。
 
-## 按实际需要接入的成熟工具
-
-| 步骤 | 方案 | 当前采用方式 |
-| --- | --- | --- |
-| 浏览器操作、截图、错误检查 | [Playwright](https://github.com/microsoft/playwright) | 已接入；有实际交互后添加点击/状态断言 |
-| 像素差异图 | [Playwright screenshot assertions](https://playwright.dev/docs/test-snapshots) | 首屏审阅通过后建基准，固定字体、视口和数据；不自动接受差异 |
-| 可访问性初筛 | [axe-core/Playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) | 首屏有内容后整合，仍需人工键盘检查 |
-| 组件状态与交互复现 | [Storybook](https://github.com/storybookjs/storybook) | 开始复用组件时加入，暂不建立大量规范板 |
-| 本地图标资产 | [Iconify](https://github.com/iconify/iconify) | 选定方向后固定一套 SVG/图标包；通过 FigCraft 文件导入 |
-| 截图对照拼板与压缩 | [sharp](https://github.com/lovell/sharp) | 画面增多时加入 |
-| MCP 客户端 | [官方 TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) | 已使用 SDK 1.32.2 进行连接、工具调用和连通性测试 |
-
-来源：[FigCraft MCP](https://github.com/storytold/figcraft/blob/main/docs/mcp.md)、[CLI](https://github.com/storytold/figcraft/blob/main/docs/cli.md)、[桌面控制协议](https://github.com/storytold/figcraft/blob/main/docs/control-protocol.md)、[Codex MCP 配置](https://developers.openai.com/codex/mcp/)。
+`design/` 保存稿件、素材和设计命令；`outputs/` 保存本地审计、导出和证据，不提交。研究截图、唯一备份和当前聊天 Git 元数据不能按临时文件整体删除。用户参考图不因同步或整理被覆盖。

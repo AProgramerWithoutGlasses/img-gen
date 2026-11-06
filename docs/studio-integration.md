@@ -1,20 +1,20 @@
 # 新前端服务端适配
 
-2026-11-06。基于合并后的 `14dbf36` 和 `frontend/BACKEND_HANDOFF.md`。沿用新版页面和操作，不引入旧视觉规范、双图角色面板、润色、多模型或图片删除功能。
+本文维护当前运行协议与已知边界。最初接入于2026-11-06，基于 `14dbf36` 和历史 `frontend/BACKEND_HANDOFF.md`；历史交接中的“未接入/未上线”不再作为现状。沿用新版页面和操作，不引入旧视觉规范、双图角色面板、润色、多模型或图片删除功能。日常命令与检查范围统一见 [工作流程](workflow.md)。
 
-本次用户确认的控件更新：GPT隐藏当前渠道不兑现的质量/分辨率档位，仅保留比例提示和数量；Flash保留已实测的512/1K/2K/4K及自动、1:1、9:16、16:9、4:3、21:9，Pro名称按当前映射实测保留同样分辨率及自动、1:1、9:16、16:9，不代表真实Pro能力。附件编辑使用自动比例/默认分辨率；前后端同步校验。下文参数转发部分保留初始接入历史，本段为现行规则。原控件设计图及配置快照位于 `docs/design/`。
+## 当前控件
+
+| 模型 | 分辨率控件 | 比例控件 | 能力边界 |
+| --- | --- | --- | --- |
+| GPT Image 2 / 1.5 / 2.5 Sunburst | 不展示；不展示质量档位 | 自动、1:1、16:9、9:16、3:2 | 比例只写入提示词，不能承诺固定输出尺寸 |
+| Gemini 3.1 Flash Image | 0.5K、1K、2K、4K（0.5K 发为512） | 自动、21:9、16:9、4:3、1:1、9:16 | 仅按渠道已探测范围使用，不泛化到任意组合 |
+| Gemini 3 Pro Image | 同上 | 自动、1:1、9:16、16:9 | 存在映射到Flash的实测证据，不宣称真实Pro能力 |
+
+每次输出1–4张；有附件时使用自动比例及默认参数，前后端同步校验。调整前的外观和完整选项保存在 [原控件存档](design/README.md)，不覆盖当前控件。
 
 ## 启动
 
-```powershell
-cd frontend
-npm ci
-npm run build:server
-cd ..
-go run .
-```
-
-Go 默认提供当前前端，需要已有 MySQL 和服务端环境变量。未构建前端时启动明确报错。`web/studio/` 是忽略提交的构建产物；旧 HTML/CSS/JavaScript 和字体已清除，`web/README.md` 说明嵌入目录用途。Docker 的 Node 阶段复制 dist 到 Go 的嵌入资源。
+首次安装和启动按 [项目入口](../README.md#首次运行)。Go 默认提供当前前端，需要本地 MySQL 和服务端环境变量，不使用生产数据库；前端输入变化时执行根目录 `npm run build` 后再运行Go。`web/studio/` 是忽略提交的构建产物；未构建时启动明确报错。Docker 的 Node 阶段自动把前端产物复制到 Go 的嵌入目录。
 
 开发时 `frontend/npm run dev` 同源代理到本机 8080，Cookie 仍由服务端设置，未放宽 CORS、Origin 或 CSP。`npm run dev:preview` 才使用原有 IndexedDB 模拟预览。生产构建剔除模拟 provider、公开演示密码与 seed。
 
@@ -46,10 +46,10 @@ Go 默认提供当前前端，需要已有 MySQL 和服务端环境变量。未�
 
 新版接口独立校验现有前端选项，不套用旧接口的16:9/default组合白名单。旧/api/jobs保留协议和验证，未删除探测报告或测试。
 
-- “自动”不生成比例限制；GPT比例继续写入提示词，同时显式传quality和size；中文质量映射为auto/max/xhigh/high/medium/low。GPT Image 1.5按1024×1024/1536×1024/1024×1536映射，其他GPT按所选长边与比例计算8像素对齐尺寸；1:1 HD最低2048边长。
+- 当前GPT不提供质量和分辨率控件，生成请求不发送这些无效档位；比例写入提示词，“自动”不生成比例限制。代码中保留的quality/size映射实现不代表当前界面开放这些参数。
 - Gemini使用generationConfig.imageConfig.aspectRatio/imageSize，0.5K映射为512。保留原生返回thought过滤，不走会混入草稿的Chat转换接口。不混淆quality与reasoning，也不额外发送reasoning字段。
 - `Qiso-生图参数链路验证-2026-11-05.md` 已证明Flash部分比例及512/1K/2K/4K组合；Pro名称存在映射到Flash的证据。其余比例和六图编辑仅完成本地协议验证。
-- 同日GPT报告已证明当前渠道的size/quality不能可靠兑现。转发字段不等于修复上游；options记录请求值，实际图片尺寸来自解码，旧任务API保留actual_model/quality等返回事实。不进行真实付费探测，不将这一适配声称为参数效果已验证。
+- 同日GPT报告已证明当前渠道的size/quality不能可靠兑现。options记录请求值，实际图片尺寸来自解码，旧任务API保留actual_model/quality等返回事实。本地协议测试不证明渠道兑现了参数；重新验证上游需单独明确任务范围，不因普通适配或检查发起付费探测。
 
 ## 数据规模
 
@@ -57,18 +57,13 @@ Go 默认提供当前前端，需要已有 MySQL 和服务端环境变量。未�
 
 ## 验证
 
+普通检查按 [工作流程](workflow.md#按改动选择检查)，不必每次完整联调。需要真实Go/MySQL浏览器验证时，先准备空的专用 `_test` 数据库，再在同一终端运行：
+
 ```powershell
-cd frontend
-npm run verify
-npm run build:server
-cd ..
-go test ./...
-go vet ./...
-go build ./...
-# 仅空的、专用且以_test结尾的数据库；测试创建并清理自己的表。
+# 按本地测试库填写DSN，不能指向已有数据或生产数据库。
 $env:TEST_MYSQL_DSN = '.../studio_integration_test?parseTime=true'
 $env:STUDIO_BROWSER_CHECK = '1'
-go test -run TestStudioMySQLWorkflow -count=1 -v
+npm run verify:all
 ```
 
 真实MySQL检查迁移、重复提交、部分失败结算、六附件传递、跨用户权限、文件夹多归属和删除保图、结果复用、改密失效。浏览器直接请求真实Go和MySQL，只有图片上游用本地fixture；验证Go的真实CSP、登录、发送、下载、文件夹刷新、价格保存、创建账号和改密。截图在frontend/outputs/integration/，测试日志和临时数据库在outputs/，均不提交。测试不代表真实渠道支持全部请求参数。
