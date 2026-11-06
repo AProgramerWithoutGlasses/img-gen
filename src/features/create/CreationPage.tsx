@@ -149,7 +149,11 @@ export default function CreationPage({
                 )}
                 <div className="result-images">
                   {images.map((image) => (
-                    <div className="result-card" key={image.id}>
+                    <div
+                      className="result-card"
+                      key={image.id}
+                      style={{ width: 258 * (image.width / image.height) + 2 }}
+                    >
                       <button
                         className="result-open"
                         onClick={() => onPreview(image, images)}

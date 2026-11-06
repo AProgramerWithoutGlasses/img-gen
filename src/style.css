@@ -462,7 +462,8 @@ small {
   gap: 16px;
 }
 .result-card {
-  width: min(344px, calc(50% - 8px));
+  max-width: 100%;
+  flex-shrink: 0;
   border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
@@ -482,9 +483,9 @@ small {
 }
 .result-actions {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   align-items: center;
-  padding: 10px 14px;
+  padding: 10px 12px;
   height: 42px;
 }
 .result-actions button {
