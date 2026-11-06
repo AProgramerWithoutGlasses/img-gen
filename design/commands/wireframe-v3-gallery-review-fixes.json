@@ -1,0 +1,296 @@
+[
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        989
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "图库按图片原比例行对齐。点击查看，选择模式支持单选/多选归类。全部图片只计唯一图片；不提供图片删除或回收站。排序和刷新规则见顶层画框标注。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2431
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "图库按图片原比例行对齐。点击查看，选择模式支持单选/多选归类。全部图片只计唯一图片；不提供图片删除或回收站。排序和刷新规则见顶层画框标注。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2564
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "图库按图片原比例行对齐。点击查看，选择模式支持单选/多选归类。全部图片只计唯一图片；不提供图片删除或回收站。排序和刷新规则见顶层画框标注。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1191
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "图库按图片原比例行对齐。点击查看，选择模式支持单选/多选归类。全部图片只计唯一图片；不提供图片删除或回收站。排序和刷新规则见顶层画框标注。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2697
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "图库按图片原比例行对齐。点击查看，选择模式支持单选/多选归类。全部图片只计唯一图片；不提供图片删除或回收站。排序和刷新规则见顶层画框标注。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4027
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "图库按图片原比例行对齐。点击查看，选择模式支持单选/多选归类。全部图片只计唯一图片；不提供图片删除或回收站。排序和刷新规则见顶层画框标注。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        989,
+        2564
+      ],
+      "props": {
+        "height": 685
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2834,
+        2836,
+        2838,
+        2859,
+        2864,
+        2869
+      ],
+      "props": {
+        "y": 0,
+        "fontSize": 14,
+        "lineHeight": 20
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1050
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "全库尚无生成图片。显示去图像创作；允许先建文件夹。新生成成功图按本项目建议自动入库，不要求手工保存。此状态下计数全部0，无既有自定义文件夹。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2766
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "空文件夹仍可通过标题右侧更多重命名或删除（仅容器、保留图片）。从图库选择入口打开选择状态，加入当前文件夹。"
+        }
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "emptyFolderMore",
+    "params": {
+      "ids": [
+        2817
+      ],
+      "map": true,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyFolderMore",
+          "field": "ids/0"
+        }
+      ],
+      "parent": 2634
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyFolderMore",
+          "field": "ids/0"
+        }
+      ],
+      "props": {
+        "x": 1338,
+        "y": 101
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        3267
+      ],
+      "props": {
+        "description": "仅自定义文件夹内选择图片时提供“移出此文件夹”。加入文件夹后保留选择，可继续整理；移出成功后清空本次选择。其他集合只有加入文件夹。"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4028
+      ],
+      "props": {
+        "name": "图库 / 图片 13"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4035
+      ],
+      "props": {
+        "name": "图库 / 图片 14"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4040
+      ],
+      "props": {
+        "name": "图库 / 图片 01"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4045
+      ],
+      "props": {
+        "name": "图库 / 图片 02"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4050
+      ],
+      "props": {
+        "name": "图库 / 图片 03"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4055
+      ],
+      "props": {
+        "name": "图库 / 图片 04"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4060
+      ],
+      "props": {
+        "name": "图库 / 图片 05"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4065
+      ],
+      "props": {
+        "name": "图库 / 图片 06"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4070
+      ],
+      "props": {
+        "name": "图库 / 图片 07"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4075
+      ],
+      "props": {
+        "name": "图库 / 图片 08"
+      }
+    }
+  }
+]

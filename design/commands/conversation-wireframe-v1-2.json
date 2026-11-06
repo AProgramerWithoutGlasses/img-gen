@@ -1,0 +1,151 @@
+[
+  {
+    "command": "component.deleteProperty",
+    "params": {
+      "id": 701,
+      "name": "参数名"
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        693,
+        728,
+        698,
+        702
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        726
+      ],
+      "props": {
+        "name": "05 附件行 / 有图显示",
+        "pluginData": {
+          "designNotes": "有图片时显示附件行；点击各图片右上角×移除对应图片，移除最后一张后整行消失。没有手动收起/展开，不显示标题或数量。附件行在文字输入框外上方，文字区保持完整。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        676
+      ],
+      "props": {
+        "x": 16,
+        "width": 1008,
+        "pluginData": {
+          "designNotes": "图片卡片单行排列，首项与输入框内边距对齐。各项右上角×移除本图；列表变空时隐藏整个附件行。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        699,
+        703
+      ],
+      "props": {
+        "fontSize": 16,
+        "x": 10,
+        "y": 10,
+        "height": 24,
+        "lineHeight": 24,
+        "textAutoResize": "none"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        700,
+        704
+      ],
+      "props": {
+        "y": 20
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        719
+      ],
+      "props": {
+        "fontSize": 16,
+        "y": 10,
+        "height": 24,
+        "lineHeight": 24,
+        "textAutoResize": "none"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        696
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "常驻＋后依次展示模型、档位、比例、清晰度、数量的当前值，省略控件内的小字说明标签。选择器高度44px不变，值文字16px，垂直居中；积分与发送保持相邻。"
+        }
+      }
+    }
+  },
+  {
+    "command": "comment.edit",
+    "params": {
+      "id": 9,
+      "author": "设计标注",
+      "text": "附件栏规则（用户确认）：添加图片后显示；点击图片右上角×移除该图，最后一张移除后整栏消失。不显示“参考图片·2”或“收起”，不提供手动折叠。附件栏仍位于文字输入框外上方，文字输入空间不受影响。"
+    }
+  },
+  {
+    "command": "comment.edit",
+    "params": {
+      "id": 8,
+      "author": "设计标注",
+      "text": "上传＋常驻输入框左下角。附件数量>0时在框外上方显示附件栏，数量=0时整栏隐藏；逐项×移除。输入文字区和底部操作栏的尺寸、位置保持不变。"
+    }
+  },
+  {
+    "command": "comment.edit",
+    "params": {
+      "id": 4,
+      "author": "设计标注",
+      "text": "选择器直接展示当前内容（16px），省略“模型/档位/比例/清晰度/数量”小标签，按钮尺寸保持不变。GPT Image系列显示档位，两个Gemini模型隐藏档位；GPT Image1.5无独立清晰度时隐藏该控件。对应身份保留在图层名称和此注释中。"
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        649
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        644
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "本容器包含本轮用户消息及对应结果。已生成图片直接表达完成和数量，标题右侧不重复显示“已完成·张数”提示；其他未设计状态另行审阅。"
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,45 @@
+[
+  {
+    "command": "page.select",
+    "params": {
+      "id": 2
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "addedResult",
+    "params": {
+      "ids": [
+        1278
+      ],
+      "dx": -3120,
+      "dy": 2080,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "addedResult",
+          "field": "ids/0"
+        }
+      ],
+      "props": {
+        "name": "创作 · 结果已添加为附件 · 1440×900"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "addedResult",
+          "field": "map/1398"
+        }
+      ]
+    }
+  }
+]

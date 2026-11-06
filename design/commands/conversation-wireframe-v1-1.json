@@ -1,0 +1,817 @@
+[
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        612
+      ],
+      "props": {
+        "width": 280,
+        "name": "01 侧栏 / 展开",
+        "pluginData": {
+          "designNotes": "可收起侧栏。展开宽280px，收起为72px图标栏；顶部按钮切换，收起后相同顶部位置保留展开入口。当前为展开静态画面，不制作交互原型。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        613
+      ],
+      "props": {
+        "x": 279
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        618,
+        623,
+        628,
+        633,
+        634
+      ],
+      "props": {
+        "width": 248
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        631
+      ],
+      "props": {
+        "x": 182
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        639
+      ],
+      "props": {
+        "x": 233
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        640
+      ],
+      "props": {
+        "x": 280,
+        "width": 1160
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        642
+      ],
+      "props": {
+        "width": 1160
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        643
+      ],
+      "props": {
+        "x": 1000
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        644,
+        675
+      ],
+      "props": {
+        "x": 340
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        696
+      ],
+      "props": {
+        "name": "输入区 / 上传、模型与参数工具栏",
+        "pluginData": {
+          "designNotes": "左下角常驻上传＋，之后为模型、档位、比例、清晰度、数量。无附件与有附件时，＋按钮位置保持一致。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        691
+      ],
+      "parent": 696,
+      "index": 0
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        691
+      ],
+      "props": {
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 44,
+        "name": "输入区 / 上传图片 ＋",
+        "fill": "none",
+        "stroke": "none",
+        "dashes": [],
+        "cornerRadius": 4,
+        "pluginData": {
+          "designNotes": "输入区左下角常驻上传按钮；点击选择图片。附件显示于提示词上方，与上传入口分离。空态和上传后保持相同位置。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        692
+      ],
+      "props": {
+        "name": "上传加号",
+        "characters": "＋",
+        "x": 7,
+        "y": 6,
+        "width": 26,
+        "height": 32,
+        "fontSize": 24,
+        "lineHeight": 32,
+        "textAlign": "center",
+        "textAutoResize": "none",
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        697
+      ],
+      "props": {
+        "x": 48
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        701
+      ],
+      "props": {
+        "x": 308
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        705
+      ],
+      "props": {
+        "x": 420
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        709
+      ],
+      "props": {
+        "x": 532
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        713
+      ],
+      "props": {
+        "x": 644
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        717
+      ],
+      "props": {
+        "x": 770,
+        "width": 110
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        705
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "图像比例按当前模型配置；不会因为Gemini不支持质量档位而隐藏比例控件。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        713
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "单次生成数量1–4张，当前2张。与档位显示条件独立。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "component",
+      "name": "侧栏 / 收起与展开入口",
+      "parent": 612,
+      "x": 232,
+      "y": 22,
+      "width": 32,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 4,
+        "description": "当前为展开侧栏的收起入口。收起后侧栏宽72px，此入口显示展开方向；静态示意，不添加交互连线。"
+      }
+    },
+    "as": "sidebarToggle"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "侧栏轮廓",
+      "parent": {
+        "$ref": "sidebarToggle"
+      },
+      "x": 6,
+      "y": 7,
+      "width": 20,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.4,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "侧栏分隔",
+      "parent": {
+        "$ref": "sidebarToggle"
+      },
+      "x": 13,
+      "y": 7,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          18
+        ]
+      ],
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.4
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "收起方向",
+      "parent": {
+        "$ref": "sidebarToggle"
+      },
+      "x": 18,
+      "y": 12,
+      "points": [
+        [
+          3,
+          0
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          3,
+          8
+        ]
+      ],
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.4,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      }
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 2,
+      "anchor": {
+        "$ref": "sidebarToggle"
+      },
+      "x": 264,
+      "y": 38,
+      "author": "设计标注",
+      "text": "本轮调整：展开侧栏宽280px；点击顶部入口收起为72px图标栏。收起后仍在顶部保留展开按钮，导航保留图标，账号保留头像，完整积分与充值在展开侧栏或账号入口中查看。本稿为静态展开状态。"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 2,
+      "anchor": 691,
+      "x": 376,
+      "y": 838,
+      "author": "设计标注",
+      "text": "对应用户图1/图2：上传＋固定在文字输入框左下角。添加文件后，附件行在文字输入框外、上方额外展开；文字区与底部操作栏的位置和高度不因附件改变。无附件时隐藏上方附件行。"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "05 附件行 / 输入框外展开",
+      "parent": 611,
+      "x": 340,
+      "y": 608,
+      "width": 1040,
+      "height": 58,
+      "select": false,
+      "props": {
+        "fill": "#F8F8F8",
+        "cornerRadius": 6,
+        "stroke": "#D5D5D5",
+        "strokeWeight": 1,
+        "pluginData": {
+          "designNotes": "附件行是输入框675之外的独立同级容器，位于其上方，58px高，间隔8px。无附件时隐藏整行；收起后仅保留28px数量和展开入口。文字输入框始终1040×202，文字区高度100px，不因附件出现而缩小。"
+        }
+      }
+    },
+    "as": "attachmentPanel"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        676,
+        693
+      ],
+      "parent": {
+        "$ref": "attachmentPanel"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        676
+      ],
+      "props": {
+        "x": 120,
+        "y": 9,
+        "height": 40,
+        "width": 780
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        693
+      ],
+      "props": {
+        "name": "附件区标题与数量",
+        "characters": "参考图片 · 2",
+        "x": 16,
+        "y": 19,
+        "width": 100,
+        "height": 20,
+        "fontSize": 11,
+        "lineHeight": 20,
+        "fill": "#777777"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        677,
+        684
+      ],
+      "props": {
+        "height": 40
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        678
+      ],
+      "props": {
+        "x": 6,
+        "y": 4,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        679
+      ],
+      "props": {
+        "x": 12,
+        "y": 11
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        680
+      ],
+      "props": {
+        "y": 1,
+        "height": 21,
+        "lineHeight": 21
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        681
+      ],
+      "props": {
+        "y": 21,
+        "height": 16,
+        "lineHeight": 16
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        682,
+        683
+      ],
+      "props": {
+        "y": 7
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        694
+      ],
+      "props": {
+        "y": 18,
+        "x": 18,
+        "width": 996,
+        "height": 100,
+        "lineHeight": 26,
+        "textAutoResize": "none"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "component",
+      "name": "附件区 / 展开与收起入口",
+      "parent": {
+        "$ref": "attachmentPanel"
+      },
+      "x": 964,
+      "y": 17,
+      "width": 60,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "description": "当前显示收起。点击后折叠图片卡片并保留标题与数量，标签改为展开；静态状态说明，不创建交互。"
+      }
+    },
+    "as": "attachmentDisclosure"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "收起标签",
+      "parent": {
+        "$ref": "attachmentDisclosure"
+      },
+      "x": 4,
+      "y": 3,
+      "width": 32,
+      "height": 18,
+      "text": "收起",
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "收起箭头",
+      "parent": {
+        "$ref": "attachmentDisclosure"
+      },
+      "x": 42,
+      "y": 10,
+      "points": [
+        [
+          0,
+          4
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          8,
+          4
+        ]
+      ],
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.3,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      }
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 2,
+      "anchor": {
+        "$ref": "attachmentPanel"
+      },
+      "x": 1364,
+      "y": 626,
+      "author": "设计标注",
+      "text": "已按用户澄清修正：附件行是输入框外的独立58px区域，间隔8px。它与主输入框是同级节点，不占用文字输入空间；主输入框保持1040×202、文字区100px。收起时保留28px标题与展开入口，无附件时整行隐藏。"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        675
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "文字输入框固定1040×202，坐标340,674；文字区100px高。附件行在框外上方独立展开，是画框611的同级子容器，不占输入文字区域。上传＋在左下角常驻。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        644
+      ],
+      "props": {
+        "height": 496
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        652
+      ],
+      "props": {
+        "width": 720,
+        "height": 300
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        653,
+        664
+      ],
+      "props": {
+        "width": 352,
+        "height": 300
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        654
+      ],
+      "props": {
+        "width": 352,
+        "height": 264
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        655
+      ],
+      "props": {
+        "path": "M0 0 L352 264",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        656
+      ],
+      "props": {
+        "path": "M0 264 L352 0",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        657
+      ],
+      "props": {
+        "x": 86,
+        "y": 84
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        658
+      ],
+      "props": {
+        "x": 163,
+        "y": 88
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        659
+      ],
+      "props": {
+        "x": 167,
+        "y": 97
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        660
+      ],
+      "props": {
+        "x": 86,
+        "y": 119
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        661
+      ],
+      "props": {
+        "x": 116,
+        "y": 150
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        662
+      ],
+      "props": {
+        "y": 274
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        663
+      ],
+      "props": {
+        "x": 286,
+        "y": 274
+      }
+    }
+  }
+]

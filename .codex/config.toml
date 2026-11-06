@@ -1,0 +1,19 @@
+# UI Studio: FigCraft attached to the visible desktop document.
+# The launcher reads executable paths and the port from figcraft.config.json.
+# Reload this trusted project's Codex session after changing its tool catalog.
+[mcp_servers.open-pencil]
+enabled = false
+
+[mcp_servers.figcraft]
+command = "node"
+args = ['C:\Users\13556\Documents\ui-studio\scripts\figcraft-mcp.mjs']
+cwd = 'C:\Users\13556\Documents\ui-studio'
+enabled = true
+startup_timeout_sec = 60
+tool_timeout_sec = 120
+enabled_tools = [
+  "list_commands", "run_command", "batch",
+  "create_node", "set_properties", "inspect_document", "get_node", "select",
+  "export", "screenshot", "open_file", "save_file", "undo", "redo",
+  "pointer", "key", "type_text", "inspect_ui", "wait_for_changes",
+]

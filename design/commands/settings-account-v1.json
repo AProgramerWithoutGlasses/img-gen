@@ -1,0 +1,1467 @@
+[
+  {
+    "command": "page.add",
+    "as": "page",
+    "params": {
+      "name": "04 · 设置与管理"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "page"
+      },
+      "name": "设置 · 账户与安全 · 管理员身份 · 1440×900",
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "clip": true,
+        "pluginData": {
+          "designNotes": "2026-11-06 用户确认行动报告后制作的首张设置画面。静态中性线框；管理员身份；账号、日期为示例。个人设置与全局管理分组。只绘制当前栏目，其余入口在首张审阅后扩展。隐藏导航不是权限校验。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sidebar",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "screen"
+      },
+      "name": "01 设置侧栏 · 管理员身份",
+      "x": 0,
+      "y": 0,
+      "width": 280,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#F7F7F7",
+        "pluginData": {
+          "designNotes": "普通用户隐藏管理员面板整个分组。返回创作应保留原对话上下文。管理员组为用户管理、请求记录、模型价格；当前页面管理的是自己的账号。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sideborder",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "侧栏右边界",
+      "x": 279,
+      "y": 0,
+      "width": 1,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#DCDCDC"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "back",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "返回创作",
+      "x": 16,
+      "y": 18,
+      "width": 248,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#F7F7F7",
+        "cornerRadius": 6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "backicon",
+    "params": {
+      "type": "vector",
+      "parent": {
+        "$ref": "back"
+      },
+      "name": "返回箭头",
+      "x": 16,
+      "y": 12,
+      "width": 18,
+      "height": 16,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#555555",
+        "strokeWeight": 1.5
+      },
+      "path": "M7 0 L0 8 L7 16 M0 8 L18 8"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "backlabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "back"
+      },
+      "name": "返回创作文本",
+      "x": 48,
+      "y": 9,
+      "width": 160,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "返回创作"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sideTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "设置标题",
+      "x": 24,
+      "y": 98,
+      "width": 200,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 24,
+        "fontStyle": "Bold",
+        "lineHeight": 32,
+        "textAutoResize": "none",
+        "fill": "#252525",
+        "textAlign": "left"
+      },
+      "text": "设置"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "personalGroup",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "个人设置分组",
+      "x": 24,
+      "y": 164,
+      "width": 200,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#858585",
+        "textAlign": "left"
+      },
+      "text": "个人设置"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "nav",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "设置 / 导航项",
+      "x": 16,
+      "y": 196,
+      "width": 248,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "navBg",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "nav"
+      },
+      "name": "选中底色",
+      "x": 0,
+      "y": 0,
+      "width": 248,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5",
+        "cornerRadius": 6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "navRail",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "nav"
+      },
+      "name": "选中指示",
+      "x": 0,
+      "y": 10,
+      "width": 3,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fill": "#484848",
+        "cornerRadius": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "navText",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "nav"
+      },
+      "name": "栏目名称",
+      "x": 20,
+      "y": 11,
+      "width": 210,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "left"
+      },
+      "text": "账户与安全"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "nav"
+      },
+      "name": "名称",
+      "type": "text",
+      "layer": {
+        "$ref": "navText"
+      },
+      "default": "账户与安全"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "nav"
+      },
+      "name": "选中",
+      "type": "boolean",
+      "layer": {
+        "$ref": "navBg"
+      },
+      "default": true
+    }
+  },
+  {
+    "command": "component.bindProperty",
+    "params": {
+      "layer": {
+        "$ref": "navRail"
+      },
+      "property": "选中",
+      "field": "visible"
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "appearance",
+    "params": {
+      "component": {
+        "$ref": "nav"
+      },
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 248
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "appearance"
+        }
+      ],
+      "properties": {
+        "名称": "外观与输入",
+        "选中": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "appearance"
+        }
+      ],
+      "props": {
+        "name": "设置导航 / 外观与输入"
+      }
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "credits",
+    "params": {
+      "component": {
+        "$ref": "nav"
+      },
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 300
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "credits"
+        }
+      ],
+      "properties": {
+        "名称": "积分",
+        "选中": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "credits"
+        }
+      ],
+      "props": {
+        "name": "设置导航 / 积分"
+      }
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "users",
+    "params": {
+      "component": {
+        "$ref": "nav"
+      },
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 428
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "users"
+        }
+      ],
+      "properties": {
+        "名称": "用户管理",
+        "选中": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "users"
+        }
+      ],
+      "props": {
+        "name": "设置导航 / 用户管理"
+      }
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "requests",
+    "params": {
+      "component": {
+        "$ref": "nav"
+      },
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 480
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requests"
+        }
+      ],
+      "properties": {
+        "名称": "请求记录",
+        "选中": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "requests"
+        }
+      ],
+      "props": {
+        "name": "设置导航 / 请求记录"
+      }
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "prices",
+    "params": {
+      "component": {
+        "$ref": "nav"
+      },
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 532
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "prices"
+        }
+      ],
+      "properties": {
+        "名称": "模型价格",
+        "选中": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "prices"
+        }
+      ],
+      "props": {
+        "name": "设置导航 / 模型价格"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "navSep",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "分隔线",
+      "x": 24,
+      "y": 380,
+      "width": 232,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E2E2E2"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "adminGroup",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "管理员面板分组",
+      "x": 24,
+      "y": 396,
+      "width": 190,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#858585",
+        "textAlign": "left"
+      },
+      "text": "管理员面板"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "identitySep",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "分隔线",
+      "x": 16,
+      "y": 831,
+      "width": 248,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#DEDEDE"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "identity",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "name": "当前登录账号",
+      "x": 16,
+      "y": 844,
+      "width": 248,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#F7F7F7",
+        "cornerRadius": 6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "avatar",
+    "params": {
+      "type": "ellipse",
+      "parent": {
+        "$ref": "identity"
+      },
+      "name": "账号头像占位",
+      "x": 0,
+      "y": 4,
+      "width": 32,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fill": "#E2E2E2"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "avatarText",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "identity"
+      },
+      "name": "头像字母",
+      "x": 0,
+      "y": 8,
+      "width": 32,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "center"
+      },
+      "text": "A"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "accountName",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "identity"
+      },
+      "name": "当前用户名",
+      "x": 44,
+      "y": 0,
+      "width": 180,
+      "height": 21,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 21,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "left"
+      },
+      "text": "admin"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "accountRole",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "identity"
+      },
+      "name": "当前身份",
+      "x": 44,
+      "y": 23,
+      "width": 180,
+      "height": 17,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 17,
+        "textAutoResize": "none",
+        "fill": "#858585",
+        "textAlign": "left"
+      },
+      "text": "管理员"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "header",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "screen"
+      },
+      "name": "02 页头",
+      "x": 280,
+      "y": 0,
+      "width": 1160,
+      "height": 72,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "headerTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "header"
+      },
+      "name": "页面标题",
+      "x": 40,
+      "y": 23,
+      "width": 400,
+      "height": 28,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 20,
+        "fontStyle": "Bold",
+        "lineHeight": 28,
+        "textAutoResize": "none",
+        "fill": "#252525",
+        "textAlign": "left"
+      },
+      "text": "设置"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "headerGroup",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "header"
+      },
+      "name": "当前分组",
+      "x": 1000,
+      "y": 26,
+      "width": 120,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#858585",
+        "textAlign": "right"
+      },
+      "text": "个人设置"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "headerSep",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "header"
+      },
+      "name": "分隔线",
+      "x": 0,
+      "y": 71,
+      "width": 1160,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "content",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "screen"
+      },
+      "name": "03 账户与安全内容",
+      "x": 340,
+      "y": 112,
+      "width": 1040,
+      "height": 676,
+      "select": false,
+      "props": {
+        "fill": "none"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "title",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "content"
+      },
+      "name": "栏目标题",
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 34,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 24,
+        "fontStyle": "Bold",
+        "lineHeight": 34,
+        "textAutoResize": "none",
+        "fill": "#252525",
+        "textAlign": "left"
+      },
+      "text": "账户与安全"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "intro",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "content"
+      },
+      "name": "栏目说明",
+      "x": 0,
+      "y": 44,
+      "width": 800,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "查看你的账号信息，管理密码与登录。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "accountCard",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "content"
+      },
+      "name": "账号信息 / 只读",
+      "x": 0,
+      "y": 96,
+      "width": 1040,
+      "height": 296,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 6,
+        "stroke": "#DEDEDE",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "accountHeading",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "accountCard"
+      },
+      "name": "账号信息标题",
+      "x": 24,
+      "y": 20,
+      "width": 450,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "left"
+      },
+      "text": "账号信息"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "currentTag",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "accountCard"
+      },
+      "name": "当前账号提示",
+      "x": 888,
+      "y": 23,
+      "width": 128,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#858585",
+        "textAlign": "right"
+      },
+      "text": "当前账号"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "cardHeadSep",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "accountCard"
+      },
+      "name": "分隔线",
+      "x": 24,
+      "y": 64,
+      "width": 992,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "row",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "accountCard"
+      },
+      "name": "设置 / 只读信息行",
+      "x": 24,
+      "y": 80,
+      "width": 992,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "none"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "rowLabel",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "row"
+      },
+      "name": "信息名称",
+      "x": 0,
+      "y": 8,
+      "width": 176,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "用户名"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "rowValue",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "row"
+      },
+      "name": "信息值",
+      "x": 216,
+      "y": 8,
+      "width": 728,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "left"
+      },
+      "text": "admin"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "row"
+      },
+      "name": "名称",
+      "type": "text",
+      "layer": {
+        "$ref": "rowLabel"
+      },
+      "default": "用户名"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "row"
+      },
+      "name": "内容",
+      "type": "text",
+      "layer": {
+        "$ref": "rowValue"
+      },
+      "default": "admin"
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "roleRow",
+    "params": {
+      "component": {
+        "$ref": "row"
+      },
+      "parent": {
+        "$ref": "accountCard"
+      },
+      "x": 24,
+      "y": 132
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "roleRow"
+        }
+      ],
+      "properties": {
+        "名称": "角色",
+        "内容": "管理员"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "roleRow"
+        }
+      ],
+      "props": {
+        "name": "账号信息 / 角色"
+      }
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "statusRow",
+    "params": {
+      "component": {
+        "$ref": "row"
+      },
+      "parent": {
+        "$ref": "accountCard"
+      },
+      "x": 24,
+      "y": 184
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "statusRow"
+        }
+      ],
+      "properties": {
+        "名称": "账号状态",
+        "内容": "启用"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "statusRow"
+        }
+      ],
+      "props": {
+        "name": "账号信息 / 账号状态"
+      }
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "dateRow",
+    "params": {
+      "component": {
+        "$ref": "row"
+      },
+      "parent": {
+        "$ref": "accountCard"
+      },
+      "x": 24,
+      "y": 236
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "dateRow"
+        }
+      ],
+      "properties": {
+        "名称": "创建时间",
+        "内容": "2026/10/26 02:12:57"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "dateRow"
+        }
+      ],
+      "props": {
+        "name": "账号信息 / 创建时间"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "passwordCard",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "content"
+      },
+      "name": "登录密码",
+      "x": 0,
+      "y": 416,
+      "width": 1040,
+      "height": 120,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 6,
+        "stroke": "#DEDEDE",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "passwordTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "passwordCard"
+      },
+      "name": "登录密码标题",
+      "x": 24,
+      "y": 24,
+      "width": 600,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "left"
+      },
+      "text": "登录密码"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "passwordHint",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "passwordCard"
+      },
+      "name": "登录密码说明",
+      "x": 24,
+      "y": 63,
+      "width": 740,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "用于登录此账号，密码不会在此显示。"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "button",
+    "params": {
+      "type": "component",
+      "parent": {
+        "$ref": "passwordCard"
+      },
+      "name": "设置 / 次级操作按钮",
+      "x": 904,
+      "y": 40,
+      "width": 112,
+      "height": 40,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CCCCCC",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 5,
+        "pluginData": {
+          "designNotes": "修改密码入口：在首张审阅后细化当前密码、新密码、确认新密码表单；会话失效范围未确定，本画面不承诺。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "buttonText",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "button"
+      },
+      "name": "操作名称",
+      "x": 8,
+      "y": 9,
+      "width": 96,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "center"
+      },
+      "text": "修改密码"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "button"
+      },
+      "name": "名称",
+      "type": "text",
+      "layer": {
+        "$ref": "buttonText"
+      },
+      "default": "修改密码"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sessionCard",
+    "params": {
+      "type": "frame",
+      "parent": {
+        "$ref": "content"
+      },
+      "name": "当前登录",
+      "x": 0,
+      "y": 560,
+      "width": 1040,
+      "height": 116,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "cornerRadius": 6,
+        "stroke": "#DEDEDE",
+        "strokeWeight": 1,
+        "strokeAlign": "inside"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sessionTitle",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "sessionCard"
+      },
+      "name": "登录区标题",
+      "x": 24,
+      "y": 22,
+      "width": 600,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "left"
+      },
+      "text": "当前登录"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sessionHint",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "sessionCard"
+      },
+      "name": "退出说明",
+      "x": 24,
+      "y": 61,
+      "width": 740,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "退出后，需要重新登录才能继续使用。"
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "logout",
+    "params": {
+      "component": {
+        "$ref": "button"
+      },
+      "parent": {
+        "$ref": "sessionCard"
+      },
+      "x": 904,
+      "y": 38
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "logout"
+        }
+      ],
+      "properties": {
+        "名称": "退出登录"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "logout"
+        }
+      ],
+      "props": {
+        "name": "退出当前登录",
+        "pluginData": {
+          "designNotes": "仅表达退出当前登录入口，不是注销账号，不包含退出所有设备。静态稿尚未连线。"
+        }
+      }
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": {
+        "$ref": "page"
+      },
+      "anchor": {
+        "$ref": "screen"
+      },
+      "x": 1400,
+      "y": 120,
+      "text": "首张设置页：1440×900，管理员身份。账号和创建时间为示例；只制作账户与安全供审阅。其余栏目、创建用户四字段表单在首张确认后扩展。"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": {
+        "$ref": "page"
+      },
+      "anchor": {
+        "$ref": "sidebar"
+      },
+      "x": 262,
+      "y": 408,
+      "text": "管理员面板纳入设置目录，普通用户隐藏整个分组；真实权限仍需开发时校验。设置目录替代创作侧栏，返回创作保留原对话上下文是设计目标。"
+    }
+  }
+]

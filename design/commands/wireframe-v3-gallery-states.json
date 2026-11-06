@@ -1,0 +1,586 @@
+[
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2342
+      ],
+      "props": {
+        "fill": "#F7F7F7"
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "folder",
+    "params": {
+      "ids": [
+        868
+      ],
+      "dx": 1560,
+      "dy": 0,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/868"
+        }
+      ],
+      "props": {
+        "name": "我的图片 · 文件夹与管理菜单 · 1440×900",
+        "pluginData": {
+          "designNotes": "文件夹为多归属集合，一张图片可在多个文件夹。菜单重命名/删除文件夹。删除仅解除该文件夹关联，图片保留；没有任何文件夹归属时归入未分类。此页选中“项目灵感”。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/988"
+        }
+      ],
+      "props": {
+        "characters": "项目灵感"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/2334"
+        }
+      ],
+      "props": {
+        "characters": "6 张"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/2340"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/2343"
+        }
+      ],
+      "props": {
+        "fill": "#F7F7F7"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/2355"
+        }
+      ],
+      "props": {
+        "fill": "#E6E6E6"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/1020"
+        },
+        {
+          "$ref": "folder",
+          "field": "map/1025"
+        },
+        {
+          "$ref": "folder",
+          "field": "map/1030"
+        },
+        {
+          "$ref": "folder",
+          "field": "map/1035"
+        },
+        {
+          "$ref": "folder",
+          "field": "map/1040"
+        },
+        {
+          "$ref": "folder",
+          "field": "map/1045"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/2336"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/2337"
+        }
+      ],
+      "props": {
+        "x": 1050
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folder",
+          "field": "map/2338"
+        }
+      ],
+      "props": {
+        "x": 1208
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "selection",
+    "params": {
+      "ids": [
+        868
+      ],
+      "dx": 3120,
+      "dy": 0,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "selection",
+          "field": "map/868"
+        }
+      ],
+      "props": {
+        "name": "我的图片 · 批量归类 · 1440×900",
+        "pluginData": {
+          "designNotes": "进入选择模式后图片点击选中/取消。示例3张选中；批量“加入文件夹”仅新增勾选的关联，原有归属不被移除，已全部加入的目标不可重复选。同图在全部图片只计一次。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "selection",
+          "field": "map/2340"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "selection",
+          "field": "map/2339"
+        }
+      ],
+      "props": {
+        "characters": "取消选择"
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "folderEmpty",
+    "params": {
+      "ids": [
+        868
+      ],
+      "dx": 3120,
+      "dy": 1040,
+      "map": true
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folderEmpty",
+          "field": "map/868"
+        }
+      ],
+      "props": {
+        "name": "我的图片 · 空文件夹 · 1440×900",
+        "pluginData": {
+          "designNotes": "已有全库图片，但当前文件夹为空。提供“从图库选择”，在来源图库选图后加入当前文件夹；不提供图库上传。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folderEmpty",
+          "field": "map/988"
+        }
+      ],
+      "props": {
+        "characters": "待整理"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folderEmpty",
+          "field": "map/2334"
+        }
+      ],
+      "props": {
+        "characters": "0 张"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folderEmpty",
+          "field": "map/989"
+        },
+        {
+          "$ref": "folderEmpty",
+          "field": "map/2335"
+        },
+        {
+          "$ref": "folderEmpty",
+          "field": "map/2336"
+        },
+        {
+          "$ref": "folderEmpty",
+          "field": "map/2340"
+        },
+        {
+          "$ref": "folderEmpty",
+          "field": "map/2338"
+        },
+        {
+          "$ref": "folderEmpty",
+          "field": "map/2337"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folderEmpty",
+          "field": "map/2343"
+        }
+      ],
+      "props": {
+        "fill": "#F7F7F7"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "folderEmpty",
+          "field": "map/2363"
+        }
+      ],
+      "props": {
+        "fill": "#E6E6E6"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1050
+      ],
+      "props": {
+        "x": 1560,
+        "y": 1040
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1153
+      ],
+      "props": {
+        "x": 0,
+        "y": 1040,
+        "pluginData": {
+          "designNotes": "当前集合：全部图片。前后切换只在进入时的集合和顺序内；关闭返回原滚动位置。归类不改变集合顺序。下载到本地；加入文件夹用于整理，与创作页“添加”为附件含义区分。"
+        }
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "previewNav",
+    "params": {
+      "ids": [
+        2342
+      ],
+      "dx": 0,
+      "dy": 0,
+      "map": true
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "previewNav",
+          "field": "map/2342"
+        }
+      ],
+      "parent": 1154
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "previewNav",
+          "field": "map/2342"
+        }
+      ],
+      "props": {
+        "x": 24,
+        "y": 218
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "as": "emptyNav",
+    "params": {
+      "ids": [
+        2342
+      ],
+      "dx": 0,
+      "dy": 0,
+      "map": true
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyNav",
+          "field": "map/2342"
+        }
+      ],
+      "parent": 1051
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyNav",
+          "field": "map/2342"
+        }
+      ],
+      "props": {
+        "x": 24,
+        "y": 218
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyNav",
+          "field": "map/2355"
+        },
+        {
+          "$ref": "emptyNav",
+          "field": "map/2359"
+        },
+        {
+          "$ref": "emptyNav",
+          "field": "map/2363"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyNav",
+          "field": "map/2346"
+        },
+        {
+          "$ref": "emptyNav",
+          "field": "map/2350"
+        }
+      ],
+      "props": {
+        "characters": "0"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1150
+      ],
+      "props": {
+        "characters": "生成成功的图片会自动保存在这里。"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1272
+      ],
+      "props": {
+        "y": 202
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1273
+      ],
+      "props": {
+        "y": 230
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1274
+      ],
+      "props": {
+        "y": 276
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1275
+      ],
+      "props": {
+        "y": 304
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1276
+      ],
+      "props": {
+        "y": 350
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        1277
+      ],
+      "props": {
+        "y": 378
+      }
+    }
+  }
+]

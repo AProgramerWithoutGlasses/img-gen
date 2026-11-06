@@ -1,0 +1,3926 @@
+[
+  {
+    "command": "node.create",
+    "as": "screen1920",
+    "params": {
+      "type": "frame",
+      "name": "ArtCraft — Create Image — 1920×1080",
+      "x": 0,
+      "y": 0,
+      "width": 1920,
+      "height": 1080,
+      "props": {
+        "fill": "#121316",
+        "clip": true
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1920_sidebar",
+    "params": {
+      "type": "frame",
+      "name": "01 · Sidebar",
+      "parent": {
+        "$ref": "screen1920"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 1080,
+      "props": {
+        "fill": "none",
+        "clip": false
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 1080,
+      "props": {
+        "fill": "#121316",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 12,
+      "y": 12,
+      "width": 232,
+      "height": 1056,
+      "props": {
+        "fill": "#1e1f22",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 12,
+      "y": 12,
+      "width": 232,
+      "height": 1056,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff26",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · span",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 21,
+      "y": 159,
+      "width": 2,
+      "height": 20,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · a",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 21,
+      "y": 153,
+      "width": 214,
+      "height": 32,
+      "props": {
+        "fill": "#ffffff14",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 187.078,
+      "y": 445.5,
+      "width": 39.922,
+      "height": 15,
+      "props": {
+        "fill": "none",
+        "stroke": "#fbbf2466",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 0,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 187.078,
+      "y": 513.5,
+      "width": 39.922,
+      "height": 15,
+      "props": {
+        "fill": "none",
+        "stroke": "#fbbf2466",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 0,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 193.547,
+      "y": 547.5,
+      "width": 33.453,
+      "height": 15,
+      "props": {
+        "fill": "none",
+        "stroke": "#c084fc66",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 0,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · button",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "x": 21,
+      "y": 1023,
+      "width": 214,
+      "height": 36,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "file.import",
+    "as": "screen1920_sidebar_icons",
+    "params": {
+      "path": "design/assets/artcraft/icons-1920-sidebar.svg",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1920_sidebar_icons"
+        }
+      ],
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1920_sidebar_icons"
+        }
+      ],
+      "props": {
+        "name": "Original vector icons",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Home",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Home",
+      "x": 51,
+      "y": 80,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "CREATE",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "CREATE",
+      "x": 29,
+      "y": 129.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Image",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Image",
+      "x": 51,
+      "y": 160,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Video",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Video",
+      "x": 51,
+      "y": 194,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Audio",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Audio",
+      "x": 51,
+      "y": 228,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "3D Object",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "3D Object",
+      "x": 51,
+      "y": 262,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "3D World",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "3D World",
+      "x": 51,
+      "y": 296,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "STUDIO",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "STUDIO",
+      "x": 29,
+      "y": 345.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Edit Image",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Edit Image",
+      "x": 51,
+      "y": 376,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Edit 3D",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Edit 3D",
+      "x": 51,
+      "y": 410,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Edit Video",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Edit Video",
+      "x": 51,
+      "y": 444,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "BETA",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "BETA",
+      "x": 194.078,
+      "y": 446.5,
+      "props": {
+        "fill": "#fcd34d",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 9,
+        "lineHeight": 12,
+        "letterSpacing": 1.08,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "BG Change",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "BG Change",
+      "x": 51,
+      "y": 478,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Moodboard",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Moodboard",
+      "x": 51,
+      "y": 512,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "BETA",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "BETA",
+      "x": 194.078,
+      "y": 514.5,
+      "props": {
+        "fill": "#fcd34d",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 9,
+        "lineHeight": 12,
+        "letterSpacing": 1.08,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Frame Extract",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Frame Extract",
+      "x": 51,
+      "y": 546,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "NEW",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "NEW",
+      "x": 200.547,
+      "y": 548.5,
+      "props": {
+        "fill": "#d8b4fe",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 9,
+        "lineHeight": 12,
+        "letterSpacing": 1.08,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "ASSETS",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "ASSETS",
+      "x": 29,
+      "y": 595.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Library",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Library",
+      "x": 51,
+      "y": 626,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Unfoldered",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Unfoldered",
+      "x": 51,
+      "y": 660,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Folders",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Folders",
+      "x": 51,
+      "y": 694,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "RESOURCES",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "RESOURCES",
+      "x": 29,
+      "y": 743.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Tutorials",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Tutorials",
+      "x": 51,
+      "y": 774,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "News",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "News",
+      "x": 51,
+      "y": 808,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "FAQ",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "FAQ",
+      "x": 51,
+      "y": 842,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "SUPPORT",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "SUPPORT",
+      "x": 29,
+      "y": 891.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Join Discord",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "Join Discord",
+      "x": 51,
+      "y": 922,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "DOWNLOAD ARTCRAFT",
+      "parent": {
+        "$ref": "screen1920_sidebar"
+      },
+      "text": "DOWNLOAD ARTCRAFT",
+      "x": 65.75,
+      "y": 1033,
+      "props": {
+        "fill": "#000000",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "Bold",
+        "fontSize": 12,
+        "lineHeight": 16,
+        "letterSpacing": 1.44,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 700
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1920_header",
+    "params": {
+      "type": "frame",
+      "name": "02 · Header",
+      "parent": {
+        "$ref": "screen1920"
+      },
+      "x": 256,
+      "y": 0,
+      "width": 1664,
+      "height": 57,
+      "props": {
+        "fill": "none",
+        "clip": false
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Header surface",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1664,
+      "height": 57,
+      "props": {
+        "fill": "#101014",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Divider",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 0,
+      "y": 56,
+      "width": 1664,
+      "height": 1,
+      "props": {
+        "fill": "#ffffff26",
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · span",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 105.5,
+      "y": 15.75,
+      "width": 53.25,
+      "height": 24.5,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 1284.297,
+      "y": 13,
+      "width": 30,
+      "height": 30,
+      "props": {
+        "fill": "#ffffff0a",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 1284.297,
+      "y": 13,
+      "width": 30,
+      "height": 30,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff14",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · Gallery layout",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 1322.297,
+      "y": 13,
+      "width": 56,
+      "height": 30,
+      "props": {
+        "fill": "#ffffff0a",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 1322.297,
+      "y": 13,
+      "width": 56,
+      "height": 30,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff14",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · Grid view",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 1325.297,
+      "y": 16,
+      "width": 24,
+      "height": 24,
+      "props": {
+        "fill": "#ffffff1a",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · a",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "x": 1560.547,
+      "y": 12,
+      "width": 83.453,
+      "height": 32,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "file.import",
+    "as": "screen1920_header_icons",
+    "params": {
+      "path": "design/assets/artcraft/icons-1920-header.svg",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1920_header_icons"
+        }
+      ],
+      "parent": {
+        "$ref": "screen1920_header"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1920_header_icons"
+        }
+      ],
+      "props": {
+        "name": "Original vector icons",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "CREATE",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "text": "CREATE",
+      "x": 26,
+      "y": 20.75,
+      "props": {
+        "fill": "#f2f1eeb3",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "Medium",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.65,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 500
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "IMAGE",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "text": "IMAGE",
+      "x": 111.5,
+      "y": 20.75,
+      "props": {
+        "fill": "#101014",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "Medium",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.65,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 500
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "PRICING",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "text": "PRICING",
+      "x": 1417.484,
+      "y": 20.75,
+      "props": {
+        "fill": "#ffffffb3",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "LOGIN",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "text": "LOGIN",
+      "x": 1502.938,
+      "y": 20.75,
+      "props": {
+        "fill": "#ffffffcc",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "SIGN UP",
+      "parent": {
+        "$ref": "screen1920_header"
+      },
+      "text": "SIGN UP",
+      "x": 1574.547,
+      "y": 20.75,
+      "props": {
+        "fill": "#000000",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1920_workspace",
+    "params": {
+      "type": "frame",
+      "name": "03 · Welcome",
+      "parent": {
+        "$ref": "screen1920"
+      },
+      "x": 256,
+      "y": 57,
+      "width": 1664,
+      "height": 1023,
+      "props": {
+        "fill": "none",
+        "clip": false
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · main",
+      "parent": {
+        "$ref": "screen1920_workspace"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1664,
+      "height": 1023,
+      "props": {
+        "fill": "#121316",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1920_workspace"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1664,
+      "height": 1023,
+      "props": {
+        "fill": "#121316",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Welcome panel",
+      "parent": {
+        "$ref": "screen1920_workspace"
+      },
+      "x": 448,
+      "y": 293.5,
+      "width": 768,
+      "height": 274,
+      "props": {
+        "fill": "#f2f1ee04",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_workspace"
+      },
+      "x": 448,
+      "y": 293.5,
+      "width": 768,
+      "height": 274,
+      "props": {
+        "fill": "none",
+        "stroke": "#f2f1ee33",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 0,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · button",
+      "parent": {
+        "$ref": "screen1920_workspace"
+      },
+      "x": 489,
+      "y": 462.5,
+      "width": 219.281,
+      "height": 48,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "file.import",
+    "as": "screen1920_workspace_icons",
+    "params": {
+      "path": "design/assets/artcraft/icons-1920-workspace.svg",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1920_workspace_icons"
+        }
+      ],
+      "parent": {
+        "$ref": "screen1920_workspace"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1920_workspace_icons"
+        }
+      ],
+      "props": {
+        "name": "Original vector icons",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Create Image",
+      "parent": {
+        "$ref": "screen1920_workspace"
+      },
+      "text": "Create Image",
+      "x": 489,
+      "y": 348.5,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "fontFamily": "Archivo",
+        "fontStyle": "SemiBold",
+        "fontSize": 48,
+        "lineHeight": 52,
+        "letterSpacing": -1.68,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 620,
+          "wdth": 118
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Describe anything. See it in seconds.",
+      "parent": {
+        "$ref": "screen1920_workspace"
+      },
+      "text": "Describe anything. See it in seconds.",
+      "x": 489,
+      "y": 416.5,
+      "props": {
+        "fill": "#ffffff99",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 16,
+        "lineHeight": 20,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "SIGN UP TO CREATE",
+      "parent": {
+        "$ref": "screen1920_workspace"
+      },
+      "text": "SIGN UP TO CREATE",
+      "x": 536.391,
+      "y": 478.5,
+      "props": {
+        "fill": "#000000",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "Bold",
+        "fontSize": 12,
+        "lineHeight": 16,
+        "letterSpacing": 1.44,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 700
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1920_composer",
+    "params": {
+      "type": "frame",
+      "name": "04 · Prompt composer",
+      "parent": {
+        "$ref": "screen1920"
+      },
+      "x": 528,
+      "y": 928,
+      "width": 1120,
+      "height": 140,
+      "props": {
+        "fill": "none",
+        "clip": false
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1120,
+      "height": 140,
+      "props": {
+        "fill": "#1e1f22f2",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1120,
+      "height": 140,
+      "props": {
+        "fill": "none",
+        "stroke": "#2d81ff",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · button",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 14.227,
+      "y": 14.227,
+      "width": 61.547,
+      "height": 61.547,
+      "props": {
+        "fill": "#1e1f22f2",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 14.227,
+      "y": 14.227,
+      "width": 61.547,
+      "height": 61.547,
+      "props": {
+        "fill": "none",
+        "stroke": "#0000000d",
+        "strokeWeight": 2,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · Expand prompt to focus mode",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 1079,
+      "y": 17,
+      "width": 24,
+      "height": 24,
+      "props": {
+        "fill": "#f2f1ee0d",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · headlessui-popover-button-:r14:",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 17,
+      "y": 88,
+      "width": 152.406,
+      "height": 34,
+      "props": {
+        "fill": "#1e1f22",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 17,
+      "y": 88,
+      "width": 152.406,
+      "height": 34,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff26",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · headlessui-popover-button-:r1r:",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 177.406,
+      "y": 88,
+      "width": 96.5,
+      "height": 34,
+      "props": {
+        "fill": "#1e1f22",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 177.406,
+      "y": 88,
+      "width": 96.5,
+      "height": 34,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff26",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · headlessui-popover-button-:r1v:",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 281.906,
+      "y": 88,
+      "width": 67.109,
+      "height": 34,
+      "props": {
+        "fill": "#1e1f22",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 281.906,
+      "y": 88,
+      "width": 67.109,
+      "height": 34,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff26",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 1015.578,
+      "y": 95,
+      "width": 1,
+      "height": 20,
+      "props": {
+        "fill": "#f2f1ee26",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · button",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "x": 1067,
+      "y": 87,
+      "width": 36,
+      "height": 36,
+      "props": {
+        "fill": "#2d81ff",
+        "opacity": 0.4,
+        "cornerRadius": 18
+      }
+    }
+  },
+  {
+    "command": "file.import",
+    "as": "screen1920_composer_icons",
+    "params": {
+      "path": "design/assets/artcraft/icons-1920-composer.svg",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1920_composer_icons"
+        }
+      ],
+      "parent": {
+        "$ref": "screen1920_composer"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1920_composer_icons"
+        }
+      ],
+      "props": {
+        "name": "Original vector icons",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Reference",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "text": "Reference",
+      "x": 24.509,
+      "y": 49.039,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 0.7,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 9,
+        "lineHeight": 15.385,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight",
+        "rotation": -6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Describe what you want in the image...",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "text": "Describe what you want in the image...",
+      "x": 85,
+      "y": 17,
+      "props": {
+        "fill": "#f2f1ee99",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Nano Banana 2",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "text": "Nano Banana 2",
+      "x": 54,
+      "y": 96,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Square",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "text": "Square",
+      "x": 214.406,
+      "y": 96,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "1K",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "text": "1K",
+      "x": 318.906,
+      "y": 96,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "1",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "text": "1",
+      "x": 953.469,
+      "y": 96,
+      "props": {
+        "fill": "#f2f1ee80",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "8",
+      "parent": {
+        "$ref": "screen1920_composer"
+      },
+      "text": "8",
+      "x": 1048.969,
+      "y": 96.25,
+      "props": {
+        "fill": "#f2f1eecc",
+        "opacity": 0.5,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Bold",
+        "fontSize": 13,
+        "lineHeight": 16,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1440",
+    "params": {
+      "type": "frame",
+      "name": "ArtCraft — Create Image — 1440×900",
+      "x": 2040,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "props": {
+        "fill": "#121316",
+        "clip": true
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1440_sidebar",
+    "params": {
+      "type": "frame",
+      "name": "01 · Sidebar",
+      "parent": {
+        "$ref": "screen1440"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 900,
+      "props": {
+        "fill": "none",
+        "clip": false
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 900,
+      "props": {
+        "fill": "#121316",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 12,
+      "y": 12,
+      "width": 232,
+      "height": 876,
+      "props": {
+        "fill": "#1e1f22",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 12,
+      "y": 12,
+      "width": 232,
+      "height": 876,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff26",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · span",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 21,
+      "y": 159,
+      "width": 2,
+      "height": 20,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · a",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 21,
+      "y": 153,
+      "width": 214,
+      "height": 32,
+      "props": {
+        "fill": "#ffffff14",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 187.078,
+      "y": 445.5,
+      "width": 39.922,
+      "height": 15,
+      "props": {
+        "fill": "none",
+        "stroke": "#fbbf2466",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 0,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 187.078,
+      "y": 513.5,
+      "width": 39.922,
+      "height": 15,
+      "props": {
+        "fill": "none",
+        "stroke": "#fbbf2466",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 0,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 193.547,
+      "y": 547.5,
+      "width": 33.453,
+      "height": 15,
+      "props": {
+        "fill": "none",
+        "stroke": "#c084fc66",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 0,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · button",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "x": 21,
+      "y": 843,
+      "width": 214,
+      "height": 36,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "file.import",
+    "as": "screen1440_sidebar_icons",
+    "params": {
+      "path": "design/assets/artcraft/icons-1440-sidebar.svg",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1440_sidebar_icons"
+        }
+      ],
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1440_sidebar_icons"
+        }
+      ],
+      "props": {
+        "name": "Original vector icons",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Home",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Home",
+      "x": 51,
+      "y": 80,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "CREATE",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "CREATE",
+      "x": 29,
+      "y": 129.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Image",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Image",
+      "x": 51,
+      "y": 160,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Video",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Video",
+      "x": 51,
+      "y": 194,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Audio",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Audio",
+      "x": 51,
+      "y": 228,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "3D Object",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "3D Object",
+      "x": 51,
+      "y": 262,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "3D World",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "3D World",
+      "x": 51,
+      "y": 296,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "STUDIO",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "STUDIO",
+      "x": 29,
+      "y": 345.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Edit Image",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Edit Image",
+      "x": 51,
+      "y": 376,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Edit 3D",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Edit 3D",
+      "x": 51,
+      "y": 410,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Edit Video",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Edit Video",
+      "x": 51,
+      "y": 444,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "BETA",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "BETA",
+      "x": 194.078,
+      "y": 446.5,
+      "props": {
+        "fill": "#fcd34d",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 9,
+        "lineHeight": 12,
+        "letterSpacing": 1.08,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "BG Change",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "BG Change",
+      "x": 51,
+      "y": 478,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Moodboard",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Moodboard",
+      "x": 51,
+      "y": 512,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "BETA",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "BETA",
+      "x": 194.078,
+      "y": 514.5,
+      "props": {
+        "fill": "#fcd34d",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 9,
+        "lineHeight": 12,
+        "letterSpacing": 1.08,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Frame Extract",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Frame Extract",
+      "x": 51,
+      "y": 546,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "NEW",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "NEW",
+      "x": 200.547,
+      "y": 548.5,
+      "props": {
+        "fill": "#d8b4fe",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 9,
+        "lineHeight": 12,
+        "letterSpacing": 1.08,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "ASSETS",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "ASSETS",
+      "x": 29,
+      "y": 595.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Library",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Library",
+      "x": 51,
+      "y": 626,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Unfoldered",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Unfoldered",
+      "x": 51,
+      "y": 660,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Folders",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Folders",
+      "x": 51,
+      "y": 694,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "RESOURCES",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "RESOURCES",
+      "x": 29,
+      "y": 743.75,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Tutorials",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "Tutorials",
+      "x": 51,
+      "y": 774,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "News",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "News",
+      "x": 51,
+      "y": 808,
+      "props": {
+        "fill": "#ffffffb8",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "DOWNLOAD ARTCRAFT",
+      "parent": {
+        "$ref": "screen1440_sidebar"
+      },
+      "text": "DOWNLOAD ARTCRAFT",
+      "x": 65.75,
+      "y": 853,
+      "props": {
+        "fill": "#000000",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "Bold",
+        "fontSize": 12,
+        "lineHeight": 16,
+        "letterSpacing": 1.44,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 700
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1440_header",
+    "params": {
+      "type": "frame",
+      "name": "02 · Header",
+      "parent": {
+        "$ref": "screen1440"
+      },
+      "x": 256,
+      "y": 0,
+      "width": 1184,
+      "height": 57,
+      "props": {
+        "fill": "none",
+        "clip": false
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Header surface",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1184,
+      "height": 57,
+      "props": {
+        "fill": "#101014",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Divider",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 0,
+      "y": 56,
+      "width": 1184,
+      "height": 1,
+      "props": {
+        "fill": "#ffffff26",
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · span",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 105.5,
+      "y": 15.75,
+      "width": 53.25,
+      "height": 24.5,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 804.297,
+      "y": 13,
+      "width": 30,
+      "height": 30,
+      "props": {
+        "fill": "#ffffff0a",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 804.297,
+      "y": 13,
+      "width": 30,
+      "height": 30,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff14",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · Gallery layout",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 842.297,
+      "y": 13,
+      "width": 56,
+      "height": 30,
+      "props": {
+        "fill": "#ffffff0a",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 842.297,
+      "y": 13,
+      "width": 56,
+      "height": 30,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff14",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · Grid view",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 845.297,
+      "y": 16,
+      "width": 24,
+      "height": 24,
+      "props": {
+        "fill": "#ffffff1a",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · a",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "x": 1080.547,
+      "y": 12,
+      "width": 83.453,
+      "height": 32,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "file.import",
+    "as": "screen1440_header_icons",
+    "params": {
+      "path": "design/assets/artcraft/icons-1440-header.svg",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1440_header_icons"
+        }
+      ],
+      "parent": {
+        "$ref": "screen1440_header"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1440_header_icons"
+        }
+      ],
+      "props": {
+        "name": "Original vector icons",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "CREATE",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "text": "CREATE",
+      "x": 26,
+      "y": 20.75,
+      "props": {
+        "fill": "#f2f1eeb3",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "Medium",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.65,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 500
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "IMAGE",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "text": "IMAGE",
+      "x": 111.5,
+      "y": 20.75,
+      "props": {
+        "fill": "#101014",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "Medium",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.65,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 500
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "PRICING",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "text": "PRICING",
+      "x": 937.484,
+      "y": 20.75,
+      "props": {
+        "fill": "#ffffffb3",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "LOGIN",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "text": "LOGIN",
+      "x": 1022.938,
+      "y": 20.75,
+      "props": {
+        "fill": "#ffffffcc",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "SIGN UP",
+      "parent": {
+        "$ref": "screen1440_header"
+      },
+      "text": "SIGN UP",
+      "x": 1094.547,
+      "y": 20.75,
+      "props": {
+        "fill": "#000000",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "SemiBold",
+        "fontSize": 11,
+        "lineHeight": 14,
+        "letterSpacing": 1.32,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 600
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1440_workspace",
+    "params": {
+      "type": "frame",
+      "name": "03 · Welcome",
+      "parent": {
+        "$ref": "screen1440"
+      },
+      "x": 256,
+      "y": 57,
+      "width": 1184,
+      "height": 843,
+      "props": {
+        "fill": "none",
+        "clip": false
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · main",
+      "parent": {
+        "$ref": "screen1440_workspace"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1184,
+      "height": 843,
+      "props": {
+        "fill": "#121316",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1440_workspace"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1184,
+      "height": 843,
+      "props": {
+        "fill": "#121316",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Welcome panel",
+      "parent": {
+        "$ref": "screen1440_workspace"
+      },
+      "x": 208,
+      "y": 203.5,
+      "width": 768,
+      "height": 274,
+      "props": {
+        "fill": "#f2f1ee04",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_workspace"
+      },
+      "x": 208,
+      "y": 203.5,
+      "width": 768,
+      "height": 274,
+      "props": {
+        "fill": "none",
+        "stroke": "#f2f1ee33",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 0,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · button",
+      "parent": {
+        "$ref": "screen1440_workspace"
+      },
+      "x": 249,
+      "y": 372.5,
+      "width": 219.281,
+      "height": 48,
+      "props": {
+        "fill": "#ffffff",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "file.import",
+    "as": "screen1440_workspace_icons",
+    "params": {
+      "path": "design/assets/artcraft/icons-1440-workspace.svg",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1440_workspace_icons"
+        }
+      ],
+      "parent": {
+        "$ref": "screen1440_workspace"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1440_workspace_icons"
+        }
+      ],
+      "props": {
+        "name": "Original vector icons",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Create Image",
+      "parent": {
+        "$ref": "screen1440_workspace"
+      },
+      "text": "Create Image",
+      "x": 249,
+      "y": 258.5,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "fontFamily": "Archivo",
+        "fontStyle": "SemiBold",
+        "fontSize": 48,
+        "lineHeight": 52,
+        "letterSpacing": -1.68,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 620,
+          "wdth": 118
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Describe anything. See it in seconds.",
+      "parent": {
+        "$ref": "screen1440_workspace"
+      },
+      "text": "Describe anything. See it in seconds.",
+      "x": 249,
+      "y": 326.5,
+      "props": {
+        "fill": "#ffffff99",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 16,
+        "lineHeight": 20,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "SIGN UP TO CREATE",
+      "parent": {
+        "$ref": "screen1440_workspace"
+      },
+      "text": "SIGN UP TO CREATE",
+      "x": 296.391,
+      "y": 388.5,
+      "props": {
+        "fill": "#000000",
+        "opacity": 1,
+        "fontFamily": "Geist Mono",
+        "fontStyle": "Bold",
+        "fontSize": 12,
+        "lineHeight": 16,
+        "letterSpacing": 1.44,
+        "textAutoResize": "widthAndHeight",
+        "fontVariations": {
+          "wght": 700
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "screen1440_composer",
+    "params": {
+      "type": "frame",
+      "name": "04 · Prompt composer",
+      "parent": {
+        "$ref": "screen1440"
+      },
+      "x": 288,
+      "y": 748,
+      "width": 1120,
+      "height": 140,
+      "props": {
+        "fill": "none",
+        "clip": false
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1120,
+      "height": 140,
+      "props": {
+        "fill": "#1e1f22f2",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1120,
+      "height": 140,
+      "props": {
+        "fill": "none",
+        "stroke": "#2d81ff",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · button",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 14.227,
+      "y": 14.227,
+      "width": 61.547,
+      "height": 61.547,
+      "props": {
+        "fill": "#1e1f22f2",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 14.227,
+      "y": 14.227,
+      "width": 61.547,
+      "height": 61.547,
+      "props": {
+        "fill": "none",
+        "stroke": "#0000000d",
+        "strokeWeight": 2,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · Expand prompt to focus mode",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 1079,
+      "y": 17,
+      "width": 24,
+      "height": 24,
+      "props": {
+        "fill": "#f2f1ee0d",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · headlessui-popover-button-:r14:",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 17,
+      "y": 88,
+      "width": 152.406,
+      "height": 34,
+      "props": {
+        "fill": "#1e1f22",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 17,
+      "y": 88,
+      "width": 152.406,
+      "height": 34,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff26",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · headlessui-popover-button-:r1r:",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 177.406,
+      "y": 88,
+      "width": 96.5,
+      "height": 34,
+      "props": {
+        "fill": "#1e1f22",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 177.406,
+      "y": 88,
+      "width": 96.5,
+      "height": 34,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff26",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · headlessui-popover-button-:r1v:",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 281.906,
+      "y": 88,
+      "width": 67.109,
+      "height": 34,
+      "props": {
+        "fill": "#1e1f22",
+        "opacity": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Border",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 281.906,
+      "y": 88,
+      "width": 67.109,
+      "height": 34,
+      "props": {
+        "fill": "none",
+        "stroke": "#ffffff26",
+        "strokeWeight": 1,
+        "strokeAlign": "inside",
+        "cornerRadius": 3,
+        "opacity": 1
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · div",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 1015.578,
+      "y": 95,
+      "width": 1,
+      "height": 20,
+      "props": {
+        "fill": "#f2f1ee26",
+        "opacity": 1,
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "Surface · button",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "x": 1067,
+      "y": 87,
+      "width": 36,
+      "height": 36,
+      "props": {
+        "fill": "#2d81ff",
+        "opacity": 0.4,
+        "cornerRadius": 18
+      }
+    }
+  },
+  {
+    "command": "file.import",
+    "as": "screen1440_composer_icons",
+    "params": {
+      "path": "design/assets/artcraft/icons-1440-composer.svg",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1440_composer_icons"
+        }
+      ],
+      "parent": {
+        "$ref": "screen1440_composer"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "screen1440_composer_icons"
+        }
+      ],
+      "props": {
+        "name": "Original vector icons",
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Reference",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "text": "Reference",
+      "x": 24.509,
+      "y": 49.039,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 0.7,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 9,
+        "lineHeight": 15.385,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight",
+        "rotation": -6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Describe what you want in the image...",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "text": "Describe what you want in the image...",
+      "x": 85,
+      "y": 17,
+      "props": {
+        "fill": "#f2f1ee99",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 16,
+        "lineHeight": 24,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Nano Banana 2",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "text": "Nano Banana 2",
+      "x": 54,
+      "y": 96,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "Square",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "text": "Square",
+      "x": 214.406,
+      "y": 96,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "1K",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "text": "1K",
+      "x": 318.906,
+      "y": 96,
+      "props": {
+        "fill": "#f2f1ee",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "1",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "text": "1",
+      "x": 953.469,
+      "y": 96,
+      "props": {
+        "fill": "#f2f1ee80",
+        "opacity": 1,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Regular",
+        "fontSize": 14,
+        "lineHeight": 18,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "8",
+      "parent": {
+        "$ref": "screen1440_composer"
+      },
+      "text": "8",
+      "x": 1048.969,
+      "y": 96.25,
+      "props": {
+        "fill": "#f2f1eecc",
+        "opacity": 0.5,
+        "fontFamily": "Microsoft YaHei UI",
+        "fontStyle": "Bold",
+        "fontSize": 13,
+        "lineHeight": 16,
+        "letterSpacing": 0,
+        "textAutoResize": "widthAndHeight"
+      }
+    }
+  }
+]

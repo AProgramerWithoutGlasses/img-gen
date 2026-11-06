@@ -1,0 +1,314 @@
+[
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2353
+      ],
+      "props": {
+        "x": 190,
+        "y": 97,
+        "width": 40,
+        "height": 44,
+        "fill": "none",
+        "stroke": "none",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2354
+      ],
+      "props": {
+        "x": 7,
+        "y": 6,
+        "width": 26,
+        "fontSize": 24,
+        "lineHeight": 32,
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2412
+      ],
+      "props": {
+        "x": 190,
+        "y": 97,
+        "width": 40,
+        "height": 44,
+        "fill": "none",
+        "stroke": "none",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2413
+      ],
+      "props": {
+        "x": 7,
+        "y": 6,
+        "width": 26,
+        "fontSize": 24,
+        "lineHeight": 32,
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2545
+      ],
+      "props": {
+        "x": 190,
+        "y": 97,
+        "width": 40,
+        "height": 44,
+        "fill": "none",
+        "stroke": "none",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2546
+      ],
+      "props": {
+        "x": 7,
+        "y": 6,
+        "width": 26,
+        "fontSize": 24,
+        "lineHeight": 32,
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2678
+      ],
+      "props": {
+        "x": 190,
+        "y": 97,
+        "width": 40,
+        "height": 44,
+        "fill": "none",
+        "stroke": "none",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2679
+      ],
+      "props": {
+        "x": 7,
+        "y": 6,
+        "width": 26,
+        "fontSize": 24,
+        "lineHeight": 32,
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2778
+      ],
+      "props": {
+        "x": 190,
+        "y": 97,
+        "width": 40,
+        "height": 44,
+        "fill": "none",
+        "stroke": "none",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2779
+      ],
+      "props": {
+        "x": 7,
+        "y": 6,
+        "width": 26,
+        "fontSize": 24,
+        "lineHeight": 32,
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2803
+      ],
+      "props": {
+        "x": 190,
+        "y": 97,
+        "width": 40,
+        "height": 44,
+        "fill": "none",
+        "stroke": "none",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2804
+      ],
+      "props": {
+        "x": 7,
+        "y": 6,
+        "width": 26,
+        "fontSize": 24,
+        "lineHeight": 32,
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4008
+      ],
+      "props": {
+        "x": 190,
+        "y": 97,
+        "width": 40,
+        "height": 44,
+        "fill": "none",
+        "stroke": "none",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        4009
+      ],
+      "props": {
+        "x": 7,
+        "y": 6,
+        "width": 26,
+        "fontSize": 24,
+        "lineHeight": 32,
+        "fill": "#555555"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        2856,
+        3225,
+        3237,
+        3265,
+        3280
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        3224
+      ],
+      "props": {
+        "characters": "文件夹管理"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        3226
+      ],
+      "props": {
+        "characters": "新建文件夹"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        3228
+      ],
+      "props": {
+        "characters": "重命名"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        3230
+      ],
+      "props": {
+        "characters": "删除文件夹"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        3259
+      ],
+      "props": {
+        "characters": "图片菜单"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        3266
+      ],
+      "props": {
+        "characters": "多选操作与反馈"
+      }
+    }
+  }
+]

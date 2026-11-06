@@ -4,9 +4,9 @@
 
 GitHub仓库与聊天相互独立。会被清理的是聊天的Codex托管工作树，而不是远程origin或已推送的提交。[官方工作树说明](https://developers.openai.com/codex/app/worktrees/) 说明归档关联聊天会触发托管工作树删除，删除前保存快照，重开聊天可恢复。
 
-推荐日常使用普通独立Git检出 `D:\workspace\img-gen-current`，在Codex中将它打开为项目，并使用Local模式开新聊天。它不是Git worktree，也不位于 `.codex/worktrees`；更换或归档聊天后，新聊天仍打开此固定项目。
+最终统一使用普通独立Git检出 `C:\Users\13556\Documents\ui-studio`，在Codex中打开已有UI项目，并使用Local模式开新聊天。它不是Git worktree，也不位于 `.codex/worktrees`；更换或归档聊天后，新聊天仍打开此固定项目。`main`跟踪原GitHub `img-gen`仓库，不更名、不删除远程或网站。
 
-旧 `D:\workspace\img-gen` 的main与远程存在分叉，并有未提交的 `.env.example` 删除，不能用reset或盲目pull整理。新固定检出保留当前代码和GitHub origin，旧目录原样保留。环境配置不会从旧项目或服务器自动复制；需要本地运行时再按实际配置。原UI Studio是另一套模拟设计源码，不能当作已接入服务端的生产工作目录。
+原UI Studio模拟源码已在本地归档分支和Git备份中保留；当前UI目录已经承接远程main的完整服务端版本。用户修改过的FigCraft稿和设计工具保留，原模拟页面运行时代码不重复放在根目录。旧 `D:\workspace\img-gen` 及过渡 `D:\workspace\img-gen-current` 只作为待清理副本；清理前先解除聊天Git依赖并保存其本地独有资料，不把服务器数据库或配置下载到项目。
 
 固定目录内的未推送提交依然需要自行备份；独立检出保证不随托管聊天工作树清理，不等于自动同步GitHub。当前设置明确不自动推送。项目在Codex中的路径需切换到此固定目录；仅在磁盘创建目录不会自动修改现有项目的路径。
 

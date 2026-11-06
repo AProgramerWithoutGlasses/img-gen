@@ -1,0 +1,25 @@
+{
+  "name": "ui-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "dev:preview": "npm --prefix frontend run dev:preview",
+    "check": "npm --prefix frontend run check && node scripts/check-scripts.mjs",
+    "build": "npm --prefix frontend run build:server",
+    "preview": "npm --prefix frontend run preview",
+    "verify": "npm --prefix frontend run verify",
+    "release:prepare": "node scripts/prepare-release.mjs",
+    "design:open": "node scripts/figcraft.mjs open",
+    "design:status": "node scripts/figcraft.mjs status",
+    "design:audit": "node scripts/figcraft.mjs audit",
+    "design:export": "node scripts/figcraft.mjs export",
+    "design:snapshot": "node scripts/figcraft.mjs snapshot",
+    "design:batch": "node scripts/figcraft.mjs batch",
+    "design:smoke": "node scripts/figcraft-smoke.mjs",
+    "design:verify": "npm run design:audit && npm run design:export"
+  },
+  "devDependencies": { "@modelcontextprotocol/sdk": "1.32.2" }
+}

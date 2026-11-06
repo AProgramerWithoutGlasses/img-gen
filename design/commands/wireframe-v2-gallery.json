@@ -1,0 +1,1770 @@
+[
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        611
+      ],
+      "dx": 0,
+      "dy": 1040,
+      "map": true
+    },
+    "as": "galleryCopy"
+  },
+  {
+    "command": "node.reparent",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/611"
+        }
+      ],
+      "parent": 867
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/611"
+        }
+      ],
+      "props": {
+        "x": 0,
+        "y": 0,
+        "name": "我的图片 · 浏览 · 1440×900"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/644"
+        },
+        {
+          "$ref": "galleryCopy",
+          "field": "map/675"
+        },
+        {
+          "$ref": "galleryCopy",
+          "field": "map/726"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/641"
+        }
+      ],
+      "props": {
+        "characters": "我的图片"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/643"
+        }
+      ],
+      "props": {
+        "characters": "全部图片"
+      }
+    }
+  },
+  {
+    "command": "component.editProperty",
+    "params": {
+      "id": {
+        "$ref": "galleryCopy",
+        "field": "map/618"
+      },
+      "name": "选中",
+      "default": false
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/618"
+        }
+      ],
+      "props": {
+        "fill": "#F7F7F7"
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/623"
+        }
+      ],
+      "properties": {
+        "选中": true
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/623"
+        }
+      ],
+      "props": {
+        "fill": "#E5E5E5"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图库分组标题",
+      "parent": {
+        "$ref": "galleryCopy",
+        "field": "map/611"
+      },
+      "x": 340,
+      "y": 108,
+      "width": 500,
+      "height": 26,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#444444",
+        "textAlign": "left"
+      },
+      "select": false,
+      "text": "最近生成"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片网格",
+      "parent": {
+        "$ref": "galleryCopy",
+        "field": "map/611"
+      },
+      "x": 340,
+      "y": 152,
+      "width": 1040,
+      "height": 650,
+      "props": {
+        "fill": "none",
+        "clip": false,
+        "pluginData": {
+          "designNotes": "按行等高、宽度随图片比例变化。原图不统一裁正方形。点击任一图片查看大图；此页不增加未确认的筛选、批量、收藏功能。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryGrid"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 01",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 275.3828571428571,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile1"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile1"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 275.3828571428571,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile1diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile1diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L275.3828571428571 206.53714285714287 M0 206.53714285714287L275.3828571428571 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile1"
+      },
+      "x": 83.69142857142856,
+      "y": 79.26857142857143,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#F1F1F1"
+      },
+      "select": false
+    },
+    "as": "galleryTile1label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile1label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 01"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile1label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "4:3"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 02",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 287.3828571428571,
+      "y": 0,
+      "width": 206.53714285714287,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile2"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile2"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 206.53714285714287,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile2diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile2diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L206.53714285714287 206.53714285714287 M0 206.53714285714287L206.53714285714287 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile2"
+      },
+      "x": 49.268571428571434,
+      "y": 79.26857142857143,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#F1F1F1"
+      },
+      "select": false
+    },
+    "as": "galleryTile2label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile2label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 02"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile2label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "1:1"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 03",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 505.91999999999996,
+      "y": 0,
+      "width": 154.90285714285716,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "#EAEAEA",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile3"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile3"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 154.90285714285716,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile3diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile3diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L154.90285714285716 206.53714285714287 M0 206.53714285714287L154.90285714285716 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile3"
+      },
+      "x": 23.45142857142858,
+      "y": 79.26857142857143,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#EAEAEA"
+      },
+      "select": false
+    },
+    "as": "galleryTile3label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile3label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 03"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile3label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "3:4"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 04",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 672.8228571428572,
+      "y": 0,
+      "width": 367.1771428571429,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile4"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile4"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 367.1771428571429,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile4diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile4diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L367.1771428571429 206.53714285714287 M0 206.53714285714287L367.1771428571429 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile4"
+      },
+      "x": 129.58857142857144,
+      "y": 79.26857142857143,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#F1F1F1"
+      },
+      "select": false
+    },
+    "as": "galleryTile4label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile4label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 04"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile4label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "16:9"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 05",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 0,
+      "y": 218.53714285714287,
+      "width": 207.7241379310345,
+      "height": 207.7241379310345,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile5"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile5"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 207.7241379310345,
+      "height": 207.7241379310345,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile5diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile5diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L207.7241379310345 207.7241379310345 M0 207.7241379310345L207.7241379310345 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile5"
+      },
+      "x": 49.86206896551725,
+      "y": 79.86206896551725,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#F1F1F1"
+      },
+      "select": false
+    },
+    "as": "galleryTile5label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile5label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 05"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile5label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "1:1"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 06",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 219.7241379310345,
+      "y": 218.53714285714287,
+      "width": 276.9655172413793,
+      "height": 207.7241379310345,
+      "props": {
+        "fill": "#EAEAEA",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile6"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile6"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 276.9655172413793,
+      "height": 207.7241379310345,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile6diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile6diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L276.9655172413793 207.7241379310345 M0 207.7241379310345L276.9655172413793 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile6"
+      },
+      "x": 84.48275862068965,
+      "y": 79.86206896551725,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#EAEAEA"
+      },
+      "select": false
+    },
+    "as": "galleryTile6label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile6label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 06"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile6label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "4:3"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 07",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 508.68965517241384,
+      "y": 218.53714285714287,
+      "width": 311.58620689655174,
+      "height": 207.7241379310345,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile7"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile7"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 311.58620689655174,
+      "height": 207.7241379310345,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile7diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile7diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L311.58620689655174 207.7241379310345 M0 207.7241379310345L311.58620689655174 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile7"
+      },
+      "x": 101.79310344827587,
+      "y": 79.86206896551725,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#F1F1F1"
+      },
+      "select": false
+    },
+    "as": "galleryTile7label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile7label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 07"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile7label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "3:2"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 08",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 832.2758620689656,
+      "y": 218.53714285714287,
+      "width": 207.7241379310345,
+      "height": 207.7241379310345,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile8"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile8"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 207.7241379310345,
+      "height": 207.7241379310345,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile8diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile8diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L207.7241379310345 207.7241379310345 M0 207.7241379310345L207.7241379310345 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile8"
+      },
+      "x": 49.86206896551725,
+      "y": 79.86206896551725,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#F1F1F1"
+      },
+      "select": false
+    },
+    "as": "galleryTile8label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile8label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 08"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile8label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "1:1"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 09",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 0,
+      "y": 438.2612807881774,
+      "width": 367.1771428571429,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "#EAEAEA",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile9"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile9"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 367.1771428571429,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile9diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile9diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L367.1771428571429 206.53714285714287 M0 206.53714285714287L367.1771428571429 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile9"
+      },
+      "x": 129.58857142857144,
+      "y": 79.26857142857143,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#EAEAEA"
+      },
+      "select": false
+    },
+    "as": "galleryTile9label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile9label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 09"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile9label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "16:9"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 10",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 379.1771428571429,
+      "y": 438.2612807881774,
+      "width": 154.90285714285716,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile10"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile10"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 154.90285714285716,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile10diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile10diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L154.90285714285716 206.53714285714287 M0 206.53714285714287L154.90285714285716 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile10"
+      },
+      "x": 23.45142857142858,
+      "y": 79.26857142857143,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#F1F1F1"
+      },
+      "select": false
+    },
+    "as": "galleryTile10label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile10label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 10"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile10label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "3:4"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 11",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 546.08,
+      "y": 438.2612807881774,
+      "width": 275.3828571428571,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile11"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile11"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 275.3828571428571,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile11diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile11diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L275.3828571428571 206.53714285714287 M0 206.53714285714287L275.3828571428571 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile11"
+      },
+      "x": 83.69142857142856,
+      "y": 79.26857142857143,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#F1F1F1"
+      },
+      "select": false
+    },
+    "as": "galleryTile11label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile11label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 11"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile11label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "4:3"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图库 / 图片 12",
+      "parent": {
+        "$ref": "galleryGrid"
+      },
+      "x": 833.4628571428572,
+      "y": 438.2612807881774,
+      "width": 206.53714285714287,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "#EAEAEA",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "clip": true,
+        "pluginData": {
+          "designNotes": "图片保持原始比例，点击进入预览；示例占位图，不是真实用户素材。"
+        }
+      },
+      "select": false
+    },
+    "as": "galleryTile12"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位轮廓",
+      "parent": {
+        "$ref": "galleryTile12"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 206.53714285714287,
+      "height": 206.53714285714287,
+      "props": {
+        "fill": "none",
+        "stroke": "#DDDDDD",
+        "strokeWeight": 1
+      },
+      "select": false
+    },
+    "as": "galleryTile12diagonal"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryTile12diagonal"
+        }
+      ],
+      "props": {
+        "path": "M0 0L206.53714285714287 206.53714285714287 M0 206.53714285714287L206.53714285714287 0"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "图片标识底板",
+      "parent": {
+        "$ref": "galleryTile12"
+      },
+      "x": 49.268571428571434,
+      "y": 79.26857142857143,
+      "width": 108,
+      "height": 48,
+      "props": {
+        "fill": "#EAEAEA"
+      },
+      "select": false
+    },
+    "as": "galleryTile12label"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片编号",
+      "parent": {
+        "$ref": "galleryTile12label"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 108,
+      "height": 24,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "图片 12"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "图片比例",
+      "parent": {
+        "$ref": "galleryTile12label"
+      },
+      "x": 0,
+      "y": 26,
+      "width": 108,
+      "height": 18,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "center"
+      },
+      "select": false,
+      "text": "1:1"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 867,
+      "anchor": {
+        "$ref": "galleryGrid"
+      },
+      "x": 1380,
+      "y": 152,
+      "author": "设计标注",
+      "text": "参考Base Design的图像优先、行对齐布局，图片按原比例展示。当前范围仅浏览与查看；此处不自动加入收藏、筛选或批量删除。默认按生成时间从新到旧是设计建议。"
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryCopy",
+          "field": "map/611"
+        }
+      ],
+      "dx": 3120,
+      "dy": 0,
+      "map": true
+    },
+    "as": "galleryEmptyCopy"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "galleryEmptyCopy",
+          "field": "ids/0"
+        }
+      ],
+      "props": {
+        "name": "我的图片 · 空状态 · 1440×900"
+      }
+    }
+  }
+]

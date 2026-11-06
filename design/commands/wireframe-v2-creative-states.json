@@ -1,0 +1,1442 @@
+[
+  {
+    "command": "page.select",
+    "params": {
+      "id": 2
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        611
+      ],
+      "dx": 3120,
+      "dy": 0,
+      "map": true
+    },
+    "as": "modelState"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/611"
+        }
+      ],
+      "props": {
+        "name": "创作 · 添加结果与模型切换 · 1440×900"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/684"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/680"
+        }
+      ],
+      "props": {
+        "characters": "生成图片01.png"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/681"
+        }
+      ],
+      "props": {
+        "characters": "PNG · 已添加"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/694"
+        }
+      ],
+      "props": {
+        "characters": "基于这张图片，保留瓶身形状，改成傍晚的侧光。"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/699"
+        }
+      ],
+      "props": {
+        "characters": "Gemini 3.1 Flash Image"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/701"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/705"
+        }
+      ],
+      "props": {
+        "x": 308
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/709"
+        }
+      ],
+      "props": {
+        "x": 420
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "modelState",
+          "field": "map/713"
+        }
+      ],
+      "props": {
+        "x": 532
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "模型选择 / 展开菜单",
+      "parent": {
+        "$ref": "modelState",
+        "field": "map/611"
+      },
+      "x": 404,
+      "y": 528,
+      "width": 360,
+      "height": 276,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#C8C8C8",
+        "strokeWeight": 1,
+        "cornerRadius": 6
+      }
+    },
+    "as": "modelMenu"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "模型菜单标题",
+      "parent": {
+        "$ref": "modelMenu"
+      },
+      "x": 16,
+      "y": 10,
+      "width": 320,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "选择模型"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "模型项 / GPT Image 2",
+      "parent": {
+        "$ref": "modelMenu"
+      },
+      "x": 8,
+      "y": 38,
+      "width": 344,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 4
+      }
+    },
+    "as": "modelOption0"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "模型名称",
+      "parent": {
+        "$ref": "modelOption0"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 296,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "GPT Image 2"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "模型项 / GPT Image 1.5",
+      "parent": {
+        "$ref": "modelMenu"
+      },
+      "x": 8,
+      "y": 82,
+      "width": 344,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 4
+      }
+    },
+    "as": "modelOption1"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "模型名称",
+      "parent": {
+        "$ref": "modelOption1"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 296,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "GPT Image 1.5"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "模型项 / GPT Image 2.5 Sunburst",
+      "parent": {
+        "$ref": "modelMenu"
+      },
+      "x": 8,
+      "y": 126,
+      "width": 344,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 4
+      }
+    },
+    "as": "modelOption2"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "模型名称",
+      "parent": {
+        "$ref": "modelOption2"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 296,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "GPT Image 2.5 Sunburst"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "模型项 / Gemini 3.1 Flash Image",
+      "parent": {
+        "$ref": "modelMenu"
+      },
+      "x": 8,
+      "y": 170,
+      "width": 344,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "#EDEDED",
+        "cornerRadius": 4
+      }
+    },
+    "as": "modelOption3"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "模型名称",
+      "parent": {
+        "$ref": "modelOption3"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 296,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "Gemini 3.1 Flash Image"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "已选标记",
+      "parent": {
+        "$ref": "modelOption3"
+      },
+      "x": 310,
+      "y": 10,
+      "width": 24,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "模型项 / Gemini 3 Pro Image",
+      "parent": {
+        "$ref": "modelMenu"
+      },
+      "x": 8,
+      "y": 214,
+      "width": 344,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "cornerRadius": 4
+      }
+    },
+    "as": "modelOption4"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "模型名称",
+      "parent": {
+        "$ref": "modelOption4"
+      },
+      "x": 12,
+      "y": 10,
+      "width": 296,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "Gemini 3 Pro Image"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 2,
+      "anchor": {
+        "$ref": "modelState",
+        "field": "map/611"
+      },
+      "x": 4484,
+      "y": 528,
+      "author": "设计标注",
+      "text": "本状态同时说明：点击结果图下“添加”后，生成图片01加入框外附件栏；切换到Gemini 3.1 Flash Image时隐藏档位，比例/清晰度/数量依次前移。上方已完成结果的历史模型保持原值。"
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        611
+      ],
+      "dx": 0,
+      "dy": 1040,
+      "map": true
+    },
+    "as": "focusState"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "focusState",
+          "field": "map/611"
+        }
+      ],
+      "props": {
+        "name": "创作 · 长提示词编辑 · 1440×900"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "长文本编辑 / 遮罩",
+      "parent": {
+        "$ref": "focusState",
+        "field": "map/611"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#00000040"
+      }
+    },
+    "as": "focusShade"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "长文本编辑 / 弹层",
+      "parent": {
+        "$ref": "focusState",
+        "field": "map/611"
+      },
+      "x": 240,
+      "y": 130,
+      "width": 960,
+      "height": 640,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#C5C5C5",
+        "strokeWeight": 1,
+        "cornerRadius": 8
+      }
+    },
+    "as": "focusDialog"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "编辑标题",
+      "parent": {
+        "$ref": "focusDialog"
+      },
+      "x": 24,
+      "y": 20,
+      "width": 500,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 20,
+        "fontStyle": "Bold",
+        "lineHeight": 32,
+        "textAutoResize": "none",
+        "fill": "#333333",
+        "textAlign": "left"
+      },
+      "text": "编辑提示词"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "长文本编辑 / 关闭",
+      "parent": {
+        "$ref": "focusDialog"
+      },
+      "x": 904,
+      "y": 18,
+      "width": 32,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fill": "#F5F5F5",
+        "cornerRadius": 4
+      }
+    },
+    "as": "focusClose"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "关闭图标",
+      "parent": {
+        "$ref": "focusClose"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 23,
+        "fontStyle": "Regular",
+        "lineHeight": 32,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "center"
+      },
+      "text": "×"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "长文本编辑 / 文字区",
+      "parent": {
+        "$ref": "focusDialog"
+      },
+      "x": 24,
+      "y": 74,
+      "width": 912,
+      "height": 460,
+      "select": false,
+      "props": {
+        "fill": "#FCFCFC",
+        "stroke": "#D6D6D6",
+        "strokeWeight": 1,
+        "cornerRadius": 4
+      }
+    },
+    "as": "focusTextArea"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "长提示词内容",
+      "parent": {
+        "$ref": "focusTextArea"
+      },
+      "x": 20,
+      "y": 18,
+      "width": 872,
+      "height": 390,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Regular",
+        "lineHeight": 28,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "生成一组极简护肤品产品图。\n\n主体：白色圆柱瓶，标签留白。\n场景：浅灰色背景，柔和的自然侧光。\n构图：4:3 横向，主体完整，周围保留呼吸空间。\n细节：材质真实，避免多余文字和装饰。"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "长文本编辑 / 取消",
+      "parent": {
+        "$ref": "focusDialog"
+      },
+      "x": 716,
+      "y": 564,
+      "width": 100,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D2D2D2",
+        "strokeWeight": 1,
+        "cornerRadius": 5
+      }
+    },
+    "as": "focusCancel"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "取消标签",
+      "parent": {
+        "$ref": "focusCancel"
+      },
+      "x": 0,
+      "y": 10,
+      "width": 100,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#666666",
+        "textAlign": "center"
+      },
+      "text": "取消"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "长文本编辑 / 完成",
+      "parent": {
+        "$ref": "focusDialog"
+      },
+      "x": 832,
+      "y": 564,
+      "width": 104,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "#444444",
+        "cornerRadius": 5
+      }
+    },
+    "as": "focusDone"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "完成标签",
+      "parent": {
+        "$ref": "focusDone"
+      },
+      "x": 0,
+      "y": 10,
+      "width": 104,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Bold",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#FFFFFF",
+        "textAlign": "center"
+      },
+      "text": "完成"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 2,
+      "anchor": {
+        "$ref": "focusDialog"
+      },
+      "x": 1200,
+      "y": 1194,
+      "author": "设计标注",
+      "text": "右上角展开入口进入此编辑弹层。完成后将文本带回紧凑输入区，保留已有附件及模型参数，不触发生成。取消/×放弃本次弹层修改是本项目建议；ArtCraft实测确认Done保留文本，未验证×对新修改的保存规则。"
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        611
+      ],
+      "dx": 1560,
+      "dy": 1040,
+      "map": true
+    },
+    "as": "accountState"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/611"
+        }
+      ],
+      "props": {
+        "name": "创作 · 收起侧栏与账户菜单 · 1440×900"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/612"
+        }
+      ],
+      "props": {
+        "width": 72,
+        "name": "侧栏 / 收起"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/613"
+        }
+      ],
+      "props": {
+        "x": 71
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/614"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/615"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/616"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/617"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/622"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/627"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/628"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/637"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/638"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/639"
+        }
+      ],
+      "props": {
+        "visible": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/618"
+        },
+        {
+          "$ref": "accountState",
+          "field": "map/623"
+        }
+      ],
+      "props": {
+        "x": 12,
+        "width": 48
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/633"
+        }
+      ],
+      "props": {
+        "x": 12,
+        "width": 48
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/634"
+        }
+      ],
+      "props": {
+        "x": 20,
+        "width": 32
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/722"
+        }
+      ],
+      "props": {
+        "x": 20
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/725"
+        }
+      ],
+      "props": {
+        "path": "M0 0L3 4L0 8",
+        "x": 18,
+        "y": 12
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/640"
+        }
+      ],
+      "props": {
+        "x": 72,
+        "width": 1368
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/642"
+        }
+      ],
+      "props": {
+        "width": 1368
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/643"
+        }
+      ],
+      "props": {
+        "x": 1208
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "accountState",
+          "field": "map/644"
+        },
+        {
+          "$ref": "accountState",
+          "field": "map/675"
+        },
+        {
+          "$ref": "accountState",
+          "field": "map/726"
+        }
+      ],
+      "props": {
+        "x": 236
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "账户 / 展开菜单",
+      "parent": {
+        "$ref": "accountState",
+        "field": "map/611"
+      },
+      "x": 84,
+      "y": 588,
+      "width": 264,
+      "height": 288,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CBCBCB",
+        "strokeWeight": 1,
+        "cornerRadius": 6
+      }
+    },
+    "as": "accountMenu"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "账户菜单标题",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 18,
+      "y": 14,
+      "width": 228,
+      "height": 28,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 17,
+        "fontStyle": "Bold",
+        "lineHeight": 28,
+        "textAutoResize": "none",
+        "fill": "#444444",
+        "textAlign": "left"
+      },
+      "text": "我的账户"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "菜单积分标签",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 18,
+      "y": 58,
+      "width": 160,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#999999",
+        "textAlign": "left"
+      },
+      "text": "积分余额"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "菜单积分数值",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 18,
+      "y": 83,
+      "width": 140,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 21,
+        "fontStyle": "Bold",
+        "lineHeight": 30,
+        "textAutoResize": "none",
+        "fill": "#444444",
+        "textAlign": "left"
+      },
+      "text": "1,280"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "账户 / 充值入口",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 174,
+      "y": 77,
+      "width": 72,
+      "height": 34,
+      "select": false,
+      "props": {
+        "fill": "#F5F5F5",
+        "stroke": "#D3D3D3",
+        "strokeWeight": 1,
+        "cornerRadius": 4
+      }
+    },
+    "as": "menuRecharge"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "菜单充值标签",
+      "parent": {
+        "$ref": "menuRecharge"
+      },
+      "x": 0,
+      "y": 6,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "center"
+      },
+      "text": "充值"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "账户菜单分隔",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 18,
+      "y": 130,
+      "width": 228,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E4E4E4"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "主题标题",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 18,
+      "y": 146,
+      "width": 120,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777",
+        "textAlign": "left"
+      },
+      "text": "主题"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "账户 / 浅色主题",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 18,
+      "y": 178,
+      "width": 106,
+      "height": 34,
+      "select": false,
+      "props": {
+        "fill": "#E8E8E8",
+        "cornerRadius": 4
+      }
+    },
+    "as": "lightTheme"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "浅色主题标签",
+      "parent": {
+        "$ref": "lightTheme"
+      },
+      "x": 0,
+      "y": 6,
+      "width": 106,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#444444",
+        "textAlign": "center"
+      },
+      "text": "浅色  ✓"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "账户 / 深色主题",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 136,
+      "y": 178,
+      "width": 110,
+      "height": 34,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#D8D8D8",
+        "strokeWeight": 1,
+        "cornerRadius": 4
+      }
+    },
+    "as": "darkTheme"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "深色主题标签",
+      "parent": {
+        "$ref": "darkTheme"
+      },
+      "x": 0,
+      "y": 6,
+      "width": 110,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#666666",
+        "textAlign": "center"
+      },
+      "text": "深色"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "设置入口",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 18,
+      "y": 242,
+      "width": 210,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#555555",
+        "textAlign": "left"
+      },
+      "text": "设置"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "设置箭头",
+      "parent": {
+        "$ref": "accountMenu"
+      },
+      "x": 226,
+      "y": 242,
+      "width": 20,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 20,
+        "fontStyle": "Regular",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#888888",
+        "textAlign": "left"
+      },
+      "text": "›"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "page": 2,
+      "anchor": {
+        "$ref": "accountMenu"
+      },
+      "x": 1908,
+      "y": 1628,
+      "author": "设计标注",
+      "text": "侧栏收起为72px，顶部图标恢复展开；底部头像打开账户菜单。积分充值与设置保留入口，独立流程范围外；主题展示浅/深两项选择，不在本阶段绘制完整双主题皮肤。"
+    }
+  }
+]

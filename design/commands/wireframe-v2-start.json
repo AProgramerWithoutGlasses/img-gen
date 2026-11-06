@@ -1,0 +1,322 @@
+[
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        662
+      ]
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "结果操作 / 下载到本地",
+      "parent": 653,
+      "x": 0,
+      "y": 270,
+      "width": 76,
+      "height": 28,
+      "props": {
+        "fill": "none",
+        "pluginData": {
+          "designNotes": "下载本张生成图片到用户本地。"
+        }
+      },
+      "select": false
+    },
+    "as": "downloadAction"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "下载图标",
+      "parent": {
+        "$ref": "downloadAction"
+      },
+      "x": 2,
+      "y": 6,
+      "width": 16,
+      "height": 16,
+      "props": {
+        "fill": "none",
+        "stroke": "#666666",
+        "strokeWeight": 1.4
+      },
+      "select": false
+    },
+    "as": "downloadIcon"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "downloadIcon"
+        }
+      ],
+      "props": {
+        "path": "M8 0V11 M4 7L8 11L12 7 M1 11V15H15V11"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "下载文字",
+      "parent": {
+        "$ref": "downloadAction"
+      },
+      "x": 25,
+      "y": 4,
+      "width": 44,
+      "height": 20,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "select": false,
+      "text": "下载"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "frame",
+      "name": "结果操作 / 添加到附件",
+      "parent": 653,
+      "x": 88,
+      "y": 270,
+      "width": 76,
+      "height": 28,
+      "props": {
+        "fill": "none",
+        "pluginData": {
+          "designNotes": "将本张结果图加入当前待发送附件栏。保留输入文字，不自动发送；有图时显示附件栏。"
+        }
+      },
+      "select": false
+    },
+    "as": "addAttachmentAction"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "添加图标",
+      "parent": {
+        "$ref": "addAttachmentAction"
+      },
+      "x": 2,
+      "y": 6,
+      "width": 16,
+      "height": 16,
+      "props": {
+        "fill": "none",
+        "stroke": "#666666",
+        "strokeWeight": 1.4
+      },
+      "select": false
+    },
+    "as": "addAttachmentIcon"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "addAttachmentIcon"
+        }
+      ],
+      "props": {
+        "path": "M8 1V15 M1 8H15"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "添加文字",
+      "parent": {
+        "$ref": "addAttachmentAction"
+      },
+      "x": 25,
+      "y": 4,
+      "width": 44,
+      "height": 20,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "select": false,
+      "text": "添加"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        654
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "点击图片本身打开大图查看。下方下载保存本图到本地；添加将本图加入当前附件栏。"
+        }
+      }
+    }
+  },
+  {
+    "command": "edit.duplicate",
+    "params": {
+      "ids": [
+        611
+      ],
+      "dx": 1560,
+      "dy": 0,
+      "map": true
+    },
+    "as": "emptyCopy"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyCopy",
+          "field": "map/611"
+        }
+      ],
+      "props": {
+        "name": "创作 · 初始空状态 · 1440×900"
+      }
+    }
+  },
+  {
+    "command": "edit.delete",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyCopy",
+          "field": "map/644"
+        },
+        {
+          "$ref": "emptyCopy",
+          "field": "map/726"
+        }
+      ]
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyCopy",
+          "field": "map/694"
+        }
+      ],
+      "props": {
+        "characters": "描述你想生成的图片…",
+        "fill": "#999999"
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyCopy",
+          "field": "map/718"
+        }
+      ],
+      "props": {
+        "fill": "#CFCFCF",
+        "pluginData": {
+          "designNotes": "提示词为空且未添加图片时，发送禁用。此状态为本项目设计规则。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "emptyCopy",
+          "field": "map/717"
+        }
+      ],
+      "props": {
+        "characters": "预计 — 积分"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "空状态标题",
+      "parent": {
+        "$ref": "emptyCopy",
+        "field": "map/611"
+      },
+      "x": 540,
+      "y": 300,
+      "width": 640,
+      "height": 40,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 28,
+        "fontStyle": "Bold",
+        "lineHeight": 40,
+        "textAutoResize": "none",
+        "textAlign": "center",
+        "fill": "#444444"
+      },
+      "select": false,
+      "text": "从一个想法开始"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "空状态说明",
+      "parent": {
+        "$ref": "emptyCopy",
+        "field": "map/611"
+      },
+      "x": 540,
+      "y": 354,
+      "width": 640,
+      "height": 26,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "textAlign": "center",
+        "fill": "#888888"
+      },
+      "select": false,
+      "text": "输入描述，也可以添加图片作为参考。"
+    }
+  },
+  {
+    "command": "page.add",
+    "params": {
+      "name": "02 · 我的图片"
+    },
+    "as": "galleryPage"
+  }
+]

@@ -1,0 +1,2370 @@
+[
+  {
+    "command": "page.rename",
+    "params": {
+      "id": 2,
+      "name": "01 · 图像创作"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        611
+      ],
+      "props": {
+        "name": "图像创作 · 结果与参考图 · 1440×900",
+        "fill": "#FFFFFF",
+        "pluginData": {
+          "designNotes": "首轮审阅：一轮已完成结果与下一轮两张参考附件。静态中性线框。积分为演示数值；档位仅模型支持时显示。更多状态待审阅后扩展。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "sidebar",
+    "params": {
+      "type": "frame",
+      "name": "01 侧栏",
+      "parent": 611,
+      "x": 0,
+      "y": 0,
+      "width": 224,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#F7F7F7"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "右边界",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 223,
+      "y": 0,
+      "width": 1,
+      "height": 900,
+      "select": false,
+      "props": {
+        "fill": "#DCDCDC",
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "品牌占位",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 24,
+      "y": 24,
+      "width": 28,
+      "height": 28,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#555555",
+        "strokeWeight": 1,
+        "cornerRadius": 5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "品牌图形",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 30,
+      "y": 31,
+      "points": [
+        [
+          0,
+          14
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          16,
+          14
+        ],
+        [
+          0,
+          14
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#555555",
+        "strokeWeight": 1.5,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "产品名称",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 64,
+      "y": 24,
+      "width": 140,
+      "height": 28,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 18,
+        "fontStyle": "Bold",
+        "lineHeight": 24,
+        "textAutoResize": "none",
+        "fill": "#252525"
+      },
+      "text": "AI 图像"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "导航分组",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 24,
+      "y": 83,
+      "width": 160,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#858585"
+      },
+      "text": "工作空间"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "nav",
+    "params": {
+      "type": "component",
+      "name": "侧栏 / 导航项",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 112,
+      "width": 192,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5",
+        "cornerRadius": 5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "选中指示",
+      "parent": {
+        "$ref": "nav"
+      },
+      "x": 0,
+      "y": 10,
+      "width": 3,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fill": "#4A4A4A",
+        "cornerRadius": 0
+      }
+    },
+    "as": "navIndicator"
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "入口图标",
+      "parent": {
+        "$ref": "nav"
+      },
+      "x": 14,
+      "y": 13,
+      "width": 18,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#616161",
+        "strokeWeight": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "图像符号",
+      "parent": {
+        "$ref": "nav"
+      },
+      "x": 17,
+      "y": 19,
+      "points": [
+        [
+          0,
+          9
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          9,
+          7
+        ],
+        [
+          12,
+          0
+        ],
+        [
+          12,
+          9
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#616161",
+        "strokeWeight": 1.2,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "navLabel",
+    "params": {
+      "type": "text",
+      "name": "入口名称",
+      "parent": {
+        "$ref": "nav"
+      },
+      "x": 44,
+      "y": 11,
+      "width": 130,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#262626"
+      },
+      "text": "图像创作"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "nav"
+      },
+      "layer": {
+        "$ref": "navLabel"
+      },
+      "name": "名称",
+      "type": "text",
+      "default": "图像创作"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "nav"
+      },
+      "layer": {
+        "$ref": "navIndicator"
+      },
+      "name": "选中",
+      "type": "boolean",
+      "default": true
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "navImages",
+    "params": {
+      "component": {
+        "$ref": "nav"
+      },
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 164
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "navImages"
+        }
+      ],
+      "props": {
+        "name": "侧栏 / 我的图片",
+        "fill": "#F7F7F7"
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "navImages"
+        }
+      ],
+      "properties": {
+        "名称": "我的图片",
+        "选中": false
+      }
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "navImages"
+        }
+      ],
+      "props": {
+        "pluginData": {
+          "designNotes": "未选中导航项；点击进入我的图片。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "credit",
+    "params": {
+      "type": "frame",
+      "name": "侧栏 / 积分摘要",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 748,
+      "width": 192,
+      "height": 68,
+      "select": false,
+      "props": {
+        "fill": "#EFEFEF",
+        "cornerRadius": 6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "积分标题",
+      "parent": {
+        "$ref": "credit"
+      },
+      "x": 14,
+      "y": 10,
+      "width": 100,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "积分余额"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "积分数值",
+      "parent": {
+        "$ref": "credit"
+      },
+      "x": 14,
+      "y": 29,
+      "width": 108,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 19,
+        "fontStyle": "Bold",
+        "lineHeight": 25,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "1,280"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "recharge",
+    "params": {
+      "type": "frame",
+      "name": "侧栏 / 积分充值入口",
+      "parent": {
+        "$ref": "credit"
+      },
+      "x": 126,
+      "y": 21,
+      "width": 54,
+      "height": 30,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#CFCFCF",
+        "strokeWeight": 1,
+        "cornerRadius": 4,
+        "pluginData": {
+          "designNotes": "充值入口；充值流程范围外。余额为演示数据。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "充值标签",
+      "parent": {
+        "$ref": "recharge"
+      },
+      "x": 11,
+      "y": 4,
+      "width": 40,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "充值"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "账户分隔",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 831,
+      "width": 192,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#DEDEDE",
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "account",
+    "params": {
+      "type": "frame",
+      "name": "侧栏 / 用户入口",
+      "parent": {
+        "$ref": "sidebar"
+      },
+      "x": 16,
+      "y": 842,
+      "width": 192,
+      "height": 42,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "pluginData": {
+          "designNotes": "点击展开账号菜单：积分与充值、浅色/深色主题、设置。展开状态在审阅后制作；不制作独立设置页或充值流程。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "name": "头像占位",
+      "parent": {
+        "$ref": "account"
+      },
+      "x": 0,
+      "y": 5,
+      "width": 32,
+      "height": 32,
+      "select": false,
+      "props": {
+        "fill": "#E1E1E1"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "头像字母",
+      "parent": {
+        "$ref": "account"
+      },
+      "x": 11,
+      "y": 9,
+      "width": 18,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "text": "U"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "账户名称",
+      "parent": {
+        "$ref": "account"
+      },
+      "x": 44,
+      "y": 1,
+      "width": 126,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Regular",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "我的账户"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "账户功能提示",
+      "parent": {
+        "$ref": "account"
+      },
+      "x": 44,
+      "y": 23,
+      "width": 126,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#858585"
+      },
+      "text": "设置与主题"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "账户展开",
+      "parent": {
+        "$ref": "account"
+      },
+      "x": 177,
+      "y": 18,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          8,
+          0
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#777777",
+        "strokeWeight": 1.5,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "header",
+    "params": {
+      "type": "frame",
+      "name": "02 页头",
+      "parent": 611,
+      "x": 224,
+      "y": 0,
+      "width": 1216,
+      "height": 72,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "页面标题",
+      "parent": {
+        "$ref": "header"
+      },
+      "x": 40,
+      "y": 23,
+      "width": 400,
+      "height": 28,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 20,
+        "fontStyle": "Bold",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#252525"
+      },
+      "text": "图像创作"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "页头分隔",
+      "parent": {
+        "$ref": "header"
+      },
+      "x": 0,
+      "y": 71,
+      "width": 1216,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5",
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "工作区说明",
+      "parent": {
+        "$ref": "header"
+      },
+      "x": 1056,
+      "y": 26,
+      "width": 120,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#858585",
+        "textAlign": "right"
+      },
+      "text": "当前对话"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "conversation",
+    "params": {
+      "type": "frame",
+      "name": "03 对话工作区 / 第1轮",
+      "parent": 611,
+      "x": 304,
+      "y": 104,
+      "width": 1040,
+      "height": 548,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "pluginData": {
+          "designNotes": "本容器包含第1轮用户消息和其生成结果；整组随对话滚动。两张结果均归属于本条用户请求。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "用户身份",
+      "parent": {
+        "$ref": "conversation"
+      },
+      "x": 972,
+      "y": 0,
+      "width": 68,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Bold",
+        "lineHeight": 19,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "text": "你"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "message",
+    "params": {
+      "type": "frame",
+      "name": "对话 / 用户消息",
+      "parent": {
+        "$ref": "conversation"
+      },
+      "x": 208,
+      "y": 30,
+      "width": 832,
+      "height": 86,
+      "select": false,
+      "props": {
+        "fill": "#F2F2F2",
+        "cornerRadius": 6
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "用户提示词",
+      "parent": {
+        "$ref": "message"
+      },
+      "x": 20,
+      "y": 14,
+      "width": 790,
+      "height": 58,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 26,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "生成 2 张极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。\n保持主体完整，使用 4:3 横向构图。"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "生成结果标题",
+      "parent": {
+        "$ref": "conversation"
+      },
+      "x": 0,
+      "y": 140,
+      "width": 110,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Bold",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "生成结果"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "complete",
+    "params": {
+      "type": "frame",
+      "name": "对话 / 结果状态",
+      "parent": {
+        "$ref": "conversation"
+      },
+      "x": 110,
+      "y": 140,
+      "width": 112,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fill": "#F1F1F1",
+        "cornerRadius": 4
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "完成状态",
+      "parent": {
+        "$ref": "complete"
+      },
+      "x": 12,
+      "y": 3,
+      "width": 100,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#666666"
+      },
+      "text": "已完成 · 2 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "历史生成参数",
+      "parent": {
+        "$ref": "conversation"
+      },
+      "x": 0,
+      "y": 170,
+      "width": 900,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "GPT Image 2.5 Sunburst    /    高    /    4:3    /    1K"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "resultrow",
+    "params": {
+      "type": "frame",
+      "name": "对话 / 本轮图片组",
+      "parent": {
+        "$ref": "conversation"
+      },
+      "x": 0,
+      "y": 198,
+      "width": 848,
+      "height": 348,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "layout": "horizontal",
+        "gap": 16,
+        "sizingH": "fixed",
+        "sizingV": "fixed",
+        "pluginData": {
+          "designNotes": "每张图片单独查看；同一次生成的图片在同一组内。占位线条表达图片区域，不代表生成内容。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "result",
+    "params": {
+      "type": "component",
+      "name": "结果 / 图片卡片",
+      "parent": {
+        "$ref": "resultrow"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 416,
+      "height": 348,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "pluginData": {
+          "designNotes": "图片为4:3；下方查看入口只针对这张图片。主组件含可编辑编号和标题。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "preview",
+    "params": {
+      "type": "frame",
+      "name": "图片区域",
+      "parent": {
+        "$ref": "result"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 416,
+      "height": 312,
+      "select": false,
+      "props": {
+        "fill": "#F1F1F1",
+        "stroke": "#D4D4D4",
+        "strokeWeight": 1,
+        "cornerRadius": 4,
+        "clip": true
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位对角线A",
+      "parent": {
+        "$ref": "preview"
+      },
+      "x": 0,
+      "y": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          416,
+          312
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#DEDEDE",
+        "strokeWeight": 1,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "占位对角线B",
+      "parent": {
+        "$ref": "preview"
+      },
+      "x": 0,
+      "y": 0,
+      "points": [
+        [
+          0,
+          312
+        ],
+        [
+          416,
+          0
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#DEDEDE",
+        "strokeWeight": 1,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "文字底板",
+      "parent": {
+        "$ref": "preview"
+      },
+      "x": 118,
+      "y": 108,
+      "width": 180,
+      "height": 96,
+      "select": false,
+      "props": {
+        "fill": "#F1F1F1",
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "图片占位图标",
+      "parent": {
+        "$ref": "preview"
+      },
+      "x": 195,
+      "y": 112,
+      "width": 26,
+      "height": 21,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#999999",
+        "strokeWeight": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "图片占位山形",
+      "parent": {
+        "$ref": "preview"
+      },
+      "x": 199,
+      "y": 121,
+      "points": [
+        [
+          0,
+          8
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          10,
+          7
+        ],
+        [
+          15,
+          0
+        ],
+        [
+          18,
+          8
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#999999",
+        "strokeWeight": 1.4,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "resultLabel",
+    "params": {
+      "type": "text",
+      "name": "结果占位标题",
+      "parent": {
+        "$ref": "preview"
+      },
+      "x": 118,
+      "y": 143,
+      "width": 180,
+      "height": 26,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 16,
+        "fontStyle": "Regular",
+        "lineHeight": 22,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "生成图片 01"
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "resultLabel"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "比例与尺寸",
+      "parent": {
+        "$ref": "preview"
+      },
+      "x": 148,
+      "y": 174,
+      "width": 120,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#909090"
+      },
+      "text": "4:3 · 1K"
+    },
+    "as": "resultDimensions"
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "resultDimensions"
+        }
+      ],
+      "props": {
+        "textAlign": "center"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "查看原图入口",
+      "parent": {
+        "$ref": "result"
+      },
+      "x": 0,
+      "y": 322,
+      "width": 110,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#555555"
+      },
+      "text": "查看大图  ↗"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "resultIndex",
+    "params": {
+      "type": "text",
+      "name": "结果编号",
+      "parent": {
+        "$ref": "result"
+      },
+      "x": 350,
+      "y": 322,
+      "width": 66,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#999999"
+      },
+      "text": "01 / 02"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "result"
+      },
+      "layer": {
+        "$ref": "resultLabel"
+      },
+      "name": "图片名称",
+      "type": "text",
+      "default": "生成图片 01"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "result"
+      },
+      "layer": {
+        "$ref": "resultIndex"
+      },
+      "name": "图片编号",
+      "type": "text",
+      "default": "01 / 02"
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "result2",
+    "params": {
+      "component": {
+        "$ref": "result"
+      },
+      "parent": {
+        "$ref": "resultrow"
+      },
+      "x": 432,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "result2"
+        }
+      ],
+      "props": {
+        "name": "结果 / 图片02"
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "result2"
+        }
+      ],
+      "properties": {
+        "图片名称": "生成图片 02",
+        "图片编号": "02 / 02"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "composer",
+    "params": {
+      "type": "frame",
+      "name": "04 底部输入区 / 下一轮待发送",
+      "parent": 611,
+      "x": 304,
+      "y": 674,
+      "width": 1040,
+      "height": 202,
+      "select": false,
+      "props": {
+        "fill": "#FFFFFF",
+        "stroke": "#BEBEBE",
+        "strokeWeight": 1,
+        "cornerRadius": 8,
+        "pluginData": {
+          "designNotes": "固定在1440×900视口底部，距底24px。附件、文本和参数均属于下一条未发送消息。两张附件独立于上方已完成生成组。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "attachments",
+    "params": {
+      "type": "frame",
+      "name": "输入区 / 参考图片列表",
+      "parent": {
+        "$ref": "composer"
+      },
+      "x": 16,
+      "y": 16,
+      "width": 1008,
+      "height": 52,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "layout": "horizontal",
+        "gap": 8,
+        "sizingH": "fixed",
+        "sizingV": "fixed",
+        "pluginData": {
+          "designNotes": "已上传2张；每项可预览和移除。模型对应上传上限尚待进一步核实，不写死。溢出建议横向滚动。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "attachment",
+    "params": {
+      "type": "component",
+      "name": "输入区 / 附件项",
+      "parent": {
+        "$ref": "attachments"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 224,
+      "height": 52,
+      "select": false,
+      "props": {
+        "fill": "#F5F5F5",
+        "stroke": "#E1E1E1",
+        "strokeWeight": 1,
+        "cornerRadius": 5
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "附件缩略图",
+      "parent": {
+        "$ref": "attachment"
+      },
+      "x": 8,
+      "y": 8,
+      "width": 36,
+      "height": 36,
+      "select": false,
+      "props": {
+        "fill": "#E5E5E5",
+        "stroke": "#D2D2D2",
+        "strokeWeight": 1,
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "附件图形",
+      "parent": {
+        "$ref": "attachment"
+      },
+      "x": 15,
+      "y": 18,
+      "points": [
+        [
+          0,
+          17
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          13,
+          11
+        ],
+        [
+          20,
+          0
+        ],
+        [
+          20,
+          17
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#B0B0B0",
+        "strokeWeight": 1,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "fileName",
+    "params": {
+      "type": "text",
+      "name": "附件文件名",
+      "parent": {
+        "$ref": "attachment"
+      },
+      "x": 54,
+      "y": 5,
+      "width": 140,
+      "height": 23,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "产品参考.png"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "fileMeta",
+    "params": {
+      "type": "text",
+      "name": "附件格式与状态",
+      "parent": {
+        "$ref": "attachment"
+      },
+      "x": 54,
+      "y": 27,
+      "width": 140,
+      "height": 18,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 10,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#858585"
+      },
+      "text": "PNG · 已上传"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "移除附件",
+      "parent": {
+        "$ref": "attachment"
+      },
+      "x": 204,
+      "y": 10,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          7,
+          7
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#888888",
+        "strokeWeight": 1.3,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "移除附件反线",
+      "parent": {
+        "$ref": "attachment"
+      },
+      "x": 204,
+      "y": 10,
+      "points": [
+        [
+          0,
+          7
+        ],
+        [
+          7,
+          0
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#888888",
+        "strokeWeight": 1.3,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "attachment"
+      },
+      "layer": {
+        "$ref": "fileName"
+      },
+      "name": "文件名",
+      "type": "text",
+      "default": "产品参考.png"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "attachment"
+      },
+      "layer": {
+        "$ref": "fileMeta"
+      },
+      "name": "格式与状态",
+      "type": "text",
+      "default": "PNG · 已上传"
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "attachment2",
+    "params": {
+      "component": {
+        "$ref": "attachment"
+      },
+      "parent": {
+        "$ref": "attachments"
+      },
+      "x": 232,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "attachment2"
+        }
+      ],
+      "props": {
+        "name": "输入区 / 附件02"
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "attachment2"
+        }
+      ],
+      "properties": {
+        "文件名": "光线参考.jpg",
+        "格式与状态": "JPG · 已上传"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "upload",
+    "params": {
+      "type": "frame",
+      "name": "输入区 / 上传图片入口",
+      "parent": {
+        "$ref": "attachments"
+      },
+      "x": 464,
+      "y": 0,
+      "width": 120,
+      "height": 52,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "stroke": "#CDCDCD",
+        "strokeWeight": 1,
+        "dashes": [
+          3,
+          3
+        ],
+        "cornerRadius": 5,
+        "pluginData": {
+          "designNotes": "选择图片上传；文件选择、上传中、失败状态在后续局部状态稿中表达。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "添加图片标签",
+      "parent": {
+        "$ref": "upload"
+      },
+      "x": 12,
+      "y": 15,
+      "width": 104,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#666666"
+      },
+      "text": "＋ 添加图片"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "已选数量",
+      "parent": {
+        "$ref": "composer"
+      },
+      "x": 932,
+      "y": 30,
+      "width": 90,
+      "height": 20,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "已选 2 张"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "下一轮提示词",
+      "parent": {
+        "$ref": "composer"
+      },
+      "x": 18,
+      "y": 86,
+      "width": 996,
+      "height": 28,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 15,
+        "fontStyle": "Regular",
+        "lineHeight": 21,
+        "textAutoResize": "none",
+        "fill": "#444444"
+      },
+      "text": "保留瓶身形状，改为暖灰背景，参考第二张图片的侧光。"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "name": "工具栏分隔",
+      "parent": {
+        "$ref": "composer"
+      },
+      "x": 16,
+      "y": 128,
+      "width": 1008,
+      "height": 1,
+      "select": false,
+      "props": {
+        "fill": "#ECECEC",
+        "cornerRadius": 0
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "toolbar",
+    "params": {
+      "type": "frame",
+      "name": "输入区 / 模型与参数工具栏",
+      "parent": {
+        "$ref": "composer"
+      },
+      "x": 16,
+      "y": 142,
+      "width": 1008,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "none",
+        "pluginData": {
+          "designNotes": "模型 → 档位（条件显示）→ 比例 → 清晰度（条件显示）→ 数量。预计积分与发送保持相邻。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "model",
+    "params": {
+      "type": "component",
+      "name": "输入区 / 模型选择",
+      "parent": {
+        "$ref": "toolbar"
+      },
+      "x": 0,
+      "y": 0,
+      "width": 252,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "#FAFAFA",
+        "stroke": "#D5D5D5",
+        "strokeWeight": 1,
+        "cornerRadius": 4,
+        "pluginData": {
+          "designNotes": "模型列表：GPT Image 2 / GPT Image 1.5 / GPT Image 2.5 Sunburst / Gemini 3.1 Flash Image / Gemini 3 Pro Image。当前为Sunburst，按ArtCraft参考配置。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "模型标签",
+      "parent": {
+        "$ref": "model"
+      },
+      "x": 10,
+      "y": 3,
+      "width": 200,
+      "height": 16,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "模型"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "模型当前值",
+      "parent": {
+        "$ref": "model"
+      },
+      "x": 10,
+      "y": 20,
+      "width": 220,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "GPT Image 2.5 Sunburst"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "模型下拉",
+      "parent": {
+        "$ref": "model"
+      },
+      "x": 232,
+      "y": 22,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          8,
+          0
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#888888",
+        "strokeWeight": 1.2,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "param",
+    "params": {
+      "type": "component",
+      "name": "输入区 / 参数选择",
+      "parent": {
+        "$ref": "toolbar"
+      },
+      "x": 260,
+      "y": 0,
+      "width": 104,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "#FAFAFA",
+        "stroke": "#D5D5D5",
+        "strokeWeight": 1,
+        "cornerRadius": 4,
+        "pluginData": {
+          "designNotes": "档位。GPT Image系列显示；两个Gemini模型隐藏。当前高档位。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "paramName",
+    "params": {
+      "type": "text",
+      "name": "参数标签",
+      "parent": {
+        "$ref": "param"
+      },
+      "x": 10,
+      "y": 3,
+      "width": 76,
+      "height": 16,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 11,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#888888"
+      },
+      "text": "档位"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "paramValue",
+    "params": {
+      "type": "text",
+      "name": "参数当前值",
+      "parent": {
+        "$ref": "param"
+      },
+      "x": 10,
+      "y": 20,
+      "width": 72,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 13,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#333333"
+      },
+      "text": "高"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "参数下拉",
+      "parent": {
+        "$ref": "param"
+      },
+      "x": 84,
+      "y": 22,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          8,
+          0
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#888888",
+        "strokeWeight": 1.2,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "param"
+      },
+      "layer": {
+        "$ref": "paramName"
+      },
+      "name": "参数名",
+      "type": "text",
+      "default": "档位"
+    }
+  },
+  {
+    "command": "component.addProperty",
+    "params": {
+      "id": {
+        "$ref": "param"
+      },
+      "layer": {
+        "$ref": "paramValue"
+      },
+      "name": "当前值",
+      "type": "text",
+      "default": "高"
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "ratio",
+    "params": {
+      "component": {
+        "$ref": "param"
+      },
+      "parent": {
+        "$ref": "toolbar"
+      },
+      "x": 372,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "ratio"
+        }
+      ],
+      "props": {
+        "name": "输入区 / 图像比例"
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "ratio"
+        }
+      ],
+      "properties": {
+        "参数名": "比例",
+        "当前值": "4:3"
+      }
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "resolution",
+    "params": {
+      "component": {
+        "$ref": "param"
+      },
+      "parent": {
+        "$ref": "toolbar"
+      },
+      "x": 484,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "resolution"
+        }
+      ],
+      "props": {
+        "name": "输入区 / 清晰度",
+        "pluginData": {
+          "designNotes": "GPT Image1.5无独立清晰度选项时隐藏；其他模型按模型参数表配置。"
+        }
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "resolution"
+        }
+      ],
+      "properties": {
+        "参数名": "清晰度",
+        "当前值": "1K"
+      }
+    }
+  },
+  {
+    "command": "instance.create",
+    "as": "quantity",
+    "params": {
+      "component": {
+        "$ref": "param"
+      },
+      "parent": {
+        "$ref": "toolbar"
+      },
+      "x": 596,
+      "y": 0
+    }
+  },
+  {
+    "command": "node.set",
+    "params": {
+      "ids": [
+        {
+          "$ref": "quantity"
+        }
+      ],
+      "props": {
+        "name": "输入区 / 生成数量"
+      }
+    }
+  },
+  {
+    "command": "instance.setProperties",
+    "params": {
+      "ids": [
+        {
+          "$ref": "quantity"
+        }
+      ],
+      "properties": {
+        "参数名": "数量",
+        "当前值": "2 张"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "预计消耗",
+      "parent": {
+        "$ref": "toolbar"
+      },
+      "x": 722,
+      "y": 12,
+      "width": 158,
+      "height": 22,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 12,
+        "fontStyle": "Regular",
+        "lineHeight": 18,
+        "textAutoResize": "none",
+        "fill": "#777777"
+      },
+      "text": "预计 12 积分"
+    }
+  },
+  {
+    "command": "node.create",
+    "as": "send",
+    "params": {
+      "type": "frame",
+      "name": "输入区 / 发送按钮",
+      "parent": {
+        "$ref": "toolbar"
+      },
+      "x": 896,
+      "y": 0,
+      "width": 112,
+      "height": 44,
+      "select": false,
+      "props": {
+        "fill": "#3C3C3C",
+        "cornerRadius": 5,
+        "pluginData": {
+          "designNotes": "发送当前提示词、附件和参数。预计12积分是演示数值，不是产品定价。"
+        }
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "name": "发送标签",
+      "parent": {
+        "$ref": "send"
+      },
+      "x": 25,
+      "y": 11,
+      "width": 52,
+      "height": 24,
+      "select": false,
+      "props": {
+        "fontFamily": "Microsoft YaHei UI",
+        "fontSize": 14,
+        "fontStyle": "Bold",
+        "lineHeight": 20,
+        "textAutoResize": "none",
+        "fill": "#FFFFFF"
+      },
+      "text": "发送"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "发送箭头",
+      "parent": {
+        "$ref": "send"
+      },
+      "x": 79,
+      "y": 14,
+      "points": [
+        [
+          0,
+          8
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          12,
+          8
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#FFFFFF",
+        "strokeWeight": 1.6,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "vector",
+      "name": "发送箭杆",
+      "parent": {
+        "$ref": "send"
+      },
+      "x": 85,
+      "y": 16,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          13
+        ]
+      ],
+      "props": {
+        "fill": "none",
+        "stroke": "#FFFFFF",
+        "strokeWeight": 1.6,
+        "strokeCap": "round",
+        "strokeJoin": "round"
+      },
+      "select": false
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "x": 1344,
+      "y": 72,
+      "anchor": 611,
+      "text": "首稿审阅 · 1440 × 900 静态线框。生成图片为占位示例；余额 1,280 与预计 12 积分均为演示数值，不是产品定价。本次未执行付费生成。",
+      "page": 2,
+      "author": "设计标注"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "x": 1152,
+      "y": 256,
+      "anchor": {
+        "$ref": "conversation"
+      },
+      "text": "归属：本容器中的用户消息和两张结果属于同一轮请求。后续多轮对话重复这个层级；结果卡的“查看大图”只作用于对应图片。",
+      "page": 2,
+      "author": "设计标注"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "x": 1344,
+      "y": 690,
+      "anchor": {
+        "$ref": "composer"
+      },
+      "text": "归属：两张参考图和提示词属于下一条待发送消息，不属于上方已完成结果。附件已上传状态已在参考站实测；每项移除、多附件数量须独立表达。建议上传中禁用发送；上限待核实。",
+      "page": 2,
+      "author": "设计标注"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "x": 632,
+      "y": 838,
+      "anchor": {
+        "$ref": "param"
+      },
+      "text": "显示条件：GPT Image 2 / 1.5 / 2.5 Sunburst 显示档位；Gemini 3.1 Flash Image 和 Gemini 3 Pro Image 隐藏档位。GPT Image 1.5 无独立清晰度时隐藏该控件。按 ArtCraft 配置取值，详见 docs/research/model-parameters.md。",
+      "page": 2,
+      "author": "设计标注"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "x": 208,
+      "y": 864,
+      "anchor": {
+        "$ref": "account"
+      },
+      "text": "用户入口展开后：账号、积分余额与充值、浅色/深色主题、设置。此首稿保留入口，展开菜单待主画面审阅后制作；独立设置页、充值流程不在本轮范围。",
+      "page": 2,
+      "author": "设计标注"
+    }
+  },
+  {
+    "command": "comment.add",
+    "params": {
+      "x": 208,
+      "y": 186,
+      "anchor": {
+        "$ref": "navImages"
+      },
+      "text": "我的图片页在首稿审阅后制作。已确认范围为浏览与查看图片；建议借鉴 Base Design 按行变化的图片网格。下载与回到来源对话仍是待确认建议。",
+      "page": 2,
+      "author": "设计标注"
+    }
+  }
+]

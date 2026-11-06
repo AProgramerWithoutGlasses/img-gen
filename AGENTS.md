@@ -1,4 +1,8 @@
-# 项目约定
+# UI 项目约定
+
+- 后续唯一开发目录为 `C:\Users\13556\Documents\ui-studio`，它是独立普通Git检出，`main`跟踪GitHub仓库 `AProgramerWithoutGlasses/img-gen` 的 `main`。仓库名称保留，网站继续使用；不再在本地img-gen副本开发。
+- 运行前端源码以 `frontend/` 为准；根目录npm命令代理到该目录。原FigCraft稿、素材和设计工具保留于 `design/`、`figcraft.config.json`、`.codex/` 和 `scripts/figcraft*`。不把旧模拟项目的根目录src覆盖回当前服务端适配版本。
+- 设计工作稿为 `design/start.figcraft`；先核对文档、选区与未保存状态，编辑明确指定文档。保留用户未提交设计和本地参考图，不能因代码同步覆盖；设计自动化修改后才运行相关design检查，普通前端小改不重复整套设计检查。
 
 - 用中文回复用户。
 - 每次对话中若有文件改动，完成改动及必要验证后，必须执行一次 Git commit，提交本次对话产生的改动。

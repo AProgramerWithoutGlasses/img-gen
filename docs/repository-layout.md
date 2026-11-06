@@ -1,5 +1,7 @@
 # 仓库结构与分支
 
+后续唯一本地开发目录为 `C:\Users\13556\Documents\ui-studio`。该目录已整合当前前后端、FigCraft设计稿和设计工具，并保持原GitHub `img-gen`远程关联。根目录npm脚本提供前端代理与设计命令，`design/`是当前设计源码，`archive/`与旧设计文档仅作历史资料。
+
 2026-11-07：将已上线的 `ebee61e` 及仓库清理提交收拢到 `main`，作为唯一长期分支；按需创建短期功能分支。推送与部署分别须用户对本次工作明确确认。仓库整理不修改线上服务。固定本地目录和发布优化见 [工作流程](workflow.md)。
 
 | 位置 | 用途 |
@@ -19,4 +21,4 @@
 
 删除的远程过渡分支：`codex/frontend-rewrite`（已合并）、`codex/studio-integration`（现用代码已收拢到main）、`codex/frontend-preview`（独立UI来源，所需UI改动已适配到现用前端）。UI来源完整历史通过归档标签 `archive/ui-studio-preview-2026-11-07` 保留；旧生产界面可在 `ebee61e` 及更早提交中查看，不需长期保留开发分支。
 
-本地其他检出目录及其未提交修改未清理或重置。原UI Studio项目继续作为独立设计工作区；归档分支已移除，不要再向生产仓库推送其旧目录布局。
+UI原本的模拟代码历史保留于本地 `archive/ui-local-before-consolidation-2026-11-07` 分支和 `outputs/consolidation-2026-11-07/ui-history.bundle`。后续推送只从UI目录的main进行，不再推送旧模拟分支布局。

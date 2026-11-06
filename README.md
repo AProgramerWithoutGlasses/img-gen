@@ -1,4 +1,8 @@
-# AI 图像工作室
+# UI Studio
+
+后续统一在 `C:\Users\13556\Documents\ui-studio` 开发，根目录 `main` 跟踪原GitHub仓库 `AProgramerWithoutGlasses/img-gen` 的 `main`。保留这个远程地址及网站，`img-gen`仅是沿用的远程/服务名称，不再代表需要切换的本地开发项目。
+
+当前前后端与设计稿均在此目录：页面源码 `frontend/`，FigCraft稿 `design/start.figcraft`。首次安装分别执行根目录与frontend的 `npm ci`；根目录 `npm run dev` 启动真实前端联调，`npm run dev:preview` 启动独立模拟预览，`npm run design:open` 打开设计稿，`npm run build` 构建Go所需的静态资源。推送及部署仍分别等待用户授权。
 
 Go + MySQL 后端与 React/TypeScript/Vite 前端。当前界面源码统一位于 `frontend/`；接口与运行方式见 [前后端适配说明](docs/studio-integration.md)，目录和分支说明见 [仓库说明](docs/repository-layout.md)。旧前端已从当前代码中清除，历史版本仍可通过 Git 找回。
 
