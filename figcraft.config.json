@@ -2,5 +2,5 @@
   "app": "C:/Program Files/ArtCraft/FigCraft/figcraft.exe",
   "cli": "C:/Program Files/ArtCraft/FigCraft/figcraft-cli.exe",
   "controlPort": 47800,
-  "document": "design/start.figcraft"
+  "document": "design/ui-studio-design.figcraft"
 }

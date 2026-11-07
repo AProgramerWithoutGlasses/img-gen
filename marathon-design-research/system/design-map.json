@@ -1,0 +1,20 @@
+{
+  "document": "design/ui-studio-design.figcraft",
+  "pageId": 23053,
+  "saved": true,
+  "frames": {
+    "studio-light": 23054,
+    "field-light": 23149,
+    "signal-light": 23244,
+    "field-dark": 23352,
+    "signal-dark": 23447,
+    "studio-dark": 23555,
+    "components-light": 23650,
+    "components-dark": 23725,
+    "gallery-light": 23800,
+    "gallery-dark": 23912,
+    "mobile-light": 24024,
+    "mobile-dark": 24070
+  },
+  "design_sha256": "2d8feedbc9a152c1c026488d0c660f6c4119220e0f99dc76311048a827990d2e"
+}

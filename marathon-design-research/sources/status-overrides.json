@@ -1,0 +1,20 @@
+{
+ "S06":{"status":"mirror-unavailable","note":"Behance HTTP 403／浏览器加载失败；同项目的 Michael Rigley 自有页面 S41 已读取，按同一作品计。"},
+ "S09":{"status":"unavailable","note":"Tau Ceti World 返回 HTTP 429，未绕过访问限制；仅保留官网对其的链接关系。"},
+ "S10":{"status":"unavailable","note":"Creative Review HTTP 403；以机构第一方 S02 为品牌主依据。"},
+ "S12":{"status":"reviewed","note":"直接 HTTP 受限，正常浏览器页面可读；已保存渲染后的正文、作者名单与媒体链接。"},
+ "S13":{"status":"reviewed","note":"正常浏览器已核实 Ryan Klaverweide 的作品说明与图标开发图。"},
+ "S16":{"status":"unavailable","note":"HTTP 403，未读取作品正文；不作为核心结论依据。"},
+ "S17":{"status":"unavailable","note":"Behance HTTP 403；CG 以导演第一方 S14 与其链接的官方视频为主。"},
+ "S21":{"status":"reviewed-preview","note":"作品说明和公开短预览已查看。Vimeo 完整片提取返回 401，不宣称观看完整影片；首次通用提取误纳入相关作品预览的输出未用于该片证据。"},
+ "S22":{"status":"reviewed-preview","note":"已核实制作归属、制作访谈及公开短预览；不宣称完整观看 Vimeo 片源。"},
+ "S23":{"status":"reviewed-preview","note":"已读取作品说明并查看公开短预览。"},
+ "S25":{"status":"unavailable","note":"yt-dlp 与正常浏览器均返回 Bilibili 412 安全风控拒绝；没有下载、转写或概括视频观点。"},
+ "S26":{"status":"discovered","note":"中文检索发现的候选；尚未读取原视频，不纳入已核实结论。"},
+ "S27":{"status":"reviewed","note":"正常浏览器已核实作者 Rémy Mallard 的 fan art 身份、制作说明及素材。"},
+ "S28":{"status":"listing-only","note":"官网新闻列表确认标题与日期；HTTP 只读到应用壳，不宣称读取更新正文。"},
+ "S29":{"status":"listing-only","note":"官网列出的 1.1.9.6 更新入口；HTTP 只读到应用壳，不能据此证明本研究 UI 截图覆盖此补丁。"},
+ "S31":{"status":"visual-reference","note":"已查看作者项目页并保存网页画面，正文依赖客户端展示。"},
+ "S34":{"status":"discovered","note":"作者网站存在该项目入口，HTTP 为客户端页面壳；未作深入分析。"},
+ "S35":{"status":"discovered","note":"作者网站存在该项目入口，HTTP 为客户端页面壳；未作深入分析。"}
+}

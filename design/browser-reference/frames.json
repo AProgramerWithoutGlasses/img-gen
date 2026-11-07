@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "description": "Editable design frames compared with the production browser UI and local synthetic metadata; historical reference page is excluded.",
+  "frontendInputHash": "3ca1051eb98e83b17518854754d52a39610eb09a66d006d657559e9f16b125fa",
+  "builtHash": "22961da3d91ae924f0b8c331004159d284a5c9105302c62de6c4815fa09370c1",
+  "frames": [
+    {
+      "name": "01-create-attachments",
+      "frameId": 611
+    },
+    {
+      "name": "02-create-gemini-edit",
+      "frameId": 1278
+    },
+    {
+      "name": "03-create-result-added",
+      "frameId": 2134
+    },
+    {
+      "name": "04-create-expanded-prompt",
+      "frameId": 1411
+    },
+    {
+      "name": "05-create-empty",
+      "frameId": 745
+    },
+    {
+      "name": "06-create-collapsed-account",
+      "frameId": 1542
+    },
+    {
+      "name": "07-create-processing",
+      "frameId": 1676
+    },
+    {
+      "name": "08-controls-gemini-current",
+      "frameId": 1834
+    },
+    {
+      "name": "09-create-failed-six-inputs",
+      "frameId": 2023
+    },
+    {
+      "name": "10-gallery-all",
+      "frameId": 868
+    },
+    {
+      "name": "11-gallery-new-images-first",
+      "frameId": 3964
+    },
+    {
+      "name": "12-gallery-empty-folder",
+      "frameId": 2634
+    },
+    {
+      "name": "13-gallery-empty",
+      "frameId": 1050
+    },
+    {
+      "name": "14-gallery-folder-menu",
+      "frameId": 2368
+    },
+    {
+      "name": "15-gallery-rename-folder",
+      "frameId": 3223
+    },
+    {
+      "name": "16-gallery-batch-organize",
+      "frameId": 2501
+    },
+    {
+      "name": "17-gallery-preview",
+      "frameId": 1153
+    },
+    {
+      "name": "18-settings-account",
+      "frameId": 2261
+    },
+    {
+      "name": "19-settings-password-dialog",
+      "frameId": 4103
+    },
+    {
+      "name": "20-settings-ordinary-account",
+      "frameId": 3887
+    },
+    {
+      "name": "21-settings-appearance",
+      "frameId": 2878
+    },
+    {
+      "name": "22-settings-credit-history",
+      "frameId": 2990
+    },
+    {
+      "name": "23-admin-users",
+      "frameId": 3081
+    },
+    {
+      "name": "24-admin-create-user",
+      "frameId": 3580
+    },
+    {
+      "name": "25-admin-requests",
+      "frameId": 3281
+    },
+    {
+      "name": "26-admin-request-detail",
+      "frameId": 3722
+    },
+    {
+      "name": "27-admin-prices",
+      "frameId": 3446
+    },
+    {
+      "name": "28-admin-unsaved-price",
+      "frameId": 4160
+    },
+    {
+      "name": "29-dark-create",
+      "frameId": 11672
+    },
+    {
+      "name": "30-dark-gallery",
+      "frameId": 11901
+    },
+    {
+      "name": "31-dark-account",
+      "frameId": 12238
+    },
+    {
+      "name": "32-dark-history",
+      "frameId": 12372
+    },
+    {
+      "name": "33-dark-appearance",
+      "frameId": 12592
+    },
+    {
+      "name": "34-dark-users",
+      "frameId": 12749
+    },
+    {
+      "name": "35-dark-requests",
+      "frameId": 12985
+    },
+    {
+      "name": "36-dark-prices",
+      "frameId": 13288
+    },
+    {
+      "name": "37-dark-account-menu",
+      "frameId": 13511
+    }
+  ]
+}

@@ -1,0 +1,530 @@
+[
+  {
+    "id": "S01",
+    "title": "Marathon 官方网站",
+    "url": "https://www.marathonthegame.com/",
+    "kind": "official",
+    "topics": [
+      "品牌",
+      "网页",
+      "排版",
+      "动效"
+    ],
+    "author": "Bungie"
+  },
+  {
+    "id": "S02",
+    "title": "Kurppa Hosk / Bungie",
+    "url": "https://www.kurppahosk.com/work/bungie",
+    "kind": "maker",
+    "topics": [
+      "品牌",
+      "平面",
+      "阵营",
+      "动效"
+    ],
+    "author": "Kurppa Hosk"
+  },
+  {
+    "id": "S03",
+    "title": "Marathon Brand Identity: How Kurppa Hosk Built a Universe",
+    "url": "https://abduzeedo.com/marathon-brand-identity-kurppa-hosk",
+    "kind": "analysis",
+    "topics": [
+      "品牌",
+      "平面"
+    ],
+    "author": "Jeff / Abduzeedo"
+  },
+  {
+    "id": "S04",
+    "title": "Bungie's art director explains Marathon's controversial art style",
+    "url": "https://www.creativebloq.com/3d/video-game-design/bungies-art-director-explains-marathons-controversial-art-style",
+    "kind": "interview-report",
+    "topics": [
+      "Graphic Realism",
+      "美术"
+    ],
+    "author": "Creative Bloq"
+  },
+  {
+    "id": "S05",
+    "title": "Bungie's Marathon: An Eye for Design",
+    "url": "https://www.brace.design/single-post/bungie-s-marathon-an-eye-for-design",
+    "kind": "analysis",
+    "topics": [
+      "美术",
+      "字体",
+      "平面"
+    ],
+    "author": "brace.design"
+  },
+  {
+    "id": "S06",
+    "title": "MARATHON / motion portfolio",
+    "url": "https://www.behance.net/gallery/205038723/MARATHON",
+    "kind": "maker-mirror",
+    "topics": [
+      "动效",
+      "UI"
+    ],
+    "author": "Michael Rigley",
+    "duplicate_of": "S41"
+  },
+  {
+    "id": "S07",
+    "title": "Bungie's Overdesigned UI's: What Marathon Gets Wrong",
+    "url": "https://josephkerrdesign.com/bungies-overdesigned-uis-what-marathon-gets-wrong/",
+    "kind": "critique",
+    "topics": [
+      "UI",
+      "可用性",
+      "反例"
+    ],
+    "author": "Joseph Kerr"
+  },
+  {
+    "id": "S08",
+    "title": "Marathon Art Style Breakdown",
+    "url": "https://www.youtube.com/watch?v=JHApRRthYgQ",
+    "kind": "analysis-video",
+    "topics": [
+      "美术",
+      "跨领域"
+    ],
+    "author": "Jake The Alright",
+    "fetch": false
+  },
+  {
+    "id": "S09",
+    "title": "Tau Ceti World explorer",
+    "url": "https://tauceti.world/explorer",
+    "kind": "official-linked",
+    "topics": [
+      "网页",
+      "地图",
+      "交互"
+    ],
+    "author": "待页面核实"
+  },
+  {
+    "id": "S10",
+    "title": "Marathon / Kurppa Hosk coverage",
+    "url": "https://www.creativereview.co.uk/kurppa-hosk-marketing-design-bungie-marathon/",
+    "kind": "analysis",
+    "topics": [
+      "品牌"
+    ],
+    "author": "Creative Review"
+  },
+  {
+    "id": "S11",
+    "title": "Marathon (2026) video game — Fonts In Use",
+    "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+    "kind": "typography-archive",
+    "topics": [
+      "字体",
+      "实机UI",
+      "动效"
+    ],
+    "author": "Alex Nguyen / Fonts In Use",
+    "date": "2026-06-21",
+    "version": "2026 / Season 2"
+  },
+  {
+    "id": "S12",
+    "title": "Bungie Marathon Art Blast",
+    "url": "https://magazine.artstation.com/2026/06/bungie-marathon-art-blast/",
+    "kind": "maker-collection",
+    "topics": [
+      "美术",
+      "角色",
+      "环境",
+      "制作"
+    ],
+    "author": "ArtStation / Bungie",
+    "date": "2026-06-18"
+  },
+  {
+    "id": "S13",
+    "title": "Marathon Ability/Trait Icons",
+    "url": "https://www.artstation.com/artwork/NrwVzd",
+    "kind": "maker",
+    "topics": [
+      "图标",
+      "UI"
+    ],
+    "author": "Ryan Klaverweide",
+    "date": "2026-06-25"
+  },
+  {
+    "id": "S14",
+    "title": "MARATHON — Alberto Mielgo",
+    "url": "http://www.albertomielgo.com/marathon",
+    "kind": "maker",
+    "topics": [
+      "CG",
+      "材质",
+      "色彩",
+      "动效"
+    ],
+    "author": "Alberto Mielgo"
+  },
+  {
+    "id": "S15",
+    "title": "Marathon World Design",
+    "url": "https://www.weststudio.com/project/marathon-world-design",
+    "kind": "maker",
+    "topics": [
+      "环境",
+      "材质",
+      "工业",
+      "美术"
+    ],
+    "author": "West Studio"
+  },
+  {
+    "id": "S16",
+    "title": "Marathon — Reveal Cinematic",
+    "url": "https://www.artstation.com/artwork/QKB2JL",
+    "kind": "maker",
+    "topics": [
+      "CG",
+      "制作"
+    ],
+    "author": "待页面核实"
+  },
+  {
+    "id": "S17",
+    "title": "Marathon Cinematic Trailer",
+    "url": "https://www.behance.net/gallery/241988427/Marathon-Cinematic-Trailer",
+    "kind": "maker",
+    "topics": [
+      "CG",
+      "制作"
+    ],
+    "author": "待页面核实"
+  },
+  {
+    "id": "S18",
+    "title": "KH Type",
+    "url": "https://khtype.com/",
+    "kind": "type-foundry",
+    "topics": [
+      "字体"
+    ],
+    "author": "KH Type"
+  },
+  {
+    "id": "S19",
+    "title": "KH Interference — type archive",
+    "url": "https://fontsinuse.com/typefaces/241490/kh-interference",
+    "kind": "typography-archive",
+    "topics": [
+      "字体"
+    ],
+    "author": "Fonts In Use"
+  },
+  {
+    "id": "S20",
+    "title": "KH Interference — 官方字样",
+    "url": "https://khtype.com/typeface/kh-interference/",
+    "kind": "type-foundry",
+    "topics": [
+      "字体"
+    ],
+    "author": "KH Type"
+  },
+  {
+    "id": "S21",
+    "title": "Marathon — In the heavens, they are waiting",
+    "url": "https://antibody.tv/works/marathon-context/",
+    "kind": "maker",
+    "topics": [
+      "动效",
+      "阵营",
+      "图形"
+    ],
+    "author": "Antibody",
+    "date": "2026"
+  },
+  {
+    "id": "S22",
+    "title": "Marathon Announcement Trailer",
+    "url": "https://antibody.tv/works/marathon-announcement-trailer/",
+    "kind": "maker",
+    "topics": [
+      "动效",
+      "CG",
+      "图形"
+    ],
+    "author": "Antibody",
+    "date": "2023"
+  },
+  {
+    "id": "S23",
+    "title": "Marathon — You Are Dead",
+    "url": "https://antibody.tv/works/marathon-intro/",
+    "kind": "maker",
+    "topics": [
+      "动效",
+      "阵营",
+      "图形"
+    ],
+    "author": "Antibody"
+  },
+  {
+    "id": "S24",
+    "title": "Antibody Step It Up for Marathon Announcement Trailer",
+    "url": "https://www.stashmedia.tv/antibody-bungie-marathon-announcement-trailer/",
+    "kind": "interview-report",
+    "topics": [
+      "动效",
+      "CG",
+      "制作"
+    ],
+    "author": "Stephen Price / Stash",
+    "date": "2023-06-19"
+  },
+  {
+    "id": "S25",
+    "title": "马拉松美术设计赏析，成也美术！败也美术！",
+    "url": "https://www.bilibili.com/video/BV1xJAYz8Ess/",
+    "kind": "analysis-video",
+    "topics": [
+      "中文解析",
+      "美术"
+    ],
+    "author": "墨狼Mowolf",
+    "fetch": false
+  },
+  {
+    "id": "S26",
+    "title": "解析 Marathon 美术总监 Joseph Cross",
+    "url": "https://www.bilibili.com/video/BV1t8oVBbEDx/",
+    "kind": "analysis-video",
+    "topics": [
+      "中文解析",
+      "美术"
+    ],
+    "author": "降噪包",
+    "fetch": false
+  },
+  {
+    "id": "S27",
+    "title": "Marathon Fan Art",
+    "url": "https://www.artstation.com/artwork/xDXW0E",
+    "kind": "fan",
+    "topics": [
+      "二创",
+      "美术"
+    ],
+    "author": "Rémy Mallard",
+    "date": "2024"
+  },
+  {
+    "id": "S28",
+    "title": "Bungie Community Update — October 2026",
+    "url": "https://www.bungie.net/7/en/News/Article/bungiecommunityupdate_10_27",
+    "kind": "official",
+    "topics": [
+      "版本",
+      "社区"
+    ],
+    "author": "Bungie",
+    "date": "2026-10-29"
+  },
+  {
+    "id": "S29",
+    "title": "Marathon Update 1.1.9.6",
+    "url": "https://www.bungie.net/7/en/News/Article/marathon_update_1_1_9_6",
+    "kind": "official",
+    "topics": [
+      "版本",
+      "UI"
+    ],
+    "author": "Bungie",
+    "date": "2026-10-27"
+  },
+  {
+    "id": "S30",
+    "title": "Marathon Press Kit",
+    "url": "https://press.bungie.com/Marathon",
+    "kind": "official",
+    "topics": [
+      "美术",
+      "实机",
+      "品牌"
+    ],
+    "author": "Bungie"
+  },
+  {
+    "id": "S31",
+    "title": "WipEout — The Designers Republic",
+    "url": "https://www.thedesignersrepublic.com/project/wipeout",
+    "kind": "cross-domain-maker",
+    "topics": [
+      "跨领域",
+      "图形",
+      "品牌"
+    ],
+    "author": "The Designers Republic"
+  },
+  {
+    "id": "S32",
+    "title": "OP–1 field",
+    "url": "https://teenage.engineering/products/op-1",
+    "kind": "cross-domain-maker",
+    "topics": [
+      "跨领域",
+      "工业",
+      "颜色",
+      "控件"
+    ],
+    "author": "teenage engineering"
+  },
+  {
+    "id": "S33",
+    "title": "Nike — Podium Design System",
+    "url": "https://www.kurppahosk.com/work/nike",
+    "kind": "cross-domain-maker",
+    "topics": [
+      "跨领域",
+      "图形",
+      "动效"
+    ],
+    "author": "Kurppa Hosk / Nike"
+  },
+  {
+    "id": "S34",
+    "title": "Aphex Twin — The Designers Republic",
+    "url": "https://www.thedesignersrepublic.com/aphex-twin",
+    "kind": "cross-domain-maker",
+    "topics": [
+      "跨领域",
+      "排版",
+      "品牌"
+    ],
+    "author": "The Designers Republic"
+  },
+  {
+    "id": "S35",
+    "title": "Issey Miyake — The Designers Republic",
+    "url": "https://www.thedesignersrepublic.com/issey-miyake",
+    "kind": "cross-domain-maker",
+    "topics": [
+      "跨领域",
+      "排版",
+      "服装"
+    ],
+    "author": "The Designers Republic"
+  },
+  {
+    "id": "S36",
+    "title": "Good design — Dieter Rams",
+    "url": "https://www.vitsoe.com/us/about/good-design",
+    "kind": "cross-domain-maker",
+    "topics": [
+      "跨领域",
+      "工业",
+      "设计原则"
+    ],
+    "author": "Vitsœ / Dieter Rams"
+  },
+  {
+    "id": "S37",
+    "title": "NASA Brand Guidelines",
+    "url": "https://www.nasa.gov/nasa-brand-center/brand-guidelines/",
+    "kind": "cross-domain-official",
+    "topics": [
+      "跨领域",
+      "规范",
+      "品牌"
+    ],
+    "author": "NASA"
+  },
+  {
+    "id": "S38",
+    "title": "Carbon Motion Overview",
+    "url": "https://carbondesignsystem.com/guidelines/motion/overview/",
+    "kind": "system-reference",
+    "topics": [
+      "动效",
+      "规范"
+    ],
+    "author": "IBM Carbon"
+  },
+  {
+    "id": "S39",
+    "title": "WCAG 2.2",
+    "url": "https://www.w3.org/TR/WCAG22/",
+    "kind": "standard",
+    "topics": [
+      "可用性",
+      "颜色",
+      "焦点",
+      "动效"
+    ],
+    "author": "W3C"
+  },
+  {
+    "id": "S40",
+    "title": "Source Han Sans",
+    "url": "https://github.com/adobe-fonts/source-han-sans",
+    "kind": "type-foundry",
+    "topics": [
+      "中文",
+      "字体",
+      "许可"
+    ],
+    "author": "Adobe"
+  },
+  {
+    "id": "S41",
+    "title": "Marathon | Announcement Trailer — UI + graphics process",
+    "url": "https://www.michaelrigley.com/work/marathon/",
+    "kind": "maker",
+    "topics": [
+      "UI",
+      "动效",
+      "图形",
+      "制作"
+    ],
+    "author": "Michael Rigley",
+    "version": "2023 announcement trailer"
+  },
+  {
+    "id": "S42",
+    "title": "Source Han Serif",
+    "url": "https://github.com/adobe-fonts/source-han-serif",
+    "kind": "type-foundry",
+    "topics": [
+      "中文",
+      "字体",
+      "许可"
+    ],
+    "author": "Adobe"
+  },
+  {
+    "id": "S43",
+    "title": "Space Grotesk",
+    "url": "https://github.com/floriankarsten/space-grotesk",
+    "kind": "type-foundry",
+    "topics": [
+      "字体",
+      "许可"
+    ],
+    "author": "Florian Karsten"
+  },
+  {
+    "id": "S44",
+    "title": "Space Mono",
+    "url": "https://github.com/googlefonts/spacemono",
+    "kind": "type-foundry",
+    "topics": [
+      "字体",
+      "许可"
+    ],
+    "author": "Colophon / Google Fonts"
+  }
+]

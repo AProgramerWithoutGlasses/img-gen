@@ -11,4 +11,4 @@
 
 生成器：`node design/scripts/build-artcraft.mjs`，只生成 `design/commands/artcraft-wide.json`。该批次用于空白画布的初次创建；现有画面应做局部修改，不要再次执行整个创建批次。
 
-画布主文件为 `design/start.figcraft`，只包含两张参考基底；网页预览仍独立保留。原网页截图、导出图和校对结果位于不提交的 `outputs/`。
+当前画布主文件为 `design/ui-studio-design.figcraft`。本目录记录最初两张参考基底的素材，当前成稿已包含后续创作、图库和设置设计；网页预览独立保留。原网页截图、导出图和校对结果位于不提交的 `outputs/`。

@@ -6,7 +6,7 @@
 
 ## 工作稿与预览
 
-- 可编辑文件：[design/start.figcraft](../design/start.figcraft)，使用安装版 FigCraft，或运行 `npm run design:open`。
+- 可编辑文件：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)，使用安装版 FigCraft，或运行 `npm run design:open`。
 - [全部画面总览](../outputs/wireframe-v2/overview.png)；[实时截图索引](../outputs/wireframe-v2/manifest.json)。截图为本轮实时文档渲染，不是旧导出。
 - 3 个设计页、12 张画框，均为 1440 × 900；其中 10 张是完整界面状态，2 张是局部组件状态对照。
 - 仅静态、原生可编辑线框，没有页面开发、交互连线、动画或后端。生成图片为灰色占位，积分、日期和提示词是示例数据。
@@ -73,4 +73,4 @@
 - 没有网页或连接自动化源代码修改，因此本轮不运行网页构建或连接 smoke。静态验收不声称点击逻辑已实现。
 - 截图、临时辅助脚本和日志仅在 `outputs/`，不提交；项目只做本地 Git commit。
 
-本轮命令记录位于 `design/commands/wireframe-v2-*.json`。正确的工作入口始终是已保存的 `design/start.figcraft`；命令记录用于复核修改，不代替最新工作稿。
+本轮命令记录位于 `design/commands/wireframe-v2-*.json`。正确的工作入口始终是已保存的 `design/ui-studio-design.figcraft`；命令记录用于复核修改，不代替最新工作稿。

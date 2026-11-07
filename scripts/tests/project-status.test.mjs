@@ -20,7 +20,8 @@ async function repository(t) {
   await writeFile(join(root, '.gitignore'), '.env\n');
   await writeFile(join(root, '.env'), 'PRIVATE_TEST_VALUE_DO_NOT_DISPLAY');
   await mkdir(join(root, 'design'));
-  await writeFile(join(root, 'design/start.figcraft'), 'saved draft');
+  await writeFile(join(root, 'figcraft.config.json'), JSON.stringify({ document: 'design/custom-working-draft.figcraft' }));
+  await writeFile(join(root, 'design/custom-working-draft.figcraft'), 'saved draft');
   git('add', '.');
   git('-c', 'commit.gpgsign=false', 'commit', '-m', 'fixture');
   return { root, git };
@@ -43,6 +44,7 @@ test('本地状态区分未推送提交、未提交改动和已保存原稿，�
   assert.equal(result.changes.length, 1);
   assert.match(result.changes[0], /note\.md$/);
   assert.equal(result.design.savedBytes, 11);
+  assert.equal(result.design.path, join(root, 'design/custom-working-draft.figcraft'));
   assert.equal(result.remote, undefined);
   assert.ok(!JSON.stringify(result).includes('PRIVATE_TEST_VALUE_DO_NOT_DISPLAY'));
 });

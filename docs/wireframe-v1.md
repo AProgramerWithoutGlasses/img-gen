@@ -6,7 +6,7 @@
 
 ## 文件与画面
 
-- 原生设计文件：[design/start.figcraft](../design/start.figcraft)。使用安装版 FigCraft 打开，亦可运行 `npm run design:open`。
+- 原生设计文件：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)。使用安装版 FigCraft 打开，亦可运行 `npm run design:open`。
 - 页面：`01 · 图像创作`，一张顶层画框 `图像创作 · 结果与参考图 · 1440×900`，节点 611。
 - 画面尺寸：1440 × 900。展开侧栏 280 px，页头 72 px，默认文字输入框宽 1040 px、高 144 px，坐标为 (340, 732)，距视口底部 24 px。文字区高 48 px，约容纳两行。附件行在输入框外上方独立显示，高 58 px，间隔 8 px，不挤占文字位置。
 - [实时画布截图](../outputs/design-preview/canvas.png)；[v1.3 同版 PNG](../outputs/wireframe-v1-3.png)。截图位于 `outputs/`，不提交 Git。

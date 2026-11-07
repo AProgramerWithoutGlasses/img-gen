@@ -20,10 +20,10 @@
 
 | 任务 | 需要的资料 | 不应照搬的内容 |
 | --- | --- | --- |
-| 修改当前界面 | `frontend/src/`、现行服务端适配说明；需要时对照 `design/start.figcraft` | 旧根 `src/`、旧皮肤和历史控件规范 |
+| 修改当前界面 | `frontend/src/`、现行服务端适配说明；需要时对照 `design/ui-studio-design.figcraft` | 旧根 `src/`、旧皮肤和历史控件规范 |
 | 调整模型参数 | 根目录两份 2026-11-05 Qiso 报告、现行适配说明 | 参考站菜单不等于当前渠道能力 |
 | 排查图片处理 | `thumbnail.go`、`input_preview.go`、`upstream_input.go` 及对应测试 | 历史压缩实验不应覆盖已确定的现行预设 |
-| 找回原设计或旧版本 | `design/start.figcraft`、[归档恢复说明](../archive/README.md)、[历史回退点](rollback.md) | 不把整份旧项目覆盖回当前目录 |
+| 找回原设计或旧版本 | `design/ui-studio-design.figcraft`、[归档恢复说明](../archive/README.md)、[历史回退点](rollback.md) | 不把整份旧项目覆盖回当前目录 |
 | 查仓库整合经过 | [项目盘点快照](project-report-2026-11-07.md)、Git 历史 | 快照中的分支/线上版本不作为实时状态 |
 
 ## 历史记录与参考

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-direction="studio">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>双主题试点 · Marathon × UI Studio</title>
+<link rel="stylesheet" href="pilot.css">
+<body>
+<header class="review-bar">
+ <a href="../index.html">← 研究图册</a><strong>UI STUDIO / 风格试点</strong>
+ <label>方向 <select id="direction"><option value="field">A 理性工业</option><option value="signal">B 强烈图形</option><option value="studio" selected>C 混合表达</option></select></label>
+ <label>主题 <select id="theme"><option value="light">浅色</option><option value="dark">深色</option><option value="system">跟随系统</option></select></label>
+ <label>任务状态 <select id="scenario"><option value="complete">完成</option><option value="processing">处理中</option><option value="partial">部分失败</option></select></label>
+ <label class="reduce-label"><input id="reduce" type="checkbox">减少动态</label>
+ <span class="demo-note">本地交互演示 · 示例数据</span>
+</header>
+<div class="app-shell" id="pilot">
+ <aside class="sidebar" aria-label="工作室侧栏">
+  <div class="brand"><span class="brand-icon" aria-hidden="true"></span><b>UI STUDIO</b></div>
+  <div class="side-caption mono">PRIVATE IMAGE WORKSPACE</div><div class="side-rule"></div>
+  <p class="nav-caption">工作空间</p>
+  <nav class="nav"><button class="nav-item active" data-view="create"><span class="mono">01</span>图像创作</button><button class="nav-item" data-view="gallery"><span class="mono">02</span>我的图片<small>24</small></button></nav>
+  <div class="folder-title"><span>我的文件夹</span><button class="icon-button" id="new-folder" aria-label="新建文件夹">+</button></div>
+  <div class="folders" id="folders"></div>
+  <p class="side-statement" aria-hidden="true">COLLECT.<br>CREATE.<br>REPEAT.</p>
+  <button class="account" id="account"><span class="avatar">A</span><span>我的账户<small>128 积分</small></span><b>···</b></button>
+ </aside>
+ <main class="app-main">
+  <div class="app-top"><span id="breadcrumb">工作室 / 图像创作</span><span class="mono">SESSION 004</span></div>
+  <div class="workspace">
+   <header class="hero"><div><small class="mono">CREATION / 01</small><h1 id="page-title">图像创作</h1></div><p id="strap">Make room for the unseen.</p><i class="barcode" aria-hidden="true"></i></header>
+   <div id="creation-view">
+    <section class="prompt-message"><span class="mono">01 / PROMPT</span><p>用简单几何体探索蓝色、珊瑚橙与白色，保留清晰轮廓和自然留白。</p></section>
+    <div class="results" id="results"></div>
+    <div class="result-meta"><span>GPT Image 2</span><span id="status" class="mono" role="status">2 / 2 完成</span></div>
+    <div class="attachments" id="attachments" aria-label="参考图附件"></div>
+    <form class="composer" id="composer"><label for="prompt" class="sr-only">描述想生成的图片</label><textarea id="prompt" spellcheck="false">保留当前构图，让蓝色形体更轻盈，橙色圆环更有体积感。
+保持干净背景，强调材质之间的对比。</textarea><div class="composer-toolbar">
+     <button type="button" class="icon-button" id="add-reference" aria-label="添加示例参考图">+</button>
+     <label class="sr-only" for="model">模型</label><select id="model"><option>GPT Image 2</option><option>Gemini 3.1 Flash Image</option></select>
+     <label class="sr-only" for="quantity">生成数量</label><select id="quantity"><option value="1">1 张</option><option value="2" selected>2 张</option><option value="3">3 张</option><option value="4">4 张</option></select>
+     <label class="sr-only" for="ratio">比例</label><select id="ratio" disabled title="有附件时使用自动比例"><option>自动</option></select>
+     <span class="cost">2 积分</span><button class="primary send" id="send" type="submit">发送 ↗</button>
+    </div></form>
+    <footer class="workspace-footer"><span>Enter 发送 · Shift + Enter 换行</span><span class="mono" id="theme-tag">STUDIO / LIGHT</span></footer>
+   </div>
+   <section id="gallery-view" hidden><div class="gallery-top"><p>全部图片 <small>6 张示例</small></p><button id="select-images">选择图片</button></div><div class="gallery-grid" id="gallery-grid"></div><div class="gallery-selection" id="selection-toolbar" hidden><span id="selected-count">已选择 0 张</span><button id="clear-selection">取消选择</button><button class="primary" id="categorize">归入文件夹</button></div></section>
+  </div>
+ </main>
+</div>
+<section class="component-lab" aria-label="组件交互试验区">
+ <header><span class="mono eyebrow">COMPONENT STUDIES / C</span><h2>组件、状态与反馈</h2><p>试用焦点、拖动、滚动、弹窗与结果反馈。上方主题设置也作用于这里。</p></header>
+ <div class="lab-grid">
+  <section class="lab-card"><h3>01 / 按钮与输入</h3><div class="button-row"><button data-open-folder>新建文件夹</button><button class="primary" data-open-folder>主要操作</button><button disabled>暂不可用</button></div><label>文件夹名称<input id="sample-name" value="海报探索" maxlength="60"></label><p class="field-error" id="sample-error" hidden>名称已存在，请使用其他名称。</p><button id="validate-name">检查名称</button></section>
+  <section class="lab-card"><h3>02 / 滑动与滚动</h3><label for="density">缩略图密度 <output id="density-value">3 / 5</output></label><input id="density" type="range" min="1" max="5" step="1" value="3"><div class="density-sample" id="density-sample" aria-label="缩略图密度预览"></div><div class="scroll-example" tabindex="0" aria-label="滚动示例"><b>图片与文件夹</b><p>项目灵感 / 08</p><p>海报探索 / 12</p><p>材质实验 / 04</p><p>新建文件夹 / 00</p><p>滚动位置持续可见。</p></div></section>
+  <section class="lab-card"><h3>03 / 状态与弹窗</h3><label class="switch-row"><input type="checkbox" id="enter-send" checked role="switch"><span>Enter 发送</span></label><div class="notice"><b>部分完成：1 张成功，1 张失败</b><p>已保留成功结果。请查看失败原因后决定下一步。</p></div><button data-open-folder>打开对话框</button><button id="preview-feedback">播放完成反馈</button></section>
+ </div>
+</section>
+<dialog id="folder-dialog" aria-labelledby="folder-dialog-title"><form id="folder-form"><div class="dialog-heading"><h2 id="folder-dialog-title">新建文件夹</h2><button type="button" class="icon-button" id="close-folder" aria-label="关闭对话框">×</button></div><p>为一组图片建立清晰的归属。</p><label for="folder-name">文件夹名称</label><input id="folder-name" maxlength="60" placeholder="例如：材质探索" required autofocus><p class="field-error" id="folder-error" role="alert" hidden></p><small>1–60 个字符</small><div class="dialog-actions"><button type="button" id="cancel-folder">取消</button><button class="primary" type="submit">创建</button></div></form></dialog>
+<dialog id="image-dialog" class="image-dialog" aria-label="大图预览"><div class="preview-head"><span>FORM STUDY / 原始配色</span><button class="icon-button" id="close-preview" aria-label="关闭预览">×</button></div><img id="preview-image" alt="几何形态研究示例"><div class="preview-actions"><button id="previous-image">← 上一张</button><button id="next-image">下一张 →</button></div></dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="pilot.js" type="module"></script>
+</body></html>

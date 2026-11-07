@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-07",
+  "scope": "在正常浏览器中读取已渲染元素的计算样式；仅对应该访问时的官网",
+  "source": "S01",
+  "url": "https://www.marathonthegame.com/",
+  "observations": [
+    {"element": "页头 BUY NOW 按钮", "background": "rgb(192, 254, 4)", "hex": "#c0fe04", "color": "rgb(0, 0, 0)", "fontFamily": "khInterference, sans-serif, sans-serif", "borderRadius": "0px"},
+    {"element": "Available now 标题", "fontFamily": "marathonShapiro, sans-serif, sans-serif", "fontWeight": "700", "fontSize": "24px"},
+    {"element": "ENGLISH 语言按钮", "fontFamily": "ppFraktionMono, monospace, monospace", "color": "rgb(255, 255, 255)"},
+    {"element": "SEASON 2 标题标签", "fontFamily": "ppFraktionMono, monospace, monospace", "fontWeight": "500", "fontSize": "15px", "letterSpacing": "0.375px"}
+  ],
+  "limits": "CSS family 名称是网站的声明名称。字库身份、定制字形与完整许可另以字库方和实机归档证据区分，不由该读取单独证明。"
+}

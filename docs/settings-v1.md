@@ -4,7 +4,7 @@
 
 ## 画面
 
-- 工作稿：[design/start.figcraft](../design/start.figcraft)。
+- 工作稿：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)。
 - 设计页：`04 · 设置与管理`（2260）。
 - 画框：`设置 · 账户与安全 · 管理员身份 · 1440×900`（2261）。
 - [实时截图](../outputs/settings-v1/account-security.png)。

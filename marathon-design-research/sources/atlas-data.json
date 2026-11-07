@@ -1,0 +1,3048 @@
+{
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Marathon 官方网站",
+      "url": "https://www.marathonthegame.com/",
+      "kind": "official",
+      "topics": [
+        "品牌",
+        "网页",
+        "排版",
+        "动效"
+      ],
+      "author": "Bungie",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S02",
+      "title": "Kurppa Hosk / Bungie",
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "kind": "maker",
+      "topics": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "author": "Kurppa Hosk",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S03",
+      "title": "Marathon Brand Identity: How Kurppa Hosk Built a Universe",
+      "url": "https://abduzeedo.com/marathon-brand-identity-kurppa-hosk",
+      "kind": "analysis",
+      "topics": [
+        "品牌",
+        "平面"
+      ],
+      "author": "Jeff / Abduzeedo",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S04",
+      "title": "Bungie's art director explains Marathon's controversial art style",
+      "url": "https://www.creativebloq.com/3d/video-game-design/bungies-art-director-explains-marathons-controversial-art-style",
+      "kind": "interview-report",
+      "topics": [
+        "Graphic Realism",
+        "美术"
+      ],
+      "author": "Creative Bloq",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S05",
+      "title": "Bungie's Marathon: An Eye for Design",
+      "url": "https://www.brace.design/single-post/bungie-s-marathon-an-eye-for-design",
+      "kind": "analysis",
+      "topics": [
+        "美术",
+        "字体",
+        "平面"
+      ],
+      "author": "brace.design",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S06",
+      "title": "MARATHON / motion portfolio",
+      "url": "https://www.behance.net/gallery/205038723/MARATHON",
+      "kind": "maker-mirror",
+      "topics": [
+        "动效",
+        "UI"
+      ],
+      "author": "Michael Rigley",
+      "duplicate_of": "S41",
+      "status": "mirror-unavailable",
+      "note": "Behance HTTP 403／浏览器加载失败；同项目的 Michael Rigley 自有页面 S41 已读取，按同一作品计。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S07",
+      "title": "Bungie's Overdesigned UI's: What Marathon Gets Wrong",
+      "url": "https://josephkerrdesign.com/bungies-overdesigned-uis-what-marathon-gets-wrong/",
+      "kind": "critique",
+      "topics": [
+        "UI",
+        "可用性",
+        "反例"
+      ],
+      "author": "Joseph Kerr",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S08",
+      "title": "Marathon Art Style Breakdown",
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ",
+      "kind": "analysis-video",
+      "topics": [
+        "美术",
+        "跨领域"
+      ],
+      "author": "Jake The Alright",
+      "fetch": false,
+      "status": "reviewed-video",
+      "note": "原视频与英文平台字幕已保存；19 个时间点采样，转写覆盖到约 15:18。自动字幕可能误识别专名。",
+      "date": "2024-11-24",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S09",
+      "title": "Tau Ceti World explorer",
+      "url": "https://tauceti.world/explorer",
+      "kind": "official-linked",
+      "topics": [
+        "网页",
+        "地图",
+        "交互"
+      ],
+      "author": "待页面核实",
+      "status": "unavailable",
+      "note": "Tau Ceti World 返回 HTTP 429，未绕过访问限制；仅保留官网对其的链接关系。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S10",
+      "title": "Marathon / Kurppa Hosk coverage",
+      "url": "https://www.creativereview.co.uk/kurppa-hosk-marketing-design-bungie-marathon/",
+      "kind": "analysis",
+      "topics": [
+        "品牌"
+      ],
+      "author": "Creative Review",
+      "status": "unavailable",
+      "note": "Creative Review HTTP 403；以机构第一方 S02 为品牌主依据。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S11",
+      "title": "Marathon (2026) video game — Fonts In Use",
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "kind": "typography-archive",
+      "topics": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "author": "Alex Nguyen / Fonts In Use",
+      "date": "2026-06-21",
+      "version": "2026 / Season 2",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S12",
+      "title": "Bungie Marathon Art Blast",
+      "url": "https://magazine.artstation.com/2026/06/bungie-marathon-art-blast/",
+      "kind": "maker-collection",
+      "topics": [
+        "美术",
+        "角色",
+        "环境",
+        "制作"
+      ],
+      "author": "ArtStation / Bungie",
+      "date": "2026-06-18",
+      "status": "reviewed",
+      "capture": "rendered DOM",
+      "note": "直接 HTTP 受限，正常浏览器页面可读；已保存渲染后的正文、作者名单与媒体链接。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S13",
+      "title": "Marathon Ability/Trait Icons",
+      "url": "https://www.artstation.com/artwork/NrwVzd",
+      "kind": "maker",
+      "topics": [
+        "图标",
+        "UI"
+      ],
+      "author": "Ryan Klaverweide",
+      "date": "2026-06-25",
+      "status": "reviewed",
+      "capture": "rendered DOM",
+      "note": "正常浏览器已核实 Ryan Klaverweide 的作品说明与图标开发图。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S14",
+      "title": "MARATHON — Alberto Mielgo",
+      "url": "http://www.albertomielgo.com/marathon",
+      "kind": "maker",
+      "topics": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "author": "Alberto Mielgo",
+      "status": "reviewed",
+      "note": "导演页面与官方 8:44 视频；选取 12 个定位帧及 5 组短片分析，不宣称进行了逐镜全片统计。",
+      "video": "https://www.youtube.com/watch?v=fvbEnWLRo1s",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S15",
+      "title": "Marathon World Design",
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "kind": "maker",
+      "topics": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "author": "West Studio",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S16",
+      "title": "Marathon — Reveal Cinematic",
+      "url": "https://www.artstation.com/artwork/QKB2JL",
+      "kind": "maker",
+      "topics": [
+        "CG",
+        "制作"
+      ],
+      "author": "待页面核实",
+      "status": "unavailable",
+      "note": "HTTP 403，未读取作品正文；不作为核心结论依据。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S17",
+      "title": "Marathon Cinematic Trailer",
+      "url": "https://www.behance.net/gallery/241988427/Marathon-Cinematic-Trailer",
+      "kind": "maker",
+      "topics": [
+        "CG",
+        "制作"
+      ],
+      "author": "待页面核实",
+      "status": "unavailable",
+      "note": "Behance HTTP 403；CG 以导演第一方 S14 与其链接的官方视频为主。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S18",
+      "title": "KH Type",
+      "url": "https://khtype.com/",
+      "kind": "type-foundry",
+      "topics": [
+        "字体"
+      ],
+      "author": "KH Type",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S19",
+      "title": "KH Interference — type archive",
+      "url": "https://fontsinuse.com/typefaces/241490/kh-interference",
+      "kind": "typography-archive",
+      "topics": [
+        "字体"
+      ],
+      "author": "Fonts In Use",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S20",
+      "title": "KH Interference — 官方字样",
+      "url": "https://khtype.com/typeface/kh-interference/",
+      "kind": "type-foundry",
+      "topics": [
+        "字体"
+      ],
+      "author": "KH Type",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S21",
+      "title": "Marathon — In the heavens, they are waiting",
+      "url": "https://antibody.tv/works/marathon-context/",
+      "kind": "maker",
+      "topics": [
+        "动效",
+        "阵营",
+        "图形"
+      ],
+      "author": "Antibody",
+      "date": "2026",
+      "status": "reviewed-preview",
+      "capture": "rendered DOM",
+      "note": "作品说明和公开短预览已查看。Vimeo 完整片提取返回 401，不宣称观看完整影片；首次通用提取误纳入相关作品预览的输出未用于该片证据。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S22",
+      "title": "Marathon Announcement Trailer",
+      "url": "https://antibody.tv/works/marathon-announcement-trailer/",
+      "kind": "maker",
+      "topics": [
+        "动效",
+        "CG",
+        "图形"
+      ],
+      "author": "Antibody",
+      "date": "2023",
+      "status": "reviewed-preview",
+      "note": "已核实制作归属、制作访谈及公开短预览；不宣称完整观看 Vimeo 片源。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S23",
+      "title": "Marathon — You Are Dead",
+      "url": "https://antibody.tv/works/marathon-intro/",
+      "kind": "maker",
+      "topics": [
+        "动效",
+        "阵营",
+        "图形"
+      ],
+      "author": "Antibody",
+      "status": "reviewed-preview",
+      "note": "已读取作品说明并查看公开短预览。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S24",
+      "title": "Antibody Step It Up for Marathon Announcement Trailer",
+      "url": "https://www.stashmedia.tv/antibody-bungie-marathon-announcement-trailer/",
+      "kind": "interview-report",
+      "topics": [
+        "动效",
+        "CG",
+        "制作"
+      ],
+      "author": "Stephen Price / Stash",
+      "date": "2023-06-19",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S25",
+      "title": "马拉松美术设计赏析，成也美术！败也美术！",
+      "url": "https://www.bilibili.com/video/BV1xJAYz8Ess/",
+      "kind": "analysis-video",
+      "topics": [
+        "中文解析",
+        "美术"
+      ],
+      "author": "墨狼Mowolf",
+      "fetch": false,
+      "status": "unavailable",
+      "note": "yt-dlp 与正常浏览器均返回 Bilibili 412 安全风控拒绝；没有下载、转写或概括视频观点。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S26",
+      "title": "解析 Marathon 美术总监 Joseph Cross",
+      "url": "https://www.bilibili.com/video/BV1t8oVBbEDx/",
+      "kind": "analysis-video",
+      "topics": [
+        "中文解析",
+        "美术"
+      ],
+      "author": "降噪包",
+      "fetch": false,
+      "status": "discovered",
+      "note": "中文检索发现的候选；尚未读取原视频，不纳入已核实结论。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S27",
+      "title": "Marathon Fan Art",
+      "url": "https://www.artstation.com/artwork/xDXW0E",
+      "kind": "fan",
+      "topics": [
+        "二创",
+        "美术"
+      ],
+      "author": "Rémy Mallard",
+      "date": "2024",
+      "status": "reviewed",
+      "capture": "rendered DOM",
+      "note": "正常浏览器已核实作者 Rémy Mallard 的 fan art 身份、制作说明及素材。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S28",
+      "title": "Bungie Community Update — October 2026",
+      "url": "https://www.bungie.net/7/en/News/Article/bungiecommunityupdate_10_27",
+      "kind": "official",
+      "topics": [
+        "版本",
+        "社区"
+      ],
+      "author": "Bungie",
+      "date": "2026-10-29",
+      "status": "listing-only",
+      "note": "官网新闻列表确认标题与日期；HTTP 只读到应用壳，不宣称读取更新正文。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S29",
+      "title": "Marathon Update 1.1.9.6",
+      "url": "https://www.bungie.net/7/en/News/Article/marathon_update_1_1_9_6",
+      "kind": "official",
+      "topics": [
+        "版本",
+        "UI"
+      ],
+      "author": "Bungie",
+      "date": "2026-10-27",
+      "status": "listing-only",
+      "note": "官网列出的 1.1.9.6 更新入口；HTTP 只读到应用壳，不能据此证明本研究 UI 截图覆盖此补丁。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S30",
+      "title": "Marathon Press Kit",
+      "url": "https://press.bungie.com/Marathon",
+      "kind": "official",
+      "topics": [
+        "美术",
+        "实机",
+        "品牌"
+      ],
+      "author": "Bungie",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S31",
+      "title": "WipEout — The Designers Republic",
+      "url": "https://www.thedesignersrepublic.com/project/wipeout",
+      "kind": "cross-domain-maker",
+      "topics": [
+        "跨领域",
+        "图形",
+        "品牌"
+      ],
+      "author": "The Designers Republic",
+      "status": "visual-reference",
+      "capture": "rendered DOM",
+      "note": "已查看作者项目页并保存网页画面，正文依赖客户端展示。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S32",
+      "title": "OP–1 field",
+      "url": "https://teenage.engineering/products/op-1",
+      "kind": "cross-domain-maker",
+      "topics": [
+        "跨领域",
+        "工业",
+        "颜色",
+        "控件"
+      ],
+      "author": "teenage engineering",
+      "status": "reviewed",
+      "capture": "rendered DOM",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S33",
+      "title": "Nike — Podium Design System",
+      "url": "https://www.kurppahosk.com/work/nike",
+      "kind": "cross-domain-maker",
+      "topics": [
+        "跨领域",
+        "图形",
+        "动效"
+      ],
+      "author": "Kurppa Hosk / Nike",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S34",
+      "title": "Aphex Twin — The Designers Republic",
+      "url": "https://www.thedesignersrepublic.com/aphex-twin",
+      "kind": "cross-domain-maker",
+      "topics": [
+        "跨领域",
+        "排版",
+        "品牌"
+      ],
+      "author": "The Designers Republic",
+      "status": "discovered",
+      "note": "作者网站存在该项目入口，HTTP 为客户端页面壳；未作深入分析。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S35",
+      "title": "Issey Miyake — The Designers Republic",
+      "url": "https://www.thedesignersrepublic.com/issey-miyake",
+      "kind": "cross-domain-maker",
+      "topics": [
+        "跨领域",
+        "排版",
+        "服装"
+      ],
+      "author": "The Designers Republic",
+      "status": "discovered",
+      "note": "作者网站存在该项目入口，HTTP 为客户端页面壳；未作深入分析。",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S36",
+      "title": "Good design — Dieter Rams",
+      "url": "https://www.vitsoe.com/us/about/good-design",
+      "kind": "cross-domain-maker",
+      "topics": [
+        "跨领域",
+        "工业",
+        "设计原则"
+      ],
+      "author": "Vitsœ / Dieter Rams",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S37",
+      "title": "NASA Brand Guidelines",
+      "url": "https://www.nasa.gov/nasa-brand-center/brand-guidelines/",
+      "kind": "cross-domain-official",
+      "topics": [
+        "跨领域",
+        "规范",
+        "品牌"
+      ],
+      "author": "NASA",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S38",
+      "title": "Carbon Motion Overview",
+      "url": "https://carbondesignsystem.com/guidelines/motion/overview/",
+      "kind": "system-reference",
+      "topics": [
+        "动效",
+        "规范"
+      ],
+      "author": "IBM Carbon",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S39",
+      "title": "WCAG 2.2",
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "kind": "standard",
+      "topics": [
+        "可用性",
+        "颜色",
+        "焦点",
+        "动效"
+      ],
+      "author": "W3C",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S40",
+      "title": "Source Han Sans",
+      "url": "https://github.com/adobe-fonts/source-han-sans",
+      "kind": "type-foundry",
+      "topics": [
+        "中文",
+        "字体",
+        "许可"
+      ],
+      "author": "Adobe",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S41",
+      "title": "Marathon | Announcement Trailer — UI + graphics process",
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "kind": "maker",
+      "topics": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "author": "Michael Rigley",
+      "version": "2023 announcement trailer",
+      "status": "reviewed",
+      "capture": "rendered DOM",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S42",
+      "title": "Source Han Serif",
+      "url": "https://github.com/adobe-fonts/source-han-serif",
+      "kind": "type-foundry",
+      "topics": [
+        "中文",
+        "字体",
+        "许可"
+      ],
+      "author": "Adobe",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S43",
+      "title": "Space Grotesk",
+      "url": "https://github.com/floriankarsten/space-grotesk",
+      "kind": "type-foundry",
+      "topics": [
+        "字体",
+        "许可"
+      ],
+      "author": "Florian Karsten",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    },
+    {
+      "id": "S44",
+      "title": "Space Mono",
+      "url": "https://github.com/googlefonts/spacemono",
+      "kind": "type-foundry",
+      "topics": [
+        "字体",
+        "许可"
+      ],
+      "author": "Colophon / Google Fonts",
+      "status": "reviewed",
+      "access_date": "2026-11-07"
+    }
+  ],
+  "cases": [
+    {
+      "id": "C01",
+      "title": "Graphic Realism：形体、功能与陌生感共同成立",
+      "sources": [
+        "S12",
+        "S04",
+        "S15"
+      ],
+      "image": "references/images/S15-04.jpg",
+      "tags": [
+        "美术",
+        "形态",
+        "原则"
+      ],
+      "observation": "2026 Art Blast 的团队说明将产品设计的可信度、强烈图形设计和陌生感并列；画面中的大形体、标签和局部强调共同提示尺度与用途。",
+      "rule": "先建立可辨认的结构和功能关系，再用比例、图形和少量强调制造身份。",
+      "application": "面板、输入区与按钮应有清楚的操作边界；装饰围绕功能锚点展开。",
+      "boundary": "源图是环境概念设计；控件尺寸、圆角和间距均须由工作室另行定义。"
+    },
+    {
+      "id": "C02",
+      "title": "官网：荧光色承担入口和身份",
+      "sources": [
+        "S01"
+      ],
+      "image": "references/screenshots/S01-home.jpg",
+      "tags": [
+        "品牌",
+        "色彩",
+        "字体"
+      ],
+      "observation": "官网把大面积动态影像与黑色导航分区，酸绿色集中在购买入口、说明块和竖向标识。浏览器读取到 BUY NOW 背景为 #C0FE04。",
+      "rule": "强调色需要明确的面积和职责；单个主动作与品牌锚点建立识别。",
+      "application": "发送按钮、当前导航和少量分区标记共享强调色，图片区保持独立底色。",
+      "boundary": "这是 2026-11-07 的网站状态与一个按钮的实际 CSS 值，不是完整官方色彩规范。",
+      "annotation": "references/annotated/C02.jpg"
+    },
+    {
+      "id": "C03",
+      "title": "宣传版式：大标题与边缘信息形成尺度差",
+      "sources": [
+        "S02"
+      ],
+      "image": "references/images/S02-04.jpg",
+      "tags": [
+        "品牌",
+        "排版",
+        "层级"
+      ],
+      "observation": "宽体主标题占据明确的视觉轴线，小号数据与符号靠近边缘，主体影像保持大块完整区域。",
+      "rule": "通过字号、位置和面积差建立主次，精细标记集中在少量固定位置。",
+      "application": "页面标题、侧栏身份区与工作区编号可以形成尺度对比。",
+      "boundary": "宣传海报的小字不能直接用作高频按钮、余额或错误信息的字号。"
+    },
+    {
+      "id": "C04",
+      "title": "Shells：选择列表、主体预览与信息面板分工",
+      "sources": [
+        "S11"
+      ],
+      "image": "references/images/S11-03.jpg",
+      "tags": [
+        "UI",
+        "布局",
+        "选择"
+      ],
+      "observation": "左侧是可扫视的角色列表，中间是较大的主体预览，右侧承接说明和动作。局部浅色块帮助标识可操作区域。",
+      "rule": "列表负责选择，预览负责判断，详情负责解释与行动。",
+      "application": "图库、图片预览与请求详情可采用同样的信息分工。",
+      "boundary": "游戏手柄提示、角色属性和装备逻辑不迁入工作室。",
+      "annotation": "references/annotated/C04.jpg"
+    },
+    {
+      "id": "C05",
+      "title": "奖励界面：编辑式标题与操作层分开",
+      "sources": [
+        "S11"
+      ],
+      "image": "references/images/S11-08.jpg",
+      "tags": [
+        "UI",
+        "字体",
+        "层级"
+      ],
+      "observation": "衬线标题与克制的技术文字同时存在，左侧聚合奖励信息，右侧将物品作为视觉主体。",
+      "rule": "字体反差需要绑定稳定语义，例如身份标题与操作／数据层的区别。",
+      "application": "允许页面级展示文字使用衬线，表单、按钮与长提示词保持统一操作字体。",
+      "boundary": "字体身份来自 Fonts In Use 的社区归档；特定字重仍以字库与样张核对。",
+      "annotation": "references/annotated/C05.jpg"
+    },
+    {
+      "id": "C06",
+      "title": "大厅：主动作与浏览路径",
+      "sources": [
+        "S11"
+      ],
+      "image": "references/images/S11-02.jpg",
+      "tags": [
+        "UI",
+        "导航",
+        "层级"
+      ],
+      "observation": "主要导航位于左侧，准备动作使用醒目的浅绿按钮，人物与场景占据中央。顶部和底部承载辅助状态。",
+      "rule": "保持一个清楚的下一步，并让辅助状态有固定位置。",
+      "application": "发送作为创作区主动作；模型、数量、费用围绕它组织，不与侧栏争夺主次。",
+      "boundary": "归档截图为 Season 2、16:10 视口；作者指出顶部存在适配问题，该问题不作为排版规则。"
+    },
+    {
+      "id": "C07",
+      "title": "图标开发：从共同原语到可区分轮廓",
+      "sources": [
+        "S13"
+      ],
+      "image": "references/images/S13-05.jpg",
+      "tags": [
+        "图标",
+        "组件",
+        "制作"
+      ],
+      "observation": "Ryan Klaverweide 的开发稿展示同一功能的多种轮廓处理，最终图标集合复用点、线、箭头、环与小块。",
+      "rule": "先测试整体轮廓的辨认度，再分配内部细节与笔画密度。",
+      "application": "下载、添加、文件夹、选择等图标建立统一的尺度、笔画和光学校正。",
+      "boundary": "开发稿中的每一列都是研究材料，不能把每个候选都认作正式定稿。",
+      "annotation": "references/annotated/C07.jpg"
+    },
+    {
+      "id": "C08",
+      "title": "工业面板：强调色对应接触和连接部位",
+      "sources": [
+        "S15"
+      ],
+      "image": "references/images/S15-04.jpg",
+      "tags": [
+        "工业",
+        "色彩",
+        "组件"
+      ],
+      "observation": "浅色结构与蓝色外框形成模块，黄色小块落在把手或连接区域附近，尺度由人物和接缝提示。",
+      "rule": "颜色与部件的使用关系共同表达功能。",
+      "application": "滑块、选中标记、按钮按压面和拖动把手获得有限强调。",
+      "boundary": "画面只能证明设计表达，不能推定虚构设备的真实机械功能。",
+      "annotation": "references/annotated/C08.jpg"
+    },
+    {
+      "id": "C09",
+      "title": "箱体与模块：外轮廓柔和，内部组织精确",
+      "sources": [
+        "S15"
+      ],
+      "image": "references/images/S15-09.jpg",
+      "tags": [
+        "工业",
+        "形态",
+        "组件"
+      ],
+      "observation": "箱体同时使用圆角外壳、直角分区、编号和有节制的色块。整套语言包含多种边界形态。",
+      "rule": "圆角、直角和切角可分工，而不是统一套一种科幻边框。",
+      "application": "输入区采用稳定小圆角，分隔与栅格保持直线，必要的标记使用明确角度。",
+      "boundary": "试点的 0／3／8px 是产品探索值，不是从概念图测得的官方参数。"
+    },
+    {
+      "id": "C10",
+      "title": "CG：环境色彩与材质的相互制约",
+      "sources": [
+        "S14"
+      ],
+      "image": "references/images/S14-02.jpg",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩"
+      ],
+      "observation": "黄色结构、青绿反射、自然植被与磨损并存，亮部平面、阴影和表面细节建立空间。",
+      "rule": "强色需要由材料、光照和中性色区域共同支撑。",
+      "application": "登录、空状态或品牌插图可使用材质反差；高频控件采用更平坦稳定的表面。",
+      "boundary": "CG 光照中的颜色不直接作为文字和背景的精确取色来源。"
+    },
+    {
+      "id": "C11",
+      "title": "CG：留白也可以建立陌生感",
+      "sources": [
+        "S14"
+      ],
+      "image": "references/images/S14-12.jpg",
+      "tags": [
+        "CG",
+        "构图",
+        "留白"
+      ],
+      "observation": "巨大天体、广阔地面与很小的人物形成明显尺度差，视觉身份并不依赖把画面填满。",
+      "rule": "通过比例和空白分配建立张力。",
+      "application": "创作空状态可以容纳一个清晰的视觉焦点；有结果后将空间让给图片。",
+      "boundary": "电影中的镜头尺度是构图参考，不对应网页的物理尺寸。"
+    },
+    {
+      "id": "C12",
+      "title": "叙事屏幕：可读性边缘是有意的剧情工具",
+      "sources": [
+        "S41",
+        "S24"
+      ],
+      "image": "references/images/S41-09.jpg",
+      "tags": [
+        "UI",
+        "图形",
+        "动效"
+      ],
+      "observation": "作者说明这些图形是片中技术系统的组成部分，用失真和不稳定表达受限或故障的信息系统。画面以网格、坐标、编号和层叠色块组织。",
+      "rule": "先明确图形在叙事或操作中的职责，再决定允许多少噪声。",
+      "application": "短暂装饰过渡可取其切片和扫描节奏；输入文字、费用与错误原因持续可读。",
+      "boundary": "这是 2023 公告片屏幕设计，不是正式游戏交互规范。",
+      "annotation": "references/annotated/C12.jpg"
+    },
+    {
+      "id": "C13",
+      "title": "图形实验：低彩度同样能保留身份",
+      "sources": [
+        "S41"
+      ],
+      "image": "references/images/S41-11.jpg",
+      "tags": [
+        "浅色",
+        "图形",
+        "排版"
+      ],
+      "observation": "灰白底上的对称形态、精密线条、窄文字和块状结构仍具有强烈辨识度。",
+      "rule": "主题身份可由结构与排版维持，饱和度并非唯一来源。",
+      "application": "浅色主题保留形态、层级和标记规则，重新分配背景和强调色。",
+      "boundary": "这张概念图不代表游戏提供官方浅色主题；工作室浅色体系为本项目原创适配。"
+    },
+    {
+      "id": "C14",
+      "title": "图形实验：色块、深度和编码信息共存",
+      "sources": [
+        "S41"
+      ],
+      "image": "references/images/S41-10.jpg",
+      "tags": [
+        "图形",
+        "色彩",
+        "层级"
+      ],
+      "observation": "蓝、绿与灰蓝的大色块构建层次，小号编码、条纹和方向文字构成次级信息。",
+      "rule": "以有限的主色关系约束复杂图形。",
+      "application": "B 方向探索高强度标题区，C 方向将同类特征压缩到局部标记。",
+      "boundary": "密集概念画面的低可读文字不复制到实际表单。"
+    },
+    {
+      "id": "C15",
+      "title": "二创：材质和比例比贴花更能维持风格",
+      "sources": [
+        "S27"
+      ],
+      "image": "references/images/S27-02.jpg",
+      "tags": [
+        "二创",
+        "材质",
+        "形态"
+      ],
+      "observation": "Rémy Mallard 的角色二创强调塑料感、身体与设备比例、有限鲜色和编号，同时公开了建模及拓扑过程。",
+      "rule": "风格迁移应落在形体、材料与比例关系上。",
+      "application": "形成自己的组件轮廓和标记系统，减少直接借用游戏阵营符号的需求。",
+      "boundary": "作者明确标为 fan art，与官方制作资产分别归档。"
+    },
+    {
+      "id": "C16",
+      "title": "OP–1 field：颜色与位置形成可学习映射",
+      "sources": [
+        "S32"
+      ],
+      "image": "references/images/S32-02.jpg",
+      "tags": [
+        "跨领域",
+        "工业",
+        "控件"
+      ],
+      "observation": "浅色硬件、黑色显示区、少量编码旋钮和重复的按钮尺度形成清晰结构，实体交互部件与显示内容分工明显。",
+      "rule": "重复控件使用稳定尺度和位置，强调色帮助建立映射。",
+      "application": "滑动条、切换开关和参数分组遵守统一交互语言。",
+      "boundary": "这是比较案例；未发现足够证据证明该具体产品直接影响 Marathon。",
+      "annotation": "references/annotated/C16.jpg"
+    },
+    {
+      "id": "C17",
+      "title": "Nike Podium：表达层与基础变量分离",
+      "sources": [
+        "S33"
+      ],
+      "image": "references/images/S33-01.jpg",
+      "tags": [
+        "跨领域",
+        "字体",
+        "规范"
+      ],
+      "observation": "案例描述 Podium Core 将字体、颜色、栅格、层级与数据可视化组织成共享基础，展示字阶强调一致的尺度关系。",
+      "rule": "基础变量支持多种表达，组件通过语义角色引用它们。",
+      "application": "共享布局与组件逻辑，浅／深主题通过同一语义变量切换。",
+      "boundary": "这里只借鉴体系组织方法，未采用 Nike 的品牌资产或其专有数值。"
+    },
+    {
+      "id": "C18",
+      "title": "Nike Podium：色板需要能进入实际内容",
+      "sources": [
+        "S33"
+      ],
+      "image": "references/images/S33-03.jpg",
+      "tags": [
+        "跨领域",
+        "色彩",
+        "规范"
+      ],
+      "observation": "颜色以多组层次与内容图像组合展示，能看出强调色在不同背景上的表现。",
+      "rule": "颜色表要与文字、按钮、照片及状态一起评估。",
+      "application": "用相同两张几何色彩测试图比较双主题，验证边框和背景是否干扰内容。",
+      "boundary": "色彩测试图是本项目自制 SVG，不是 AI 生成截图或游戏资产。"
+    },
+    {
+      "id": "C19",
+      "title": "Rams：让结构解释用途",
+      "sources": [
+        "S36"
+      ],
+      "image": "references/images/S36-03.jpg",
+      "tags": [
+        "跨领域",
+        "工业",
+        "可用性"
+      ],
+      "observation": "功能部件在一个明确面板内组织，大旋钮、小刻度和材质分区各有职责；文章将可理解、诚实与有用列为设计原则。",
+      "rule": "通过结构和反馈解释操作。",
+      "application": "提供明确的按钮等级、滑块位置、焦点和错误恢复路径。",
+      "boundary": "采用的是比较视角，不能以简约原则消除用户要求的风格辨识度。"
+    },
+    {
+      "id": "C20",
+      "title": "WipEout 视角：虚构品牌可组成一致世界",
+      "sources": [
+        "S08",
+        "S31"
+      ],
+      "image": "references/frames/S08-t0602_00.jpg",
+      "tags": [
+        "跨领域",
+        "品牌",
+        "图形"
+      ],
+      "observation": "解析视频用 WipEout 的队伍标识和版式说明品牌世界的相互关联；TDR 自有项目页可核对作者归属。",
+      "rule": "把主身份、子模块和信息标记放进同一套关系。",
+      "application": "工作室侧栏、组件和反馈共享标记原则，同时维持内容差异。",
+      "boundary": "截图来自 S08 的评论视频，属于二级比较材料，不充当 TDR 原始规范。"
+    },
+    {
+      "id": "C21",
+      "title": "物品网格：选择与详情保持空间连续",
+      "sources": [
+        "S11"
+      ],
+      "image": "references/images/S11-09.jpg",
+      "tags": [
+        "UI",
+        "图库",
+        "选择"
+      ],
+      "observation": "左侧网格保留其他物品，右侧详情聚焦选中内容；标签、边界和大预览共同确认选择。",
+      "rule": "选择后保留上下文，详情有固定承接位置。",
+      "application": "图库多选使用持久选中状态与批量工具栏，大图预览保留前后图片切换。",
+      "boundary": "稀有度、战令与装备等级不用于定义工作室图片价值。"
+    },
+    {
+      "id": "C22",
+      "title": "反例研究：同时增加视觉信号会压平层级",
+      "sources": [
+        "S07",
+        "S11"
+      ],
+      "image": "references/images/S11-07.jpg",
+      "tags": [
+        "反例",
+        "可用性",
+        "字体"
+      ],
+      "observation": "Joseph Kerr 对字体竞争和视觉噪声提出批评。实机 Codex 截图可用于检查低亮度文字与装饰背景之间的阅读关系。",
+      "rule": "用真实任务验证视线顺序和持续阅读，风格评价包含操作成本。",
+      "application": "价格、错误、提示词和状态采用稳定字阶；测试长中文和部分失败。",
+      "boundary": "评论代表作者判断，不是可用性实验或全体玩家意见；本研究未开展用户统计实验。"
+    },
+    {
+      "id": "C23",
+      "title": "获取奖励：块阵、色带与稳定结果",
+      "sources": [
+        "S11"
+      ],
+      "image": "references/motion/M03-strip.jpg",
+      "tags": [
+        "动效",
+        "状态",
+        "反馈"
+      ],
+      "observation": "连续帧显示先离开物品页，再出现块阵／解码图形，之后色带切入并呈现奖励结果。",
+      "rule": "状态变化可以有清晰的起点、转换段和稳定终点。",
+      "application": "生成结果出现采用短暂、局部反馈；处理中的含义始终由文字说明。",
+      "boundary": "原片段含数秒庆祝过程；工作室建议参数为另行设计的 120–320ms，非原片测量结果。",
+      "annotation": "references/annotated/C23.jpg"
+    },
+    {
+      "id": "C24",
+      "title": "场景标记：大面积留白中的信息锚点",
+      "sources": [
+        "S02"
+      ],
+      "image": "references/images/S02-15.jpg",
+      "tags": [
+        "品牌",
+        "图形",
+        "留白"
+      ],
+      "observation": "建筑表面以少量大标识、细编号和留白建立尺度与位置感，标记依附于结构。",
+      "rule": "装饰标记有位置规律，并与真实的信息组织相关。",
+      "application": "使用区域编号、分隔与对齐线，控制同屏装饰数量。",
+      "boundary": "试点使用自有几何标记，不直接复用游戏企业标识。"
+    }
+  ],
+  "gallery": [
+    {
+      "id": "S02-01",
+      "source": "S02",
+      "preview": "references/images/S02-01.jpg",
+      "title": "Kurppa Hosk / Bungie / 01",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-02",
+      "source": "S02",
+      "preview": "references/images/S02-02.jpg",
+      "title": "Kurppa Hosk / Bungie / 02",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-03",
+      "source": "S02",
+      "preview": "references/images/S02-03.jpg",
+      "title": "Kurppa Hosk / Bungie / 03",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-04",
+      "source": "S02",
+      "preview": "references/images/S02-04.jpg",
+      "title": "Kurppa Hosk / Bungie / 04",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-05",
+      "source": "S02",
+      "preview": "references/images/S02-05.jpg",
+      "title": "Kurppa Hosk / Bungie / 05",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-06",
+      "source": "S02",
+      "preview": "references/images/S02-06.jpg",
+      "title": "Kurppa Hosk / Bungie / 06",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-07",
+      "source": "S02",
+      "preview": "references/images/S02-07.jpg",
+      "title": "Kurppa Hosk / Bungie / 07",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-08",
+      "source": "S02",
+      "preview": "references/images/S02-08.jpg",
+      "title": "Kurppa Hosk / Bungie / 08",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-09",
+      "source": "S02",
+      "preview": "references/images/S02-09.jpg",
+      "title": "Kurppa Hosk / Bungie / 09",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-10",
+      "source": "S02",
+      "preview": "references/images/S02-10.jpg",
+      "title": "Kurppa Hosk / Bungie / 10",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-11",
+      "source": "S02",
+      "preview": "references/images/S02-11.jpg",
+      "title": "Kurppa Hosk / Bungie / 11",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-12",
+      "source": "S02",
+      "preview": "references/images/S02-12.jpg",
+      "title": "Kurppa Hosk / Bungie / 12",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-13",
+      "source": "S02",
+      "preview": "references/images/S02-13.jpg",
+      "title": "Kurppa Hosk / Bungie / 13",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-14",
+      "source": "S02",
+      "preview": "references/images/S02-14.jpg",
+      "title": "Kurppa Hosk / Bungie / 14",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S02-15",
+      "source": "S02",
+      "preview": "references/images/S02-15.jpg",
+      "title": "Kurppa Hosk / Bungie / 15",
+      "kind": "maker",
+      "tags": [
+        "品牌",
+        "平面",
+        "阵营",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/bungie",
+      "type": "image"
+    },
+    {
+      "id": "S05-01",
+      "source": "S05",
+      "preview": "references/images/S05-01.jpg",
+      "title": "I'm almost surprised the chair doesn't have a label that says \"SIT\"",
+      "kind": "analysis",
+      "tags": [
+        "美术",
+        "字体",
+        "平面"
+      ],
+      "url": "https://www.brace.design/single-post/bungie-s-marathon-an-eye-for-design",
+      "type": "image"
+    },
+    {
+      "id": "S11-01",
+      "source": "S11",
+      "preview": "references/images/S11-01.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 01",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-02",
+      "source": "S11",
+      "preview": "references/images/S11-02.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 02",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-03",
+      "source": "S11",
+      "preview": "references/images/S11-03.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 03",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-04",
+      "source": "S11",
+      "preview": "references/images/S11-04.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 04",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-05",
+      "source": "S11",
+      "preview": "references/images/S11-05.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 05",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-06",
+      "source": "S11",
+      "preview": "references/images/S11-06.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 06",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-07",
+      "source": "S11",
+      "preview": "references/images/S11-07.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 07",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-08",
+      "source": "S11",
+      "preview": "references/images/S11-08.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 08",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-09",
+      "source": "S11",
+      "preview": "references/images/S11-09.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 09",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S11-10",
+      "source": "S11",
+      "preview": "references/images/S11-10.jpg",
+      "title": "Marathon (2026) video game — Fonts In Use / 10",
+      "kind": "typography-archive",
+      "tags": [
+        "字体",
+        "实机UI",
+        "动效"
+      ],
+      "url": "https://fontsinuse.com/uses/67879/marathon-2026-video-game",
+      "type": "image"
+    },
+    {
+      "id": "S13-01",
+      "source": "S13",
+      "preview": "references/images/S13-01.jpg",
+      "title": "图标设计过程",
+      "kind": "maker",
+      "tags": [
+        "图标",
+        "UI"
+      ],
+      "url": "https://www.artstation.com/artwork/NrwVzd",
+      "type": "image"
+    },
+    {
+      "id": "S13-02",
+      "source": "S13",
+      "preview": "references/images/S13-02.jpg",
+      "title": "图标设计过程",
+      "kind": "maker",
+      "tags": [
+        "图标",
+        "UI"
+      ],
+      "url": "https://www.artstation.com/artwork/NrwVzd",
+      "type": "image"
+    },
+    {
+      "id": "S13-03",
+      "source": "S13",
+      "preview": "references/images/S13-03.jpg",
+      "title": "图标设计过程",
+      "kind": "maker",
+      "tags": [
+        "图标",
+        "UI"
+      ],
+      "url": "https://www.artstation.com/artwork/NrwVzd",
+      "type": "image"
+    },
+    {
+      "id": "S13-04",
+      "source": "S13",
+      "preview": "references/images/S13-04.jpg",
+      "title": "图标设计过程",
+      "kind": "maker",
+      "tags": [
+        "图标",
+        "UI"
+      ],
+      "url": "https://www.artstation.com/artwork/NrwVzd",
+      "type": "image"
+    },
+    {
+      "id": "S13-05",
+      "source": "S13",
+      "preview": "references/images/S13-05.jpg",
+      "title": "图标设计过程",
+      "kind": "maker",
+      "tags": [
+        "图标",
+        "UI"
+      ],
+      "url": "https://www.artstation.com/artwork/NrwVzd",
+      "type": "image"
+    },
+    {
+      "id": "S14-01",
+      "source": "S14",
+      "preview": "references/images/S14-01.jpg",
+      "title": "MARATHON",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-02",
+      "source": "S14",
+      "preview": "references/images/S14-02.jpg",
+      "title": "60.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-03",
+      "source": "S14",
+      "preview": "references/images/S14-03.jpg",
+      "title": "56.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-04",
+      "source": "S14",
+      "preview": "references/images/S14-04.jpg",
+      "title": "53.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-05",
+      "source": "S14",
+      "preview": "references/images/S14-05.jpg",
+      "title": "50.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-06",
+      "source": "S14",
+      "preview": "references/images/S14-06.jpg",
+      "title": "45.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-07",
+      "source": "S14",
+      "preview": "references/images/S14-07.jpg",
+      "title": "39.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-08",
+      "source": "S14",
+      "preview": "references/images/S14-08.jpg",
+      "title": "37.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-09",
+      "source": "S14",
+      "preview": "references/images/S14-09.jpg",
+      "title": "32.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-10",
+      "source": "S14",
+      "preview": "references/images/S14-10.jpg",
+      "title": "27.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-11",
+      "source": "S14",
+      "preview": "references/images/S14-11.jpg",
+      "title": "22.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-12",
+      "source": "S14",
+      "preview": "references/images/S14-12.jpg",
+      "title": "17.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-13",
+      "source": "S14",
+      "preview": "references/images/S14-13.jpg",
+      "title": "13.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-14",
+      "source": "S14",
+      "preview": "references/images/S14-14.jpg",
+      "title": "9.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S14-15",
+      "source": "S14",
+      "preview": "references/images/S14-15.jpg",
+      "title": "5.jpg",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "http://www.albertomielgo.com/marathon",
+      "type": "image"
+    },
+    {
+      "id": "S15-01",
+      "source": "S15",
+      "preview": "references/images/S15-01.jpg",
+      "title": "Marathon World Design / 01",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-02",
+      "source": "S15",
+      "preview": "references/images/S15-02.jpg",
+      "title": "Marathon World Design / 02",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-03",
+      "source": "S15",
+      "preview": "references/images/S15-03.jpg",
+      "title": "Marathon World Design / 03",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-04",
+      "source": "S15",
+      "preview": "references/images/S15-04.jpg",
+      "title": "Marathon World Design / 04",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-05",
+      "source": "S15",
+      "preview": "references/images/S15-05.jpg",
+      "title": "Marathon World Design / 05",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-06",
+      "source": "S15",
+      "preview": "references/images/S15-06.jpg",
+      "title": "Marathon World Design / 06",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-07",
+      "source": "S15",
+      "preview": "references/images/S15-07.jpg",
+      "title": "Marathon World Design / 07",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-08",
+      "source": "S15",
+      "preview": "references/images/S15-08.jpg",
+      "title": "Marathon World Design / 08",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-09",
+      "source": "S15",
+      "preview": "references/images/S15-09.jpg",
+      "title": "Marathon World Design / 09",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-10",
+      "source": "S15",
+      "preview": "references/images/S15-10.jpg",
+      "title": "Marathon World Design / 10",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-11",
+      "source": "S15",
+      "preview": "references/images/S15-11.jpg",
+      "title": "Marathon World Design / 11",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S15-12",
+      "source": "S15",
+      "preview": "references/images/S15-12.jpg",
+      "title": "Marathon World Design / 12",
+      "kind": "maker",
+      "tags": [
+        "环境",
+        "材质",
+        "工业",
+        "美术"
+      ],
+      "url": "https://www.weststudio.com/project/marathon-world-design",
+      "type": "image"
+    },
+    {
+      "id": "S27-01",
+      "source": "S27",
+      "preview": "references/images/S27-01.jpg",
+      "title": "Rémy Mallard 二创",
+      "kind": "fan",
+      "tags": [
+        "二创",
+        "美术"
+      ],
+      "url": "https://www.artstation.com/artwork/xDXW0E",
+      "type": "image"
+    },
+    {
+      "id": "S27-02",
+      "source": "S27",
+      "preview": "references/images/S27-02.jpg",
+      "title": "Rémy Mallard 二创",
+      "kind": "fan",
+      "tags": [
+        "二创",
+        "美术"
+      ],
+      "url": "https://www.artstation.com/artwork/xDXW0E",
+      "type": "image"
+    },
+    {
+      "id": "S27-03",
+      "source": "S27",
+      "preview": "references/images/S27-03.jpg",
+      "title": "Rémy Mallard 二创",
+      "kind": "fan",
+      "tags": [
+        "二创",
+        "美术"
+      ],
+      "url": "https://www.artstation.com/artwork/xDXW0E",
+      "type": "image"
+    },
+    {
+      "id": "S32-01",
+      "source": "S32",
+      "preview": "references/images/S32-01.jpg",
+      "title": "OP–1 field 产品与操作面板",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "工业",
+        "颜色",
+        "控件"
+      ],
+      "url": "https://teenage.engineering/products/op-1",
+      "type": "image"
+    },
+    {
+      "id": "S32-02",
+      "source": "S32",
+      "preview": "references/images/S32-02.jpg",
+      "title": "OP–1 field 产品与操作面板",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "工业",
+        "颜色",
+        "控件"
+      ],
+      "url": "https://teenage.engineering/products/op-1",
+      "type": "image"
+    },
+    {
+      "id": "S32-03",
+      "source": "S32",
+      "preview": "references/images/S32-03.jpg",
+      "title": "OP–1 field 产品与操作面板",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "工业",
+        "颜色",
+        "控件"
+      ],
+      "url": "https://teenage.engineering/products/op-1",
+      "type": "image"
+    },
+    {
+      "id": "S32-04",
+      "source": "S32",
+      "preview": "references/images/S32-04.jpg",
+      "title": "OP–1 field 产品与操作面板",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "工业",
+        "颜色",
+        "控件"
+      ],
+      "url": "https://teenage.engineering/products/op-1",
+      "type": "image"
+    },
+    {
+      "id": "S33-01",
+      "source": "S33",
+      "preview": "references/images/S33-01.jpg",
+      "title": "Nike — Podium Design System / 01",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "图形",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/nike",
+      "type": "image"
+    },
+    {
+      "id": "S33-02",
+      "source": "S33",
+      "preview": "references/images/S33-02.jpg",
+      "title": "Nike — Podium Design System / 02",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "图形",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/nike",
+      "type": "image"
+    },
+    {
+      "id": "S33-03",
+      "source": "S33",
+      "preview": "references/images/S33-03.jpg",
+      "title": "Nike — Podium Design System / 03",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "图形",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/nike",
+      "type": "image"
+    },
+    {
+      "id": "S33-04",
+      "source": "S33",
+      "preview": "references/images/S33-04.jpg",
+      "title": "Nike — Podium Design System / 04",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "图形",
+        "动效"
+      ],
+      "url": "https://www.kurppahosk.com/work/nike",
+      "type": "image"
+    },
+    {
+      "id": "S36-01",
+      "source": "S36",
+      "preview": "references/images/S36-01.jpg",
+      "title": "620 Chair high back in red leather with off-white shell. 606 Universal Shelving System in the background.",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "工业",
+        "设计原则"
+      ],
+      "url": "https://www.vitsoe.com/us/about/good-design",
+      "type": "image"
+    },
+    {
+      "id": "S36-02",
+      "source": "S36",
+      "preview": "references/images/S36-02.jpg",
+      "title": "Dieter Rams, Vitsœ's furniture designer. Photograph by Abisag Tüllmann",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "工业",
+        "设计原则"
+      ],
+      "url": "https://www.vitsoe.com/us/about/good-design",
+      "type": "image"
+    },
+    {
+      "id": "S36-03",
+      "source": "S36",
+      "preview": "references/images/S36-03.jpg",
+      "title": "Braun TP 1 radio/phono designed by Dieter Rams",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "工业",
+        "设计原则"
+      ],
+      "url": "https://www.vitsoe.com/us/about/good-design",
+      "type": "image"
+    },
+    {
+      "id": "S36-04",
+      "source": "S36",
+      "preview": "references/images/S36-04.jpg",
+      "title": "Braun MPZ 21 multipress citrus juicer designed by Dieter Rams",
+      "kind": "cross-domain-maker",
+      "tags": [
+        "跨领域",
+        "工业",
+        "设计原则"
+      ],
+      "url": "https://www.vitsoe.com/us/about/good-design",
+      "type": "image"
+    },
+    {
+      "id": "S41-01",
+      "source": "S41",
+      "preview": "references/images/S41-01.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-02",
+      "source": "S41",
+      "preview": "references/images/S41-02.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-03",
+      "source": "S41",
+      "preview": "references/images/S41-03.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-04",
+      "source": "S41",
+      "preview": "references/images/S41-04.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-05",
+      "source": "S41",
+      "preview": "references/images/S41-05.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-06",
+      "source": "S41",
+      "preview": "references/images/S41-06.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-07",
+      "source": "S41",
+      "preview": "references/images/S41-07.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-08",
+      "source": "S41",
+      "preview": "references/images/S41-08.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-09",
+      "source": "S41",
+      "preview": "references/images/S41-09.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-10",
+      "source": "S41",
+      "preview": "references/images/S41-10.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-11",
+      "source": "S41",
+      "preview": "references/images/S41-11.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S41-12",
+      "source": "S41",
+      "preview": "references/images/S41-12.jpg",
+      "title": "marathon study",
+      "kind": "maker",
+      "tags": [
+        "UI",
+        "动效",
+        "图形",
+        "制作"
+      ],
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "type": "image"
+    },
+    {
+      "id": "S14-t0020_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0020_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 00:20.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=20",
+      "type": "frame",
+      "time": 20.0
+    },
+    {
+      "id": "S14-t0060_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0060_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 01:00.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=60",
+      "type": "frame",
+      "time": 60.0
+    },
+    {
+      "id": "S14-t0100_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0100_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 01:40.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=100",
+      "type": "frame",
+      "time": 100.0
+    },
+    {
+      "id": "S14-t0150_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0150_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 02:30.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=150",
+      "type": "frame",
+      "time": 150.0
+    },
+    {
+      "id": "S14-t0200_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0200_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 03:20.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=200",
+      "type": "frame",
+      "time": 200.0
+    },
+    {
+      "id": "S14-t0250_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0250_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 04:10.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=250",
+      "type": "frame",
+      "time": 250.0
+    },
+    {
+      "id": "S14-t0300_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0300_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 05:00.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=300",
+      "type": "frame",
+      "time": 300.0
+    },
+    {
+      "id": "S14-t0350_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0350_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 05:50.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=350",
+      "type": "frame",
+      "time": 350.0
+    },
+    {
+      "id": "S14-t0400_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0400_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 06:40.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=400",
+      "type": "frame",
+      "time": 400.0
+    },
+    {
+      "id": "S14-t0450_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0450_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 07:30.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=450",
+      "type": "frame",
+      "time": 450.0
+    },
+    {
+      "id": "S14-t0480_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0480_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 08:00.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=480",
+      "type": "frame",
+      "time": 480.0
+    },
+    {
+      "id": "S14-t0510_00",
+      "source": "S14",
+      "preview": "references/frames/S14-t0510_00.jpg",
+      "title": "MARATHON — Alberto Mielgo / 08:30.00",
+      "kind": "maker",
+      "tags": [
+        "CG",
+        "材质",
+        "色彩",
+        "动效"
+      ],
+      "url": "https://www.youtube.com/watch?v=fvbEnWLRo1s&t=510",
+      "type": "frame",
+      "time": 510.0
+    },
+    {
+      "id": "S08-t0035_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0035_00.jpg",
+      "title": "Marathon Art Style Breakdown / 00:35.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=35",
+      "type": "frame",
+      "time": 35.0
+    },
+    {
+      "id": "S08-t0096_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0096_00.jpg",
+      "title": "Marathon Art Style Breakdown / 01:36.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=96",
+      "type": "frame",
+      "time": 96.0
+    },
+    {
+      "id": "S08-t0128_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0128_00.jpg",
+      "title": "Marathon Art Style Breakdown / 02:08.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=128",
+      "type": "frame",
+      "time": 128.0
+    },
+    {
+      "id": "S08-t0204_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0204_00.jpg",
+      "title": "Marathon Art Style Breakdown / 03:24.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=204",
+      "type": "frame",
+      "time": 204.0
+    },
+    {
+      "id": "S08-t0266_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0266_00.jpg",
+      "title": "Marathon Art Style Breakdown / 04:26.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=266",
+      "type": "frame",
+      "time": 266.0
+    },
+    {
+      "id": "S08-t0296_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0296_00.jpg",
+      "title": "Marathon Art Style Breakdown / 04:56.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=296",
+      "type": "frame",
+      "time": 296.0
+    },
+    {
+      "id": "S08-t0342_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0342_00.jpg",
+      "title": "Marathon Art Style Breakdown / 05:42.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=342",
+      "type": "frame",
+      "time": 342.0
+    },
+    {
+      "id": "S08-t0389_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0389_00.jpg",
+      "title": "Marathon Art Style Breakdown / 06:29.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=389",
+      "type": "frame",
+      "time": 389.0
+    },
+    {
+      "id": "S08-t0454_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0454_00.jpg",
+      "title": "Marathon Art Style Breakdown / 07:34.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=454",
+      "type": "frame",
+      "time": 454.0
+    },
+    {
+      "id": "S08-t0497_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0497_00.jpg",
+      "title": "Marathon Art Style Breakdown / 08:17.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=497",
+      "type": "frame",
+      "time": 497.0
+    },
+    {
+      "id": "S08-t0540_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0540_00.jpg",
+      "title": "Marathon Art Style Breakdown / 09:00.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=540",
+      "type": "frame",
+      "time": 540.0
+    },
+    {
+      "id": "S08-t0565_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0565_00.jpg",
+      "title": "Marathon Art Style Breakdown / 09:25.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=565",
+      "type": "frame",
+      "time": 565.0
+    },
+    {
+      "id": "S08-t0602_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0602_00.jpg",
+      "title": "Marathon Art Style Breakdown / 10:02.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=602",
+      "type": "frame",
+      "time": 602.0
+    },
+    {
+      "id": "S08-t0640_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0640_00.jpg",
+      "title": "Marathon Art Style Breakdown / 10:40.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=640",
+      "type": "frame",
+      "time": 640.0
+    },
+    {
+      "id": "S08-t0681_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0681_00.jpg",
+      "title": "Marathon Art Style Breakdown / 11:21.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=681",
+      "type": "frame",
+      "time": 681.0
+    },
+    {
+      "id": "S08-t0740_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0740_00.jpg",
+      "title": "Marathon Art Style Breakdown / 12:20.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=740",
+      "type": "frame",
+      "time": 740.0
+    },
+    {
+      "id": "S08-t0786_00",
+      "source": "S08",
+      "preview": "references/frames/S08-t0786_00.jpg",
+      "title": "Marathon Art Style Breakdown / 13:06.00",
+      "kind": "analysis-video",
+      "tags": [
+        "美术",
+        "跨领域"
+      ],
+      "url": "https://www.youtube.com/watch?v=JHApRRthYgQ&t=786",
+      "type": "frame",
+      "time": 786.0
+    },
+    {
+      "id": "S01-web",
+      "source": "S01",
+      "preview": "references/screenshots/S01-home.jpg",
+      "title": "当前官网：导航、主入口与影像区",
+      "kind": "official",
+      "tags": [
+        "品牌",
+        "网页",
+        "排版"
+      ],
+      "url": "https://www.marathonthegame.com/",
+      "type": "screenshot"
+    }
+  ],
+  "motion": [
+    {
+      "id": "M01",
+      "source": "S11",
+      "status": "ok",
+      "title": "阵营页：流动背景与稳定信息层",
+      "source_media": "outputs/media/S11-04.gif",
+      "source_start_seconds": 0,
+      "requested_duration": 5,
+      "decoded_sample_count": 10,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M01.mp4",
+      "poster": "references/motion/M01.jpg",
+      "strip": "references/motion/M01-strip.jpg",
+      "scope": "bounded excerpt",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M02",
+      "source": "S11",
+      "status": "ok",
+      "title": "Codex：滚动文字带与静态正文",
+      "source_media": "outputs/media/S11-07.gif",
+      "source_start_seconds": 0,
+      "requested_duration": 5,
+      "decoded_sample_count": 10,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M02.mp4",
+      "poster": "references/motion/M02.jpg",
+      "strip": "references/motion/M02-strip.jpg",
+      "scope": "bounded excerpt",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M03",
+      "source": "S11",
+      "status": "ok",
+      "title": "奖励页：选择与物品呈现",
+      "source_media": "outputs/media/S11-10.gif",
+      "source_start_seconds": 0,
+      "requested_duration": 5,
+      "decoded_sample_count": 10,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M03.mp4",
+      "poster": "references/motion/M03.jpg",
+      "strip": "references/motion/M03-strip.jpg",
+      "scope": "bounded excerpt",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M04",
+      "source": "S21",
+      "status": "ok",
+      "title": "世界观短预览：图形层与图像切换",
+      "source_media": "outputs/video/S21/preview.mp4",
+      "source_start_seconds": 0,
+      "requested_duration": 4,
+      "decoded_sample_count": 7,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M04.mp4",
+      "poster": "references/motion/M04.jpg",
+      "strip": "references/motion/M04-strip.jpg",
+      "scope": "public short preview only",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M05",
+      "source": "S23",
+      "status": "ok",
+      "title": "You Are Dead 短预览：身份与状态切换",
+      "source_media": "outputs/video/S23/preview.mp4",
+      "source_start_seconds": 0,
+      "requested_duration": 4,
+      "decoded_sample_count": 8,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M05.mp4",
+      "poster": "references/motion/M05.jpg",
+      "strip": "references/motion/M05-strip.jpg",
+      "scope": "public short preview only",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M06",
+      "source": "S22",
+      "status": "ok",
+      "title": "2023 公告片短预览：材质与剪辑",
+      "source_media": "outputs/video/S22/preview.mp4",
+      "source_start_seconds": 0,
+      "requested_duration": 4,
+      "decoded_sample_count": 4,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M06.mp4",
+      "poster": "references/motion/M06.jpg",
+      "strip": "references/motion/M06-strip.jpg",
+      "scope": "public short preview only",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M07",
+      "source": "S41",
+      "status": "ok",
+      "title": "界面作者公开背景循环",
+      "source_media": "outputs/video/S41/banner.mp4",
+      "source_start_seconds": 0,
+      "requested_duration": 4,
+      "decoded_sample_count": 8,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M07.mp4",
+      "poster": "references/motion/M07.jpg",
+      "strip": "references/motion/M07-strip.jpg",
+      "scope": "public short preview only",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M08",
+      "source": "S14",
+      "status": "ok",
+      "title": "CG：视线与图形标记",
+      "source_media": "outputs/video/S14/source.mp4",
+      "source_start_seconds": 17,
+      "requested_duration": 6,
+      "decoded_sample_count": 12,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M08.mp4",
+      "poster": "references/motion/M08.jpg",
+      "strip": "references/motion/M08-strip.jpg",
+      "scope": "bounded excerpt",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M09",
+      "source": "S14",
+      "status": "ok",
+      "title": "CG：入口面板与状态光",
+      "source_media": "outputs/video/S14/source.mp4",
+      "source_start_seconds": 97,
+      "requested_duration": 6,
+      "decoded_sample_count": 12,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M09.mp4",
+      "poster": "references/motion/M09.jpg",
+      "strip": "references/motion/M09-strip.jpg",
+      "scope": "bounded excerpt",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M10",
+      "source": "S14",
+      "status": "ok",
+      "title": "CG：空间中的信息终端",
+      "source_media": "outputs/video/S14/source.mp4",
+      "source_start_seconds": 246,
+      "requested_duration": 6,
+      "decoded_sample_count": 12,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M10.mp4",
+      "poster": "references/motion/M10.jpg",
+      "strip": "references/motion/M10-strip.jpg",
+      "scope": "bounded excerpt",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M11",
+      "source": "S14",
+      "status": "ok",
+      "title": "CG：人物材质与近景运动",
+      "source_media": "outputs/video/S14/source.mp4",
+      "source_start_seconds": 347,
+      "requested_duration": 6,
+      "decoded_sample_count": 12,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M11.mp4",
+      "poster": "references/motion/M11.jpg",
+      "strip": "references/motion/M11-strip.jpg",
+      "scope": "bounded excerpt",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    },
+    {
+      "id": "M12",
+      "source": "S14",
+      "status": "ok",
+      "title": "CG：片尾排版的组织方式",
+      "source_media": "outputs/video/S14/source.mp4",
+      "source_start_seconds": 505,
+      "requested_duration": 6,
+      "decoded_sample_count": 12,
+      "sample_step_seconds": 0.5,
+      "clip": "references/motion/M12.mp4",
+      "poster": "references/motion/M12.jpg",
+      "strip": "references/motion/M12-strip.jpg",
+      "scope": "bounded excerpt",
+      "timing_note": "条带时间为本地采样位置，非界面原生交互耗时；影片剪辑不直接决定产品动效参数"
+    }
+  ],
+  "tokens": {
+    "status": "pilot proposal, not official Marathon tokens",
+    "version": 1,
+    "measured_reference": {
+      "source": "S01",
+      "selector": "BUY NOW button",
+      "date": "2026-11-07",
+      "background": "#c0fe04"
+    },
+    "themes": {
+      "light": {
+        "bg": "#eeefea",
+        "surface": "#fafbf7",
+        "raised": "#ffffff",
+        "sidebar": "#e3e5de",
+        "ink": "#19201d",
+        "muted": "#536057",
+        "line": "#b8c0b5",
+        "control": "#75816f",
+        "accent": "#c0fe04",
+        "onAccent": "#111700",
+        "accentText": "#3e6500",
+        "blue": "#193bd4",
+        "error": "#af263c",
+        "warning": "#805000"
+      },
+      "dark": {
+        "bg": "#171b1a",
+        "surface": "#202725",
+        "raised": "#2b3430",
+        "sidebar": "#111614",
+        "ink": "#f2f5ed",
+        "muted": "#acb9af",
+        "line": "#59695e",
+        "control": "#7f9186",
+        "accent": "#c0fe04",
+        "onAccent": "#111700",
+        "accentText": "#c0fe04",
+        "blue": "#a4b8ff",
+        "error": "#ff9eb0",
+        "warning": "#ffd289"
+      }
+    },
+    "directions": {
+      "field": {
+        "title": "A · 理性工业",
+        "name": "FIELD",
+        "radius": 8,
+        "display": "Arial",
+        "headline": 38,
+        "strap": "A PLACE FOR EVERY IDEA"
+      },
+      "signal": {
+        "title": "B · 强烈图形",
+        "name": "SIGNAL",
+        "radius": 0,
+        "display": "Arial",
+        "headline": 48,
+        "strap": "MAKE / UNMAKE / REMAKE"
+      },
+      "studio": {
+        "title": "C · 混合表达",
+        "name": "STUDIO",
+        "radius": 3,
+        "display": "Georgia",
+        "headline": 40,
+        "strap": "Make room for the unseen."
+      }
+    },
+    "spacing": [
+      4,
+      8,
+      12,
+      16,
+      24,
+      32,
+      48,
+      64
+    ],
+    "motion": {
+      "feedback": 120,
+      "state": 180,
+      "panel": 240,
+      "context": 320,
+      "ease": "cubic-bezier(0.2,0,0,1)",
+      "reduced": 0
+    }
+  },
+  "stats": {
+    "sourceRecords": 44,
+    "reviewedSources": 33,
+    "cases": 24,
+    "referenceImages": 115,
+    "motionStudies": 12,
+    "pilotFrames": 12
+  }
+}

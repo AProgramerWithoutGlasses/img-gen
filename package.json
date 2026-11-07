@@ -24,7 +24,8 @@
     "design:snapshot": "node scripts/figcraft.mjs snapshot",
     "design:batch": "node scripts/figcraft.mjs batch",
     "design:smoke": "node scripts/figcraft-smoke.mjs",
-    "design:verify": "npm run design:audit && npm run design:export"
+    "design:verify": "npm run design:audit && npm run design:export",
+    "design:compare": "node scripts/check-design-browser.mjs"
   },
   "devDependencies": { "@modelcontextprotocol/sdk": "1.32.2" }
 }

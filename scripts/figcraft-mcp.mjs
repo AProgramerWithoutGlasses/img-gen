@@ -1,16 +1,24 @@
-// Launch/reuse the desktop app, then let the official CLI speak MCP directly on stdio.
-// Never print startup logs to stdout: it belongs to the MCP protocol.
-import { spawn } from 'node:child_process';
-import { ensureApp, root, settings } from './lib/figcraft.mjs';
+// Advertise the official catalog without opening the desktop app.
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { connect } from './lib/figcraft.mjs';
 
 try {
-  await ensureApp();
-  const bridge = spawn(settings.cli, ['mcp', '--attach', String(settings.controlPort), '--timeout', '90'], {
-    cwd: root, windowsHide: true, stdio: 'inherit',
+  const catalogClient = await connect({ headless: true });
+  let catalog;
+  try { catalog = await catalogClient.listTools(); }
+  finally { await catalogClient.close(); }
+
+  const server = new Server({ name: 'UI Studio FigCraft', version: '1.0.0' }, { capabilities: { tools: {} } });
+  let desktopClient;
+  server.setRequestHandler(ListToolsRequestSchema, async () => catalog);
+  server.setRequestHandler(CallToolRequestSchema, async request => {
+    desktopClient ??= connect().catch(error => { desktopClient = undefined; throw error; });
+    const client = await desktopClient;
+    return client.callTool(request.params, undefined, { timeout: 100_000 });
   });
-  bridge.on('error', error => { console.error(error.message); process.exitCode = 1; });
-  bridge.on('exit', code => { process.exitCode = code ?? 1; });
-  for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => bridge.kill());
+  await server.connect(new StdioServerTransport());
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;

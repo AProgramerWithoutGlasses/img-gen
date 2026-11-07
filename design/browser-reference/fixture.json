@@ -1,0 +1,429 @@
+{
+  "snapshot": {
+    "version": 1,
+    "assets": [
+      {
+        "id": "image-1",
+        "userId": "admin",
+        "name": "图片 01.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22768%22%20height%3D%22576%22%20viewBox%3D%220%200%20768%20576%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L768%20576%20M768%200L0%20576%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%22245.76%22%20y%3D%22247.68%22%20width%3D%22276.48%22%20height%3D%2280.64000000000001%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2226%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2001%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 768,
+        "height": 576,
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "batchId": "seed-request",
+        "outputIndex": 0,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "4:3",
+          "count": 2
+        },
+        "folderIds": [
+          "inspiration",
+          "poster"
+        ]
+      },
+      {
+        "id": "image-2",
+        "userId": "admin",
+        "name": "图片 02.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22192%22%20height%3D%22192%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L192%20192%20M192%200L0%20192%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%2249.92%22%20y%3D%2282.56%22%20width%3D%2292.16%22%20height%3D%2226.880000000000003%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%229%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2002%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 192,
+        "height": 192,
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "batchId": "seed-request",
+        "outputIndex": 1,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "1:1",
+          "count": 2
+        },
+        "folderIds": [
+          "inspiration",
+          "poster"
+        ]
+      },
+      {
+        "id": "image-3",
+        "userId": "admin",
+        "name": "图片 03.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22576%22%20height%3D%22768%22%20viewBox%3D%220%200%20576%20768%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L576%20768%20M576%200L0%20768%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%22149.76%22%20y%3D%22343.68%22%20width%3D%22276.48%22%20height%3D%2280.64000000000001%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2226%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2003%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 576,
+        "height": 768,
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "batchId": "history-2",
+        "outputIndex": 2,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "3:4",
+          "count": 2
+        },
+        "folderIds": [
+          "inspiration"
+        ]
+      },
+      {
+        "id": "image-4",
+        "userId": "admin",
+        "name": "图片 04.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%223072%22%20height%3D%221728%22%20viewBox%3D%220%200%203072%201728%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L3072%201728%20M3072%200L0%201728%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%221121.28%22%20y%3D%22743.04%22%20width%3D%22829.4399999999999%22%20height%3D%22241.92000000000002%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2278%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2004%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 3072,
+        "height": 1728,
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "batchId": "history-3",
+        "outputIndex": 3,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "16:9",
+          "count": 2
+        },
+        "folderIds": [
+          "inspiration"
+        ]
+      },
+      {
+        "id": "image-5",
+        "userId": "admin",
+        "name": "图片 05.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22192%22%20height%3D%22192%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L192%20192%20M192%200L0%20192%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%2249.92%22%20y%3D%2282.56%22%20width%3D%2292.16%22%20height%3D%2226.880000000000003%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%229%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2005%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 192,
+        "height": 192,
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "batchId": "history-4",
+        "outputIndex": 4,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "1:1",
+          "count": 2
+        },
+        "folderIds": [
+          "inspiration",
+          "poster"
+        ]
+      },
+      {
+        "id": "image-6",
+        "userId": "admin",
+        "name": "图片 06.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22768%22%20height%3D%22576%22%20viewBox%3D%220%200%20768%20576%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L768%20576%20M768%200L0%20576%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%22245.76%22%20y%3D%22247.68%22%20width%3D%22276.48%22%20height%3D%2280.64000000000001%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2226%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2006%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 768,
+        "height": 576,
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "batchId": "history-5",
+        "outputIndex": 5,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "4:3",
+          "count": 2
+        },
+        "folderIds": [
+          "inspiration"
+        ]
+      },
+      {
+        "id": "image-7",
+        "userId": "admin",
+        "name": "图片 07.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22576%22%20height%3D%22384%22%20viewBox%3D%220%200%20576%20384%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L576%20384%20M576%200L0%20384%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%22195.84%22%20y%3D%22165.12%22%20width%3D%22184.32%22%20height%3D%2253.760000000000005%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2217%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2007%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 576,
+        "height": 384,
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "batchId": "history-6",
+        "outputIndex": 6,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "3:2",
+          "count": 2
+        },
+        "folderIds": [
+          "poster"
+        ]
+      },
+      {
+        "id": "image-8",
+        "userId": "admin",
+        "name": "图片 08.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22192%22%20height%3D%22192%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L192%20192%20M192%200L0%20192%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%2249.92%22%20y%3D%2282.56%22%20width%3D%2292.16%22%20height%3D%2226.880000000000003%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%229%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2008%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 192,
+        "height": 192,
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "batchId": "history-7",
+        "outputIndex": 7,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "1:1",
+          "count": 2
+        },
+        "folderIds": []
+      },
+      {
+        "id": "image-9",
+        "userId": "admin",
+        "name": "图片 09.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%223072%22%20height%3D%221728%22%20viewBox%3D%220%200%203072%201728%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L3072%201728%20M3072%200L0%201728%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%221121.28%22%20y%3D%22743.04%22%20width%3D%22829.4399999999999%22%20height%3D%22241.92000000000002%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2278%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2009%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 3072,
+        "height": 1728,
+        "createdAt": "2026-11-06T06:32:00.000Z",
+        "batchId": "history-8",
+        "outputIndex": 8,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "16:9",
+          "count": 2
+        },
+        "folderIds": []
+      },
+      {
+        "id": "image-10",
+        "userId": "admin",
+        "name": "图片 10.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22576%22%20height%3D%22768%22%20viewBox%3D%220%200%20576%20768%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L576%20768%20M576%200L0%20768%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%22149.76%22%20y%3D%22343.68%22%20width%3D%22276.48%22%20height%3D%2280.64000000000001%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2226%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2010%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 576,
+        "height": 768,
+        "createdAt": "2026-11-06T06:32:00.000Z",
+        "batchId": "history-9",
+        "outputIndex": 9,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "3:4",
+          "count": 2
+        },
+        "folderIds": []
+      },
+      {
+        "id": "image-11",
+        "userId": "admin",
+        "name": "图片 11.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22768%22%20height%3D%22576%22%20viewBox%3D%220%200%20768%20576%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L768%20576%20M768%200L0%20576%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%22245.76%22%20y%3D%22247.68%22%20width%3D%22276.48%22%20height%3D%2280.64000000000001%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2226%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2011%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 768,
+        "height": 576,
+        "createdAt": "2026-11-06T06:32:00.000Z",
+        "batchId": "history-10",
+        "outputIndex": 10,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "4:3",
+          "count": 2
+        },
+        "folderIds": []
+      },
+      {
+        "id": "image-12",
+        "userId": "admin",
+        "name": "图片 12.svg",
+        "url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22192%22%20height%3D%22192%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23eeeeee%22%2F%3E%3Cpath%20d%3D%22M0%200L192%20192%20M192%200L0%20192%22%20stroke%3D%22%23d9d9d9%22%2F%3E%3Crect%20x%3D%2249.92%22%20y%3D%2282.56%22%20width%3D%2292.16%22%20height%3D%2226.880000000000003%22%20fill%3D%22%23eeeeee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%229%22%20fill%3D%22%23888%22%3E%E5%9B%BE%E7%89%87%2012%3C%2Ftext%3E%3C%2Fsvg%3E",
+        "width": 192,
+        "height": 192,
+        "createdAt": "2026-11-06T06:32:00.000Z",
+        "batchId": "history-11",
+        "outputIndex": 11,
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "1:1",
+          "count": 2
+        },
+        "folderIds": []
+      }
+    ],
+    "folders": [
+      {
+        "id": "inspiration",
+        "userId": "admin",
+        "name": "项目灵感",
+        "createdAt": "2026-11-07T06:32:00.000Z"
+      },
+      {
+        "id": "poster",
+        "userId": "admin",
+        "name": "海报探索",
+        "createdAt": "2026-11-07T06:32:00.000Z"
+      },
+      {
+        "id": "pending",
+        "userId": "admin",
+        "name": "待整理",
+        "createdAt": "2026-11-07T06:32:00.000Z"
+      }
+    ],
+    "generations": [
+      {
+        "id": "seed-request",
+        "userId": "admin",
+        "username": "admin",
+        "prompt": "极简护肤品产品图：白色圆柱瓶、浅灰背景、柔和侧光。保持主体完整，使用横向构图。",
+        "attachments": [],
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "自动",
+          "count": 2
+        },
+        "status": "completed",
+        "imageIds": [
+          "image-1",
+          "image-2"
+        ],
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "completedAt": "2026-11-07T06:32:00.000Z",
+        "durationMs": 12800,
+        "cost": 6
+      },
+      {
+        "id": "failed-request",
+        "userId": "user1",
+        "username": "user1",
+        "prompt": "一张安静的海边照片",
+        "attachments": [],
+        "options": {
+          "modelId": "gpt-image-2.5-sunburst",
+          "ratio": "自动",
+          "count": 1
+        },
+        "status": "failed",
+        "imageIds": [],
+        "createdAt": "2026-11-07T06:32:00.000Z",
+        "cost": 0,
+        "error": "生成服务暂时不可用，请稍后重试。"
+      }
+    ],
+    "users": [
+      {
+        "id": "admin",
+        "username": "admin",
+        "role": "admin",
+        "status": "enabled",
+        "balance": 991,
+        "createdAt": "2026-11-03T08:00:00.000Z"
+      },
+      {
+        "id": "user1",
+        "username": "user1",
+        "role": "user",
+        "status": "enabled",
+        "balance": 200,
+        "createdAt": "2026-11-04T08:00:00.000Z"
+      },
+      {
+        "id": "user2",
+        "username": "user2",
+        "role": "user",
+        "status": "disabled",
+        "balance": 0,
+        "createdAt": "2026-11-05T08:00:00.000Z"
+      }
+    ],
+    "currentUserId": "admin",
+    "prices": {
+      "gpt-image-2": 1,
+      "gpt-image-1.5": 1,
+      "gpt-image-2.5-sunburst": 1,
+      "gemini-3.1-flash-image": 1,
+      "gemini-3-pro-image": 1
+    },
+    "priceUpdatedAt": {
+      "gpt-image-2": "2026-11-07T06:00:00.000Z",
+      "gpt-image-1.5": "2026-11-07T06:00:00.000Z",
+      "gpt-image-2.5-sunburst": "2026-11-07T06:00:00.000Z",
+      "gemini-3.1-flash-image": "2026-11-07T06:00:00.000Z",
+      "gemini-3-pro-image": "2026-11-07T06:00:00.000Z"
+    },
+    "preferences": {
+      "theme": "light",
+      "enterToSend": true
+    },
+    "priceVersions": {
+      "gpt-image-2": 1,
+      "gpt-image-1.5": 1,
+      "gpt-image-2.5-sunburst": 1,
+      "gemini-3.1-flash-image": 1,
+      "gemini-3-pro-image": 1
+    }
+  },
+  "models": [
+    {
+      "id": "gpt-image-2",
+      "name": "GPT Image 2",
+      "qualities": [],
+      "resolutions": [],
+      "ratios": [
+        "自动",
+        "1:1",
+        "16:9",
+        "9:16",
+        "3:2"
+      ]
+    },
+    {
+      "id": "gpt-image-1.5",
+      "name": "GPT Image 1.5",
+      "qualities": [],
+      "resolutions": [],
+      "ratios": [
+        "自动",
+        "1:1",
+        "16:9",
+        "9:16",
+        "3:2"
+      ]
+    },
+    {
+      "id": "gpt-image-2.5-sunburst",
+      "name": "GPT Image 2.5 Sunburst",
+      "qualities": [],
+      "resolutions": [],
+      "ratios": [
+        "自动",
+        "1:1",
+        "16:9",
+        "9:16",
+        "3:2"
+      ]
+    },
+    {
+      "id": "gemini-3.1-flash-image",
+      "name": "Gemini 3.1 Flash Image",
+      "qualities": [],
+      "resolutions": [
+        "0.5K",
+        "1K",
+        "2K",
+        "4K"
+      ],
+      "ratios": [
+        "自动",
+        "21:9",
+        "16:9",
+        "4:3",
+        "1:1",
+        "9:16"
+      ]
+    },
+    {
+      "id": "gemini-3-pro-image",
+      "name": "Gemini 3 Pro Image",
+      "qualities": [],
+      "resolutions": [
+        "0.5K",
+        "1K",
+        "2K",
+        "4K"
+      ],
+      "ratios": [
+        "自动",
+        "1:1",
+        "9:16",
+        "16:9"
+      ]
+    }
+  ]
+}

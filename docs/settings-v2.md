@@ -4,7 +4,7 @@
 
 ## 工作稿与画面
 
-- 工作稿：[design/start.figcraft](../design/start.figcraft)，设计页 `04 · 设置与管理`（2260）。
+- 工作稿：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)，设计页 `04 · 设置与管理`（2260）。
 - 本设计页共 11 张 1440 × 900 画框：9 张完整界面状态、2 张局部状态对照；本轮新增 10 张。
 - [六个主要画面总览](../outputs/settings-v2/overview.png)，[全部实时截图索引](../outputs/settings-v2/manifest.json)。
 

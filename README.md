@@ -43,14 +43,14 @@ go run .
 | `npm run verify:all` | 工具检查、一次前端构建、模拟浏览器检查、产物同步及 Go test/vet/build |
 | `npm run release:prepare` | 从干净提交准备并缓存本地 Linux 发布包；不推送、不部署 |
 
-仅改文档运行 `check:docs` 即可。其他改动按 [检查矩阵](docs/workflow.md#按改动选择检查) 执行；真实 MySQL/Go 浏览器联调另需专用空 `_test` 数据库，不能把模拟检查当作真实渠道验证。
+仅改文档运行 `check:docs` 即可。其他改动按 [检查矩阵](docs/workflow.md#按改动选择检查) 对累计改动检查一次；相关输入未变时复用已有结果，新改动只补受影响检查，不按对话次数重复全量检查。真实 MySQL/Go 浏览器联调另需专用空 `_test` 数据库，不能把模拟检查当作真实渠道验证。
 
 ## 源码和资料
 
 - 当前前端：`frontend/`；后端：根目录 Go 文件。旧根 `src/` 不再是开发入口。
-- 设计原稿：[`design/start.figcraft`](design/start.figcraft)；原生成控件图：[`docs/design/`](docs/design/README.md)。
+- 设计原稿：[`design/ui-studio-design.figcraft`](design/ui-studio-design.figcraft)；原生成控件图：[`docs/design/`](docs/design/README.md)。
 - 当前目录职责见 [仓库结构](docs/repository-layout.md)；2026-11-07 的静态盘点见 [项目报表](docs/project-report-2026-11-07.md)，即时版本以状态命令和服务器实际记录为准。
 
 每张图片单独调用，失败和中断不自动重试。模型参数以上游实测边界为准；充值未接入。不要把 `.env`、数据库、缓存、日志或 `outputs/` 提交到 Git。
 
-推送和部署分别需要用户对本次工作明确同意。本地提交、状态查询、构建和发布准备均不会自动发布网站。
+本地提交仅在用户明确要求时执行，小改可跨对话累计。推送和部署仍分别需要用户对本次工作明确同意，授权互不替代；工作完成不自动提交、推送或部署。发布准备要求已有干净提交，不能为此擅自提交或隐藏工作区改动。

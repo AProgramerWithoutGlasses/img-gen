@@ -34,7 +34,11 @@ export async function collectStatus({ root = projectRoot, remote = false } = {})
   const counts = upstream
     ? (await git(root, ['rev-list', '--left-right', '--count', `HEAD...${upstream}`])).split(/\s+/).map(Number)
     : null;
-  const designPath = resolve(root, 'design/start.figcraft');
+  const designSettings = JSON.parse(await readFile(resolve(root, 'figcraft.config.json'), 'utf8'));
+  if (typeof designSettings.document !== 'string' || !designSettings.document.trim()) {
+    throw new Error('figcraft.config.json: document must name the working design file');
+  }
+  const designPath = resolve(root, designSettings.document);
   const designBytes = await readFile(designPath).catch(error => {
     if (error.code === 'ENOENT') return null;
     throw error;

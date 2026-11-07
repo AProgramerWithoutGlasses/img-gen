@@ -2,7 +2,7 @@
 
 > 后续审阅已移除“有新图片 · 更新”和“最新生成在前”。下面保留初版设计过程；当前前端直接显示已完成图片，不恢复这两个控件。前端接入说明见 [backend-handoff.md](backend-handoff.md)。
 
-日期：2026-11-06。可编辑工作稿：[design/start.figcraft](../design/start.figcraft)。本次更新第 **02 · 我的图片** 设计页，共 **8 张 1440 × 900 静态画框**。创作页沿用已审阅的结构；其他并行设计页不属于本轮图库交付。
+日期：2026-11-06。可编辑工作稿：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)。本次更新第 **02 · 我的图片** 设计页，共 **8 张 1440 × 900 静态画框**。创作页沿用已审阅的结构；其他并行设计页不属于本轮图库交付。
 
 [调研报告](research/gallery-organization.md) · [截图总览](../outputs/gallery-v3/overview.png) · [实时截图索引](../outputs/gallery-v3/manifest.json)
 
@@ -54,7 +54,7 @@
 
 每张界面按“侧栏／分类导航／页头／网格／选择工具栏／归类面板”分组。文字、图片占位、图标、组件均为原生节点；单独状态保留独立主组件，便于手工修改。归属与显示条件记在组件 description、图层名称、pluginData.designNotes 和画布评论。文件夹表单画框是独立状态并排说明，实际产品建议一次只显示一个居中表单。
 
-命令记录为 design/commands/wireframe-v3-*.json，不能在成稿重放；当前唯一工作入口是 start.figcraft。
+命令记录为 design/commands/wireframe-v3-*.json，不能在成稿重放；当前唯一工作入口是 ui-studio-design.figcraft。
 
 ## 调研结论与边界
 

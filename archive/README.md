@@ -17,4 +17,4 @@ Expand-Archive -LiteralPath archive/openpencil-2026-11-06.zip -DestinationPath o
 
 需要回退整个工具流程时，先另存当前 `.figcraft` 工作稿和项目修改，再从解压目录取回 `.codex/config.toml`、`package.json`、`package-lock.json`、`scripts/`、`design/` 及原文档；在恢复后的项目中运行 `npm ci`、`npm run verify`，重新加载项目会话。原源码也可直接从该 Git 提交取出。
 
-当前主文件为 `design/start.figcraft`。旧 ZIP 仅存档，不向其中追加设计。
+当前主文件为 `design/ui-studio-design.figcraft`。旧 ZIP 仅存档，不向其中追加设计。

@@ -1,5 +1,7 @@
 # UI Studio 项目盘点报表
 
+> 后续更名说明：设计原稿已更名为 [ui-studio-design.figcraft](../design/ui-studio-design.figcraft)，应用内标题同步更新。下文文件名、体积和校验值保留盘点时快照；改名后仅文档名称字段变化，不以此处旧校验值验证新文件。
+
 盘点日期：2026-11-07（Asia/Shanghai）。唯一开发目录：`C:\Users\13556\Documents\ui-studio`。
 
 本报表依据本地 Git、文件统计、设计文件只读信息与服务器只读状态整理。统计基线为 `70ab7544d9c67959a52d14cdbde11d5e8dff31b3`；文件数量及体积不包含本次新增报表和文档说明。它是现状快照，不是全功能测试报告。
@@ -53,7 +55,7 @@
 
 ## 3. 设计原稿和参考资料
 
-原稿入口：[`design/start.figcraft`](../design/start.figcraft)。从项目根目录运行 `npm run design:open` 打开。
+原稿入口（已更名）：[`design/ui-studio-design.figcraft`](../design/ui-studio-design.figcraft)。从项目根目录运行 `npm run design:open` 打开。
 
 | 设计页面 | 页内节点数 | 顶层画框数 |
 | --- | ---: | ---: |
