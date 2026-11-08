@@ -7,7 +7,10 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const files = ['README.md', 'AGENTS.md', 'docs/README.md', 'docs/workflow.md',
   'docs/DEPLOYMENT.md', 'docs/repository-layout.md', 'docs/studio-integration.md',
-  'docs/efficiency.md', 'frontend/README.md'];
+  'docs/efficiency.md', 'docs/api-contract.md', 'frontend/README.md',
+  'frontend/AGENTS.md', 'internal/AGENTS.md', 'internal/studio/README.md',
+  'design/README.md', 'tests/README.md', 'tests/probes/README.md',
+  'research/README.md', 'research/AGENTS.md'];
 let checked = 0;
 const failures = [];
 for (const file of files) {

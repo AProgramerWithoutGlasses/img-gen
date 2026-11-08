@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "status": "node scripts/project-status.mjs",
     "status:remote": "node scripts/project-status.mjs --remote",
@@ -11,7 +13,7 @@
     "dev:preview": "npm --prefix frontend run dev:preview",
     "check": "npm --prefix frontend run check && npm run check:tools",
     "check:docs": "node scripts/check-docs.mjs",
-    "check:tools": "node scripts/check-scripts.mjs && node --test scripts/tests/*.test.mjs && npm run check:docs",
+    "check:tools": "node scripts/check-scripts.mjs && node scripts/check-structure.mjs && node --test tests/tools/*.test.mjs && npm run check:docs",
     "build": "npm --prefix frontend run build:server",
     "preview": "npm --prefix frontend run preview",
     "verify": "npm --prefix frontend run verify",
@@ -23,9 +25,12 @@
     "design:export": "node scripts/figcraft.mjs export",
     "design:snapshot": "node scripts/figcraft.mjs snapshot",
     "design:batch": "node scripts/figcraft.mjs batch",
-    "design:smoke": "node scripts/figcraft-smoke.mjs",
+    "design:smoke": "node tests/design/figcraft-smoke.mjs",
     "design:verify": "npm run design:audit && npm run design:export",
-    "design:compare": "node scripts/check-design-browser.mjs"
+    "design:compare": "node tests/design/check-design-browser.mjs",
+    "test:go": "go test ./tests/go/..."
   },
-  "devDependencies": { "@modelcontextprotocol/sdk": "1.32.2" }
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2"
+  }
 }

@@ -6,8 +6,7 @@ enabled = false
 
 [mcp_servers.figcraft]
 command = "node"
-args = ['C:\Users\13556\Documents\ui-studio\scripts\figcraft-mcp.mjs']
-cwd = 'C:\Users\13556\Documents\ui-studio'
+args = ['scripts/figcraft-mcp.mjs']
 enabled = true
 startup_timeout_sec = 60
 tool_timeout_sec = 120

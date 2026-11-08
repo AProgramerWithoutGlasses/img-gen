@@ -1,0 +1,54 @@
+.app-shell {
+  --sidebar-width: 280px;
+}
+.app-shell.sidebar-collapsed {
+  --sidebar-width: 72px;
+}
+.gallery-page,
+.settings-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.modal.settings-drawer {
+  margin: 0 0 0 auto;
+  max-height: 100dvh;
+  height: 100dvh;
+  border-radius: 0;
+  width: 520px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 1320px) {
+  .composer-area {
+    width: calc(100% - 64px);
+  }
+  .composer-toolbar {
+    gap: 6px;
+    padding: 8px;
+  }
+  .composer-toolbar .model-select {
+    width: 216px;
+    min-width: 180px;
+    font-size: 14px;
+  }
+  .composer-toolbar select {
+    font-size: 14px;
+  }
+  .estimated-cost {
+    font-size: 11px;
+  }
+  .send-button {
+    min-width: 74px;
+    padding: 8px 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

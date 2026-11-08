@@ -7,7 +7,7 @@ import { Context } from "./context";
 export { useStudio } from "./context";
 
 const PreviewProvider = import.meta.env.MODE === "preview"
-  ? lazy(() => import("./PreviewStudioProvider")) : null;
+  ? lazy(() => import("../preview/PreviewStudioProvider")) : null;
 type ServerData = StudioData & { priceVersions: Record<string, number> };
 const defaults: Preferences = { theme: "system", enterToSend: true };
 function emptyData(): ServerData {

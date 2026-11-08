@@ -15,3 +15,5 @@ web/studio/
 /dist/
 *.tsbuildinfo
 /我觉得可能用得上的参考图片/
+
+figcraft.local.json

@@ -7,7 +7,13 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 const exec = promisify(execFile);
 export const root = fileURLToPath(new URL('../../', import.meta.url));
-export const settings = JSON.parse(await readFile(resolve(root, 'figcraft.config.json'), 'utf8'));
+const sharedSettings = JSON.parse(await readFile(resolve(root, 'figcraft.config.json'), 'utf8'));
+let localSettings = {};
+try { localSettings = JSON.parse(await readFile(resolve(root, 'figcraft.local.json'), 'utf8')); }
+catch (error) { if (error.code !== 'ENOENT') throw error; }
+export const settings = { ...sharedSettings, ...localSettings };
+settings.app = process.env.FIGCRAFT_APP || settings.app;
+settings.cli = process.env.FIGCRAFT_CLI || settings.cli;
 export const documentPath = resolve(root, settings.document);
 export const output = resolve(root, 'outputs');
 export const design = resolve(root, 'design');
