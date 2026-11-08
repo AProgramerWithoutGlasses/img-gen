@@ -1,6 +1,6 @@
 # 前端接手说明
 
-> 历史模拟前端交接稿。当前UI目录已同步远程生产代码，现行页面源码位于frontend/，接口和部署见docs/studio-integration.md及docs/DEPLOYMENT.md；下文不作为当前运行状态。
+> 历史模拟前端交接稿。现行页面源码位于 frontend/，当前接口见 [接口契约](../../api-contract.md)，发布见 [部署说明](../../DEPLOYMENT.md)；下文不作为当前运行状态。
 
 日期：2026-11-06。当前交付为 React + TypeScript + Vite 桌面前端，按现有 FigCraft 线框实现。所有业务操作使用本地模拟数据；未连接任何远程服务。
 

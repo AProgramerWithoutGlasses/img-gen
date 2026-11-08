@@ -6,8 +6,8 @@
 
 ## 工作稿与预览
 
-- 可编辑文件：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)，使用安装版 FigCraft，或运行 `npm run design:open`。
-- [全部画面总览](../outputs/wireframe-v2/overview.png)；[实时截图索引](../outputs/wireframe-v2/manifest.json)。截图为本轮实时文档渲染，不是旧导出。
+- 可编辑文件：[design/ui-studio-design.figcraft](../../../design/ui-studio-design.figcraft)，使用安装版 FigCraft，或运行 `npm run design:open`。
+- [全部画面总览](../../../outputs/wireframe-v2/overview.png)；[实时截图索引](../../../outputs/wireframe-v2/manifest.json)。截图为本轮实时文档渲染，不是旧导出。
 - 3 个设计页、12 张画框，均为 1440 × 900；其中 10 张是完整界面状态，2 张是局部组件状态对照。
 - 仅静态、原生可编辑线框，没有页面开发、交互连线、动画或后端。生成图片为灰色占位，积分、日期和提示词是示例数据。
 
@@ -15,18 +15,18 @@
 
 | 设计页 | 画面 | 节点 | 预览 |
 | --- | --- | --- | --- |
-| 01 · 图像创作 | 已完成结果＋多附件 | 611 | [预览](../outputs/wireframe-v2/create-results.png) |
-| 01 · 图像创作 | 初始空状态 | 745 | [预览](../outputs/wireframe-v2/create-empty.png) |
-| 01 · 图像创作 | 添加结果＋模型菜单展开 | 1278 | [预览](../outputs/wireframe-v2/create-model-menu.png) |
-| 01 · 图像创作 | 结果已添加为附件 | 2134 | [预览](../outputs/wireframe-v2/create-added-result.png) |
-| 01 · 图像创作 | 长提示词编辑弹层 | 1411 | [预览](../outputs/wireframe-v2/create-prompt-expanded.png) |
-| 01 · 图像创作 | 侧栏收起＋账户菜单 | 1542 | [预览](../outputs/wireframe-v2/create-account-menu.png) |
-| 01 · 图像创作 | 多轮对话＋生成中 | 1676 | [预览](../outputs/wireframe-v2/create-multiturn.png) |
-| 02 · 我的图片 | 图片浏览 | 868 | [预览](../outputs/wireframe-v2/gallery.png) |
-| 02 · 我的图片 | 大图查看 | 1153 | [预览](../outputs/wireframe-v2/gallery-preview.png) |
-| 02 · 我的图片 | 图库为空 | 1050 | [预览](../outputs/wireframe-v2/gallery-empty.png) |
-| 03 · 组件与状态 | 五模型参数差异与菜单 | 1834 | [预览](../outputs/wireframe-v2/model-parameters.png) |
-| 03 · 组件与状态 | 上传与异常建议 | 2023 | [预览](../outputs/wireframe-v2/status-proposals.png) |
+| 01 · 图像创作 | 已完成结果＋多附件 | 611 | [预览](../../../outputs/wireframe-v2/create-results.png) |
+| 01 · 图像创作 | 初始空状态 | 745 | [预览](../../../outputs/wireframe-v2/create-empty.png) |
+| 01 · 图像创作 | 添加结果＋模型菜单展开 | 1278 | [预览](../../../outputs/wireframe-v2/create-model-menu.png) |
+| 01 · 图像创作 | 结果已添加为附件 | 2134 | [预览](../../../outputs/wireframe-v2/create-added-result.png) |
+| 01 · 图像创作 | 长提示词编辑弹层 | 1411 | [预览](../../../outputs/wireframe-v2/create-prompt-expanded.png) |
+| 01 · 图像创作 | 侧栏收起＋账户菜单 | 1542 | [预览](../../../outputs/wireframe-v2/create-account-menu.png) |
+| 01 · 图像创作 | 多轮对话＋生成中 | 1676 | [预览](../../../outputs/wireframe-v2/create-multiturn.png) |
+| 02 · 我的图片 | 图片浏览 | 868 | [预览](../../../outputs/wireframe-v2/gallery.png) |
+| 02 · 我的图片 | 大图查看 | 1153 | [预览](../../../outputs/wireframe-v2/gallery-preview.png) |
+| 02 · 我的图片 | 图库为空 | 1050 | [预览](../../../outputs/wireframe-v2/gallery-empty.png) |
+| 03 · 组件与状态 | 五模型参数差异与菜单 | 1834 | [预览](../../../outputs/wireframe-v2/model-parameters.png) |
+| 03 · 组件与状态 | 上传与异常建议 | 2023 | [预览](../../../outputs/wireframe-v2/status-proposals.png) |
 
 ## 已确认规则的落实
 
@@ -36,7 +36,7 @@
 
 **结果图操作最终为“下载”“添加”，均带文字和图标。** 下载将本图保存到本地；添加将本图加入当前待发送附件栏，不立即发送，原结果仍保留。点击图片本身进入大图查看。“删除”方案已撤回，当前稿不包含删除生成图操作。第二轮对话示例使用第一轮图片为参考，明确了结果、已发送参考图、当前输入之间的关系。
 
-模型只保留用户指定的五项。Gemini 两个模型隐藏档位；GPT Image 1.5 隐藏独立清晰度；五模型的显示差异、菜单选中态集中在第 03 页，完整取值和来源见 [模型参数表](research/model-parameters.md)。新选择只影响下一次生成，历史结果保留原参数。
+模型只保留用户指定的五项。Gemini 两个模型隐藏档位；GPT Image 1.5 隐藏独立清晰度；五模型的显示差异、菜单选中态集中在第 03 页，完整取值和来源见 [模型参数表](../../research/model-parameters.md)。新选择只影响下一次生成，历史结果保留原参数。
 
 账户菜单覆盖积分余额、充值、浅／深主题和设置入口。独立设置页、充值流程和完整双主题皮肤仍在本阶段范围外。
 
@@ -44,7 +44,7 @@
 
 图库参考 Base Design 的行对齐、变宽图片网格。主图区从 x=340 开始，宽 1040 px，间隔 12 px；每行约 207 px 高，图片宽度由比例决定。示例共 12 张，展示横向、方形和竖向比例，没有统一裁成方图。
 
-大图查看采用覆盖层，原图按比例完整显示，提供关闭、前后切换及集合内位置；右侧展示示例提示词与生成参数。**覆盖层、信息面板和切换范围是本项目设计建议**，不是 Base 的实测图片灯箱行为。Base 实测是项目详情页，依据与区别见 [调研报告](research/website-research.md)。
+大图查看采用覆盖层，原图按比例完整显示，提供关闭、前后切换及集合内位置；右侧展示示例提示词与生成参数。**覆盖层、信息面板和切换范围是本项目设计建议**，不是 Base 的实测图片灯箱行为。Base 实测是项目详情页，依据与区别见 [调研报告](../../research/website-research.md)。
 
 图库本轮没有加入删除、收藏、搜索、筛选或批量操作。创作结果卡的下载／添加已确认，但是否在图库再放相同入口，仍可在图库审阅时决定。
 
@@ -67,8 +67,8 @@
 ## 验证与本地记录
 
 - `npm run design:verify` 通过：3 页、12 张 1440 × 900 画框，无缺失字体、导入警告或审计诊断。
-- 12 张实时截图与对应磁盘导出逐一比较，SHA-256 全部相同，见 [截图索引](../outputs/wireframe-v2/manifest.json)。
-- 可见节点边界检查为 0 项溢出，见 [布局检查](../outputs/wireframe-v2/layout-check.json)。本轮检查先发现并修正了 5 处结果组容器的 2 px 边界超出。
+- 12 张实时截图与对应磁盘导出逐一比较，SHA-256 全部相同，见 [截图索引](../../../outputs/wireframe-v2/manifest.json)。
+- 可见节点边界检查为 0 项溢出，见 [布局检查](../../../outputs/wireframe-v2/layout-check.json)。本轮检查先发现并修正了 5 处结果组容器的 2 px 边界超出。
 - 已逐张检查主画面、图库、弹层和局部状态；修正了上传示例中“一张附件却指向第二张图”的文案。
 - 没有网页或连接自动化源代码修改，因此本轮不运行网页构建或连接 smoke。静态验收不声称点击逻辑已实现。
 - 截图、临时辅助脚本和日志仅在 `outputs/`，不提交；项目只做本地 Git commit。

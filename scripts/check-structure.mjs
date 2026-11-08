@@ -10,6 +10,9 @@ const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclud
 }).split('\0').filter(file => file && existsSync(resolve(root, file)));
 const errors = [];
 for (const file of new Set(files)) {
+  if (/^(personal-notes|personal-research)\//i.test(file)) {
+    errors.push(`${file}: 个人工具与流程笔记请放仓库外；项目研究放 research/，临时证据放 outputs/。`);
+  }
   if (!file.includes('/') && file.endsWith('.md') && !['README.md', 'AGENTS.md'].includes(file)) {
     errors.push(`${file}: 根目录仅保留 README.md 和 AGENTS.md；报告放 docs/，调研放 research/。`);
   }

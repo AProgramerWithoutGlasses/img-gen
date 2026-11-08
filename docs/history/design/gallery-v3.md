@@ -1,10 +1,10 @@
 # 我的图片 · 图库与文件夹 v3
 
-> 后续审阅已移除“有新图片 · 更新”和“最新生成在前”。下面保留初版设计过程；当前前端直接显示已完成图片，不恢复这两个控件。前端接入说明见 [backend-handoff.md](backend-handoff.md)。
+> 后续审阅已移除“有新图片 · 更新”和“最新生成在前”。下面保留初版设计过程；当前前端直接显示已完成图片，不恢复这两个控件。前端接入说明见 [backend-handoff.md](../integration/backend-handoff.md)。
 
-日期：2026-11-06。可编辑工作稿：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)。本次更新第 **02 · 我的图片** 设计页，共 **8 张 1440 × 900 静态画框**。创作页沿用已审阅的结构；其他并行设计页不属于本轮图库交付。
+日期：2026-11-06。可编辑工作稿：[design/ui-studio-design.figcraft](../../../design/ui-studio-design.figcraft)。本次更新第 **02 · 我的图片** 设计页，共 **8 张 1440 × 900 静态画框**。创作页沿用已审阅的结构；其他并行设计页不属于本轮图库交付。
 
-[调研报告](research/gallery-organization.md) · [截图总览](../outputs/gallery-v3/overview.png) · [实时截图索引](../outputs/gallery-v3/manifest.json)
+[调研报告](../../research/gallery-organization.md) · [截图总览](../../../outputs/gallery-v3/overview.png) · [实时截图索引](../../../outputs/gallery-v3/manifest.json)
 
 ## 新图放入逻辑（设计建议，待审）
 
@@ -41,14 +41,14 @@
 
 | 画框 | 节点 | 覆盖状态 |
 | --- | --- | --- |
-| [全部与新图提示](../outputs/gallery-v3/gallery.png) | 868 | 全库、未分类、文件夹导航；收到两张新图但尚未刷新 |
-| [更新后新图在前](../outputs/gallery-v3/gallery-updated.png) | 3964 | 新图13／14在前，旧图01—12顺序保持；全库12→14，未分类5→7，文件夹数量不变 |
-| [文件夹与管理菜单](../outputs/gallery-v3/folder.png) | 2368 | 当前文件夹六图；重命名／删除文件夹入口；单图更多入口 |
-| [批量归类](../outputs/gallery-v3/organize.png) | 2501 | 三图选中；全部已加入、部分已加入、新勾选目标；只新增关联 |
-| [大图查看](../outputs/gallery-v3/preview.png) | 1153 | 完整图片、生成信息、多个归属、下载和归类 |
-| [全库空态](../outputs/gallery-v3/empty-library.png) | 1050 | 尚无生成图片，去图像创作；可新建文件夹 |
-| [空文件夹](../outputs/gallery-v3/empty-folder.png) | 2634 | 全库有图但当前文件夹无图，提供从图库选择 |
-| [文件夹管理状态](../outputs/gallery-v3/folder-states.png) | 3223 | 新建、重命名重名校验、删除确认、单图菜单、批量移出、反馈 |
+| [全部与新图提示](../../../outputs/gallery-v3/gallery.png) | 868 | 全库、未分类、文件夹导航；收到两张新图但尚未刷新 |
+| [更新后新图在前](../../../outputs/gallery-v3/gallery-updated.png) | 3964 | 新图13／14在前，旧图01—12顺序保持；全库12→14，未分类5→7，文件夹数量不变 |
+| [文件夹与管理菜单](../../../outputs/gallery-v3/folder.png) | 2368 | 当前文件夹六图；重命名／删除文件夹入口；单图更多入口 |
+| [批量归类](../../../outputs/gallery-v3/organize.png) | 2501 | 三图选中；全部已加入、部分已加入、新勾选目标；只新增关联 |
+| [大图查看](../../../outputs/gallery-v3/preview.png) | 1153 | 完整图片、生成信息、多个归属、下载和归类 |
+| [全库空态](../../../outputs/gallery-v3/empty-library.png) | 1050 | 尚无生成图片，去图像创作；可新建文件夹 |
+| [空文件夹](../../../outputs/gallery-v3/empty-folder.png) | 2634 | 全库有图但当前文件夹无图，提供从图库选择 |
+| [文件夹管理状态](../../../outputs/gallery-v3/folder-states.png) | 3223 | 新建、重命名重名校验、删除确认、单图菜单、批量移出、反馈 |
 
 更新后画面展示当前视口，昨天四张图片在下方滚动区域；未用“14 张”暗示同屏必须放完。新图标记仅用于这次刷新，重新进入时清除（建议）。
 
@@ -66,4 +66,4 @@ Adobe 的整理动作创建副本，本项目不采用；Leonardo 的生成前�
 
 ## 验证
 
-本稿仅表达静态界面，不具备点击、生成、真实入库或管理能力。主体更新已通过 npm run design:verify，八张实时图与磁盘导出一致、边界溢出为零。最后按用户要求统一新建加号、移除说明文字，仅做局部目视检查并刷新预览，不重复整套验证。[当前截图](../outputs/gallery-v3/manifest.json) 与 [清理前验证](../outputs/gallery-v3/verified-before-cleanup.json) 分别保存。
+本稿仅表达静态界面，不具备点击、生成、真实入库或管理能力。主体更新已通过 npm run design:verify，八张实时图与磁盘导出一致、边界溢出为零。最后按用户要求统一新建加号、移除说明文字，仅做局部目视检查并刷新预览，不重复整套验证。[当前截图](../../../outputs/gallery-v3/manifest.json) 与 [清理前验证](../../../outputs/gallery-v3/verified-before-cleanup.json) 分别保存。

@@ -1,6 +1,6 @@
 # 根目录逐项说明
 
-根目录保留项目入口与通用工具配置，普通报告和研究统一进入对应目录。整理后 Git 跟踪的根文件由 23 个减少到 14 个；9 份渠道报告已移入 [Qiso 报告目录](providers/qiso/README.md)，247 个研究文件整体归入 [research/marathon/](../research/marathon/README.md)。
+根目录保留项目入口与通用工具配置。现行说明放 docs/，项目研究放 research/，渠道实测放 [Qiso 报告目录](providers/qiso/README.md)；个人工具与流程笔记放仓库外，具体见 [资料归属](workflow.md#资料归属)。
 
 ## 根文件：逐项保留原因
 
@@ -33,9 +33,9 @@
 | [internal/](../internal/studio/README.md) | 后端业务实现 |
 | [web/](../web/README.md) | Go 前端嵌入声明，studio 子目录是生成产物 |
 | [design/](../design/README.md) | 当前可编辑设计稿、素材与设计命令 |
-| [docs/](README.md) | 现行说明和历史报告导航；Qiso 报告放 providers/qiso/ |
+| [docs/](README.md) | 现行说明入口；历史资料放 history/，Qiso 实测放 providers/qiso/ |
 | [tests/](../tests/README.md) | Go、工具、设计对照与接口探测测试 |
-| [research/](../research/README.md) | 新旧调研任务、报告与必要参考素材 |
+| [research/](../research/README.md) | 有共享价值的项目研究和必要参考素材 |
 | [scripts/](../scripts/) | 日常状态、检查、发布准备和设计工具 |
 | [deploy/](../deploy/README.md) | Nginx 等部署配置模板 |
 | [archive/](../archive/README.md) | 旧设计迁移备份；有独立恢复用途，保留 |

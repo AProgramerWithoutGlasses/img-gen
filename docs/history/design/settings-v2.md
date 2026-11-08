@@ -4,23 +4,23 @@
 
 ## 工作稿与画面
 
-- 工作稿：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)，设计页 `04 · 设置与管理`（2260）。
+- 工作稿：[design/ui-studio-design.figcraft](../../../design/ui-studio-design.figcraft)，设计页 `04 · 设置与管理`（2260）。
 - 本设计页共 11 张 1440 × 900 画框：9 张完整界面状态、2 张局部状态对照；本轮新增 10 张。
-- [六个主要画面总览](../outputs/settings-v2/overview.png)，[全部实时截图索引](../outputs/settings-v2/manifest.json)。
+- [六个主要画面总览](../../../outputs/settings-v2/overview.png)，[全部实时截图索引](../../../outputs/settings-v2/manifest.json)。
 
 | 画面 | 节点 | 覆盖 |
 | --- | --- | --- |
-| [账户与安全](../outputs/settings-v2/account.png) | 2261 | 已认可首张，管理员身份；保持原稿 |
-| [外观与输入](../outputs/settings-v2/appearance.png) | 2878 | 浅色、深色、跟随系统；Enter 发送默认关闭；两种键盘规则 |
-| [积分](../outputs/settings-v2/credits.png) | 2990 | 示例余额 991、充值入口、按模型与每张图计价的说明 |
-| [用户管理](../outputs/settings-v2/users.png) | 3081 | 搜索、创建用户、角色、启用／停用、余额、日期、当前账号、行操作 |
-| [请求记录](../outputs/settings-v2/requests.png) | 3281 | 四项筛选、快捷日期、自定义时间、统计、完成／处理中／失败 |
-| [模型价格](../outputs/settings-v2/prices.png) | 3446 | 五个模型、单张积分、修改时间、逐行保存；首行未保存编辑 |
-| [创建用户](../outputs/settings-v2/create.png) | 3580 | 用户列表上打开右侧抽屉；四个字段、规则、取消、禁用创建 |
-| [请求详情](../outputs/settings-v2/requestDetail.png) | 3722 | 用户、时间、模型、耗时、积分、完整提示词、两张结果图 |
-| [普通用户账户](../outputs/settings-v2/normalAccount.png) | 3887 | 当前用户 user1，管理员整个分组隐藏 |
-| [账户与表单状态](../outputs/settings-v2/formStates.png) | 4103 | 改密不一致、用户名格式／重名、创建失败／成功、无权限、放弃修改 |
-| [请求与价格状态](../outputs/settings-v2/recordStates.png) | 4160 | 无匹配、请求失败、价格保存中／成功／失败、离开或刷新确认 |
+| [账户与安全](../../../outputs/settings-v2/account.png) | 2261 | 已认可首张，管理员身份；保持原稿 |
+| [外观与输入](../../../outputs/settings-v2/appearance.png) | 2878 | 浅色、深色、跟随系统；Enter 发送默认关闭；两种键盘规则 |
+| [积分](../../../outputs/settings-v2/credits.png) | 2990 | 示例余额 991、充值入口、按模型与每张图计价的说明 |
+| [用户管理](../../../outputs/settings-v2/users.png) | 3081 | 搜索、创建用户、角色、启用／停用、余额、日期、当前账号、行操作 |
+| [请求记录](../../../outputs/settings-v2/requests.png) | 3281 | 四项筛选、快捷日期、自定义时间、统计、完成／处理中／失败 |
+| [模型价格](../../../outputs/settings-v2/prices.png) | 3446 | 五个模型、单张积分、修改时间、逐行保存；首行未保存编辑 |
+| [创建用户](../../../outputs/settings-v2/create.png) | 3580 | 用户列表上打开右侧抽屉；四个字段、规则、取消、禁用创建 |
+| [请求详情](../../../outputs/settings-v2/requestDetail.png) | 3722 | 用户、时间、模型、耗时、积分、完整提示词、两张结果图 |
+| [普通用户账户](../../../outputs/settings-v2/normalAccount.png) | 3887 | 当前用户 user1，管理员整个分组隐藏 |
+| [账户与表单状态](../../../outputs/settings-v2/formStates.png) | 4103 | 改密不一致、用户名格式／重名、创建失败／成功、无权限、放弃修改 |
+| [请求与价格状态](../../../outputs/settings-v2/recordStates.png) | 4160 | 无匹配、请求失败、价格保存中／成功／失败、离开或刷新确认 |
 
 ## 已落实的信息与规则
 
@@ -67,4 +67,4 @@
 
 仍需产品明确后再细化的内容：管理已有用户的完整字段、积分调整规则、记录范围枚举、密码字节编码与个人改密策略、会话失效的触发范围、充值后续流程。相应入口保留，没有用假设补成已确定的业务表单。
 
-来源：[行动报告](settings-admin-action-plan.md)、[设置补充调研](research/settings-research.md)、本会话四张管理员业务截图。首张历史见 [settings-v1.md](settings-v1.md)。
+来源：[行动报告](settings-admin-action-plan.md)、[设置补充调研](../../research/settings-research.md)、本会话四张管理员业务截图。首张历史见 [settings-v1.md](settings-v1.md)。

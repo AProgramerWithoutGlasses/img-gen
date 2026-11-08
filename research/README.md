@@ -1,10 +1,9 @@
 # 调研索引
 
-新任务放 `research/YYYY-MM-DD-主题/`，一份 report.md 可包含问题、结论、出处、访问日期与采纳状态；必要素材放任务 assets，下载与中间结果放 outputs/research/同名任务。不为普通报告预建原型或工具。规则见 [AGENTS.md](AGENTS.md)。
+这里保留与网站直接相关、值得共同维护的设计和技术研究。确需长期保存的新任务放 `research/YYYY-MM-DD-主题/`；下载与中间结果放 `outputs/research/同名任务/`。个人工具配置和流程笔记放仓库外，普通咨询不默认生成报告。规则见 [AGENTS.md](AGENTS.md)。
 
 | 资料 | 状态与边界 |
 | --- | --- |
-| [GitHub MCP 精简接入](2026-11-08-github-mcp/report.md) | 已完成全局及 img-gen 接入验收；本仓库实测为公开，文件、提交、PR、CI 与日志读取通过 |
 | [Marathon 研究](marathon/README.md) | 历史参考；保留原型、素材和工具，不作为当前页面规范 |
 | [既有研究资料](../docs/research/) | 历史参考；按主题检索，不当作未完成需求 |
 | [Qiso 渠道报告](../docs/providers/qiso/README.md) | 渠道探测证据；按日期与已测范围理解，现行约定引用原报告 |

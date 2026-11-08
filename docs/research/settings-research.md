@@ -47,4 +47,4 @@ General 的多个 switch 在可访问性树中共用泛化名称 `Enable notific
 4. “修改密码”“跟随系统”“Enter 发送默认关闭”和完整设置页组织方式属于待审阅建议。参考产品有这些模式，不代表本项目必须全部采用。
 5. 不为填满设置页添加 API Key、服务地址、供应商配置、团队邀请、公开资料、清缓存、删除账号、邮件通知或自动下载。
 
-后续行动和用户提供的新建账号规则见 [行动报告](../settings-admin-action-plan.md)。
+后续行动和用户提供的新建账号规则见 [行动报告](../history/design/settings-admin-action-plan.md)。

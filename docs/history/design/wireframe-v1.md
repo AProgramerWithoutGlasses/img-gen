@@ -6,10 +6,10 @@
 
 ## 文件与画面
 
-- 原生设计文件：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)。使用安装版 FigCraft 打开，亦可运行 `npm run design:open`。
+- 原生设计文件：[design/ui-studio-design.figcraft](../../../design/ui-studio-design.figcraft)。使用安装版 FigCraft 打开，亦可运行 `npm run design:open`。
 - 页面：`01 · 图像创作`，一张顶层画框 `图像创作 · 结果与参考图 · 1440×900`，节点 611。
 - 画面尺寸：1440 × 900。展开侧栏 280 px，页头 72 px，默认文字输入框宽 1040 px、高 144 px，坐标为 (340, 732)，距视口底部 24 px。文字区高 48 px，约容纳两行。附件行在输入框外上方独立显示，高 58 px，间隔 8 px，不挤占文字位置。
-- [实时画布截图](../outputs/design-preview/canvas.png)；[v1.3 同版 PNG](../outputs/wireframe-v1-3.png)。截图位于 `outputs/`，不提交 Git。
+- [实时画布截图](../../../outputs/design-preview/canvas.png)；[v1.3 同版 PNG](../../../outputs/wireframe-v1-3.png)。截图位于 `outputs/`，不提交 Git。
 - 无网页代码、原型连线、动画或后端连接。画面中图片为原生线框占位，不是实际生成结果。
 - 积分余额 1,280 与预计 12 积分都是演示数值；没有确定本项目定价，也没有付费生成。此说明同时保存在画布评论 1。
 
@@ -49,7 +49,7 @@
 | SnowShot_2026-11-06_14-58-39.png | 参数集中排列，控件展示当前值，发送位于操作端 | 模型与参数工具栏 |
 | image.png | 侧栏底部用户入口，以及积分与账号相邻的层级 | 积分摘要、充值与用户入口；展开菜单后续制作 |
 
-只采用结构，不沿用原图配色、品牌皮肤或无关功能。静态截图不能证明交互，详见 [逐图分析](research/local-references.md)。
+只采用结构，不沿用原图配色、品牌皮肤或无关功能。静态截图不能证明交互，详见 [逐图分析](../../research/local-references.md)。
 
 ## 主要关系与状态
 
@@ -68,15 +68,15 @@
 | 用户入口 | 已绘制，评论写明展开后的账号、积分充值、主题、设置关系 | 展开菜单在下一轮；独立设置页与充值流程范围外 |
 | 我的图片 | 侧栏入口已绘制 | 下一轮制作浏览和查看；下载、回到来源对话仅为建议 |
 
-模型取值统一参考 ArtCraft，以避免混拼不同站点配置；[参数表](research/model-parameters.md) 保留 ImageAT、Krea 的差异。未验证的上传数量上限、格式大小限制、后台组合约束和积分算法均未写成既定规则。
+模型取值统一参考 ArtCraft，以避免混拼不同站点配置；[参数表](../../research/model-parameters.md) 保留 ImageAT、Krea 的差异。未验证的上传数量上限、格式大小限制、后台组合约束和积分算法均未写成既定规则。
 
 ## 调研与验证
 
-- [网站调研](research/website-research.md)：四站正式布局观察与交互检查均核验实际视口为 1440 × 900；早期窄屏入口检查不用于设计。
-- [参数表](research/model-parameters.md) 与 [Gemini 别名](research/model-aliases.md)：五模型配置来源、官方别名及证据边界。
-- [成熟组件模式](research/component-patterns.md)：Sender、Attachments、Image.PreviewGroup，仅采用结构和状态组织，没有确定代码组件库。
+- [网站调研](../../research/website-research.md)：四站正式布局观察与交互检查均核验实际视口为 1440 × 900；早期窄屏入口检查不用于设计。
+- [参数表](../../research/model-parameters.md) 与 [Gemini 别名](../../research/model-aliases.md)：五模型配置来源、官方别名及证据边界。
+- [成熟组件模式](../../research/component-patterns.md)：Sender、Attachments、Image.PreviewGroup，仅采用结构和状态组织，没有确定代码组件库。
 - v1.3 已运行 `npm run design:verify`：1 页、1 张 1440 × 900 顶层画面、110 内容节点，无缺失字体与审计警告。
-- 附件布局验收 4 项通过、0 失败：[本地验证结果](../outputs/attachment-layout-check.json)。核对独立同级容器且无重叠、有/无附件时输入框渲染完全一致、错误的内部附件布局能被负向对照检测、实时与磁盘导出一致。[无附件对照截图](../outputs/attachments-empty.png) 用于与主稿比较文字区。对照在一次性无界面副本中执行，未改变工作稿。这验证静态布局关系；“点击×移除、删光隐藏”是已记录的显示条件，尚未实现可操作点击逻辑。
+- 附件布局验收 4 项通过、0 失败：[本地验证结果](../../../outputs/attachment-layout-check.json)。核对独立同级容器且无重叠、有/无附件时输入框渲染完全一致、错误的内部附件布局能被负向对照检测、实时与磁盘导出一致。[无附件对照截图](../../../outputs/attachments-empty.png) 用于与主稿比较文字区。对照在一次性无界面副本中执行，未改变工作稿。这验证静态布局关系；“点击×移除、删光隐藏”是已记录的显示条件，尚未实现可操作点击逻辑。
 - 独立视觉检查和最终实时截图检查未发现截断、重叠或越界。实时画布 PNG 与本轮磁盘导出 PNG 的 SHA-256 完全相同，确认显示内容一致。该检查不等于交互测试；本阶段没有可操作页面。
 - `npm run design:snapshot -- 611` 的路径查找未识别已打开文档。复核桌面 `doc.list` 与 `inspect_document` 后，使用同一附加 MCP 的文档 ID 5 调用 `screenshot`，将真实实时画布保存到上面的截图路径。没有拿旧磁盘导出替代实时画布，也没有修改连接脚本。
 
@@ -84,12 +84,12 @@
 
 ## 命令记录
 
-[conversation-wireframe-v1.json](../design/commands/conversation-wireframe-v1.json) 保存构建批次，使用 `as/$ref` 组织父子层级。它仅适用于具有空白画框 611 的初始稿，不能在现有成稿中直接重放，否则会重复创建内容。后续修改优先在当前工作稿调整，或编写针对节点的独立修改批次。
+[conversation-wireframe-v1.json](../../../design/commands/conversation-wireframe-v1.json) 保存构建批次，使用 `as/$ref` 组织父子层级。它仅适用于具有空白画框 611 的初始稿，不能在现有成稿中直接重放，否则会重复创建内容。后续修改优先在当前工作稿调整，或编写针对节点的独立修改批次。
 
-[conversation-wireframe-v1-1.json](../design/commands/conversation-wireframe-v1-1.json) 记录上一轮针对 v1 节点的修改：侧栏加宽、补充侧栏折叠入口、左下角上传＋、框外附件行及标注。它已经应用，不要在当前稿直接重复运行。
+[conversation-wireframe-v1-1.json](../../../design/commands/conversation-wireframe-v1-1.json) 记录上一轮针对 v1 节点的修改：侧栏加宽、补充侧栏折叠入口、左下角上传＋、框外附件行及标注。它已经应用，不要在当前稿直接重复运行。
 
 以上 v1、v1.1 批次均为历史记录，不代表 v1.2 的附件规则。当前附件行采用“有图显示、删光隐藏”，没有手动折叠；最终稿和当前说明优先。
 
-[conversation-wireframe-v1-2.json](../design/commands/conversation-wireframe-v1-2.json) 记录本轮修改：删除附件标题与手动收起组件，记录有图显示／删光隐藏条件，删除选择器小字标签并放大当前值。它已经应用，不要在当前稿直接重复运行。
+[conversation-wireframe-v1-2.json](../../../design/commands/conversation-wireframe-v1-2.json) 记录本轮修改：删除附件标题与手动收起组件，记录有图显示／删光隐藏条件，删除选择器小字标签并放大当前值。它已经应用，不要在当前稿直接重复运行。
 
-[conversation-wireframe-v1-3.json](../design/commands/conversation-wireframe-v1-3.json) 记录默认输入框缩小、外部附件行重新定位和右上角展开入口。它已经应用，不要在当前稿直接重复运行。
+[conversation-wireframe-v1-3.json](../../../design/commands/conversation-wireframe-v1-3.json) 记录默认输入框缩小、外部附件行重新定位和右上角展开入口。它已经应用，不要在当前稿直接重复运行。

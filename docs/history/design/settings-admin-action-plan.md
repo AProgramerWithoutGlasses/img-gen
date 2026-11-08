@@ -120,7 +120,7 @@
 
 ## 8. 依据
 
-- [本次设置补充调研](research/settings-research.md)：ArtCraft General／Account／Keybinds；Krea Profile／Appearance／Account 的实际可见内容。
-- [既有网站调研](research/website-research.md)、[本地参考图分析](research/local-references.md)。
+- [本次设置补充调研](../../research/settings-research.md)：ArtCraft General／Account／Keybinds；Krea Profile／Appearance／Account 的实际可见内容。
+- [既有网站调研](../../research/website-research.md)、[本地参考图分析](../../research/local-references.md)。
 - [当前设计交付说明](wireframe-v2.md)、[状态覆盖清单](state-coverage.md)。
 - 用户在当前会话提供的用户管理、请求记录、模型价格和创建用户四张截图。

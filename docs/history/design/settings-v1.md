@@ -4,11 +4,11 @@
 
 ## 画面
 
-- 工作稿：[design/ui-studio-design.figcraft](../design/ui-studio-design.figcraft)。
+- 工作稿：[design/ui-studio-design.figcraft](../../../design/ui-studio-design.figcraft)。
 - 设计页：`04 · 设置与管理`（2260）。
 - 画框：`设置 · 账户与安全 · 管理员身份 · 1440×900`（2261）。
-- [实时截图](../outputs/settings-v1/account-security.png)。
-- [截图与磁盘导出核对](../outputs/settings-v1/manifest.json)；[边界与原页回归检查](../outputs/settings-v1/layout-check.json)。
+- [实时截图](../../../outputs/settings-v1/account-security.png)。
+- [截图与磁盘导出核对](../../../outputs/settings-v1/manifest.json)；[边界与原页回归检查](../../../outputs/settings-v1/layout-check.json)。
 
 沿用现稿灰白线框、Microsoft YaHei UI、280 px 侧栏、72 px 页头、1040 px 主内容宽度。设置侧栏替换创作侧栏，左上角提供返回创作。个人设置包含账户与安全、外观与输入、积分；管理员面板独立分组，包含用户管理、请求记录、模型价格。
 
@@ -26,7 +26,7 @@
 | 设置 / 只读信息行 | 2312 | 角色、账号状态、创建时间；暴露名称与内容 |
 | 设置 / 次级操作按钮 | 2327 | 修改密码主件、退出登录实例；暴露名称 |
 
-批次记录：[settings-account-v1.json](../design/commands/settings-account-v1.json)。已经应用；它是一次性创建记录，不可在当前稿重复执行。
+批次记录：[settings-account-v1.json](../../../design/commands/settings-account-v1.json)。已经应用；它是一次性创建记录，不可在当前稿重复执行。
 
 ## 验证
 
