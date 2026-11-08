@@ -25,7 +25,9 @@ MCP 只读不限制本地文件编辑、Git 或 SSH。用户要求微调并上�
 
 ### 每台机器的授权与启用
 
-用户级配置在授权前设为 `enabled = false`。每台机器分别使用自己的细粒度 PAT，通过 `GITHUB_MCP_TOKEN` 环境变量提供；不得将令牌写入仓库、项目 `.env`、报告或聊天。本机当前先配置公开项目调研：Repository access 选择 Public repositories，不额外增加账户权限；先验证登录身份和公开仓库读取，不把公开访问通过当作私有 img-gen 已授权。后续需要读取私有仓库时，再按账号实际可选范围单独处理；若可选择 `AProgramerWithoutGlasses/img-gen`，仅授予 Contents、Issues、Pull requests、Actions 的 Read 和 GitHub 自动包含的 Metadata Read。全局可用不等于取得所有私有仓库权限。
+用户级配置在授权前设为 `enabled = false`。每台机器分别使用自己的细粒度 PAT，通过 `GITHUB_MCP_TOKEN` 环境变量提供；不得将令牌写入仓库、项目 `.env`、报告或聊天。本机令牌的 Repository access 选择 Public repositories，不额外增加账户权限。2026-11-08 实测 `AProgramerWithoutGlasses/img-gen` 为公开仓库（`private: false`、`visibility: public`），MCP 已成功读取其 README、提交、PR、Actions 状态及任务日志，可以辅助本项目和其他公开项目调研，详见 [接入验收](../research/2026-11-08-github-mcp/report.md)。
+
+每次判断访问条件时先核对目标仓库实际可见性，不把网站的私有工作室定位当成 GitHub 仓库权限，也不以其他项目的读取结果代替本项目验证。仓库可见性未来可能变化；若需读取私有仓库，再根据账号实际可选范围单独授权，权限仅按需要开放 Read。全局可用不等于取得所有私有仓库权限。
 
 申请私有仓库权限前，先确认账号能够选择该仓库；协作者账号或端点兼容性存在限制时说明具体原因，不自动扩大为所有私有仓库权限。Git 的既有登录不等于 MCP 授权，Codex 支持 OAuth 也不代表 GitHub 托管服务在本客户端可以直接 OAuth 登录。
 

@@ -1,8 +1,8 @@
 # GitHub MCP 精简接入报告
 
-日期：2026-11-08。状态：公开项目接入已完成。用户已批准全局使用、完成本机令牌设置并重启 Codex；当前聊天实际加载 13 个只读 GitHub 工具，身份、项目搜索和代码搜索调用通过。已整合到 [工作流程](../../docs/workflow.md) 和 [共同规则](../../AGENTS.md)，用户级配置已启用，项目不重复定义。私有 img-gen 访问未验证。
+日期：2026-11-08。状态：全局与本项目接入验收已完成。用户已批准全局使用、完成本机令牌设置并重启 Codex；当前聊天实际加载 13 个只读 GitHub 工具。目标仓库 `AProgramerWithoutGlasses/img-gen` 实测为公开仓库，文件、提交、PR、Actions 和日志读取均通过。已整合到 [工作流程](../../docs/workflow.md) 和 [共同规则](../../AGENTS.md)，用户级配置已启用，项目不重复定义。
 
-授权范围更新：用户页面显示资源所有者为 `hh5123`，与目标仓库所有者不同。当前先按 Public repositories 配置公开项目调研，不要求用户使用其他人的账号；本机保存脚本改为验证登录身份和公开的 `github/github-mcp-server`。私有 img-gen 访问待单独处理，公开仓库验证不能作为该私有仓库已获授权的证据。下文限定 img-gen 的权限设计仅在账号可选择该仓库时适用。
+可见性更正：先前将 img-gen 描述为私有仓库，没有先查实际元数据，是错误判断。MCP 元数据与不携带登录凭据的 GitHub API 均返回 `private: false`、`visibility: public`；本项目可使用现有 Public repositories 授权读取。仓库公开意味着其他人可浏览代码与公开记录，写入仍由 GitHub 权限控制，网站数据是否公开不由此判定。本机账号为 `hh5123`，无需切换到仓库所有者账号。下文的指定仓库权限设计仅在未来需要访问私有仓库且账号允许选择时适用。
 
 ## 实际接入结果
 
@@ -10,10 +10,22 @@
 - `tools/list` 恰好返回所选 13 个工具，无缺失、无额外工具；13 个工具均标注 `readOnlyHint = true`。
 - `get_me` 实测身份为 `hh5123`。
 - `get_file_contents` 成功读取公开仓库 `github/github-mcp-server` 的 README。
-- `search_repositories`、`search_code` 和 `actions_list` 实际调用成功；其他工具本轮仅核对目录与只读标注，没有逐个调用，也未验证 Actions 日志读取。
+- 首轮对公开参考仓库的 `search_repositories`、`search_code` 和 `actions_list` 实际调用成功；后续本项目验证结果见下文。不因目录加载成功就宣称所有工具的每个方法均已逐一验证。
 - 用户级配置 `enabled = true`，其他全局配置保持不变；项目 FigCraft 配置与接入前逐字节一致。
 - 本机证据在忽略的 `outputs/github-mcp/verification.json`，不保存令牌或完整仓库响应。
 - 用户重启后，当前聊天实际暴露的 GitHub 工具与所选 13 个工具一致；直接通过会话工具调用 `get_me`、`search_repositories`、`search_code` 均通过，账号为 `hh5123`。查询返回了官方 `github/github-mcp-server` 仓库和代码文件结果，已完成桌面加载验收。
+
+## img-gen 项目实际验证
+
+- `search_repositories` 返回目标仓库，`private` 为 false；不带 Authorization 的 GitHub API 请求同样返回 public，证明不是依赖私有仓库授权才能读取。
+- `get_file_contents` 成功读取 main 的 README，返回提交 `dae874101dca9f34745a924ed7684045c2dc946f`。
+- `list_commits` 成功读取上述提交及其中文说明。
+- `actions_list` 和 `actions_get` 成功读取 [Project checks #43](https://github.com/AProgramerWithoutGlasses/img-gen/actions/runs/42477490385)，对应上述提交，结论 success；scope、result 通过，业务 test 因纯文档范围按规则跳过，不能称业务全量测试也执行通过。
+- `get_job_logs` 成功读取该运行 scope 任务末尾 5 行，证明日志读取可用，没有下载或保存完整日志。
+- `search_issues` 请求成功，结果为 0 条；没有凭空创建 Issue 验证 `issue_read`。
+- `search_pull_requests` 返回 PR #1，`pull_request_read` 成功读取详情，状态为已合并。
+- 本项目 `search_code` 请求返回不完整的空结果，不能据此认定代码不存在或权限失败；代码搜索已在官方参考仓库中实际命中，本项目文件读取已直接通过。
+- 验证中只执行只读请求，没有变更仓库可见性或访问权限。
 
 ## 建议
 
@@ -21,7 +33,7 @@
 
 这适合目前两人维护的 img-gen：本地修改、验证、Git 推送和 SSH 发布已经有独立流程，MCP 补充远程协作和检查信息。
 
-## 当前检查结果
+## 接入前检查记录
 
 - 项目：`D:\ai-work\img-gen`，`main @ 1db8068`；开始检查时工作区干净。
 - 用户级和项目级显式 MCP 配置均未发现 GitHub 服务，当前会话也未暴露 GitHub MCP 工具。
@@ -81,7 +93,7 @@ MCP 的主要收益是更直接地取得结构化的协作和检查信息；其�
 
 回退只需移除本次新增服务并按需要撤销本次专用令牌，不影响 Git 推送与现有服务器部署方式。
 
-初次报告阶段仅调研。用户随后批准整合，并明确要求全局可用，现已更新工作流和本机 Codex 用户级 MCP 配置，公开项目范围的授权、独立 MCP 连接验收及重启后的聊天内调用验收均已通过。私有 img-gen 访问未验证；此次接入不涉及生产部署。
+初次报告阶段仅调研。用户随后批准整合，并明确要求全局可用，现已更新工作流和本机 Codex 用户级 MCP 配置；全局服务及 img-gen 的聊天内读取验收均已通过。本项目实测为公开仓库，不再使用错误的“私有 img-gen 未验证”作为当前状态。此次接入不涉及生产部署。
 
 ## 官方资料
 
