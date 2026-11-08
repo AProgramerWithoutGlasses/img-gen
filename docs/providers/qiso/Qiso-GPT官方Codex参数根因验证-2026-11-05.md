@@ -21,7 +21,7 @@
 
 通过只读 SQL 会话读取刚刚成功出图账号 187 的现有 OAuth access token 与代理 253。SQL 设置 `default_transaction_read_only=on` 和 5 秒 statement timeout。凭据只进入服务器 Python 进程内存，用于原官方地址和原代理；没有输出、复制到本地或写入报告。没有刷新 OAuth、改变调度或创建新密钥。
 
-脚本：[probe_codex_server_controls.py](probe_codex_server_controls.py)。HTTP 使用 requests，不继承环境代理、显式使用原账号代理、不跟随重定向、默认开启 TLS 验证、无自动重试。响应仅提取允许保存的字段与图片字节解码后的 PNG 宽高/SHA-256；不保存完整响应、图片 base64、思考文本或凭据。
+脚本：[probe_codex_server_controls.py](../../../tests/probes/probe_codex_server_controls.py)。HTTP 使用 requests，不继承环境代理、显式使用原账号代理、不跟随重定向、默认开启 TLS 验证、无自动重试。响应仅提取允许保存的字段与图片字节解码后的 PNG 宽高/SHA-256；不保存完整响应、图片 base64、思考文本或凭据。
 
 TLS 证书摘要：subject CN=`chatgpt.com`，issuer=`Let's Encrypt / YE1`，校验成功。直连响应还有 Cloudflare `cf-ray`；原生 Images 返回 `x-codex-imagegen-request-id`。结合固定 HTTPS 目标，支持“请求到达官方 Codex 端点”，不依赖网关自报模型名。
 
@@ -46,7 +46,7 @@ version: 0.146.0
 
 原生 Images 非法字段对照请求 ID：`9fa8b263-4799-401b-a9c2-a12311964f92`。各项完整请求 ID 保留在服务器脱敏记录中。
 
-服务器完整脱敏记录：`/tmp/imggen-gpt-cause-20261105-current-client/`。本地 [证据摘要](outputs/gpt-cause-2026-11-05/official-server-evidence-summary.json) 明确标注它是从实际 Xshell 输出摘录的字段，并非下载的完整远程记录。
+服务器完整脱敏记录：`/tmp/imggen-gpt-cause-20261105-current-client/`。本地 [证据摘要](../../../outputs/gpt-cause-2026-11-05/official-server-evidence-summary.json) 明确标注它是从实际 Xshell 输出摘录的字段，并非下载的完整远程记录。
 
 ### 工具声明不是请求值的回显
 

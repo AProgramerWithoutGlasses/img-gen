@@ -11,11 +11,14 @@
 | 设计稿与工具 | [design/README.md](../design/README.md) |
 | 检查与测试目录 | [tests/README.md](../tests/README.md) |
 | 调研任务 | [research/README.md](../research/README.md) |
+| 渠道实测与参数证据 | [Qiso 报告索引](providers/qiso/README.md) |
 | 发布与回滚 | [DEPLOYMENT.md](DEPLOYMENT.md) |
 
 ## 目录速查
 
 `main.go` 是启动入口；`internal/studio/` 是后端；`frontend/src/` 是页面实现；`web/` 嵌入构建产物；`tests/` 与 `frontend/tests/` 是测试；`design/` 是当前设计；`research/` 是后续研究；`scripts/` 是日常工具；`deploy/` 是部署配置；`archive/` 是历史资料；`outputs/` 与 `.local/` 是不提交的本地证据和缓存。
+
+根目录每个文件、文件夹及本地产物的用途与保留原因，见 [完整根目录清单](root-layout.md)。
 
 ## 历史记录与参考
 
@@ -30,7 +33,7 @@
 | 参考研究 | [组件](research/component-patterns.md)、[图库组织](research/gallery-organization.md)、[本地素材](research/local-references.md)、[模型别名](research/model-aliases.md)、[参数](research/model-parameters.md)、[设置](research/settings-research.md)、[参考站](research/website-research.md) | 参考事实、设计取舍、真实渠道能力要分开 |
 | 原稿迁移存档 | [OpenPencil 快照](../archive/README.md) | 仅从独立目录恢复查看，当前工作稿仍为 FigCraft |
 
-根目录 `Qiso-*.md` 保留原实测结论；探测脚本已迁入 [tests/probes/](../tests/probes/README.md)，原报告中的命令是当时记录。`outputs/` 是不进入仓库的本地证据和备份；存在唯一备份或聊天 Git 元数据，不能整体清空。
+[Qiso 实测报告](providers/qiso/README.md) 已集中归档，保留原结论；[历史设计研究](../research/marathon/README.md) 已整体归入 research。探测脚本位于 [tests/probes/](../tests/probes/README.md)，原报告中的命令是当时记录。`outputs/` 是不进入仓库的本地证据和备份；存在唯一备份或聊天 Git 元数据，不能整体清空。
 
 
 更新操作方式时只改负责该项的现行文档，并检查本地链接。历史实验保留日期和验证边界，不改写为当前状态。

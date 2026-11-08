@@ -23,11 +23,11 @@
 以下命令从项目根目录执行。`python` 指具有 Pillow 的 Python 3.11+；采集脚本另需 requests。依赖版本记录于 [requirements.txt](requirements.txt)。本轮复用了本机已有 Python／视频工具环境，新增 Markdown 仅装在本研究目录的忽略目录 `outputs/python-deps/`。
 
 ```powershell
-python -m pip install --target marathon-design-research/outputs/python-deps Markdown==3.11.3
-python marathon-design-research/tools/build_atlas.py
-python marathon-design-research/tools/package_skill.py
-python marathon-design-research/tools/validate.py --negative-probes
-python -m http.server 8766 --bind 127.0.0.1 --directory marathon-design-research
+python -m pip install --target research/marathon/outputs/python-deps Markdown==3.11.3
+python research/marathon/tools/build_atlas.py
+python research/marathon/tools/package_skill.py
+python research/marathon/tools/validate.py --negative-probes
+python -m http.server 8766 --bind 127.0.0.1 --directory research/marathon
 ```
 
 图册访问 `http://127.0.0.1:8766/`，试点访问 `/prototypes/index.html`。修改原型后刷新浏览器，保留本地示例数据标识。
@@ -35,9 +35,9 @@ python -m http.server 8766 --bind 127.0.0.1 --directory marathon-design-research
 采集选定来源时：
 
 ```powershell
-python marathon-design-research/tools/collect.py --ids S01 S02
-python marathon-design-research/tools/media.py --ids S13 S27
-python marathon-design-research/tools/video_evidence.py --source S14 --video marathon-design-research/outputs/video/S14/source.mp4 --times 20 60 100 --ffmpeg <FFmpeg可执行文件>
+python research/marathon/tools/collect.py --ids S01 S02
+python research/marathon/tools/media.py --ids S13 S27
+python research/marathon/tools/video_evidence.py --source S14 --video research/marathon/outputs/video/S14/source.mp4 --times 20 60 100 --ffmpeg <FFmpeg可执行文件>
 ```
 
 只有需要重新请求来源时才用 `--refresh`。连接层故障可以显式指定本机现有代理；HTTP 401／403／412／429 不作为绕过限制的理由。Bilibili、部分媒体站点和 Vimeo 完整片源的限制已在来源索引记录。

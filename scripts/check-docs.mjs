@@ -10,7 +10,8 @@ const files = ['README.md', 'AGENTS.md', 'docs/README.md', 'docs/workflow.md',
   'docs/efficiency.md', 'docs/api-contract.md', 'frontend/README.md',
   'frontend/AGENTS.md', 'internal/AGENTS.md', 'internal/studio/README.md',
   'design/README.md', 'tests/README.md', 'tests/probes/README.md',
-  'research/README.md', 'research/AGENTS.md'];
+  'research/README.md', 'research/AGENTS.md', 'docs/root-layout.md',
+  'docs/providers/qiso/README.md'];
 let checked = 0;
 const failures = [];
 for (const file of files) {

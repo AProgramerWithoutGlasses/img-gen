@@ -23,7 +23,7 @@ lines=['# 证据与采用边界','核对日期：2026-11-07。保留事实、观
  '本包的 assets 是原创工作室试点，使用系统字体和自制 SVG 几何图。它们展示研究阶段的强度与结构，后续用户决定优先。','']
 for s in catalog:
  if s['id'] in selected:lines.append(f"- **{s['id']}** [{s['title']}]({s['url']}) — {s['author']}；{', '.join(s['topics'])}。")
-lines+=['','完整来源索引、案例与视频采样保存在原研究包 `marathon-design-research/`；本 skill 中的具体规则已包含足够的局部设计依据。']
+lines+=['','完整来源索引、案例与视频采样保存在原研究包 `research/marathon/`；本 skill 中的具体规则已包含足够的局部设计依据。']
 (REF/'evidence.md').write_text('\n\n'.join(lines),encoding='utf8')
 (ROOT/'outputs/skill-package.json').write_text(json.dumps({'status':'pilot draft','files':manifest},ensure_ascii=False,indent=2),encoding='utf8')
 print('Packaged skill references and',sum(x['target'].startswith('assets/') for x in manifest),'original pilot examples')

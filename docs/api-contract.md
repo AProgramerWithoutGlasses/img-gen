@@ -42,7 +42,7 @@
 
 - 当前GPT不提供质量和分辨率控件，生成请求不发送这些无效档位；比例写入提示词，“自动”不生成比例限制。代码中保留的quality/size映射实现不代表当前界面开放这些参数。
 - Gemini使用generationConfig.imageConfig.aspectRatio/imageSize，0.5K映射为512。保留原生返回thought过滤，不走会混入草稿的Chat转换接口。不混淆quality与reasoning，也不额外发送reasoning字段。
-- `Qiso-生图参数链路验证-2026-11-05.md` 已证明Flash部分比例及512/1K/2K/4K组合；Pro名称存在映射到Flash的证据。其余比例和六图编辑仅完成本地协议验证。
+- [Qiso-生图参数链路验证-2026-11-05.md](providers/qiso/Qiso-生图参数链路验证-2026-11-05.md) 已证明Flash部分比例及512/1K/2K/4K组合；Pro名称存在映射到Flash的证据。其余比例和六图编辑仅完成本地协议验证。
 - 同日GPT报告已证明当前渠道的size/quality不能可靠兑现。options记录请求值，实际图片尺寸来自解码，旧任务API保留actual_model/quality等返回事实。本地协议测试不证明渠道兑现了参数；重新验证上游需单独明确任务范围，不因普通适配或检查发起付费探测。
 
 ## 数据规模

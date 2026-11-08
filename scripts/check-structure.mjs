@@ -10,6 +10,12 @@ const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclud
 }).split('\0').filter(file => file && existsSync(resolve(root, file)));
 const errors = [];
 for (const file of new Set(files)) {
+  if (!file.includes('/') && file.endsWith('.md') && !['README.md', 'AGENTS.md'].includes(file)) {
+    errors.push(`${file}: 根目录仅保留 README.md 和 AGENTS.md；报告放 docs/，调研放 research/。`);
+  }
+  if (/^[^/]+-research\//i.test(file)) {
+    errors.push(`${file}: 专题研究应放 research/ 下，不单独占用仓库根目录。`);
+  }
   const business = /^(frontend\/src\/|internal\/|web\/|scripts\/)/.test(file) || !file.includes('/');
   if (business && /(?:_test\.go|\.(?:test|spec)\.[cm]?[jt]sx?|(?:^|\/)probe_[^/]+)$/.test(file)) {
     errors.push(`${file}: 测试请放 tests/ 或 frontend/tests/，不要放业务目录。`);
