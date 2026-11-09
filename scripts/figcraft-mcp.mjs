@@ -2,7 +2,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { connect } from './lib/figcraft.mjs';
+import { connect, requestedDocument } from './lib/figcraft.mjs';
 
 try {
   const catalogClient = await connect({ headless: true });
@@ -14,7 +14,8 @@ try {
   let desktopClient;
   server.setRequestHandler(ListToolsRequestSchema, async () => catalog);
   server.setRequestHandler(CallToolRequestSchema, async request => {
-    desktopClient ??= connect().catch(error => { desktopClient = undefined; throw error; });
+    const target = requestedDocument(request.params.name, request.params.arguments);
+    desktopClient ??= connect({ document: target }).catch(error => { desktopClient = undefined; throw error; });
     const client = await desktopClient;
     return client.callTool(request.params, undefined, { timeout: 100_000 });
   });

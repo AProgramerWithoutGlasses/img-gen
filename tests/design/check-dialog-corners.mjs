@@ -77,8 +77,11 @@ async function main() {
     return;
   }
   const document = resolve(root, 'design/对话框设计稿.figcraft').replaceAll('\\', '/');
-  const client = await connect();
+  const saved = process.argv.includes('--saved');
+  const client = await connect({ document, headless: saved });
   try {
+    // Inspect the saved artifact independently while preserving the user's dirty tab.
+    if (saved) await call(client, 'open_file', { path: document });
     const summary = data(await call(client, 'inspect_document', { document, depth: 0, fields: [] }));
     assert.equal(summary.path, document, '必须显式使用指定对话框稿');
     assert.equal(summary.dirty, false, '先保存设计稿，再校验');

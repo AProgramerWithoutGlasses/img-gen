@@ -68,7 +68,7 @@ async function main(){
   let browser,client;
   const errors=[],results=[];
   try{
-    client=await connect();
+    client=await connect({ document: documentPath });
     const documents=data(await call(client,'run_command',{command:'doc.list'}));
     let document;
     for(const candidate of documents){

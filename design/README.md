@@ -45,11 +45,11 @@
 
 ## FigCraft 操作与连接
 
-`figcraft.config.json` 是应用、CLI、默认工作稿和控制端口的共享入口；本机安装路径可用忽略提交的 `figcraft.local.json` 或 `FIGCRAFT_APP`、`FIGCRAFT_CLI` 配置。个人代理、安装与授权方式不写成全员要求。
+`figcraft.config.json` 是应用、CLI、离线兜底稿和控制端口的共享入口；其中 `document` 只供未指定文件的离线审计／导出及旧主稿对照使用，不决定应用启动时打开什么。本机安装路径可用忽略提交的 `figcraft.local.json` 或 `FIGCRAFT_APP`、`FIGCRAFT_CLI` 配置。个人代理、安装与授权方式不写成全员要求。
 
-项目 MCP 通过官方 CLI 启动或复用 FigCraft，并以 `figcraft-cli mcp --attach` 连接。若控制端口属于其他应用，或已有会话读写根目录不匹配，先保留现场再处理冲突，不关闭用户进程。普通代码或文档任务不需要连接设计工具。
+项目 MCP 通过官方 CLI 复用已运行的 FigCraft，并以 `figcraft-cli mcp --attach` 连接。只有请求携带明确文件目标时才允许按该目标启动应用；列工具、查状态或查询当前文档不会自动打开旧稿。若控制端口属于其他应用，或已有会话读写根目录不匹配，先保留现场再处理冲突，不关闭用户进程。普通代码或文档任务不需要连接设计工具。
 
-`design:open` 打开默认稿；`design:status` 和项目连接启动器在应用未启动时也可能启动默认稿。处理指定稿时，先 `doc.list`；已有连接用 `open_file` 指定目标，连接不可用时按配置启动应用并把指定稿作为启动文件。后续工具调用显式传 `document`，不要为一次任务改共享默认稿路径。
+用 `npm run design:open -- "design/目标.figcraft"` 按需打开本次目标稿；省略文件会提示补充，不打开兜底稿。`design:status` 只探测，应用未运行时返回未运行状态。处理设计时先读取可用会话的 `doc.list`；应用未启动时直接用明确目标的 `open_file` 或 `design:open` 启动，再核对现场。后续工具调用显式传 `document`，不要为一次任务改共享兜底稿路径。`design:snapshot` 不带目标时截取现有当前页，可追加节点 ID 和目标路径；批量写入使用 `design:batch -- commands.json "design/目标.figcraft"`，必须明确目标稿。
 
 少量查询 `list_commands` 后，按依赖顺序用 `batch` 更新一组相关节点，编辑后保存。可长期复用的参数化操作放 `design/commands/`，一次性操作和证据放 `outputs/`。失败先读取实际状态，不自动重试，不重放旧建稿或缩放脚本恢复过时样式；需要复用时先核对输入、目标对象和参数。
 
@@ -60,7 +60,7 @@
 | `design:export -- "design/目标.figcraft"` | 导出指定稿；优先用 API 只导出本次相关画板，避免重复全稿输出 |
 | `design:verify` | 默认稿的审计加导出复合命令；追加路径不能假定两步都切换到指定稿 |
 | `design:compare` | 现有 37 个状态映射属于默认主稿；只有对应目标与场景仍适用时才使用 |
-| `design:smoke` | 设计连接、工具或自动化实现变化后的连通验证，普通样式调整不重跑 |
+| `design:smoke` | 设计连接、工具或自动化实现变化后的连通验证；先用 `design:open -- "design/目标.figcraft"` 建立会话，再运行自建临时 fixture 检查，不自动启动兜底稿；普通样式调整不重跑 |
 
 这些是可用工具，不是每次任务都必须依次执行的清单。独立稿或新区域应对照其当前批准对象与真实浏览器，不用默认稿的旧映射证明同步。现有对话框几何检查也带特定范围；新区域先配置对应范围，不能硬套旧节点 ID。
 

@@ -8,6 +8,7 @@
 }
 .dialog-button {
   --dialog-button-fill: var(--dialog-control-fill, #eeecec);
+  --dialog-button-line: #333;
   box-sizing: border-box;
   position: relative;
   display: inline-flex;
@@ -21,7 +22,8 @@
   margin: 0;
   border: 0;
   border-radius: calc(var(--dialog-control-height, 36px) / 2);
-  background: var(--dialog-button-fill);
+  background: transparent;
+  isolation: isolate;
   color: var(--dialog-control-text, #4d4d4d);
   font-family: inherit;
   font-size: 13px;
@@ -31,14 +33,20 @@
   cursor: pointer;
   transition: background-color 140ms, color 140ms;
 }
-.dialog-button::before {
-  content: "";
+.dialog-button-surface {
   position: absolute;
-  inset: var(--dialog-control-inset, 2px);
-  border: 1px solid #333;
-  border-radius: calc(var(--dialog-control-height, 36px) / 2 - var(--dialog-control-inset, 2px));
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  z-index: -1;
   pointer-events: none;
 }
+.dialog-button-surface rect {
+  fill: var(--dialog-button-fill);
+  transition: fill 140ms;
+}
+.dialog-button-surface .dialog-button-surface-line { fill: var(--dialog-button-line); }
 .dialog-button:hover:not(:disabled) {
   --dialog-button-fill: var(--dialog-control-hover, #fafaf5);
 }
@@ -57,12 +65,10 @@
 }
 .dialog-button:disabled {
   --dialog-button-fill: var(--dialog-disabled-fill, #64645d);
+  --dialog-button-line: #a3a3a3;
   opacity: 1;
   color: var(--dialog-disabled-text, #eeecec);
   cursor: default;
-}
-.dialog-button:disabled::before {
-  border-color: #a3a3a3;
 }
 .dialog-button:disabled .dialog-arrow {
   background: var(--dialog-disabled-arrow, #333);
@@ -244,6 +250,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .dialog-button,
+  .dialog-button-surface rect,
   .dialog-menu[data-state],
   .dialog-tooltip {
     animation: none;

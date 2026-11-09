@@ -22,7 +22,7 @@ if (!Number.isInteger(settings.controlPort) || settings.controlPort < 1024 || se
 }
 
 export async function prepare() {
-  await Promise.all([access(settings.app), access(settings.cli), access(documentPath), mkdir(output, { recursive: true })]);
+  await Promise.all([access(settings.app), access(settings.cli), mkdir(output, { recursive: true })]);
 }
 
 export const fileRoots = ['--automation-read-root', root, '--automation-write-root', design, '--automation-write-root', output];
@@ -55,13 +55,32 @@ function validateListener(process) {
   }
 }
 
-export async function ensureApp() {
+export function appLaunchArguments(document) {
+  if (!document) throw Object.assign(new Error('FigCraft 未运行。请先用 npm run design:open -- "design/目标.figcraft" 打开本次目标稿；状态查询和 MCP 连接不会自动打开兜底稿。'), { code: 'FIGCRAFT_NOT_RUNNING' });
+  return ['--control', String(settings.controlPort), ...fileRoots, resolve(root, document)];
+}
+
+export function requestedDocument(name, args = {}) {
+  if (name === 'open_file') return args.path;
+  return typeof args.document === 'string' && /\.(figcraft|fig|sketch|json)$/i.test(args.document) ? args.document : undefined;
+}
+
+export async function appStatus() {
+  const owner = await listener();
+  if (!owner) return { running: false };
+  validateListener(owner);
+  return { running: true, pid: owner.ProcessId };
+}
+
+export async function ensureApp({ document } = {}) {
   await prepare();
   let owner = await listener();
   if (owner) { validateListener(owner); return { pid: owner.ProcessId, reused: true }; }
+  const args = appLaunchArguments(document);
+  await access(args.at(-1));
   await mkdir(resolve(output, 'figcraft'), { recursive: true });
   const log = await open(resolve(output, 'figcraft/app.log'), 'a');
-  const app = spawn(settings.app, ['--control', String(settings.controlPort), ...fileRoots, documentPath], {
+  const app = spawn(settings.app, args, {
     cwd: root, detached: true, windowsHide: true, stdio: ['ignore', log.fd, log.fd],
   });
   try { await new Promise((yes, no) => { app.once('spawn', yes); app.once('error', no); }); }
@@ -77,9 +96,9 @@ export async function ensureApp() {
   throw new Error('FigCraft did not open its control port; see outputs/figcraft/app.log');
 }
 
-export async function connect({ headless = false } = {}) {
+export async function connect({ headless = false, document } = {}) {
   await prepare();
-  if (!headless) await ensureApp();
+  if (!headless) await ensureApp({ document });
   const [{ Client }, { StdioClientTransport }] = await Promise.all([
     import('@modelcontextprotocol/sdk/client/index.js'),
     import('@modelcontextprotocol/sdk/client/stdio.js'),

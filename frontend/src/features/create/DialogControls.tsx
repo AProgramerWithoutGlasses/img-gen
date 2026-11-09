@@ -15,6 +15,7 @@ import type {
   RefObject,
 } from "react";
 import { createPortal } from "react-dom";
+import { DialogButtonSurface } from "./DialogButtonSurface";
 import "./dialog-controls.css";
 
 const dismissTooltipsEvent = "dialog-dismiss-tooltips";
@@ -253,6 +254,7 @@ export const DialogButton = forwardRef<HTMLButtonElement, DialogButtonProps>(fun
         className={`dialog-button${accent ? " dialog-button-accent" : ""} ${className}`.trim()}
         aria-describedby={hint.description ?? props["aria-describedby"]}
       >
+        <DialogButtonSurface />
         {children}
       </button>
       {hint.tooltip}

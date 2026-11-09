@@ -23,7 +23,6 @@
   }
 
   .dialog-button,
-  .dialog-button::before,
   .dialog-control:focus-visible,
   .dialog-expand-editor,
   .dialog-expand-editor::after,

@@ -1,3 +1,5 @@
+// Requires an existing desktop session: first run design:open with the intended file.
+// This check creates its own temporary fixture; it never starts the configured fallback draft.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';

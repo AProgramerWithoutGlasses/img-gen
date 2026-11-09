@@ -108,19 +108,19 @@ export async function verifyDialog({ page, screenshot }) {
     const optical = await creation.getByRole("button", { name: "上传图片", exact: true }).evaluate(element => {
       const rect = element.getBoundingClientRect();
       const model = document.querySelector('.dialog-select-accent').getBoundingClientRect();
-      const inner = getComputedStyle(element, "::before");
+      const inner = element.querySelector('.dialog-button-surface rect:nth-child(2)');
       const centerX = rect.left + rect.width / 2;
       return { width: rect.width, height: rect.height, center: rect.top + rect.height / 2,
         modelHeight: model.height, modelCenter: model.top + model.height / 2,
-        innerRadius: inner.borderTopLeftRadius, insets: [inner.top, inner.right, inner.bottom, inner.left],
+        innerRadius: Number(inner.getAttribute('rx')), inset: Number(inner.getAttribute('y')),
         topVisible: element.contains(document.elementFromPoint(centerX, rect.top + .5)),
         bottomVisible: element.contains(document.elementFromPoint(centerX, rect.bottom - .5)) };
     });
     expect(optical.width).toBeCloseTo(38, 0); expect(optical.height).toBeCloseTo(38, 0);
     expect(optical.modelHeight).toBeCloseTo(36, 0);
     expect(optical.center).toBeCloseTo(optical.modelCenter, 1);
-    expect(optical.innerRadius).toBe("17px");
-    expect(optical.insets).toEqual(["2px", "2px", "2px", "2px"]);
+    expect(optical.innerRadius).toBe(17);
+    expect(optical.inset).toBe(2);
     expect(optical.topVisible, "The 36px toolbar clips the enlarged upload circle's top").toBe(true);
     expect(optical.bottomVisible, "The 36px toolbar clips the enlarged upload circle's bottom").toBe(true);
     await model.click();
@@ -130,13 +130,13 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(model).toHaveCSS("font-size", "13px");
     expect(menu.width).toBeCloseTo(246, 0);
     const geometry = await model.evaluate(element => {
-      const outer = getComputedStyle(element), inner = getComputedStyle(element, "::before");
-      return { outerRadius: outer.borderTopLeftRadius, innerRadius: inner.borderTopLeftRadius,
-        insets: [inner.top, inner.right, inner.bottom, inner.left] };
+      const outer = getComputedStyle(element), inner = element.querySelector('.dialog-button-surface rect:nth-child(2)');
+      return { outerRadius: outer.borderTopLeftRadius, innerRadius: Number(inner.getAttribute('rx')),
+        inset: Number(inner.getAttribute('y')) };
     });
     expect(geometry.outerRadius).toBe("18px");
-    expect(geometry.innerRadius).toBe("16px");
-    expect(geometry.insets).toEqual(["2px", "2px", "2px", "2px"]);
+    expect(geometry.innerRadius).toBe(16);
+    expect(geometry.inset).toBe(2);
     expect(menu.y + menu.height).toBeLessThan(box.y + 1);
     await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
     await page.keyboard.press("End");
@@ -391,7 +391,7 @@ export async function verifyDialog({ page, screenshot }) {
         await prompt.fill("");
         await prompt.evaluate(element => element.blur());
         await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
-        await expect(creation.getByRole("button", { name: "生成", exact: true })).toHaveCSS("background-color", "rgb(214, 214, 214)");
+        await expect(creation.getByRole("button", { name: "生成", exact: true }).locator('.dialog-button-surface rect').first()).toHaveCSS("fill", "rgb(214, 214, 214)");
         await screenshot("dialog-light-idle-neutral-colors");
       }
       await prompt.fill("亮暗主题与动效核对");
