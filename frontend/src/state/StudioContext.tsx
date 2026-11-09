@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { MODELS, setModels } from "../config/models";
-import type { Attachment, ModelConfig, Preferences, StudioActions, StudioData, StudioUser } from "../types";
+import type { Attachment, Generation, ModelConfig, Preferences, StudioActions, StudioData, StudioUser } from "../types";
 import { api, apiBlob, APIError, requestID } from "../services/api";
 import { Context } from "./context";
 export { useStudio } from "./context";
@@ -94,7 +94,7 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
       return result;
     }
     return {
-      async generate(prompt, attachments, options) {
+      async generate(prompt, attachments, options, onAccepted) {
         const attachmentIds: string[] = [];
         for (const attachment of attachments) {
           const foreignResult = "userId" in attachment && attachment.userId !== ref.current.currentUserId;
@@ -118,18 +118,22 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
         } catch (cause) {
           await refresh().catch(() => undefined);
           const accepted = ref.current.generations.find(g => g.id === id);
-          if (accepted) { pendingSubmission.current = null; return accepted; }
+          if (accepted) { pendingSubmission.current = null; onAccepted?.(accepted); return accepted; }
           if (cause instanceof APIError && cause.status >= 400 && cause.status < 500) pendingSubmission.current = null;
           throw cause;
         }
         pendingSubmission.current = null;
+        // A successful POST confirms acceptance and validates expectedCredits.
+        // Switch the result stage before any queued state read; balances and assets still come from refresh.
+        const accepted: Generation = ref.current.generations.find(g => g.id === id) ?? {
+          id, userId: ref.current.currentUserId, username: "", prompt, attachments, options,
+          status: "processing", imageIds: [], createdAt: new Date().toISOString(), cost: payload.expectedCredits,
+        };
+        onAccepted?.(accepted);
         try { await refresh(); } catch {
           window.dispatchEvent(new CustomEvent("studio:error", { detail: "任务已提交，读取状态失败，请刷新查看，避免重复提交。" }));
         }
-        return ref.current.generations.find(g => g.id === id) ?? {
-          id, userId: ref.current.currentUserId, username: "", prompt, attachments, options,
-          status: "processing", imageIds: [], createdAt: new Date().toISOString(), cost: 0,
-        };
+        return ref.current.generations.find(g => g.id === id) ?? accepted;
       },
       createFolder: name => mutate("/api/studio/folders", "POST", { name }),
       renameFolder: (id, name) => mutate("/api/studio/folders/" + id, "PATCH", { name }),

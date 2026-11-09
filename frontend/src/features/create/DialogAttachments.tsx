@@ -16,12 +16,13 @@ export interface DialogAttachmentItem extends Partial<Attachment> {
 
 interface Props {
   items: DialogAttachmentItem[];
+  baseId?: string | null;
   disabled: boolean;
   onRemove: (id: string) => void;
   active: boolean;
 }
 
-export default function DialogAttachments({ items, disabled, onRemove, active }: Props) {
+export default function DialogAttachments({ items, baseId, disabled, onRemove, active }: Props) {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [layoutState, setLayout] = useState<{ key: string; value: AttachmentPreviewLayout } | null>(null);
   const [density, setDensity] = useState(window.devicePixelRatio || 1);
@@ -175,8 +176,9 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
               key={item.id}
               ref={element => { if (element) cards.current.set(item.id, element); else cards.current.delete(item.id); }}
               data-attachment-id={item.id}
+              data-base-image={baseId === item.id || undefined}
               tabIndex={0}
-              aria-label={`参考图：${item.name}${item.status === "uploading" ? "，上传中" : item.status === "failed" ? "，上传失败" : ""}`}
+              aria-label={`${baseId === item.id ? "基础图" : "参考图"}：${item.name}${item.status === "uploading" ? "，上传中" : item.status === "failed" ? "，上传失败" : ""}`}
               onMouseEnter={() => schedulePreview(item)}
               onMouseLeave={scheduleClose}
               onFocus={() => schedulePreview(item)}
@@ -191,6 +193,7 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
                   {item.status === "uploading" && <span className="dialog-attachment-progress" aria-hidden="true" />}
                 </div>
               )}
+              {baseId === item.id && <span className="dialog-base-image-badge">基础图</span>}
               <button
                 type="button"
                 className="attachment-remove dialog-attachment-remove"

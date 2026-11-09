@@ -33,7 +33,7 @@ button {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 input,
@@ -48,7 +48,7 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--text);
+  border-color: var(--accent);
 }
 h1,
 h2,
@@ -107,3 +107,8 @@ small {
 .icon-button:hover {
   background: var(--selected);
 }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button { transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease; }
+.btn, input, textarea, select { border-radius: 9px; }
+.icon-button { border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) { button { transition: none; } }

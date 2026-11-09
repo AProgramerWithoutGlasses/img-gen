@@ -8,7 +8,7 @@
 }
 .dialog-button {
   --dialog-button-fill: var(--dialog-control-fill, #eeecec);
-  --dialog-button-line: #333;
+  --dialog-button-line: var(--control-border);
   box-sizing: border-box;
   position: relative;
   display: inline-flex;
@@ -55,14 +55,14 @@
   --dialog-button-fill: var(--dialog-control-active, #c7c7c1);
 }
 .dialog-button-accent {
-  --dialog-button-fill: #fffa00;
-  color: #333;
+  --dialog-button-fill: var(--accent);
+  color: var(--on-accent);
 }
 .dialog-button-accent:hover:not(:disabled) {
-  --dialog-button-fill: #fffc66;
+  --dialog-button-fill: var(--accent-hover);
 }
 .dialog-button-accent:active:not(:disabled) {
-  --dialog-button-fill: #e6de00;
+  --dialog-button-fill: var(--accent-pressed);
 }
 .dialog-button:disabled {
   --dialog-button-fill: var(--dialog-disabled-fill, #64645d);
@@ -76,13 +76,13 @@
 }
 .dialog-button:focus-visible,
 .dialog-control:focus-visible {
-  outline: 2px solid #6b5d00;
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: calc(var(--dialog-control-height, 36px) / 2);
 }
 :root[data-theme="dark"] .dialog-button:focus-visible,
 :root[data-theme="dark"] .dialog-control:focus-visible {
-  outline-color: #fffa00;
+  outline-color: var(--accent);
 }
 .dialog-button-label {
   display: flex;
@@ -113,8 +113,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #333;
-  color: var(--dialog-button-fill, #fffa00);
+  background: var(--dialog-control-text, var(--text));
+  color: var(--dialog-button-fill, var(--surface));
 }
 .dialog-arrow svg,
 .dialog-coins {
@@ -128,7 +128,7 @@
 .dialog-button-credits {
   width: 58px;
   gap: 5px;
-  color: #333;
+  color: var(--dialog-control-text, var(--text));
   font-variant-numeric: tabular-nums;
 }
 .dialog-button-generate {
@@ -145,11 +145,10 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 5px;
-  border: 1px solid #858585;
+  border: 1px solid var(--control-border);
   border-radius: 12px;
-  background: #eeecec;
-  color: #333;
-  color-scheme: light;
+  background: var(--surface);
+  color: var(--text);
   font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
   font-size: 13px;
   line-height: 18px;
@@ -181,21 +180,22 @@
   padding: 7px 10px;
   border: 1px solid transparent;
   border-radius: 8px;
-  color: #333;
+  color: var(--text);
   cursor: pointer;
   user-select: none;
 }
 .dialog-option[data-highlighted="true"] {
-  background: #d8d8d0;
+  background: var(--surface-alt);
 }
 .dialog-option[data-highlighted="true"][data-keyboard="true"] {
-  border-color: #333;
+  border-color: var(--accent);
 }
 .dialog-option[aria-selected="true"] {
-  background: #b8b8b0;
+  background: var(--accent-soft);
+  color: var(--selected-text);
 }
 .dialog-option:active {
-  background: #c7c7c1;
+  background: var(--surface-alt);
 }
 .dialog-option-label {
   min-width: 0;
@@ -207,7 +207,7 @@
   height: 8px;
   flex: none;
   border-radius: 50%;
-  background: #333;
+  background: var(--accent);
 }
 .dialog-tooltip {
   position: fixed;
@@ -219,8 +219,8 @@
   padding: 4px 9px;
   border: 0;
   border-radius: 12px;
-  background: #fffa00;
-  color: #333;
+  background: var(--accent);
+  color: var(--on-accent);
   font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
   font-size: 11px;
   font-weight: 500;
@@ -240,13 +240,11 @@
   height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-bottom: 4px solid #fffa00;
+  border-bottom: 4px solid var(--accent);
   pointer-events: none;
 }
-.dialog-menu[data-dialog-theme="light"] { background: #fff; }
-.dialog-menu[data-dialog-theme="light"] .dialog-option[data-highlighted="true"] { background: #e8e8e8; }
-.dialog-menu[data-dialog-theme="light"] .dialog-option[aria-selected="true"] { background: #d0d0d0; }
-.dialog-menu[data-dialog-theme="light"] .dialog-option:active { background: #d6d6d6; }
+.dialog-button-accent .dialog-arrow { background: var(--on-accent); color: var(--accent); }
+.dialog-menu[data-dialog-theme="light"] { background: var(--surface); }
 @keyframes dialog-menu-enter {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }

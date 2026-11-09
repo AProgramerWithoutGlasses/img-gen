@@ -3,8 +3,8 @@ import { placeholderImage } from "../lib/images";
 import type { ImageAsset, StudioData } from "../types";
 
 export function createSeed(): StudioData {
-  const today = new Date();
-  today.setHours(14, 32, 0, 0);
+  // Seed history must precede tasks created during the preview session.
+  const today = new Date(Date.now() - 60000);
   const date = today.toISOString();
   const yesterday = new Date(today.getTime() - 86400000).toISOString();
   const ratios = [

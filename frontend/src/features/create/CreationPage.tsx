@@ -1,13 +1,14 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
-import { RenditionImage } from "../../components/RenditionImage";
 import { DEFAULT_OPTIONS, MODELS, normalizeOptions } from "../../config/models";
-import { downloadImage, readImageFile } from "../../lib/images";
+import { readImageFile } from "../../lib/images";
 import { useStudio } from "../../state/StudioContext";
 import DialogAttachments, { type DialogAttachmentItem } from "./DialogAttachments";
 import { DialogArrow, DialogButton, DialogCoins, DialogSelect } from "./DialogControls";
+import ResultStage from "./ResultStage";
 import type {
   Attachment,
+  Generation,
   GenerationOptions,
   ImageAsset,
   Notify,
@@ -33,6 +34,7 @@ function isReadyAttachment(item: DialogAttachmentItem): item is DialogAttachment
 interface Props {
   active: boolean;
   onPreview: PreviewImage;
+  onFolder: (imageIds: string[]) => void;
   notify: Notify;
   pendingAttachment: ImageAsset | null;
   onAttachmentHandled: () => void;
@@ -40,6 +42,7 @@ interface Props {
 export default function CreationPage({
   active,
   onPreview,
+  onFolder,
   notify,
   pendingAttachment,
   onAttachmentHandled,
@@ -47,6 +50,8 @@ export default function CreationPage({
   const { data, currentUser, actions } = useStudio();
   const [prompt, setPrompt] = useState("");
   const [attachmentItems, setAttachmentItems] = useState<DialogAttachmentItem[]>([]);
+  const [baseAttachmentId, setBaseAttachmentId] = useState<string | null>(null);
+  const [acceptedBatch, setAcceptedBatch] = useState<Generation | null>(null);
   const [options, setOptions] = useState<GenerationOptions>(DEFAULT_OPTIONS);
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
@@ -56,7 +61,8 @@ export default function CreationPage({
   const uploadLock = useRef(false);
   const removedUploads = useRef(new Set<string>());
   const attachmentSources = useRef(new Map<string, string>());
-  const end = useRef<HTMLDivElement>(null);
+  const attachmentItemsRef = useRef(attachmentItems);
+  attachmentItemsRef.current = attachmentItems;
   const composing = useRef(false);
   const lastAttachment = useRef("");
   const model = MODELS.find((m) => m.id === options.modelId)!;
@@ -90,6 +96,16 @@ export default function CreationPage({
     return () => observer.disconnect();
   }, [prompt, active]);
   const history = data.generations.filter((j) => j.userId === currentUser.id);
+  const latest = history.reduce<Generation | undefined>((previous, next) =>
+    !previous || Date.parse(next.createdAt) >= Date.parse(previous.createdAt) ? next : previous, undefined);
+  const acceptedRecord = acceptedBatch?.userId === currentUser.id
+    ? history.find(job => job.id === acceptedBatch.id) : undefined;
+  const accepted = acceptedBatch?.userId === currentUser.id ? acceptedRecord ?? acceptedBatch : undefined;
+  // Explicit acceptance selects this workspace batch, even when local/server clocks differ.
+  const currentBatch = accepted ?? latest;
+  const currentImages = currentBatch
+    ? currentBatch.imageIds.map(id => data.assets.find(image => image.id === id)).filter((image): image is ImageAsset => !!image)
+    : [];
   const cost = data.prices[options.modelId] * options.count;
   const quoteReady = Number.isFinite(cost) && cost >= 0;
   const insufficientCredits = quoteReady && cost > currentUser.balance;
@@ -110,26 +126,42 @@ export default function CreationPage({
         : [...previous, { ...image, status: "ready" }],
     );
   };
+  const continueEditing = (image: ImageAsset) => {
+    if (sending) {
+      notify("任务正在提交，请稍候再添加基础图。");
+      return;
+    }
+    const references = attachmentItemsRef.current.filter(item => item.id !== image.id && item.id !== baseAttachmentId);
+    if (references.length >= 6) {
+      notify("最多添加 6 张图片，请先移除一张参考图。");
+      return;
+    }
+    if (baseAttachmentId && baseAttachmentId !== image.id) attachmentSources.current.delete(baseAttachmentId);
+    setAttachmentItems([{ ...image, status: "ready" }, ...references]);
+    setBaseAttachmentId(image.id);
+    setOpenMenu(null);
+    notify("已设为基础图，输入你想修改的内容。");
+    requestAnimationFrame(() => promptInput.current?.focus({ preventScroll: true }));
+  };
   useEffect(() => {
     if (pendingAttachment && lastAttachment.current !== pendingAttachment.id) {
       lastAttachment.current = pendingAttachment.id;
-      addAttachment(pendingAttachment);
+      continueEditing(pendingAttachment);
       onAttachmentHandled();
     }
     if (!pendingAttachment) lastAttachment.current = "";
   }, [pendingAttachment]);
-  useEffect(() => {
-    if (active) end.current?.scrollIntoView({ block: "end" });
-  }, [history.length, history.at(-1)?.status, active]);
   const submit = async () => {
     if (sending || uploading || incompleteAttachments || !quoteReady || insufficientCredits || !prompt.trim()) return;
     setOpenMenu(null);
     setSending(true);
     try {
-      await actions.generate(prompt, attachments, normalizeOptions(options, editing));
+      const accepted = await actions.generate(prompt, attachments, normalizeOptions(options, editing), setAcceptedBatch);
+      setAcceptedBatch(accepted);
       setPrompt("");
       attachmentSources.current.clear();
       setAttachmentItems([]);
+      setBaseAttachmentId(null);
     } catch (error) {
       notify(error instanceof Error ? error.message : "生成失败，请重试");
     } finally {
@@ -208,115 +240,41 @@ export default function CreationPage({
   return (
     <section className="creation-page" hidden={!active} aria-label="图像创作">
       <div className="conversation">
-        {history.length === 0 && (
+        {!currentBatch && (
           <div className="creation-empty">
-            <Icon name="image" size={48} />
+            <div className="creation-empty-mark"><Icon name="image" size={32} /></div>
             <h2>从一个想法开始</h2>
-            <p>描述你想创作的图片</p>
+            <p>描述画面，或添加一张图片继续创作</p>
           </div>
         )}
-        {history.map((job) => {
-          const images = job.imageIds
-            .map((i) => data.assets.find((a) => a.id === i))
-            .filter((a): a is ImageAsset => !!a);
-          return (
-            <article
-              className="conversation-turn"
-              key={job.id}
-              data-testid="generation-turn"
-            >
-              <div className="message-user">
-                {job.attachments.length > 0 && (
-                  <div className="sent-attachments">
-                    {job.attachments.map((a) => (
-                      <RenditionImage source={a} fit="cover" purpose="thumbnail" displayWidth={56} displayHeight={56} alt={a.name} key={a.id} width={a.width} height={a.height} loading="lazy" decoding="async" />
-                    ))}
-                  </div>
-                )}
-                <p>{job.prompt}</p>
-              </div>
-              <div className="generation-result">
-                <h3>
-                  {MODELS.find((m) => m.id === job.options.modelId)?.name}
-                </h3>
-                {job.status === "processing" && (
-                  <div className="generation-progress" role="status">
-                    <span className="spinner" />
-                    正在生成…
-                  </div>
-                )}
-                {job.status === "failed" && (
-                  <div className="inline-error" role="alert">
-                    {job.error}
-                    <button
-                      className="btn"
-                      disabled={sending}
-                      onClick={() => {
-                        setPrompt(job.prompt);
-                        setOptions(normalizeOptions(job.options));
-                        attachmentSources.current.clear();
-                        setAttachmentItems(job.attachments.map(item => ({ ...item, status: "ready" })));
-                      }}
-                    >
-                      重新编辑
-                    </button>
-                  </div>
-                )}
-                <div className="result-images">
-                  {images.map((image) => (
-                    <div
-                      className="result-card"
-                      key={image.id}
-                      style={{ width: 258 * (image.width / image.height) + 2 }}
-                    >
-                      <button
-                        className="result-open"
-                        onClick={() => onPreview(image, images)}
-                        aria-label={`查看${image.name}`}
-                      >
-                        <RenditionImage
-                          source={image}
-                          alt={image.name}
-                          width={image.width}
-                          height={image.height}
-                          loading="lazy"
-                          decoding="async"
-                          draggable
-                          onDragStart={event => {
-                            event.dataTransfer.setData(imageDragType, image.id);
-                            event.dataTransfer.effectAllowed = "copy";
-                          }}
-                        />
-                      </button>
-                      <div className="result-actions">
-                        <button onClick={() => downloadImage(image)}>
-                          <Icon name="download" size={16} />
-                          下载
-                        </button>
-                        <button
-                          disabled={sending}
-                          onClick={() => addAttachment(image)}
-                        >
-                          <Icon name="plus" size={16} />
-                          添加
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </article>
-          );
-        })}
-        <div ref={end} />
+        {currentBatch && <ResultStage
+          key={currentBatch.id}
+          job={currentBatch}
+          images={currentImages}
+          active={active}
+          busy={sending}
+          onPreview={onPreview}
+          onEdit={continueEditing}
+          onFolder={onFolder}
+          onRestore={() => {
+            setPrompt(currentBatch.prompt);
+            setOptions(normalizeOptions(currentBatch.options));
+            attachmentSources.current.clear();
+            setAttachmentItems(currentBatch.attachments.map(item => ({ ...item, status: "ready" })));
+            setBaseAttachmentId(null);
+            requestAnimationFrame(() => promptInput.current?.focus({ preventScroll: true }));
+          }}
+        />}
       </div>
       <div className="composer-area dialog-composer-scope">
         <DialogAttachments
           items={attachmentItems}
+          baseId={baseAttachmentId}
           disabled={sending}
           active={active}
           onRemove={id => {
             attachmentSources.current.delete(id);
+            if (baseAttachmentId === id) setBaseAttachmentId(null);
             if (attachmentItems.some(item => item.id === id && item.status === "uploading")) {
               removedUploads.current.add(id);
             }

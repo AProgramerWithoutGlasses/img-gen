@@ -76,7 +76,15 @@ async function register(context, requests) {
   });
 }
 async function loaded(locator) {
-  await expect.poll(() => locator.evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
+  try {
+    await expect.poll(() => locator.evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
+  } catch (error) {
+    console.error("Image load diagnostic", await locator.evaluate(image => ({
+      src: image.getAttribute("src"), complete: image.complete, naturalWidth: image.naturalWidth,
+      box: image.getBoundingClientRect().toJSON(), parent: image.parentElement?.getBoundingClientRect().toJSON(),
+    })));
+    throw error;
+  }
 }
 async function upload(page, count = shapes.length) {
   const buffer = Buffer.from("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", "base64");
@@ -134,10 +142,11 @@ try {
     await page.goto(origin);
     const result = page.locator(".result-card img");
     await loaded(result);
-    expect(await result.getAttribute("src")).toBe(dpr <= 1.25 ? asset.thumbnailUrl : asset.previewUrl);
-    const history = page.locator(".sent-attachments img");
-    await loaded(history);
-    await expect(history).toHaveAttribute("src", attachment(shapes[0]).thumbnailUrl);
+    const displayed = await result.boundingBox();
+    const fittedEdge = Math.max(asset.width, asset.height) * Math.min(displayed.width / asset.width, displayed.height / asset.height) * dpr;
+    await expect(result).toHaveAttribute("src", fittedEdge <= 641 ? asset.thumbnailUrl : asset.previewUrl);
+    await expect(page.locator(".workbench-prompt")).toHaveText(asset.prompt);
+    await expect(page.locator(".sent-attachments img")).toHaveCount(0);
     await upload(page);
     for (const id of ["landscape", "portrait", "square", "small", "long"]) {
       const snapshot = await geometry(page, id);
@@ -185,7 +194,7 @@ try {
       await card.hover({ position: { x: 8, y: 48 } });
       await card.getByRole("button", { name: "移除" + shapes.find(shape => shape.id === id).name, exact: true }).click();
     }
-    await page.locator(".result-actions").getByRole("button", { name: "添加", exact: true }).click();
+    await page.locator(".result-actions").getByRole("button", { name: "继续修图", exact: true }).click();
     const outputCard = page.locator(".dialog-attachment-card");
     await loaded(outputCard.locator("img"));
     await expect(outputCard.locator("img")).toHaveAttribute("src", asset.thumbnailUrl);

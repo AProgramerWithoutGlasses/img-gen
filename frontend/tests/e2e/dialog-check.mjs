@@ -98,6 +98,12 @@ async function removalNames(creation) {
     .map((button) => button.getAttribute("aria-label")));
 }
 
+async function approvedAccent(page) {
+  return (await page.locator("html").getAttribute("data-theme")) === "dark"
+    ? { hex: "#9ab9ff", rgb: "154, 185, 255" }
+    : { hex: "#315cbb", rgb: "49, 92, 187" };
+}
+
 export async function verifyDialog({ page, screenshot }) {
   const results = [];
   const creation = page.getByRole("region", { name: "图像创作", exact: true });
@@ -138,12 +144,13 @@ export async function verifyDialog({ page, screenshot }) {
   });
 
   await check("menus-keyboard-and-input-focus", async () => {
+    const accent = await approvedAccent(page);
     await prompt.fill("输入焦点检查");
     await prompt.evaluate(element => element.blur());
-    await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
+    await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain(accent.rgb);
     const beforeFocus = await composer.boundingBox();
     await prompt.focus();
-    await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("255, 250, 0");
+    await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).toContain(accent.rgb);
     const focusShadow = await composer.evaluate(element => getComputedStyle(element).boxShadow);
     expect(focusShadow).not.toContain("inset");
     expect(focusShadow).toContain("0px 0px 0px 2px");
@@ -185,8 +192,8 @@ export async function verifyDialog({ page, screenshot }) {
       return { model: fill(element), ordinary: fill(ordinary), generate: fill(generate) };
     });
     expect(fills.model, "Model selector should use the ordinary button colour").toBe(fills.ordinary);
-    expect(fills.model.toLowerCase()).not.toBe("#fffa00");
-    expect(fills.generate.toLowerCase(), "Generate should retain its yellow emphasis").toBe("#fffa00");
+    expect(fills.model.toLowerCase()).not.toBe(accent.hex);
+    expect(fills.generate.toLowerCase(), "Generate should use the approved blue emphasis").toBe(accent.hex);
     const geometry = await model.evaluate(element => {
       const outer = getComputedStyle(element), inner = element.querySelector('.dialog-button-surface rect:nth-child(2)');
       return { outerRadius: outer.borderTopLeftRadius, innerRadius: Number(inner.getAttribute('rx')),
@@ -196,7 +203,7 @@ export async function verifyDialog({ page, screenshot }) {
     expect(geometry.innerRadius).toBe(16);
     expect(geometry.inset).toBe(2);
     expect(menu.y + menu.height).toBeLessThan(box.y + 1);
-    await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
+    await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).not.toContain(accent.rgb);
     await page.keyboard.press("End");
     await page.keyboard.press("Escape");
     await expect(page.getByRole("listbox")).toHaveCount(0);
@@ -459,11 +466,12 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(cards).toHaveCount(2);
     await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(285, 0);
     await prompt.fill("dialog attachments disabled visibility");
+    await chooseDialogOption(page, creation.getByRole("combobox", { name: "生成数量", exact: true }), "1张");
     await moveAway();
     await page.clock.install();
     await page.clock.pauseAt(new Date(Date.now() + 1000));
     await creation.getByRole("button", { name: "生成", exact: true }).click();
-    await expect(creation.getByText("正在生成…", { exact: true })).toBeVisible();
+    await expect(creation.locator(".workbench-status")).toHaveText("已完成 0 / 1 张");
     await expect(row.locator(".attachment-remove").first()).toBeDisabled();
     await expect.poll(() => removalNames(creation)).toEqual([]);
     await screenshot("dialog-attachments-submitting");
@@ -479,19 +487,20 @@ export async function verifyDialog({ page, screenshot }) {
       await page.getByRole("button", { name: label, exact: true }).click();
       await page.getByRole("button", { name: "返回创作", exact: true }).click();
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      const accent = await approvedAccent(page);
       await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", await composer.evaluate(element => getComputedStyle(element).backgroundColor));
       if (theme === "light") {
-        await expect(composer).toHaveCSS("background-color", "rgb(242, 242, 242)");
-        await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", "rgb(242, 242, 242)");
+        await expect(composer).toHaveCSS("background-color", "rgb(255, 255, 255)");
+        await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", "rgb(255, 255, 255)");
         await prompt.fill("");
         await prompt.evaluate(element => element.blur());
-        await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
-        await expect(creation.getByRole("button", { name: "生成", exact: true }).locator('.dialog-button-surface rect').first()).toHaveCSS("fill", "rgb(214, 214, 214)");
+        await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain(accent.rgb);
+        await expect(creation.getByRole("button", { name: "生成", exact: true }).locator('.dialog-button-surface rect').first()).toHaveCSS("fill", "rgb(238, 238, 238)");
         await screenshot("dialog-light-idle-neutral-colors");
       }
       await prompt.fill("亮暗主题与动效核对");
       await prompt.focus();
-      await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("255, 250, 0");
+      await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).toContain(accent.rgb);
       const shadow = await composer.evaluate(element => getComputedStyle(element).boxShadow);
       expect(shadow).not.toContain("inset");
       expect(shadow).toContain("0px 0px 0px 2px");

@@ -34,6 +34,20 @@ async function logout() {
   await page.getByRole('button', { name: '退出登录', exact: true }).click();
   await expect(page.getByRole('button', { name: '登录', exact: true })).toBeVisible();
 }
+async function openPictureSection(name) {
+  const navigation = page.getByRole('navigation', { name: '主导航', exact: true });
+  const expandSidebar = page.getByRole('button', { name: '展开侧栏', exact: true });
+  if (await expandSidebar.count()) await expandSidebar.click();
+  const galleryToggle = navigation.getByRole('button', { name: '我的图片', exact: true });
+  if ((await galleryToggle.getAttribute('aria-expanded')) !== 'true') await galleryToggle.click();
+  await expect(galleryToggle).toHaveAttribute('aria-expanded', 'true');
+  const target = navigation.getByRole('button', { name, exact: true });
+  await target.click();
+}
+async function openFolder(name) {
+  await openPictureSection('文件夹管理');
+  await page.getByRole('button', { name: '打开文件夹 ' + name, exact: true }).click();
+}
 try {
   const response = await page.goto(origin);
   expect(response.headers()['content-security-policy']).toContain("style-src 'self'");
@@ -47,7 +61,7 @@ try {
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await shot('01-authenticated');
   const creation = page.getByRole('region', { name: '图像创作', exact: true });
-  const before = await creation.getByTestId('generation-turn').count();
+  const before = await creation.getByTestId('generation-turn').evaluateAll(nodes => nodes[0]?.getAttribute('data-generation-id') ?? null);
   await chooseDialogOption(page, creation.getByRole('combobox', { name: '模型', exact: true }), 'Gemini Image 3.1F');
   await chooseDialogOption(page, creation.getByRole('combobox', { name: '清晰度', exact: true }), '0.5K');
   await chooseDialogOption(page, creation.getByRole('combobox', { name: '图像比例', exact: true }), '21:9');
@@ -59,13 +73,16 @@ try {
   await shot('02-six-attachments');
   await creation.getByRole('textbox', { name: '提示词', exact: true }).fill('six-inputs browser');
   await creation.getByRole('button', { name: '生成', exact: true }).click();
-  await expect(creation.getByTestId('generation-turn')).toHaveCount(before + 1);
+  await expect(creation.getByTestId('generation-turn')).toHaveCount(1);
+  await expect(creation.getByTestId('generation-turn')).toHaveAttribute('data-generation-id', /\S+/);
+  if (before) await expect(creation.getByTestId('generation-turn')).not.toHaveAttribute('data-generation-id', before);
+  await expect(creation.locator('.workbench-prompt')).toHaveText('six-inputs browser');
   await expect(creation.locator('.attachment-row')).toHaveCount(0);
   const result = creation.getByTestId('generation-turn').filter({ hasText: 'six-inputs browser' });
-  await expect(result.locator('.result-card')).toHaveCount(1, { timeout: 15000 });
+  await expect(result.locator('.result-open img')).toHaveCount(1, { timeout: 15000 });
   const width = await result.locator('.result-card').evaluate(el => el.getBoundingClientRect().width);
   expect(width).toBeGreaterThan(300); // React CSSOM geometry under the actual Go CSP.
-  await result.getByRole('button', { name: '添加', exact: true }).click();
+  await result.getByRole('button', { name: '继续修图', exact: true }).click();
   await expect(creation.locator('.attachment-item')).toHaveCount(1);
   await expect(result.locator('.result-card')).toHaveCount(1);
   await creation.locator('.attachment-item').hover();
@@ -148,17 +165,18 @@ try {
   await expect(partialRow).toContainText('部分完成');
   await expect(partialRow.getByRole('cell').nth(3)).toHaveText('1 积分');
   await page.getByRole('button', { name: '返回创作', exact: true }).click();
-  await page.getByRole('button', { name: '我的图片', exact: true }).click();
+  await openPictureSection('全部图片');
   const gallery = page.getByRole('region', { name: '我的图片', exact: true });
   const originalCount = await gallery.locator('.gallery-tile').count();
   for (const name of ['浏览器 A', '浏览器 B']) {
+    await openPictureSection('文件夹管理');
     await page.getByRole('button', { name: '新建文件夹', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: '新建文件夹', exact: true });
     await dialog.getByLabel('文件夹名称', { exact: true }).fill(name);
     await dialog.getByRole('button', { name: '创建', exact: true }).click();
     await expect(dialog).not.toBeVisible();
   }
-  await page.getByRole('button', { name: '全部图片', exact: true }).click();
+  await openPictureSection('全部图片');
   await gallery.getByRole('button', { name: '选择图片', exact: true }).click();
   await gallery.getByRole('checkbox', { name: /^选中 / }).first().check();
   await gallery.getByRole('toolbar', { name: '图片整理' }).getByRole('button', { name: '加入文件夹', exact: true }).click();
@@ -166,15 +184,15 @@ try {
   for (const name of ['浏览器 A', '浏览器 B']) await picker.getByRole('checkbox', { name, exact: true }).check();
   await picker.getByRole('button', { name: '加入', exact: true }).click();
   await expect(picker).not.toBeVisible();
-  await page.getByRole('button', { name: '浏览器 A', exact: true }).click();
+  await openFolder('浏览器 A');
   await expect(gallery.locator('.gallery-tile')).toHaveCount(1);
   await page.reload();
   await expect(gallery.locator('.gallery-tile')).toHaveCount(1);
-  await gallery.getByRole('button', { name: '文件夹管理', exact: true }).click();
+  await gallery.locator('.gallery-folder-more').click();
   await gallery.getByRole('menuitem', { name: '删除文件夹', exact: true }).click();
   await page.getByRole('dialog').getByRole('button', { name: '删除文件夹', exact: true }).click();
   await expect(gallery.locator('.gallery-tile')).toHaveCount(originalCount);
-  await page.getByRole('button', { name: '浏览器 B', exact: true }).click();
+  await openFolder('浏览器 B');
   await expect(gallery.locator('.gallery-tile')).toHaveCount(1);
   await shot('04-folder-persistence');
   await page.getByRole('button', { name: '我的账户', exact: true }).click();
@@ -229,7 +247,7 @@ try {
   await passwordDialog.getByRole('button', { name: '修改密码', exact: true }).click();
   await expect(page.getByRole('button', { name: '登录', exact: true })).toBeVisible();
   await login('browser_user', 'browser-password-new');
-  await page.getByRole('button', { name: '我的图片', exact: true }).click();
+  await openPictureSection('全部图片');
   await expect(page.getByRole('heading', { name: '还没有生成的图片', exact: true })).toBeVisible();
   await page.setViewportSize({ width: 1280, height: 900 });
   await shot('06-user-boundary-1280');

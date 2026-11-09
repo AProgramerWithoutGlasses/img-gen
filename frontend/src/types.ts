@@ -109,6 +109,7 @@ export interface StudioActions {
     prompt: string,
     attachments: Attachment[],
     options: GenerationOptions,
+    onAccepted?: (generation: Generation) => void,
   ) => Promise<Generation>;
   createFolder: (name: string) => Promise<Folder>;
   renameFolder: (id: string, name: string) => Promise<void>;

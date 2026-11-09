@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Icon } from "../components/Icon";
+import { Toast } from "../components/Toast";
 import { Sidebar } from "./Sidebar";
 import { settingsLabels } from "./navigation";
 import { Modal } from "../components/Modal";
@@ -18,7 +18,7 @@ function routeFromHash() {
 function StudioApp() {
   const { data, currentUser, actions } = useStudio();
   const [route, setRoute] = useState(routeFromHash);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem("imggen-sidebar-collapsed") === "true");
   const [folderModal, setFolderModal] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [folderError, setFolderError] = useState("");
@@ -45,6 +45,7 @@ function StudioApp() {
     [],
   );
   const isSettings = route.startsWith("/settings");
+  useEffect(() => { localStorage.setItem("imggen-sidebar-collapsed", String(collapsed)); }, [collapsed]);
   useEffect(() => {
     const handler = (event: Event) =>
       notify((event as CustomEvent<string>).detail);
@@ -158,7 +159,7 @@ function StudioApp() {
         notify={notify}
       />
       <main className="workspace">
-        <header className="page-header">
+        {isSettings && <header className="page-header">
           <h1>
             {isSettings
               ? settingsLabels[settingsSection]
@@ -169,11 +170,12 @@ function StudioApp() {
           {import.meta.env.MODE === "preview" && (
             <span className="preview-badge">本地预览</span>
           )}
-        </header>
+        </header>}
         <CreationPage
           key={currentUser.id}
           active={!isGallery && !isSettings}
           onPreview={openPreview}
+          onFolder={setPreviewFolder}
           notify={notify}
           pendingAttachment={pendingAttachment}
           onAttachmentHandled={() => setPendingAttachment(null)}
@@ -267,6 +269,7 @@ function StudioApp() {
           onAdd={setPendingAttachment}
           onCreate={() => navigate("/create")}
           isGallery={isGallery}
+          collection={preview.ids.map(id => data.assets.find(image => image.id === id)).filter((image): image is ImageAsset => !!image)}
         />
       )}
       {previewFolder && (
@@ -310,26 +313,7 @@ function StudioApp() {
         </Modal>
       )}
       {toast && (
-        <div className="toast" role="status">
-          <span>{toast.text}</span>
-          {toast.action && (
-            <button
-              onClick={() => {
-                toast.action?.run();
-                setToast(null);
-              }}
-            >
-              {toast.action.label}
-            </button>
-          )}
-          <button
-            className="icon-button"
-            aria-label="关闭提示"
-            onClick={() => setToast(null)}
-          >
-            <Icon name="close" size={14} />
-          </button>
-        </div>
+        <Toast text={toast.text} action={toast.action} onClose={() => setToast(null)} />
       )}
     </div>
   );

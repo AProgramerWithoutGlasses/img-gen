@@ -106,7 +106,7 @@ export default function PreviewStudioProvider({
       return clean;
     };
     return {
-      async generate(prompt, attachments, options) {
+      async generate(prompt, attachments, options, onAccepted) {
         const normalized = normalizeOptions(options, attachments.length > 0);
         if (!prompt.trim()) throw new Error("请输入提示词");
         const job = await update<Generation>((d) => {
@@ -129,6 +129,7 @@ export default function PreviewStudioProvider({
           d.generations.push(record);
           return record;
         });
+        onAccepted?.(job);
         await new Promise((resolve) => setTimeout(resolve, 1300));
         try {
           return await update<Generation>((d) => {

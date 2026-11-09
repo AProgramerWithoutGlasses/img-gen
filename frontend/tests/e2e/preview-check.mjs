@@ -70,6 +70,22 @@ async function signInAs(username) {
   ).not.toBeVisible();
 }
 
+async function openPictureSection(name) {
+  const navigation = page.getByRole("navigation", { name: "主导航", exact: true });
+  const expandSidebar = page.getByRole("button", { name: "展开侧栏", exact: true });
+  if (await expandSidebar.count()) await expandSidebar.click();
+  const galleryToggle = navigation.getByRole("button", { name: "我的图片", exact: true });
+  if ((await galleryToggle.getAttribute("aria-expanded")) !== "true") await galleryToggle.click();
+  await expect(galleryToggle).toHaveAttribute("aria-expanded", "true");
+  const target = navigation.getByRole("button", { name, exact: true });
+  await target.click();
+}
+
+async function openFolder(name) {
+  await openPictureSection("文件夹管理");
+  await page.getByRole("button", { name: "打开文件夹 " + name, exact: true }).click();
+}
+
 async function verifyLogin() {
   const username = page.getByLabel("用户名", { exact: true });
   const password = page.getByLabel("密码", { exact: true });
@@ -146,9 +162,10 @@ async function verifyCreation() {
   await removeDialogAttachment(creation, "移除reference-a.gif");
   await removeDialogAttachment(creation, "移除reference-b.gif");
   await expect(creation.locator(".attachment-row")).toHaveCount(0);
-  const originalCards = await creation.locator(".result-card").count();
+  const originalBatch = await creation.getByTestId("generation-turn").getAttribute("data-generation-id");
+  const originalImage = await creation.locator(".result-open img").first().getAttribute("alt");
   await creation
-    .getByRole("button", { name: "添加", exact: true })
+    .getByRole("button", { name: "继续修图", exact: true })
     .first()
     .click();
   await expect(
@@ -169,28 +186,25 @@ async function verifyCreation() {
   await page.clock.install();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await creation.getByRole("button", { name: "生成", exact: true }).click();
-  await expect(creation.getByText("正在生成…", { exact: true })).toBeVisible();
-  await expect(
-    creation
-      .locator(".result-actions")
-      .getByRole("button", { name: "添加", exact: true })
-      .first(),
-  ).toBeDisabled();
-  await creation.locator(".result-open").first().click();
-  const preview = page.getByRole("dialog", { name: "图片预览", exact: true });
-  await expect(
-    preview.getByRole("button", { name: "添加", exact: true }),
-  ).toBeDisabled();
-  await preview.getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(creation.getByTestId("generation-turn")).not.toHaveAttribute("data-generation-id", originalBatch);
+  await expect(creation.getByTestId("generation-turn")).toHaveCount(1);
+  await expect(creation.locator(".workbench-prompt")).toHaveText(testPrompt);
+  await expect(creation.locator(".workbench-status")).toHaveText("已完成 0 / 2 张");
+  await expect(creation.locator(".result-card")).toHaveCount(2);
+  await expect(creation.locator(".result-slot-placeholder")).toHaveCount(2);
+  await expect(creation.locator(".result-open")).toHaveCount(0);
+  await expect(creation.locator(".result-actions")).toHaveCount(0);
   await page.clock.resume();
-  await expect(creation.locator(".result-card")).toHaveCount(
-    originalCards + 2,
-    { timeout: 15000 },
-  );
+  await expect(creation.locator(".result-open")).toHaveCount(2, { timeout: 15000 });
+  await expect(creation.locator(".workbench-status")).toHaveText("2 张已完成");
   await expect(prompt).toHaveValue("");
   await page.reload();
-  await expect(creation.locator(".result-card")).toHaveCount(originalCards + 2);
+  await expect(creation.getByTestId("generation-turn")).toHaveCount(1);
+  await expect(creation.locator(".result-open")).toHaveCount(2);
   await expect(creation.getByText(testPrompt, { exact: true })).toBeVisible();
+  await openPictureSection("全部图片");
+  await expect(page.getByRole("region", { name: "我的图片", exact: true }).getByRole("img", { name: originalImage, exact: true })).toHaveCount(1);
+  await page.getByRole("button", { name: "图像创作", exact: true }).click();
 }
 
 async function verifyScroll(locator) {
@@ -252,21 +266,24 @@ async function verifyRequestsAndKeyboard() {
   await page.getByRole("button", { name: "返回创作", exact: true }).click();
   const creation = page.getByRole("region", { name: "图像创作", exact: true });
   const prompt = creation.getByRole("textbox", { name: "提示词", exact: true });
-  const before = await creation.getByTestId("generation-turn").count();
+  const current = creation.getByTestId("generation-turn");
+  const before = await current.getAttribute("data-generation-id");
   await prompt.fill("中文输入法候选");
   await prompt.dispatchEvent("compositionstart");
   await prompt.press("Enter");
   await expect(prompt).toBeEnabled();
-  await expect(creation.getByTestId("generation-turn")).toHaveCount(before);
+  await expect(current).toHaveAttribute("data-generation-id", before);
   await prompt.dispatchEvent("compositionend");
   await prompt.fill("键盘发送检查");
   await prompt.press("Shift+Enter");
   await expect(prompt).toHaveValue("键盘发送检查\n");
-  await expect(creation.getByTestId("generation-turn")).toHaveCount(before);
+  await expect(current).toHaveAttribute("data-generation-id", before);
   await prompt.press("Enter");
-  await expect(creation.getByTestId("generation-turn")).toHaveCount(before + 1);
+  await expect(current).not.toHaveAttribute("data-generation-id", before);
+  await expect(current).toHaveCount(1);
+  await expect(creation.locator(".workbench-prompt")).toHaveText("键盘发送检查");
   await expect(prompt).toHaveValue("", { timeout: 15000 });
-  await verifyScroll(creation.locator(".conversation"));
+  expect(await creation.locator(".conversation").evaluate(element => element.scrollHeight <= element.clientHeight + 1), "The current result area must fit without a history scrollbar").toBe(true);
 }
 
 async function verifyRoleBoundary() {
@@ -295,21 +312,31 @@ async function verifyRoleBoundary() {
     page.getByRole("button", { name: "登录", exact: true }),
   ).toBeVisible();
   await signInAs("user1");
-  await page.getByRole("button", { name: "我的图片", exact: true }).click();
+  await openPictureSection("全部图片");
   await expect(
     page.getByRole("heading", { name: "还没有生成的图片", exact: true }),
   ).toBeVisible();
+  await openPictureSection("文件夹管理");
+  await expect(page.getByRole("region", { name: "文件夹管理", exact: true })).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "预览测试 A", exact: true }),
+    page.getByRole("button", { name: "打开文件夹 预览测试 A", exact: true }),
   ).toHaveCount(0);
   await page.getByRole("button", { name: "图像创作", exact: true }).click();
   const creation = page.getByRole("region", { name: "图像创作", exact: true });
-  const retry = creation.getByRole("button", { name: "重新编辑", exact: true });
+  const failedBatch = await creation.getByTestId("generation-turn").getAttribute("data-generation-id");
+  await creation.getByRole("button", { name: "查看错误", exact: true }).click();
+  const failure = page.getByRole("dialog", { name: "生成未全部完成", exact: true });
+  const retry = failure.getByRole("button", { name: "重新编辑", exact: true });
   await expect(retry).toBeEnabled();
+  await retry.click();
+  await expect(failure).not.toBeVisible();
   const prompt = creation.getByRole("textbox", { name: "提示词", exact: true });
+  await expect(prompt).toHaveValue("一张安静的海边照片");
   await prompt.fill("普通用户处理中检查");
   await creation.getByRole("button", { name: "生成", exact: true }).click();
-  await expect(retry).toBeDisabled();
+  await expect(creation.getByTestId("generation-turn")).not.toHaveAttribute("data-generation-id", failedBatch);
+  await expect(creation.getByTestId("generation-turn")).toHaveCount(1);
+  await expect(creation.getByRole("button", { name: "查看错误", exact: true })).toHaveCount(0);
   await expect(prompt).toHaveValue("", { timeout: 15000 });
   await page.getByRole("button", { name: "我的账户", exact: true }).click();
   await page.getByRole("button", { name: "设置", exact: true }).click();
@@ -331,7 +358,7 @@ async function verifyRoleBoundary() {
 }
 
 async function verifyGallery() {
-  await page.getByRole("button", { name: "我的图片", exact: true }).click();
+  await openPictureSection("全部图片");
   const gallery = page.getByRole("region", { name: "我的图片", exact: true });
   await expect(
     gallery.getByRole("heading", { name: "全部图片", exact: true }),
@@ -341,6 +368,7 @@ async function verifyGallery() {
   const folderA = "预览测试 A";
   const folderB = "预览测试 B";
   for (const name of [folderA, folderB]) {
+    await openPictureSection("文件夹管理");
     await page.getByRole("button", { name: "新建文件夹", exact: true }).click();
     const dialog = page.getByRole("dialog", {
       name: "新建文件夹",
@@ -350,7 +378,7 @@ async function verifyGallery() {
     await dialog.getByRole("button", { name: "创建", exact: true }).click();
     await expect(dialog).not.toBeVisible();
   }
-  await page.getByRole("button", { name: "全部图片", exact: true }).click();
+  await openPictureSection("全部图片");
   await gallery.getByRole("button", { name: "选择图片", exact: true }).click();
   const imageName = (
     await gallery
@@ -371,7 +399,7 @@ async function verifyGallery() {
   await picker.getByRole("button", { name: "加入", exact: true }).click();
   await expect(picker).not.toBeVisible();
   await expect(gallery.locator(".gallery-tile")).toHaveCount(originalCount);
-  await page.getByRole("button", { name: folderA, exact: true }).click();
+  await openFolder(folderA);
   await expect(gallery.locator(".gallery-tile")).toHaveCount(1);
   await expect(
     gallery.getByRole("img", { name: imageName, exact: true }),
@@ -391,13 +419,11 @@ async function verifyGallery() {
   await expect(
     gallery.getByRole("heading", { name: "这个文件夹还没有图片", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: folderB, exact: true }).click();
+  await openFolder(folderB);
   await expect(
     gallery.getByRole("img", { name: imageName, exact: true }),
   ).toBeVisible();
-  await gallery
-    .getByRole("button", { name: "文件夹管理", exact: true })
-    .click();
+  await gallery.locator(".gallery-folder-more").click();
   await gallery
     .getByRole("menuitem", { name: "删除文件夹", exact: true })
     .click();
@@ -416,14 +442,18 @@ async function verifyGallery() {
     gallery.getByRole("heading", { name: "全部图片", exact: true }),
   ).toBeVisible();
   await expect(gallery.locator(".gallery-tile")).toHaveCount(originalCount);
+  await openPictureSection("文件夹管理");
+  await expect(page.getByRole("button", { name: "打开文件夹 " + folderA, exact: true })).toBeVisible();
   await expect(
-    page.getByRole("button", { name: folderB, exact: true }),
+    page.getByRole("button", { name: "打开文件夹 " + folderB, exact: true }),
   ).toHaveCount(0);
   await page.reload();
-  await expect(gallery.locator(".gallery-tile")).toHaveCount(originalCount);
+  await expect(page.getByRole("button", { name: "打开文件夹 " + folderA, exact: true })).toBeVisible();
   await expect(
-    page.getByRole("button", { name: folderB, exact: true }),
+    page.getByRole("button", { name: "打开文件夹 " + folderB, exact: true }),
   ).toHaveCount(0);
+  await openPictureSection("全部图片");
+  await expect(gallery.locator(".gallery-tile")).toHaveCount(originalCount);
   await verifyScroll(gallery);
 }
 

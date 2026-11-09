@@ -10,7 +10,7 @@ const output = new URL("../../outputs/big-preview/", import.meta.url);
 const probe = process.argv.includes("--probe");
 const origin = "http://127.0.0.1:5178";
 await mkdir(output, { recursive: true });
-const options = { modelId: "gpt-image-2", ratio: "自动", count: 1 };
+const options = { modelId: "gpt-image-2", ratio: "自动", count: 3 };
 const user = { id: "fixture-user", username: "fixture", role: "admin", status: "enabled", balance: 100, createdAt: "2026-11-10T00:00:00Z" };
 const assets = [
   ["landscape", 1600, 900, "#b7c8b5"],
@@ -133,7 +133,7 @@ try {
       expect(requests.slice(before).filter(r => r.path === assets[2].url && r.method === "GET")).toHaveLength(1);
       results.push({ name: `decode-failure-single-original-fallback-${dpr}x`, status: "passed" });
       await modal.getByRole("button", { name: "关闭", exact: true }).click();
-      await page.getByRole("button", { name: "我的图片", exact: true }).click();
+      await page.getByRole("navigation", { name: "主导航", exact: true }).getByRole("button", { name: "全部图片", exact: true }).click();
       const gallery = page.getByRole("region", { name: "我的图片", exact: true });
       const galleryImages = gallery.locator(".gallery-tile img");
       await expect(galleryImages).toHaveCount(3);

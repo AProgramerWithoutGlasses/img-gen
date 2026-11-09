@@ -8,6 +8,7 @@ import "./gallery.css";
 import { errorText, useOutsideClose } from "./shared";
 import { FolderPicker } from "./FolderPicker";
 import { GalleryImage } from "./GalleryImage";
+import { FolderManagement } from "./FolderManagement";
 interface GalleryPageProps {
   activeFolder: string;
   onChangeFolder: (id: string) => void;
@@ -117,7 +118,7 @@ export default function GalleryPage({
     );
     observer.observe(target);
     return () => observer.disconnect();
-  }, []);
+  }, [activeFolder]);
 
   const images = useMemo(
     () =>
@@ -235,17 +236,27 @@ export default function GalleryPage({
     }
   }
 
+  if (activeFolder === "folders") {
+    return <FolderManagement onOpenFolder={onChangeFolder} onCreateFolder={onCreateFolder} notify={notify} />;
+  }
+
   return (
     <section className="gallery-page" aria-label="我的图片">
       <header className="gallery-heading">
-        <div className="gallery-heading-title">
-          <h1>{title}</h1>
-          <span>{images.length} 张</span>
+        <div className="gallery-heading-copy">
+          {currentFolder && !sourceTarget && (
+            <button className="gallery-back" onClick={() => onChangeFolder("folders")}><Icon name="chevronLeft" size={15} />文件夹管理</button>
+          )}
+          <div className="gallery-heading-title">
+            <h1>{title}</h1>
+            <span>{images.length} 张</span>
+          </div>
+          <p>{sourceTarget ? "选中要加入此文件夹的图片。" : currentFolder ? "属于这个文件夹的图片，也会保留在全部图片中。" : "所有生成的图片都在这里，按时间整理。"}</p>
         </div>
         <div className="gallery-heading-actions">
           {images.length > 0 && (
             <button
-              className="btn"
+              className={`btn${selecting ? "" : " btn-primary"}`}
               onClick={() => {
                 if (selecting) cancelSelection();
                 else setSelecting(true);
@@ -283,6 +294,7 @@ export default function GalleryPage({
                   </button>
                   <button
                     role="menuitem"
+                    className="gallery-danger"
                     onClick={() => {
                       setError("");
                       setFolderDialog("delete");
@@ -466,7 +478,7 @@ export default function GalleryPage({
                 取消
               </button>
               <button
-                className="btn btn-primary"
+                className={`btn ${folderDialog === "delete" ? "gallery-danger-button" : "btn-primary"}`}
                 disabled={
                   busy || (folderDialog === "rename" && !folderName.trim())
                 }
