@@ -4,6 +4,7 @@
 
 | 资料 | 用途 |
 | --- | --- |
+| [主界面改版 · 2026-11-10](2026-11-10-workbench-redesign.md) | 设计与实现范围、验证事实、发布回档点及过程改进 |
 | [首稿](design/wireframe-v1.md)、[v2](design/wireframe-v2.md) | 早期页面结构与设计取舍 |
 | [图库 v3](design/gallery-v3.md)、[状态覆盖](design/state-coverage.md) | 图库组织与设计状态依据 |
 | [设置 v1](design/settings-v1.md)、[v2](design/settings-v2.md)、[管理员方案](design/settings-admin-action-plan.md) | 设置与管理页面设计演进 |

@@ -91,9 +91,17 @@ export default function CreationPage({
       input.style.overflowY = input.scrollHeight > maxHeight ? "auto" : "hidden";
     };
     resize();
-    const observer = new ResizeObserver(resize);
+    let resizeFrame = 0;
+    let previousWidth = input.clientWidth;
+    const observer = new ResizeObserver(([entry]) => {
+      const width = entry.contentRect.width;
+      if (width <= 0 || Math.abs(width - previousWidth) < .1) return;
+      previousWidth = width;
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(resize);
+    });
     observer.observe(input.parentElement!);
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); cancelAnimationFrame(resizeFrame); };
   }, [prompt, active]);
   const history = data.generations.filter((j) => j.userId === currentUser.id);
   const latest = history.reduce<Generation | undefined>((previous, next) =>

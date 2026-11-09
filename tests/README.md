@@ -43,6 +43,8 @@ npm run verify:all
 
 截图保存在 frontend/outputs/preview、integration、performance，设计证据在 outputs/design-browser-check；缓存、日志和数据不进入 Git。Go 跨包覆盖统计用 `go test '-coverpkg=./internal/...' '-coverprofile=outputs/coverage.out' ./tests/go/...`，数据库覆盖仍需启用专用库。
 
+完整模拟流程另检查390px窄屏下工具栏按钮可点击、长文本增高及窗口来回缩放。浏览器初始化时单独捕获 ResizeObserver 循环错误，避免开发服务器拦截全局错误后漏报；旧同步回写实现已作为负例验证该检查会失败。
+
 ## 保留的关键行为
 
 | 行为 | 证据入口 |

@@ -44,6 +44,11 @@ async function check(name, action) {
 }
 
 async function attachGuards(context) {
+  await context.addInitScript(() => {
+    addEventListener("error", event => {
+      if (event.message.includes("ResizeObserver loop")) console.error(event.message);
+    });
+  });
   context.on("page", (observedPage) => {
     observedPage.on("pageerror", (error) => errors.push(error.message));
     observedPage.on("console", (message) => {
@@ -574,6 +579,19 @@ try {
             });
         });
       expect(clipped, "Composer controls clipped at 1280px").toBe(false);
+      await page.setViewportSize({ width: 390, height: 844 });
+      const narrowPrompt = page.getByRole("textbox", { name: "提示词", exact: true });
+      await narrowPrompt.fill("窄屏输入与换行检查。\n".repeat(8));
+      await expect.poll(() => page.locator(".composer-toolbar").evaluate(element =>
+        Array.from(element.querySelectorAll("button")).every(button => {
+          const rect = button.getBoundingClientRect();
+          return rect.left >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight &&
+            button.contains(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2));
+        }),
+      ), "Every composer button stays reachable on a narrow viewport").toBe(true);
+      await screenshot("narrow-390-input-growth");
+      await narrowPrompt.fill("");
+      await page.setViewportSize({ width: 1280, height: 900 });
     });
   }
   const dialogContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
