@@ -1,0 +1,248 @@
+.dialog-control {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  position: relative;
+  height: 36px;
+  vertical-align: middle;
+}
+.dialog-button {
+  --dialog-button-fill: #eeecec;
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 72px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 8px;
+  margin: 0;
+  border: 0;
+  border-radius: 18px;
+  background: var(--dialog-button-fill);
+  color: #4d4d4d;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 140ms, color 140ms;
+}
+.dialog-button::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 0.5px solid #333;
+  border-radius: 16px;
+  pointer-events: none;
+}
+.dialog-button:hover:not(:disabled) {
+  --dialog-button-fill: #fafaf5;
+}
+.dialog-button:active:not(:disabled) {
+  --dialog-button-fill: #c7c7c1;
+}
+.dialog-button-accent {
+  --dialog-button-fill: #fffa00;
+  color: #333;
+}
+.dialog-button-accent:hover:not(:disabled) {
+  --dialog-button-fill: #fffc66;
+}
+.dialog-button-accent:active:not(:disabled) {
+  --dialog-button-fill: #e6de00;
+}
+.dialog-button:disabled {
+  --dialog-button-fill: #64645d;
+  opacity: 1;
+  color: #eeecec;
+  cursor: default;
+}
+.dialog-button:disabled::before {
+  border-color: #a3a3a3;
+}
+.dialog-button:focus-visible,
+.dialog-control:focus-visible {
+  outline: 2px solid #6b5d00;
+  outline-offset: 3px;
+  border-radius: 18px;
+}
+:root[data-theme="dark"] .dialog-button:focus-visible,
+:root[data-theme="dark"] .dialog-control:focus-visible {
+  outline-color: #fffa00;
+}
+.dialog-button-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  align-self: stretch;
+  min-width: 0;
+  line-height: 20px;
+  text-align: center;
+}
+.dialog-select-accent {
+  width: 188px;
+  padding-right: 8px;
+}
+.dialog-select-accent .dialog-button-label,
+.dialog-button-generate .dialog-button-label {
+  margin-right: 6px;
+}
+.dialog-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #333;
+  color: var(--dialog-button-fill, #fffa00);
+}
+.dialog-arrow svg,
+.dialog-coins {
+  display: block;
+  flex: none;
+}
+.dialog-button-icon {
+  width: 36px;
+  padding: 0;
+}
+.dialog-button-credits {
+  width: 56px;
+  gap: 5px;
+  color: #333;
+  font-variant-numeric: tabular-nums;
+}
+.dialog-button-generate {
+  width: 96px;
+}
+.dialog-button-fit {
+  width: auto;
+  padding: 0 14px;
+}
+.dialog-menu {
+  position: fixed;
+  z-index: 10020;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 5px;
+  border: 1px solid #858585;
+  border-radius: 12px;
+  background: #eeecec;
+  color: #333;
+  color-scheme: light;
+  font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  outline: none;
+  transform-origin: left bottom;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 120ms, transform 120ms;
+}
+.dialog-menu[data-state="open"] {
+  animation: dialog-menu-enter 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+.dialog-menu[data-state="closed"] {
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+}
+.dialog-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  height: 34px;
+  min-height: 34px;
+  margin-bottom: 2px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+.dialog-option[data-highlighted="true"] {
+  background: #d8d8d0;
+}
+.dialog-option[data-highlighted="true"][data-keyboard="true"] {
+  border-color: #333;
+}
+.dialog-option[aria-selected="true"] {
+  background: #b8b8b0;
+}
+.dialog-option:active {
+  background: #c7c7c1;
+}
+.dialog-option-label {
+  min-width: 0;
+  flex: 1;
+  white-space: nowrap;
+}
+.dialog-selected-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: #333;
+}
+.dialog-tooltip {
+  position: fixed;
+  z-index: 10030;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - 16px);
+  min-height: 20px;
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: #fffa00;
+  color: #333;
+  font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 14px;
+  text-align: center;
+  pointer-events: auto;
+  user-select: none;
+  animation: dialog-tooltip-enter 120ms ease-out;
+}
+.dialog-tooltip::before {
+  content: "";
+  position: absolute;
+  left: var(--dialog-tip-arrow-x, 10px);
+  top: -4px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid #fffa00;
+  pointer-events: none;
+}
+@keyframes dialog-menu-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes dialog-tooltip-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog-button,
+  .dialog-menu[data-state],
+  .dialog-tooltip {
+    animation: none;
+    transition: none;
+  }
+  .dialog-menu[data-state] {
+    transform: none;
+  }
+}

@@ -4,6 +4,7 @@ import { chromium, expect } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
+import { chooseDialogOption } from './dialog-check.mjs';
 
 const origin = process.argv[2];
 if (!origin?.startsWith('http://127.0.0.1:')) throw new Error('requires the local Go test server');
@@ -45,16 +46,17 @@ try {
   await shot('01-authenticated');
   const creation = page.getByRole('region', { name: '图像创作', exact: true });
   const before = await creation.getByTestId('generation-turn').count();
-  await creation.getByRole('combobox', { name: '模型', exact: true }).selectOption('gemini-3.1-flash-image');
-  await creation.getByRole('combobox', { name: '清晰度', exact: true }).selectOption('0.5K');
-  await creation.getByRole('combobox', { name: '图像比例', exact: true }).selectOption('21:9');
-  await creation.getByRole('combobox', { name: '生成数量', exact: true }).selectOption('1');
+  await chooseDialogOption(page, creation.getByRole('combobox', { name: '模型', exact: true }), 'Gemini Image 3.1F');
+  await chooseDialogOption(page, creation.getByRole('combobox', { name: '清晰度', exact: true }), '0.5K');
+  await chooseDialogOption(page, creation.getByRole('combobox', { name: '图像比例', exact: true }), '21:9');
+  await chooseDialogOption(page, creation.getByRole('combobox', { name: '生成数量', exact: true }), '1张');
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
   await page.getByLabel('上传图片文件').setInputFiles(Array.from({ length: 6 }, (_, i) => ({ name: `browser-${i}.png`, mimeType: 'image/png', buffer: png })));
+  await creation.getByRole('button', { name: '展开参考图', exact: true }).click();
   await expect(creation.locator('.attachment-item')).toHaveCount(6);
   await shot('02-six-attachments');
   await creation.getByRole('textbox', { name: '提示词', exact: true }).fill('six-inputs browser');
-  await creation.getByRole('button', { name: '发送', exact: true }).click();
+  await creation.getByRole('button', { name: '生成', exact: true }).click();
   await expect(creation.getByTestId('generation-turn')).toHaveCount(before + 1);
   await expect(creation.locator('.attachment-row')).toHaveCount(0);
   const result = creation.getByTestId('generation-turn').filter({ hasText: 'six-inputs browser' });
@@ -64,6 +66,7 @@ try {
   await result.getByRole('button', { name: '添加', exact: true }).click();
   await expect(creation.locator('.attachment-item')).toHaveCount(1);
   await expect(result.locator('.result-card')).toHaveCount(1);
+  await creation.locator('.attachment-item').hover();
   await creation.locator('.attachment-remove').click();
   await expect(creation.locator('.attachment-row')).toHaveCount(0);
   const downloadEvent = page.waitForEvent('download');

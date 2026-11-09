@@ -86,130 +86,175 @@
 .result-actions button:hover {
   text-decoration: underline;
 }
-.composer-area {
-  width: calc(100% - 120px);
-  max-width: 1040px;
+.dialog-composer-scope,
+.dialog-prompt-modal {
+  --dialog-surface: #f2f2ec;
+  --dialog-input: #dcddd6;
+  --dialog-text: #191919;
+  --dialog-secondary: #4d4d4d;
+  --dialog-line: #b6b8b3;
+  --dialog-border: #737373;
+  --dialog-error: #b8322a;
+  font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+}
+:root[data-theme="dark"] .dialog-composer-scope,
+:root[data-theme="dark"] .dialog-prompt-modal {
+  --dialog-surface: #2a2a2a;
+  --dialog-input: #333333;
+  --dialog-text: #f2f2f2;
+  --dialog-secondary: #b8b8b8;
+  --dialog-line: #525252;
+  --dialog-border: #858585;
+  --dialog-error: #ff8d85;
+}
+.dialog-composer-scope.composer-area {
+  position: relative;
+  width: 840px;
+  max-width: calc(100% - 64px);
   align-self: center;
-  margin: 16px 0 24px;
+  margin: 16px 0 40px;
   flex: none;
+  z-index: 20;
 }
-.attachment-row {
-  display: flex;
-  gap: 8px;
-  min-height: 58px;
-  margin-bottom: 8px;
-  overflow-x: auto;
-  padding: 3px 8px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface-alt);
-}
-.attachment-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 28px 6px 6px;
-  border: 1px solid var(--border);
-  border-radius: 5px;
+.dialog-composer {
   position: relative;
-  flex: none;
-  background: var(--surface);
-  height: 50px;
+  width: 100%;
+  padding: 12px 12px 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--dialog-surface);
+  box-shadow: inset 0 0 0 1px var(--dialog-border);
+  transition: box-shadow 140ms ease;
 }
-.attachment-item img {
-  width: 36px;
-  height: 36px;
-  object-fit: cover;
-  border-radius: 2px;
+.dialog-composer:has(.dialog-prompt-input:focus) {
+  box-shadow: inset 0 0 0 1px #fffa00;
 }
-.attachment-item > span {
-  width: 110px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
+.dialog-prompt-area.prompt-area {
+  width: 710px;
+  max-width: calc(100% - 106px);
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--dialog-input);
 }
-.attachment-remove {
-  position: absolute;
-  right: 3px;
-  top: 3px;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.attachment-remove:hover {
-  background: var(--selected);
-}
-.composer {
-  border: 1px solid #aaa;
-  border-radius: 8px;
-  background: var(--surface);
-  height: 144px;
-  display: flex;
-  flex-direction: column;
-}
-.prompt-area {
-  height: 82px;
-  position: relative;
-  padding: 16px 48px 16px 16px;
-}
-.prompt-area textarea {
+.dialog-prompt-input {
+  display: block;
   width: 100%;
   height: 48px;
   min-height: 48px;
-  border: 0;
+  max-height: 192px;
   padding: 0;
   resize: none;
+  border: 0;
   border-radius: 0;
+  background: transparent;
+  color: var(--dialog-text);
+  font-size: 16px;
   line-height: 24px;
-  font-size: 16px;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dialog-secondary) transparent;
 }
-.expand-prompt {
+.dialog-prompt-input::placeholder { color: var(--dialog-secondary); opacity: 1; }
+.dialog-expand-editor {
   position: absolute;
-  right: 10px;
-  top: 10px;
+  top: 12px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  color: #333;
+  background: #eeecec;
+  transition: background-color 140ms ease;
 }
-.composer-toolbar {
-  border-top: 1px solid var(--border);
-  height: 60px;
-  padding: 8px 12px;
+.dialog-expand-editor::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: .5px solid #333;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.dialog-expand-editor:hover:not(:disabled) { background: #fff; }
+.dialog-expand-editor:active:not(:disabled) { background: #c7c7c1; }
+.dialog-composer .composer-toolbar {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
+  height: 36px;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
 }
-.composer-toolbar select {
+.dialog-upload-button { margin-right: 4px; }
+.dialog-credit-anchor { margin-left: auto; }
+.dialog-button-generate { position: relative; }
+.dialog-generate-label {
+  position: absolute;
+  left: 8px;
+  right: 36px;
+  text-align: center;
+}
+.dialog-button-generate .dialog-arrow { margin-left: auto; }
+.modal.dialog-prompt-modal {
+  display: flex;
+  flex-direction: column;
+  width: 840px;
+  height: min(650px, calc(100dvh - 48px));
+  border: 0;
+  border-radius: 12px;
+  background: var(--dialog-surface);
+  color: var(--dialog-text);
+  box-shadow: inset 0 0 0 1px var(--dialog-border);
+}
+.dialog-prompt-modal .modal-header {
+  flex: none;
+  height: 73px;
+  padding: 18px 24px;
+}
+.dialog-prompt-modal .modal-header h2 { font-size: 20px; font-weight: 500; }
+.dialog-prompt-modal .modal-header .icon-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--dialog-secondary);
+}
+.dialog-prompt-modal .modal-header .icon-button:hover { background: var(--dialog-input); }
+.dialog-prompt-modal .modal-body {
+  flex: 1;
+  min-height: 0;
+  padding: 0 24px 26px;
+}
+.modal.dialog-prompt-modal textarea {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 18px 22px 18px 18px;
+  resize: none;
+  border: 0;
+  border-radius: 10px;
+  background: var(--dialog-input);
+  box-shadow: inset 0 0 0 .7px var(--dialog-border);
+  color: var(--dialog-text);
   font-size: 16px;
-  padding: 7px 22px 7px 10px;
-  height: 40px;
-  min-width: 64px;
-  max-width: 100px;
-  cursor: pointer;
+  line-height: 24px;
 }
-.composer-toolbar .model-select {
-  max-width: none;
-  width: 248px;
-  min-width: 180px;
-  flex-shrink: 1;
+.modal.dialog-prompt-modal textarea:focus { box-shadow: inset 0 0 0 .7px #fffa00; }
+.dialog-prompt-modal .modal-footer {
+  flex: none;
+  height: 86px;
+  margin: 0 24px;
+  padding: 23px 0 26px;
+  gap: 8px;
+  border-top: 1px solid var(--dialog-line);
 }
-.upload-button {
-  width: 40px;
-  height: 44px;
-}
-.estimated-cost {
-  margin-left: auto;
-  color: var(--muted);
-  font-size: 12px;
-  white-space: nowrap;
-  min-width: 60px;
-  height: 40px;
-  padding: 8px 12px;
-  gap: 7px;
-}
-.send-button {
-  min-width: 84px;
+.dialog-prompt-modal .dialog-editor-cancel { width: 80px; }
+.dialog-prompt-modal .dialog-editor-done { width: 96px; }
+@media (prefers-reduced-motion: reduce) {
+  .dialog-composer,
+  .dialog-expand-editor { transition: none; }
 }
 .creation-empty {
   height: 100%;

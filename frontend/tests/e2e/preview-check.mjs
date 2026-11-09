@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { chromium, expect } from "@playwright/test";
 import { createServer } from "vite";
+import { chooseDialogOption, removeDialogAttachment, verifyDialog } from "./dialog-check.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const output = new URL("../../outputs/preview/", import.meta.url);
@@ -14,6 +15,7 @@ const server = await createServer({
 });
 const errors = [];
 const results = [];
+let dialogChecks = [];
 let browser;
 let page;
 
@@ -105,24 +107,22 @@ async function verifyCreation() {
   const model = creation.getByRole("combobox", { name: "模型", exact: true });
   const prompt = creation.getByRole("textbox", { name: "提示词", exact: true });
   await expect(prompt).toBeVisible();
-  await model.selectOption("gemini-3.1-flash-image");
+  await chooseDialogOption(page, model, "Gemini Image 3.1F");
   await expect(
     creation.getByRole("combobox", { name: "档位", exact: true }),
   ).toHaveCount(0);
   await expect(
     creation.getByRole("combobox", { name: "清晰度", exact: true }),
   ).toBeVisible();
-  await model.selectOption("gpt-image-1.5");
+  await chooseDialogOption(page, model, "GPT Image 1.5");
   await expect(
     creation.getByRole("combobox", { name: "档位", exact: true }),
   ).toHaveCount(0);
   await expect(
     creation.getByRole("combobox", { name: "清晰度", exact: true }),
   ).toHaveCount(0);
-  await model.selectOption("gpt-image-2.5-sunburst");
-  await creation
-    .getByRole("combobox", { name: "生成数量", exact: true })
-    .selectOption("2");
+  await chooseDialogOption(page, model, "GPT Image 2.5S");
+  await chooseDialogOption(page, creation.getByRole("combobox", { name: "生成数量", exact: true }), "2张");
   await creation
     .getByRole("button", { name: "展开提示词", exact: true })
     .click();
@@ -131,6 +131,12 @@ async function verifyCreation() {
     exact: true,
   });
   const testPrompt = "线框预览自动检查：一张灰色几何图形，保持横向构图。";
+  const fullPrompt = expanded.getByRole("textbox", { name: "完整提示词", exact: true });
+  await expect(fullPrompt).toHaveCSS("line-height", "24px");
+  await expect(fullPrompt).toHaveCSS("resize", "none");
+  const editorBox = await fullPrompt.boundingBox();
+  expect(editorBox.width).toBeCloseTo(792, 0);
+  expect(editorBox.height).toBeCloseTo(465, 0);
   await expanded
     .getByRole("textbox", { name: "完整提示词", exact: true })
     .fill(testPrompt);
@@ -146,18 +152,14 @@ async function verifyCreation() {
     { name: "reference-b.gif", mimeType: "image/gif", buffer: pixel },
   ]);
   await expect(
-    creation.getByRole("button", { name: /^移除reference-/ }),
+    creation.locator(".attachment-row .attachment-item"),
   ).toHaveCount(2);
   const afterUpload = await prompt.boundingBox();
   expect(afterUpload.height).toBeCloseTo(beforeUpload.height, 0);
   expect(afterUpload.y).toBeCloseTo(beforeUpload.y, 0);
   await screenshot("creation-two-attachments");
-  await creation
-    .getByRole("button", { name: "移除reference-a.gif", exact: true })
-    .click();
-  await creation
-    .getByRole("button", { name: "移除reference-b.gif", exact: true })
-    .click();
+  await removeDialogAttachment(creation, "移除reference-a.gif");
+  await removeDialogAttachment(creation, "移除reference-b.gif");
   await expect(creation.locator(".attachment-row")).toHaveCount(0);
   const originalCards = await creation.locator(".result-card").count();
   await creation
@@ -168,6 +170,7 @@ async function verifyCreation() {
     creation.locator(".attachment-row .attachment-item"),
   ).toHaveCount(1);
   const attachment = creation.locator(".attachment-row");
+  await attachment.locator(".attachment-item").first().hover();
   await attachment.getByRole("button", { name: /^移除/ }).click();
   await expect(attachment).toHaveCount(0);
   const downloadEvent = page.waitForEvent("download");
@@ -180,7 +183,7 @@ async function verifyCreation() {
   expect(await download.failure()).toBeNull();
   await page.clock.install();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
-  await creation.getByRole("button", { name: "发送", exact: true }).click();
+  await creation.getByRole("button", { name: "生成", exact: true }).click();
   await expect(creation.getByText("正在生成…", { exact: true })).toBeVisible();
   await expect(
     creation
@@ -323,7 +326,7 @@ async function verifyRoleBoundary() {
   await expect(retry).toBeEnabled();
   const prompt = creation.getByRole("textbox", { name: "提示词", exact: true });
   await prompt.fill("普通用户处理中检查");
-  await creation.getByRole("button", { name: "发送", exact: true }).click();
+  await creation.getByRole("button", { name: "生成", exact: true }).click();
   await expect(retry).toBeDisabled();
   await expect(prompt).toHaveValue("", { timeout: 15000 });
   await page.getByRole("button", { name: "我的账户", exact: true }).click();
@@ -559,11 +562,17 @@ try {
       });
     expect(clipped, "Composer controls clipped at 1280px").toBe(false);
   });
+  const dialogContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await attachGuards(dialogContext);
+  page = await dialogContext.newPage();
+  await page.goto(origin);
+  await signInAs("admin");
+  dialogChecks = await verifyDialog({ page, screenshot });
   if (errors.length) throw new Error(errors.join("\n"));
   console.log(
     "Browser check passed: " +
       results.length +
-      " flows; screenshots: outputs/preview/",
+      " flows + " + dialogChecks.length + " dialog checks; screenshots: outputs/preview/",
   );
 } catch (error) {
   errors.push(error instanceof Error ? error.message : String(error));
@@ -572,7 +581,7 @@ try {
 } finally {
   await writeFile(
     new URL("result.json", output),
-    JSON.stringify({ results, errors }, null, 2),
+    JSON.stringify({ results, dialogChecks, errors }, null, 2),
   );
   await browser?.close();
   await server.close();

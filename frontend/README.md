@@ -7,12 +7,15 @@ React / TypeScript / Vite。用户按下表中的页面描述需求即可，agen
 | 应用侧栏、导航、账户菜单 | src/app/Sidebar.tsx、src/components/AccountMenu.tsx | 主页面与账户菜单 |
 | 登录 | src/features/auth/LoginPage.tsx | 登录及会话联调 |
 | 图像创作、输入与结果 | src/features/create/CreationPage.tsx | 01–09、29 |
+| 创作对话框控件、附件与悬停预览 | src/features/create/DialogControls.tsx、DialogAttachments.tsx | 独立[对话框设计稿](../design/对话框设计稿.figcraft)中标为“本轮适配”的页面 |
 | 我的图片 | src/features/gallery/GalleryPage.tsx | 10–17、30 |
 | 文件夹选择、图片预览 | FolderPicker.tsx、ImagePreview.tsx（图库目录） | 整理与预览场景 |
 | 账户、外观、积分 | src/features/settings/Account.tsx、Appearance.tsx、Credits.tsx | 18–22、31–33 |
 | 用户、请求、价格 | src/features/settings/Users.tsx、Requests.tsx、Prices.tsx | 23–28、34–36 |
 
 设计画框 ID 只维护在 [对照映射](../tests/design/fixtures/frames.json)，不在本表复制另一份。当前稿见 [设计说明](../design/README.md)。
+
+创作对话框于 2026-11-09 按独立稿适配：桌面宽 840px，输入按实际折行在两至八行间向上增长；工具栏菜单、提示、附件折叠及悬停预览使用局部组件与样式。显示简称仅在该工具栏与菜单映射，模型 ID、结果区名称、请求和计费协议不变。原稿及其副本只作参考，色板用于配色；旧主稿的整页映射不用于宣称本次对话框已对齐。具体决定和适配范围见[行动报告](../research/2026-11-09-endfield-dialog/action-plan.md)。
 
 ## 样式与数据
 

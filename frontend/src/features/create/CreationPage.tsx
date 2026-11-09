@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
 import { Modal } from "../../components/Modal";
 import { DEFAULT_OPTIONS, MODELS, normalizeOptions } from "../../config/models";
 import { downloadImage, readImageFile } from "../../lib/images";
 import { useStudio } from "../../state/StudioContext";
+import DialogAttachments, { type DialogAttachmentItem } from "./DialogAttachments";
+import { DialogArrow, DialogButton, DialogCoins, DialogSelect } from "./DialogControls";
 import type {
   Attachment,
   GenerationOptions,
@@ -11,6 +13,18 @@ import type {
   Notify,
   PreviewImage,
 } from "../../types";
+
+const dialogModelNames: Record<string, string> = {
+  "gpt-image-2": "GPT Image 2",
+  "gpt-image-1.5": "GPT Image 1.5",
+  "gpt-image-2.5-sunburst": "GPT Image 2.5S",
+  "gemini-3.1-flash-image": "Gemini Image 3.1F",
+  "gemini-3-pro-image": "Gemini Image 3Pro",
+};
+function isReadyAttachment(item: DialogAttachmentItem): item is DialogAttachmentItem & Attachment {
+  return item.status !== "uploading" && item.status !== "failed" &&
+    typeof item.url === "string" && typeof item.width === "number" && typeof item.height === "number";
+}
 
 interface Props {
   active: boolean;
@@ -28,28 +42,59 @@ export default function CreationPage({
 }: Props) {
   const { data, currentUser, actions } = useStudio();
   const [prompt, setPrompt] = useState("");
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [attachmentItems, setAttachmentItems] = useState<DialogAttachmentItem[]>([]);
   const [options, setOptions] = useState<GenerationOptions>(DEFAULT_OPTIONS);
   const [expanded, setExpanded] = useState(false);
   const [expandedDraft, setExpandedDraft] = useState("");
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const promptInput = useRef<HTMLTextAreaElement>(null);
+  const uploadLock = useRef(false);
+  const removedUploads = useRef(new Set<string>());
   const end = useRef<HTMLDivElement>(null);
   const composing = useRef(false);
   const lastAttachment = useRef("");
   const model = MODELS.find((m) => m.id === options.modelId)!;
-  const editing = attachments.length > 0;
+  const attachments = attachmentItems.filter(isReadyAttachment);
+  const editing = attachmentItems.length > 0;
+  const incompleteAttachments = attachmentItems.some(item => !isReadyAttachment(item));
   useEffect(() => {
     setOptions(previous => normalizeOptions(previous, editing));
   }, [editing]);
+  useEffect(() => {
+    if (!active || expanded) setOpenMenu(null);
+  }, [active, expanded]);
+  useLayoutEffect(() => {
+    const input = promptInput.current;
+    if (!input || !active) return;
+    const resize = () => {
+      if (!input.clientWidth) return;
+      input.style.height = "48px";
+      const height = Math.max(48, Math.min(192, Math.ceil(input.scrollHeight / 24) * 24));
+      input.style.height = `${height}px`;
+      input.style.overflowY = input.scrollHeight > 192 ? "auto" : "hidden";
+    };
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(input.parentElement!);
+    return () => observer.disconnect();
+  }, [prompt, active]);
   const history = data.generations.filter((j) => j.userId === currentUser.id);
   const cost = data.prices[options.modelId] * options.count;
+  const quoteReady = Number.isFinite(cost) && cost >= 0;
+  const insufficientCredits = quoteReady && cost > currentUser.balance;
+  const costLabel = quoteReady ? cost.toLocaleString("zh-CN") : "…";
+  const suppressTooltips = !active || expanded || openMenu !== null;
+  const generationHint = uploading ? "参考图上传中，请稍候。" : incompleteAttachments
+    ? "请先移除上传失败的参考图。" : !quoteReady ? "正在获取报价…" : insufficientCredits
+    ? "积分不足，请调整张数或联系管理员。" : "开始生成图片";
   const addAttachment = (image: Attachment) =>
-    setAttachments((previous) =>
+    setAttachmentItems((previous) =>
       previous.some((a) => a.id === image.id) || previous.length >= 6
         ? previous
-        : [...previous, image],
+        : [...previous, { ...image, status: "ready" }],
     );
   useEffect(() => {
     if (pendingAttachment && lastAttachment.current !== pendingAttachment.id) {
@@ -63,12 +108,13 @@ export default function CreationPage({
     if (active) end.current?.scrollIntoView({ block: "end" });
   }, [history.length, history.at(-1)?.status, active]);
   const submit = async () => {
-    if (sending || uploading || !prompt.trim()) return;
+    if (sending || uploading || incompleteAttachments || !quoteReady || insufficientCredits || !prompt.trim()) return;
+    setOpenMenu(null);
     setSending(true);
     try {
       await actions.generate(prompt, attachments, normalizeOptions(options, editing));
       setPrompt("");
-      setAttachments([]);
+      setAttachmentItems([]);
     } catch (error) {
       notify(error instanceof Error ? error.message : "生成失败，请重试");
     } finally {
@@ -76,19 +122,37 @@ export default function CreationPage({
     }
   };
   async function upload(files: FileList | null) {
-    if (!files?.length) return;
-    const capacity = 6 - attachments.length;
+    if (!files?.length || sending || uploadLock.current) return;
+    const capacity = 6 - attachmentItems.length;
     if (files.length > capacity) notify("最多添加 6 张图片");
+    if (capacity <= 0) return;
+    uploadLock.current = true;
     setUploading(true);
+    setOpenMenu(null);
+    const pending = Array.from(files).slice(0, capacity).map(file => ({
+      file, id: crypto.randomUUID(),
+    }));
+    setAttachmentItems(previous => [...previous, ...pending.map(({ file, id }) => ({
+      id, name: file.name, status: "uploading" as const,
+    }))]);
     try {
-      for (const file of Array.from(files).slice(0, capacity)) {
+      for (const { file, id } of pending) {
+        if (removedUploads.current.delete(id)) continue;
         try {
-          addAttachment(await readImageFile(file));
+          const image = await readImageFile(file);
+          setAttachmentItems(previous => previous.map(item => item.id === id
+            ? { ...image, status: "ready" } : item));
         } catch (e) {
-          notify(e instanceof Error ? e.message : "上传失败");
+          const message = e instanceof Error ? e.message : "上传失败";
+          setAttachmentItems(previous => previous.map(item => item.id === id
+            ? { ...item, status: "failed", error: message } : item));
+          if (!removedUploads.current.has(id)) notify(message);
+        } finally {
+          removedUploads.current.delete(id);
         }
       }
     } finally {
+      uploadLock.current = false;
       setUploading(false);
       if (fileInput.current) fileInput.current.value = "";
     }
@@ -144,7 +208,7 @@ export default function CreationPage({
                       onClick={() => {
                         setPrompt(job.prompt);
                         setOptions(normalizeOptions(job.options));
-                        setAttachments(job.attachments);
+                        setAttachmentItems(job.attachments.map(item => ({ ...item, status: "ready" })));
                       }}
                     >
                       重新编辑
@@ -182,7 +246,7 @@ export default function CreationPage({
                         <button
                           disabled={sending}
                           onClick={() => {
-                            if (attachments.length >= 6)
+                            if (attachmentItems.length >= 6)
                               notify("最多添加 6 张图片");
                             else addAttachment(image);
                           }}
@@ -200,75 +264,63 @@ export default function CreationPage({
         })}
         <div ref={end} />
       </div>
-      <div className="composer-area">
-        {attachments.length > 0 && (
-          <div className="attachment-row" aria-label="附件栏">
-            {attachments.map((a) => (
-              <div className="attachment-item" key={a.id}>
-                <img src={a.url} alt="" />
-                <span title={a.name}>{a.name}</span>
-                <button
-                  aria-label={`移除${a.name}`}
-                  className="attachment-remove"
-                  disabled={sending}
-                  onClick={() =>
-                    setAttachments((list) => list.filter((i) => i.id !== a.id))
-                  }
-                >
-                  <Icon name="close" size={12} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="composer-area dialog-composer-scope">
+        <DialogAttachments
+          items={attachmentItems}
+          disabled={sending}
+          active={active && !expanded}
+          onRemove={id => {
+            if (attachmentItems.some(item => item.id === id && item.status === "uploading")) {
+              removedUploads.current.add(id);
+            }
+            setAttachmentItems(items => items.filter(item => item.id !== id));
+          }}
+        />
         <div
-          className="composer"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (!sending) void upload(e.dataTransfer.files);
+          className="composer dialog-composer"
+          onDragOver={event => event.preventDefault()}
+          onDrop={event => {
+            event.preventDefault();
+            if (!sending) void upload(event.dataTransfer.files);
           }}
         >
-          <div className="prompt-area">
+          <div className="prompt-area dialog-prompt-area">
             <textarea
+              ref={promptInput}
+              className="dialog-prompt-input"
               aria-label="提示词"
-              placeholder="描述你想生成的图片…"
+              placeholder="输入提示词以生成图片…"
               value={prompt}
               disabled={sending}
-              onChange={(e) => setPrompt(e.target.value)}
-              onCompositionStart={() => {
-                composing.current = true;
-              }}
-              onCompositionEnd={() => {
-                composing.current = false;
-              }}
-              onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  !e.shiftKey &&
-                  data.preferences.enterToSend &&
-                  !composing.current &&
-                  !e.nativeEvent.isComposing &&
-                  e.keyCode !== 229
-                ) {
-                  e.preventDefault();
+              onFocus={() => setOpenMenu(null)}
+              onChange={event => setPrompt(event.target.value)}
+              onCompositionStart={() => { composing.current = true; }}
+              onCompositionEnd={() => { composing.current = false; }}
+              onKeyDown={event => {
+                if (event.key === "Enter" && !event.shiftKey && data.preferences.enterToSend &&
+                    !composing.current && !event.nativeEvent.isComposing && event.keyCode !== 229) {
+                  event.preventDefault();
                   void submit();
                 }
               }}
             />
-            <button
-              className="icon-button expand-prompt"
-              aria-label="展开提示词"
-              disabled={sending}
-              onClick={() => {
-                setExpandedDraft(prompt);
-                setExpanded(true);
-              }}
-            >
-              <Icon name="expand" size={17} />
-            </button>
           </div>
-          <div className="composer-toolbar">
+          <button
+            type="button"
+            className="dialog-expand-editor"
+            aria-label="展开提示词"
+            disabled={sending}
+            onClick={() => {
+              setOpenMenu(null);
+              setExpandedDraft(prompt);
+              setExpanded(true);
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true">
+              <rect x="3" y="2.5" width="10" height="11" rx="2" />
+            </svg>
+          </button>
+          <div className="composer-toolbar dialog-composer-toolbar">
             <input
               ref={fileInput}
               type="file"
@@ -276,119 +328,128 @@ export default function CreationPage({
               multiple
               hidden
               aria-label="上传图片文件"
-              onChange={(e) => void upload(e.target.files)}
+              onChange={event => void upload(event.target.files)}
             />
-            <button
-              className="icon-button upload-button"
+            <DialogButton
+              className="dialog-button-icon dialog-upload-button"
               aria-label="上传图片"
-              disabled={uploading || sending || attachments.length >= 6}
-              onClick={() => fileInput.current?.click()}
+              tooltip="添加图片，也可拖入图片到对话框。"
+              tooltipAlign="start"
+              tooltipDisabled={suppressTooltips}
+              disabled={uploading || sending || attachmentItems.length >= 6}
+              onClick={() => { setOpenMenu(null); fileInput.current?.click(); }}
             >
-              <Icon name="plus" size={24} />
-            </button>
-            <select
-              aria-label="模型"
-              className="model-select"
-              disabled={sending}
+              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 0v20M0 10h20" />
+              </svg>
+            </DialogButton>
+            <DialogSelect
+              label="模型"
               value={options.modelId}
-              onChange={(e) =>
-                updateOption({
-                  modelId: e.target.value as GenerationOptions["modelId"],
-                })
-              }
-            >
-              {MODELS.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
-            {!editing && model.qualities.length > 0 && (
-              <select
-                aria-label="档位"
-                disabled={sending}
-                value={options.quality}
-                onChange={(e) => updateOption({ quality: e.target.value })}
-              >
-                {model.qualities.map((x) => (
-                  <option key={x}>{x}</option>
-                ))}
-              </select>
-            )}
-            {!editing && <select
-              aria-label="图像比例"
+              options={MODELS.map(item => ({ value: item.id, label: dialogModelNames[item.id] ?? item.name }))}
+              onChange={modelId => updateOption({ modelId })}
               disabled={sending}
+              accent
+              tooltip="选择生成模型"
+              tooltipDisabled={!active || expanded}
+              openMenu={openMenu}
+              onOpenChange={setOpenMenu}
+            />
+            {!editing && model.qualities.length > 0 && <DialogSelect
+              label="档位"
+              value={options.quality ?? model.qualities[0]}
+              options={model.qualities.map(value => ({ value, label: value }))}
+              onChange={quality => updateOption({ quality })}
+              disabled={sending}
+              tooltip="图像质量"
+              tooltipDisabled={!active || expanded}
+              openMenu={openMenu}
+              onOpenChange={setOpenMenu}
+            />}
+            {!editing && <DialogSelect
+              label="图像比例"
               value={options.ratio}
-              onChange={(e) => updateOption({ ratio: e.target.value })}
-            >
-              {model.ratios.map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-            </select>}
-            {!editing && model.resolutions.length > 0 && (
-              <select
-                aria-label="清晰度"
-                disabled={sending}
-                value={options.resolution}
-                onChange={(e) => updateOption({ resolution: e.target.value })}
-              >
-                {model.resolutions.map((x) => (
-                  <option key={x}>{x}</option>
-                ))}
-              </select>
-            )}
-            <select
-              aria-label="生成数量"
+              options={model.ratios.map(value => ({ value, label: value }))}
+              onChange={ratio => updateOption({ ratio })}
               disabled={sending}
-              value={options.count}
-              onChange={(e) => updateOption({ count: Number(e.target.value) })}
+              tooltip="画面比例"
+              tooltipDisabled={!active || expanded}
+              openMenu={openMenu}
+              onOpenChange={setOpenMenu}
+            />}
+            {!editing && model.resolutions.length > 0 && <DialogSelect
+              label="清晰度"
+              value={options.resolution ?? "1K"}
+              options={model.resolutions.map(value => ({ value, label: value }))}
+              onChange={resolution => updateOption({ resolution })}
+              disabled={sending}
+              tooltip="图像分辨率"
+              tooltipDisabled={!active || expanded}
+              openMenu={openMenu}
+              onOpenChange={setOpenMenu}
+            />}
+            <DialogSelect
+              label="生成数量"
+              value={String(options.count)}
+              options={[1, 2, 3, 4].map(value => ({ value: String(value), label: `${value}张` }))}
+              onChange={count => updateOption({ count: Number(count) })}
+              disabled={sending}
+              tooltip="生成张数"
+              tooltipDisabled={!active || expanded}
+              openMenu={openMenu}
+              onOpenChange={setOpenMenu}
+            />
+            <DialogButton
+              className="dialog-button-credits"
+              wrapperClassName="dialog-credit-anchor"
+              style={{ width: Math.max(56, 30 + costLabel.length * 10) }}
+              aria-label={quoteReady ? `预计 ${cost} 积分` : "报价未就绪"}
+              tooltip={quoteReady ? `预计消耗 ${costLabel} 积分` : "正在获取报价…"}
+              tooltipDisabled={suppressTooltips}
+              onClick={() => {
+                setOpenMenu(null);
+                notify(quoteReady
+                  ? `本次预计消耗 ${costLabel} 积分，可用 ${currentUser.balance.toLocaleString("zh-CN")} 积分。`
+                  : "正在获取报价…");
+              }}
             >
-              {[1, 2, 3, 4].map((n) => (
-                <option key={n} value={n}>
-                  {n} 张
-                </option>
-              ))}
-            </select>
-            <button
-              className="btn estimated-cost"
-              type="button"
-              aria-label={`预计 ${cost} 积分`}
-              title={`预计消耗 ${cost} 积分`}
-              onClick={() => notify(`本次预计消耗 ${cost} 积分，可用 ${currentUser.balance.toLocaleString("zh-CN")} 积分。`)}
-            >
-              <Icon name="coins" size={16} />
-              <span>{cost.toLocaleString("zh-CN")}</span>
-            </button>
-            <button
-              className="btn btn-primary send-button"
-              disabled={!prompt.trim() || sending || uploading}
+              <DialogCoins />
+              <span>{costLabel}</span>
+            </DialogButton>
+            <DialogButton
+              className="dialog-button-generate"
+              accent
+              tooltip={generationHint}
+              tooltipDisabled={suppressTooltips}
+              disabled={!prompt.trim() || sending || uploading || incompleteAttachments || !quoteReady || insufficientCredits}
               onClick={() => void submit()}
             >
-              <Icon name="send" size={16} />
-              {sending ? "生成中" : "发送"}
-            </button>
+              <span className="dialog-generate-label">{sending ? "生成中" : "生成"}</span>
+              <DialogArrow submit />
+            </DialogButton>
           </div>
         </div>
       </div>
       {expanded && (
         <Modal
           title="编辑提示词"
-          className="prompt-modal"
+          className="prompt-modal dialog-prompt-modal"
           onClose={() => setExpanded(false)}
           footer={
             <>
-              <button className="btn" onClick={() => setExpanded(false)}>
+              <DialogButton className="dialog-editor-cancel" onClick={() => setExpanded(false)}>
                 取消
-              </button>
-              <button
-                className="btn btn-primary"
+              </DialogButton>
+              <DialogButton
+                className="dialog-editor-done"
+                accent
                 onClick={() => {
                   setPrompt(expandedDraft);
                   setExpanded(false);
                 }}
               >
                 完成
-              </button>
+              </DialogButton>
             </>
           }
         >

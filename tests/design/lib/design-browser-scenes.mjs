@@ -33,11 +33,15 @@ export async function captureScenes({ page, fixture, setFixture, capture, origin
     else await page.evaluate(()=>document.documentElement.dataset.theme='light');
   }
   const take=async(name,id)=>capture(name,id);
+  const choose=async(label,value)=>{
+    await page.getByRole('combobox',{name:label,exact:true}).click();
+    await page.getByRole('option',{name:value,exact:true}).click();
+  };
   await open('/create');
   await page.getByRole('button',{name:'添加',exact:true}).first().click();
   await page.getByRole('textbox',{name:'提示词',exact:true}).fill('保留主体形状，调整为暖灰背景，参考上一轮图片的光线。');
   await take('01-create-attachments',611);
-  await page.getByRole('combobox',{name:'模型',exact:true}).selectOption('gemini-3.1-flash-image');
+  await choose('模型','Gemini Image 3.1F');
   await take('02-create-gemini-edit',1278);
   await take('03-create-result-added',2134);
   await page.getByRole('button',{name:'展开提示词',exact:true}).click();
@@ -50,9 +54,9 @@ export async function captureScenes({ page, fixture, setFixture, capture, origin
   await take('06-create-collapsed-account',1542);
   await open('/create',{processing:true});await take('07-create-processing',1676);
   await open('/create');
-  await page.getByRole('combobox',{name:'模型',exact:true}).selectOption('gemini-3.1-flash-image');
-  await page.getByRole('combobox',{name:'清晰度',exact:true}).selectOption('0.5K');
-  await page.getByRole('combobox',{name:'图像比例',exact:true}).selectOption('21:9');
+  await choose('模型','Gemini Image 3.1F');
+  await choose('清晰度','0.5K');
+  await choose('图像比例','21:9');
   await take('08-controls-gemini-current',1834);
   await open('/create',{failed:true});await page.getByRole('button',{name:'重新编辑',exact:true}).click();
   await take('09-create-failed-six-inputs',2023);
