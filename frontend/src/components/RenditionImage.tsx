@@ -30,9 +30,12 @@ export function RenditionImage({ source, displayWidth, displayHeight, fit = "con
     if (!element) return;
     const measure = () => {
       const box = element.getBoundingClientRect();
-      const parent = element.parentElement?.getBoundingClientRect();
-      const width = displayWidth ?? (box.width || parent?.width || 1);
-      const height = displayHeight ?? (box.height || parent?.height || 1);
+      // A closed dialog has no rendered size. Wait for it to open and let the
+      // observer measure its actual image area, rather than selecting a tiny
+      // rendition that would be replaced as soon as the dialog becomes visible.
+      if (box.width <= 0 || box.height <= 0) return;
+      const width = displayWidth ?? box.width;
+      const height = displayHeight ?? box.height;
       const dpr = window.devicePixelRatio || 1;
       setLayout(previous => previous.width === width && previous.height === height && previous.dpr === dpr
         ? previous : { width, height, dpr });

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useId, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { Icon } from "./Icon";
@@ -20,7 +20,7 @@ export function Modal({
   const close = useRef(onClose);
   close.current = onClose;
   const titleId = useId();
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = dialog.current!;
     const previouslyFocused = document.activeElement as HTMLElement | null;
     element.showModal();
