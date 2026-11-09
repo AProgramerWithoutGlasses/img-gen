@@ -8,6 +8,7 @@
 | 前端页面、组件、预览 | [frontend/README.md](../frontend/README.md) |
 | 后端模块、配置与队列 | [internal/studio/README.md](../internal/studio/README.md) |
 | 跨端接口与模型能力 | [api-contract.md](api-contract.md) |
+| 网站缩略图、附件与大图预览 | [image-preview-strategy.md](image-preview-strategy.md) |
 | 新样式探索、设计适配与工具 | [design/README.md](../design/README.md) |
 | 检查与测试目录 | [tests/README.md](../tests/README.md) |
 | 调研任务 | [research/README.md](../research/README.md) |
