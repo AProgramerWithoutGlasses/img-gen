@@ -1,0 +1,36 @@
+/* FigCraft uses iOS corner smoothing at 60%. Native CSS superellipse(1.6)
+   approximates that appearance; its parameter is not a 1:1 iOS percentage.
+   Unsupported browsers keep the existing border-radius. Full-radius capsules
+   and circles stay round, matching the iOS radius limit. */
+@supports (corner-shape: superellipse(1.6)) {
+  .dialog-composer,
+  .dialog-prompt-area.prompt-area,
+  .modal.dialog-prompt-modal,
+  .modal.dialog-prompt-modal textarea,
+  .dialog-menu,
+  .dialog-option,
+  .dialog-attachments .dialog-attachments-track,
+  .dialog-attachments-track::before,
+  .dialog-attachments .dialog-attachment-card,
+  .dialog-attachment-card .dialog-attachment-thumbnail,
+  .dialog-attachment-placeholder,
+  .dialog-attachments .dialog-attachment-toggle,
+  .dialog-attachment-toggle::after,
+  .dialog-attachment-preview,
+  .dialog-attachment-preview-image,
+  .dialog-attachment-preview-name {
+    corner-shape: superellipse(1.6);
+  }
+
+  .dialog-button,
+  .dialog-button::before,
+  .dialog-control:focus-visible,
+  .dialog-expand-editor,
+  .dialog-expand-editor::after,
+  .dialog-arrow,
+  .dialog-attachment-remove,
+  .dialog-tooltip,
+  .dialog-prompt-modal .modal-header .icon-button {
+    corner-shape: round;
+  }
+}

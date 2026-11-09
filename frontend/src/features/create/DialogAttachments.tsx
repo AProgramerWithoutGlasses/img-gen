@@ -28,7 +28,7 @@ export default function DialogAttachments({ ownerId, items, disabled, onRemove, 
   const preferenceKey = `img-gen:dialog-attachments-expanded:${ownerId}`;
   const [expanded, setExpanded] = useState(() => readExpanded(preferenceKey));
   const [previewId, setPreviewId] = useState<string | null>(null);
-  const [previewHeight, setPreviewHeight] = useState(384);
+  const [previewHeight, setPreviewHeight] = useState(360);
   const [imageState, setImageState] = useState<{ key: string; state: "loading" | "ready" | "failed" }>({ key: "", state: "loading" });
   const strip = useRef<HTMLDivElement>(null);
   const preview = useRef<HTMLDivElement>(null);
@@ -106,13 +106,13 @@ export default function DialogAttachments({ ownerId, items, disabled, onRemove, 
   const previewKey = selected?.url ? `${selected.id}:${selected.url}` : "";
   const loadState = imageState.key === previewKey ? imageState.state : "loading";
   const pictureRatio = selected?.width && selected?.height ? selected.width / selected.height : 1;
-  const pictureWidth = Math.min(376, Math.max(1, previewHeight - 40) * pictureRatio);
-  const pictureHeight = Math.min(Math.max(1, previewHeight - 40), 376 / pictureRatio);
+  const pictureWidth = Math.min(352, Math.max(1, previewHeight - 40) * pictureRatio);
+  const pictureHeight = Math.min(Math.max(1, previewHeight - 40), 352 / pictureRatio);
   useLayoutEffect(() => {
     if (!previewId || !active) return;
     const measure = () => {
       const top = strip.current?.getBoundingClientRect().top ?? 340;
-      setPreviewHeight(Math.max(52, Math.min(384, top - 10.188 - 8)));
+      setPreviewHeight(Math.max(52, Math.min(360, top - 10.188 - 8)));
     };
     measure();
     const resize = new ResizeObserver(measure);
@@ -137,8 +137,8 @@ export default function DialogAttachments({ ownerId, items, disabled, onRemove, 
 
   if (!active || !items.length) return null;
   const visibleItems = expanded ? items.slice(0, 6) : items.slice(0, 3);
-  const compactWidth = 344;
-  const markerLeft = 121;
+  const compactWidth = 320;
+  const markerLeft = 112;
   const stripStyle = {
     width: expanded ? "100%" : compactWidth,
     "--dialog-attachment-marker-left": `${markerLeft}px`,
@@ -161,7 +161,7 @@ export default function DialogAttachments({ ownerId, items, disabled, onRemove, 
               onBlur={leaveCard}
             >
               {item.url && item.status !== "uploading" && item.status !== "failed" ? (
-                <img className="dialog-attachment-thumbnail" src={item.url} alt={item.name} width={72} height={72} decoding="async" />
+                <img className="dialog-attachment-thumbnail" src={item.url} alt={item.name} width={68} height={68} decoding="async" />
               ) : (
                 <div className={`dialog-attachment-placeholder${item.status === "failed" ? " dialog-attachment-placeholder-failed" : ""}`} role="status" aria-label={item.error || undefined}>
                   <span>{item.status === "failed" ? "上传失败" : "上传中"}</span>

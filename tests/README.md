@@ -14,6 +14,7 @@ Go 测试保留在同一个外部测试包，文件名区分主题，既有 49 �
 | 后端 | 前端嵌入产物可用后 go test ./...、go vet ./...、go build ./... |
 | 跨端、构建与 CI | npm run verify:all；真实数据库/浏览器按下节启用 |
 | 设计稿变更 | 保存后 npm run design:verify、相关画面及 design:compare |
+| 对话框圆角或尺寸 | 保存指定稿后 node tests/design/check-dialog-corners.mjs；核对本轮平滑设置、等距内框及内外圆角，浏览器只补受影响流程 |
 | 设计连接工具 | npm run design:smoke，相关命令实际验证 |
 | 上游探测脚本 | Python 语法和安全 dry-run、Go 显式编译；不自动实际收费探测 |
 

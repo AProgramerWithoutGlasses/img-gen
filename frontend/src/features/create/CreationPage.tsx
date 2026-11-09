@@ -76,10 +76,10 @@ export default function CreationPage({
     if (!input || !active) return;
     const resize = () => {
       if (!input.clientWidth) return;
-      input.style.height = "56px";
-      const height = Math.max(56, Math.min(224, Math.ceil(input.scrollHeight / 28) * 28));
+      input.style.height = "48px";
+      const height = Math.max(48, Math.min(192, Math.ceil(input.scrollHeight / 24) * 24));
       input.style.height = `${height}px`;
-      input.style.overflowY = input.scrollHeight > 224 ? "auto" : "hidden";
+      input.style.overflowY = input.scrollHeight > 192 ? "auto" : "hidden";
     };
     resize();
     const observer = new ResizeObserver(resize);
@@ -456,7 +456,7 @@ export default function CreationPage({
             <DialogButton
               className="dialog-button-credits"
               wrapperClassName="dialog-credit-anchor"
-              style={{ width: Math.max(68, 36 + costLabel.length * 11) }}
+              style={{ width: Math.max(64, 34 + costLabel.length * 10) }}
               aria-label={quoteReady ? `预计 ${cost} 积分` : "报价未就绪"}
               tooltip={quoteReady ? `预计消耗 ${costLabel} 积分` : "正在获取报价…"}
               tooltipDisabled={suppressTooltips}

@@ -319,7 +319,7 @@ export function DialogSelect<T extends string>({
   const isOpen = openMenu === menuId && !disabled && options.length > 0;
   const present = useExitPresence(isOpen, 120);
   const theme = useDialogTheme();
-  const width = accent ? 288 : 136;
+  const width = accent ? 272 : 128;
   const position = useFloatingPosition(button, popup, present, "above", width);
   const returnFocus = useCallback(() => button.current?.focus({ preventScroll: true }), []);
   const close = (focus = true) => {

@@ -3,7 +3,7 @@
   flex: none;
   align-items: center;
   position: relative;
-  height: 44px;
+  height: var(--dialog-control-height, 40px);
   vertical-align: middle;
 }
 .dialog-button {
@@ -14,19 +14,19 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 88px;
-  height: 44px;
-  min-height: 44px;
+  width: 80px;
+  height: var(--dialog-control-height, 40px);
+  min-height: var(--dialog-control-height, 40px);
   padding: 0 10px;
   margin: 0;
   border: 0;
-  border-radius: 22px;
+  border-radius: calc(var(--dialog-control-height, 40px) / 2);
   background: var(--dialog-button-fill);
   color: var(--dialog-control-text, #4d4d4d);
   font-family: inherit;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 24px;
+  line-height: 20px;
   white-space: nowrap;
   cursor: pointer;
   transition: background-color 140ms, color 140ms;
@@ -34,9 +34,9 @@
 .dialog-button::before {
   content: "";
   position: absolute;
-  inset: 2px;
+  inset: var(--dialog-control-inset, 2px);
   border: 1px solid #333;
-  border-radius: 20px;
+  border-radius: calc(var(--dialog-control-height, 40px) / 2 - var(--dialog-control-inset, 2px));
   pointer-events: none;
 }
 .dialog-button:hover:not(:disabled) {
@@ -71,7 +71,7 @@
 .dialog-control:focus-visible {
   outline: 2px solid #6b5d00;
   outline-offset: 3px;
-  border-radius: 22px;
+  border-radius: calc(var(--dialog-control-height, 40px) / 2);
 }
 :root[data-theme="dark"] .dialog-button:focus-visible,
 :root[data-theme="dark"] .dialog-control:focus-visible {
@@ -84,11 +84,11 @@
   flex: 1;
   align-self: stretch;
   min-width: 0;
-  line-height: 24px;
+  line-height: 20px;
   text-align: center;
 }
 .dialog-select-accent {
-  width: 232px;
+  width: 216px;
   padding-right: 10px;
 }
 .dialog-select-accent .dialog-button-label,
@@ -100,8 +100,8 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #333;
   color: var(--dialog-button-fill, #fffa00);
@@ -112,17 +112,17 @@
   flex: none;
 }
 .dialog-button-icon {
-  width: 44px;
+  width: var(--dialog-control-height, 40px);
   padding: 0;
 }
 .dialog-button-credits {
-  width: 68px;
+  width: 64px;
   gap: 6px;
   color: #333;
   font-variant-numeric: tabular-nums;
 }
 .dialog-button-generate {
-  width: 120px;
+  width: 112px;
 }
 .dialog-button-fit {
   width: auto;
@@ -141,8 +141,8 @@
   color: #333;
   color-scheme: light;
   font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 20px;
   outline: none;
   transform-origin: left bottom;
   opacity: 1;
@@ -162,8 +162,8 @@
   align-items: center;
   gap: 12px;
   box-sizing: border-box;
-  height: 42px;
-  min-height: 42px;
+  height: 38px;
+  min-height: 38px;
   margin-bottom: 2px;
   padding: 8px 12px;
   border: 1px solid transparent;
