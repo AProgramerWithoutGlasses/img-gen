@@ -4,9 +4,9 @@ import { pathToFileURL } from 'node:url';
 import { connect, call, data, root } from '../../scripts/lib/figcraft.mjs';
 
 const pageIds = [1157, 1418, 1622, 1957, 2174, 2247, 2508, 2647, 2766, 2969, 3285];
-// Only these explicitly approved groups from the comparison page are implementation sources.
-// Never inspect the whole comparison page: it also contains the old size and A/B references.
-const approvedGroupIds = [3739, 3773, 3807];
+// Only these explicitly approved groups from the comparison and input-size pages
+// are sources. Their pages also contain old size, A/B and 14px references.
+const approvedGroupIds = [3739, 3773, 3807, 3937, 3972];
 const circleRoles = new Set(['button.upload', 'button.editor', 'button.close-editor', 'button.remove-attachment']);
 const role = node => node?.pluginData?.handoffRole || '';
 const radius = node => Array.isArray(node.cornerRadius) ? Math.max(...node.cornerRadius) : node.cornerRadius || 0;

@@ -167,28 +167,51 @@ export async function verifyDialog({ page, screenshot }) {
     const baseline = await composer.boundingBox(), bottom = baseline.y + baseline.height;
     expect(baseline.width).toBeCloseTo(900, 0);
     expect(baseline.height).toBeCloseTo(148, 0);
-    await expect(prompt).toHaveCSS("font-size", "14px");
+    await expect(prompt).toHaveCSS("font-size", "16px");
+    await expect(prompt).toHaveCSS("line-height", "24px");
+    const area = await creation.locator(".dialog-prompt-area").boundingBox();
+    const text = await prompt.boundingBox();
+    expect(area.width).toBeCloseTo(782, 0);
+    expect(area.height).toBeCloseTo(68, 0);
+    expect(text.width).toBeCloseTo(754, 0);
+    expect(text.height).toBeCloseTo(48, 0);
+    expect(text.x - baseline.x).toBeCloseTo(28, 0);
+    expect(text.y - baseline.y, "Text must start 14px below the composer top").toBeCloseTo(14, 0);
     expect((await toolbar.boundingBox()).height).toBeCloseTo(36, 0);
     const toolbarBaseline = await toolbar.boundingBox();
+    expect(toolbarBaseline.y - baseline.y).toBeCloseTo(98, 0);
     const stages = [];
     for (const count of [3, 4, 6, 8]) {
       await prompt.fill(lines.slice(0, count).join("\n"));
-      await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(baseline.height + (count - 2) * 22, 0);
+      await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(baseline.height + (count - 2) * 24, 0);
       const actual = await composer.boundingBox();
       expect(actual.y + actual.height).toBeCloseTo(bottom, 0);
       expect((await toolbar.boundingBox()).y).toBeCloseTo(toolbarBaseline.y, 0);
       stages.push({ lines: count, height: actual.height });
     }
     const capped = await composer.boundingBox();
+    expect(capped.height).toBeCloseTo(292, 0);
     await prompt.fill(lines.join("\n"));
     await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(capped.height, 0);
     const scrolling = await prompt.evaluate((element) => ({ scroll: element.scrollHeight, client: element.clientHeight, overflow: getComputedStyle(element).overflowY }));
     expect(scrolling.scroll).toBeGreaterThan(scrolling.client);
+    expect(scrolling.client).toBe(192);
     expect(scrolling.overflow).toMatch(/auto|scroll/);
     await screenshot("dialog-input-eight-line-cap");
     await prompt.fill("");
     await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(baseline.height, 0);
-    return { stages, cappedHeight: capped.height };
+    const paragraph = "森林薄雾、晨光与林间小径，画面自然通透，细节清晰。".repeat(6);
+    await prompt.fill(paragraph);
+    await expect.poll(async () => (await composer.boundingBox()).height).toBeGreaterThan(baseline.height);
+    const wrapped = await composer.boundingBox();
+    expect(wrapped.height).toBeLessThanOrEqual(capped.height);
+    expect(wrapped.y + wrapped.height).toBeCloseTo(bottom, 0);
+    expect((await toolbar.boundingBox()).y).toBeCloseTo(toolbarBaseline.y, 0);
+    expect((await prompt.boundingBox()).height).toBeGreaterThan(48);
+    await screenshot("dialog-input-natural-wrapping");
+    await prompt.fill("");
+    await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(baseline.height, 0);
+    return { stages, cappedHeight: capped.height, naturalWrappedHeight: wrapped.height };
   });
 
   const verifyTooltip = async (control) => {

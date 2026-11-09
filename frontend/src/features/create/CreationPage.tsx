@@ -73,10 +73,15 @@ export default function CreationPage({
     if (!input || !active) return;
     const resize = () => {
       if (!input.clientWidth) return;
-      input.style.height = "44px";
-      const height = Math.max(44, Math.min(176, Math.ceil(input.scrollHeight / 22) * 22));
+      const lineHeight = Number.parseFloat(getComputedStyle(input).lineHeight);
+      if (!Number.isFinite(lineHeight) || lineHeight <= 0) return;
+      const minHeight = lineHeight * 2;
+      const maxHeight = lineHeight * 8;
+      input.style.overflowY = "hidden";
+      input.style.height = `${minHeight}px`;
+      const height = Math.max(minHeight, Math.min(maxHeight, Math.ceil(input.scrollHeight / lineHeight) * lineHeight));
       input.style.height = `${height}px`;
-      input.style.overflowY = input.scrollHeight > 176 ? "auto" : "hidden";
+      input.style.overflowY = input.scrollHeight > maxHeight ? "auto" : "hidden";
     };
     resize();
     const observer = new ResizeObserver(resize);
