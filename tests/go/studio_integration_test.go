@@ -46,7 +46,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 		t.Fatal("requires empty dedicated database", err)
 	}
 	t.Cleanup(func() {
-		for _, table := range []string{"studio_image_folders", "studio_folders", "studio_batch_attachments", "studio_attachments", "studio_batch_jobs", "studio_batches", "credit_ledger", "model_prices", "job_image_previews", "image_thumbnails", "images", "jobs", "sessions", "users"} {
+		for _, table := range []string{"studio_image_folders", "studio_folders", "studio_batch_attachments", "studio_attachment_renditions", "studio_attachments", "studio_batch_jobs", "studio_batches", "credit_ledger", "model_prices", "job_image_previews", "image_thumbnails", "images", "jobs", "sessions", "users"} {
 			if _, err := DB.Exec("DROP TABLE IF EXISTS " + table); err != nil {
 				t.Error(err)
 			}
@@ -257,6 +257,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 	request(Client, "POST", "/api/admin/users", map[string]any{"username": "disabled_user", "password": "integration1234", "role": "user", "active": false}, 201)
 	request(second, "POST", "/api/auth/login", map[string]string{"username": "disabled_user", "password": "integration1234"}, 401)
 	attachmentIDs := []string{}
+	var firstAttachment studio.Attachment
 	for range 6 {
 		var buf bytes.Buffer
 		writer := multipart.NewWriter(&buf)
@@ -276,7 +277,49 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 		}
 		var att studio.Attachment
 		json.Unmarshal(raw, &att)
+		if len(attachmentIDs) == 0 {
+			firstAttachment = att
+		}
 		attachmentIDs = append(attachmentIDs, att.ID)
+	}
+	// Historical attachments create display copies only when visited; originals
+	// and submission inputs remain unchanged after all three renditions exist.
+	var cacheCount int
+	if err = DB.QueryRow("SELECT COUNT(*) FROM studio_attachment_renditions WHERE attachment_id=?", firstAttachment.ID).Scan(&cacheCount); err != nil || cacheCount != 0 {
+		t.Fatal("upload must not eagerly encode display copies", cacheCount, err)
+	}
+	for _, url := range []string{firstAttachment.ThumbnailURL, firstAttachment.PreviewURL, firstAttachment.PreviewLargeURL} {
+		if url == "" {
+			t.Fatal("upload omitted rendition URL")
+		}
+		res, err := Client.Get(server.URL + url)
+		if err != nil {
+			t.Fatal(err)
+		}
+		data, _ := io.ReadAll(res.Body)
+		res.Body.Close()
+		if res.StatusCode != 200 || res.Header.Get("Content-Type") != "image/webp" || len(data) == 0 {
+			t.Fatal("rendition was not generated", res.StatusCode)
+		}
+		etag := res.Header.Get("ETag")
+		req, _ := http.NewRequest("GET", server.URL+url, nil)
+		req.Header.Set("If-None-Match", etag)
+		res, err = Client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		data, _ = io.ReadAll(res.Body)
+		res.Body.Close()
+		if res.StatusCode != 304 || len(data) != 0 {
+			t.Fatal("rendition did not revalidate", res.StatusCode)
+		}
+		request(second, "GET", url, nil, 404)
+	}
+	if err = DB.QueryRow("SELECT COUNT(*) FROM studio_attachment_renditions WHERE attachment_id=?", firstAttachment.ID).Scan(&cacheCount); err != nil || cacheCount != 3 {
+		t.Fatal("rendition cache did not persist independently", cacheCount, err)
+	}
+	if original := request(Client, "GET", firstAttachment.URL, nil, 200); !bytes.Equal(original, testPNG()) {
+		t.Fatal("display compression changed original")
 	}
 	opts = studio.GenerationOptions{ModelID: "gemini-3.1-flash-image", Ratio: "自动", Count: 1}
 	six := map[string]any{"prompt": "six-inputs", "attachmentIds": attachmentIDs, "options": opts, "requestId": studio.NewID(), "expectedCredits": 1}

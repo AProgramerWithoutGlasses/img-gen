@@ -16,6 +16,7 @@ Go 测试保留在同一个外部测试包，文件名区分主题，既有 49 �
 | 设计稿变更 | 保存当前指定稿；按变动核对局部画面、字体及对应真实浏览器；需要时显式指定稿审计／导出，旧场景映射仍适用时才运行 design:compare |
 | 现行创作对话框圆角或尺寸 | 保存指定稿后 node tests/design/check-dialog-corners.mjs；检查当前批准参数与适配组，浏览器只补受影响流程。新风格先更新相应规则与用例，其他区域不硬套旧参数和节点 ID |
 | 对话框按钮轮廓或栅格绘制 | node frontend/tests/e2e/dialog-pixels-check.mjs；覆盖 0.9、1、1.1、1.125、1.25、1.5、2 DPR 的亮暗及输入增长，比较截图可见对边，并用旧 CSS 负例确认能发现不均；不以几何值代替截图 |
+| 图片资源选择、附件自适应预览 | node frontend/tests/e2e/image-renditions-check.mjs；按实际尺寸/DPR核对压缩URL、当前卡片锚点、比例/小图/长图、输入增高、快速切换与失败回退；真实编码及权限由Go测试验证，不读生产图片 |
 | 设计连接工具 | npm run design:smoke，相关命令实际验证 |
 | 上游探测脚本 | Python 语法和安全 dry-run、Go 显式编译；不自动实际收费探测 |
 

@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { FocusEvent } from "react";
+import { createPortal } from "react-dom";
+import { RenditionImage } from "../../components/RenditionImage";
+import type { Attachment } from "../../types";
+import { attachmentPreviewLayout, visibleAttachmentDimensions } from "./attachment-preview";
+import type { AttachmentPreviewLayout } from "./attachment-preview";
 import "./dialog-attachments.css";
 
-export interface DialogAttachmentItem {
+export interface DialogAttachmentItem extends Partial<Attachment> {
   id: string;
   name: string;
-  url?: string;
-  width?: number;
-  height?: number;
   status?: "uploading" | "failed" | "ready";
   error?: string;
 }
@@ -21,9 +23,13 @@ interface Props {
 
 export default function DialogAttachments({ items, disabled, onRemove, active }: Props) {
   const [previewId, setPreviewId] = useState<string | null>(null);
-  const [previewHeight, setPreviewHeight] = useState(324);
+  const [layoutState, setLayout] = useState<{ key: string; value: AttachmentPreviewLayout } | null>(null);
+  const [density, setDensity] = useState(window.devicePixelRatio || 1);
+  const [natural, setNatural] = useState<{ key: string; width: number; height: number } | null>(null);
   const [imageState, setImageState] = useState<{ key: string; state: "loading" | "ready" | "failed" }>({ key: "", state: "loading" });
+  const container = useRef<HTMLDivElement>(null);
   const strip = useRef<HTMLDivElement>(null);
+  const cards = useRef(new Map<string, HTMLDivElement>());
   const preview = useRef<HTMLDivElement>(null);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -95,31 +101,59 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
   }, [active, closePreview]);
 
   const selected = items.find((item) => item.id === previewId);
-  const previewKey = selected?.url ? `${selected.id}:${selected.url}` : "";
+  const selectedKey = selected?.url ? `${selected.id}:${selected.url}` : "";
+  const layout = layoutState?.key === selectedKey ? layoutState.value : null;
+  const dimensions = visibleAttachmentDimensions(selected ?? {}, natural?.key === selectedKey ? natural : undefined);
+  const previewSource = selected ? { ...selected, ...dimensions } : {};
+  // A sharper rendition must not hide an already displayed image. In particular,
+  // an original fallback keeps the same src across DPR changes and fires no load.
+  const previewKey = selectedKey;
+  const currentPreviewKey = useRef(previewKey);
+  currentPreviewKey.current = previewKey;
   const loadState = imageState.key === previewKey ? imageState.state : "loading";
-  const pictureRatio = selected?.width && selected?.height ? selected.width / selected.height : 1;
-  const pictureWidth = Math.min(316, Math.max(1, previewHeight - 36) * pictureRatio);
-  const pictureHeight = Math.min(Math.max(1, previewHeight - 36), 316 / pictureRatio);
   useLayoutEffect(() => {
-    if (!previewId || !active) return;
+    if (!previewId || !active) {
+      setLayout(null);
+      return;
+    }
     const measure = () => {
-      const top = strip.current?.getBoundingClientRect().top ?? 340;
-      setPreviewHeight(Math.max(52, Math.min(324, top - 10.188 - 8)));
+      const anchor = cards.current.get(previewId);
+      if (!anchor || !container.current) return;
+      const next = attachmentPreviewLayout(dimensions, anchor.getBoundingClientRect(),
+        { left: 0, top: 0 }, document.documentElement.clientWidth);
+      setLayout(previous => {
+        if (!next) return null;
+        const old = previous?.key === selectedKey ? previous.value : null;
+        return old && old.left === next.left && old.top === next.top &&
+          old.width === next.width && old.height === next.height &&
+          old.pictureWidth === next.pictureWidth && old.pictureHeight === next.pictureHeight
+          ? previous : { key: selectedKey, value: next };
+      });
+      setDensity(window.devicePixelRatio || 1);
     };
     measure();
     const resize = new ResizeObserver(measure);
     if (strip.current) resize.observe(strip.current);
+    if (container.current) resize.observe(container.current);
+    const anchor = cards.current.get(previewId);
+    if (anchor) resize.observe(anchor);
     // The composer can grow or move without this component changing size.
-    const composerArea = strip.current?.closest(".composer-area") ?? strip.current?.parentElement?.parentElement;
+    const composerArea = container.current?.closest(".composer-area");
     if (composerArea) resize.observe(composerArea);
+    // Sidebar collapse can move a fixed-width composer without resizing it.
+    const workspace = container.current?.closest(".workspace");
+    if (workspace) resize.observe(workspace);
+    const media = window.matchMedia(`(resolution: ${density}dppx)`);
+    media.addEventListener("change", measure);
     window.addEventListener("resize", measure);
     window.addEventListener("scroll", measure, true);
     return () => {
       resize.disconnect();
+      media.removeEventListener("change", measure);
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", measure, true);
     };
-  }, [previewId, active]);
+  }, [previewId, selectedKey, active, dimensions.width, dimensions.height, density, items.length]);
 
   const leaveCard = (event: FocusEvent<HTMLDivElement>) => {
     const target = event.relatedTarget;
@@ -132,13 +166,14 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
   const stripWidth = 16 + columns * 62 + (columns - 1) * 7;
 
   return (
-    <div className="dialog-attachments">
+    <div ref={container} className="dialog-attachments">
       <div ref={strip} className="attachment-row dialog-attachments-track" style={{ width: stripWidth }} aria-label="附件栏">
         <div className="dialog-attachments-cards">
           {items.map((item) => (
             <div
               className="attachment-item dialog-attachment-card"
               key={item.id}
+              ref={element => { if (element) cards.current.set(item.id, element); else cards.current.delete(item.id); }}
               data-attachment-id={item.id}
               tabIndex={0}
               aria-label={`参考图：${item.name}${item.status === "uploading" ? "，上传中" : item.status === "failed" ? "，上传失败" : ""}`}
@@ -148,7 +183,8 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
               onBlur={leaveCard}
             >
               {item.url && item.status !== "uploading" && item.status !== "failed" ? (
-                <img className="dialog-attachment-thumbnail" src={item.url} alt={item.name} width={62} height={62} decoding="async" />
+                <RenditionImage source={item} displayWidth={62} displayHeight={62} fit="cover" purpose="thumbnail"
+                  className="dialog-attachment-thumbnail" alt={item.name} width={62} height={62} decoding="async" />
               ) : (
                 <div className={`dialog-attachment-placeholder${item.status === "failed" ? " dialog-attachment-placeholder-failed" : ""}`} role="status" aria-label={item.error || undefined}>
                   <span>{item.status === "failed" ? "上传失败" : "上传中"}</span>
@@ -172,33 +208,49 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
           ))}
         </div>
       </div>
-      {selected?.url && (
+      {selected?.url && layout && createPortal(
         <div
+          key={selected.id}
           ref={preview}
-          className="dialog-attachment-preview"
+          className="dialog-composer-scope dialog-attachment-preview"
           role="region"
           aria-label="参考图预览"
-          style={{ height: previewHeight }}
+          data-attachment-id={selected.id}
+          style={{ left: layout.left, top: layout.top, width: layout.width, height: layout.height }}
           onMouseEnter={clearClose}
           onMouseLeave={scheduleClose}
         >
           <div className="dialog-attachment-preview-image">
-            <img
-              key={previewKey}
-              src={selected.url}
+            <RenditionImage
+              key={selectedKey}
+              source={previewSource}
+              displayWidth={layout.pictureWidth}
+              displayHeight={layout.pictureHeight}
               alt={selected.name}
-              width={selected.width}
-              height={selected.height}
-              style={{ width: pictureWidth, height: pictureHeight }}
+              width={dimensions.width}
+              height={dimensions.height}
+              style={{ width: layout.pictureWidth, height: layout.pictureHeight }}
               decoding="async"
-              onLoad={() => setImageState({ key: previewKey, state: "ready" })}
-              onError={() => setImageState({ key: previewKey, state: "failed" })}
+              onLoad={event => {
+                if (currentPreviewKey.current !== previewKey) return;
+                const image = event.currentTarget;
+                setImageState({ key: previewKey, state: "ready" });
+                if (image.naturalWidth && image.naturalHeight) {
+                  setNatural(previous => previous?.key === selectedKey && previous.width === image.naturalWidth &&
+                    previous.height === image.naturalHeight ? previous : {
+                      key: selectedKey, width: image.naturalWidth, height: image.naturalHeight,
+                    });
+                }
+              }}
+              onError={() => {
+                if (currentPreviewKey.current === previewKey) setImageState({ key: previewKey, state: "failed" });
+              }}
               className={loadState === "ready" ? "dialog-attachment-preview-ready" : undefined}
             />
             {loadState !== "ready" && <span role="status" className={loadState === "failed" ? "dialog-attachment-preview-error" : undefined}>{loadState === "failed" ? "预览暂时无法加载" : "正在载入预览…"}</span>}
           </div>
           <div className="dialog-attachment-preview-name"><span>{selected.name}</span></div>
-        </div>
+        </div>, document.body,
       )}
     </div>
   );

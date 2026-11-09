@@ -131,7 +131,7 @@ func (a *App) studioState(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取输出顺序失败")
 		return
 	}
-	rows, err = a.DB.QueryContext(ctx, "SELECT b.id,a.id,a.name,a.width,a.height FROM studio_batch_attachments ba JOIN studio_batches b ON b.id=ba.batch_id JOIN studio_attachments a ON a.id=ba.attachment_id WHERE 1=1"+batchScope+" ORDER BY ba.position", batchArgs...)
+	rows, err = a.DB.QueryContext(ctx, "SELECT b.id,a.id,a.name,COALESCE(p.source_width,a.width),COALESCE(p.source_height,a.height) FROM studio_batch_attachments ba JOIN studio_batches b ON b.id=ba.batch_id JOIN studio_attachments a ON a.id=ba.attachment_id LEFT JOIN studio_attachment_renditions p ON p.attachment_id=a.id AND p.kind='thumbnail' AND p.version=1 WHERE 1=1"+batchScope+" ORDER BY ba.position", batchArgs...)
 	if err != nil {
 		apiError(w, 500, "读取附件失败")
 		return
@@ -142,7 +142,7 @@ func (a *App) studioState(w http.ResponseWriter, r *http.Request) {
 		if err = rows.Scan(&id, &att.ID, &att.Name, &att.Width, &att.Height); err != nil {
 			break
 		}
-		att.URL = "/api/studio/attachments/" + att.ID
+		setAttachmentRenditionURLs(&att)
 		attachments[id] = append(attachments[id], att)
 	}
 	err = errors.Join(err, rows.Err())
@@ -259,10 +259,10 @@ func studioHistory(jobs []Job, opts map[string]GenerationOptions, positions map[
 			g.Attachments = []Attachment{}
 		}
 		if !ok && first.HasInput {
-			g.Attachments = append(g.Attachments, Attachment{ID: first.ID + "-input", Name: "输入图片", URL: "/api/jobs/" + first.ID + "/input"})
+			g.Attachments = append(g.Attachments, Attachment{ID: first.ID + "-input", Name: "输入图片", URL: "/api/jobs/" + first.ID + "/input", PreviewURL: "/api/jobs/" + first.ID + "/input/preview/" + previewVersion})
 		}
 		if !ok && first.HasReference {
-			g.Attachments = append(g.Attachments, Attachment{ID: first.ID + "-reference", Name: "参考图片", URL: "/api/jobs/" + first.ID + "/reference"})
+			g.Attachments = append(g.Attachments, Attachment{ID: first.ID + "-reference", Name: "参考图片", URL: "/api/jobs/" + first.ID + "/reference", PreviewURL: "/api/jobs/" + first.ID + "/reference/preview/" + previewVersion})
 		}
 		active, failed := false, false
 		var started, finished *time.Time
@@ -289,7 +289,7 @@ func studioHistory(jobs []Job, opts map[string]GenerationOptions, positions map[
 				if fids == nil {
 					fids = []string{}
 				}
-				assets = append(assets, Asset{Attachment: Attachment{p.ID, "生成图片-" + p.ID + "." + strings.TrimPrefix(p.MIME, "image/"), p.URL, p.Width, p.Height}, ThumbnailURL: p.ThumbnailURL, PreviewURL: p.PreviewURL, UserID: j.UserID, CreatedAt: j.CreatedAt, BatchID: id, OutputIndex: i, Prompt: j.Prompt, Options: o, FolderIDs: fids})
+				assets = append(assets, Asset{Attachment: Attachment{ID: p.ID, Name: "生成图片-" + p.ID + "." + strings.TrimPrefix(p.MIME, "image/"), URL: p.URL, Width: p.Width, Height: p.Height}, ThumbnailURL: p.ThumbnailURL, PreviewURL: p.PreviewURL, UserID: j.UserID, CreatedAt: j.CreatedAt, BatchID: id, OutputIndex: i, Prompt: j.Prompt, Options: o, FolderIDs: fids})
 				g.ImageIDs = append(g.ImageIDs, p.ID)
 			}
 		}

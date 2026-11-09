@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { connect, call, data, root } from '../../scripts/lib/figcraft.mjs';
 
-const pageIds = [1157, 1418, 1622, 1957, 2174, 2247, 2508, 2647, 2766, 2969, 3285];
+const pageIds = [1157, 1418, 1622, 1957, 2174, 2247, 2508, 2647, 2766, 2969, 3285, 4007];
 // Only these explicitly approved groups from the comparison and input-size pages
 // are sources. Their pages also contain old size, A/B and 14px references.
 const approvedGroupIds = [3739, 3773, 3807, 3937, 3972];

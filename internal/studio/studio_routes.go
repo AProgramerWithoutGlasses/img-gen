@@ -13,6 +13,7 @@ func (a *App) studioRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/studio/models", func(w http.ResponseWriter, r *http.Request) { jsonResponse(w, 200, studioModels()) })
 	mux.HandleFunc("POST /api/studio/attachments", a.uploadStudioAttachment)
 	mux.HandleFunc("GET /api/studio/attachments/{id}", a.getStudioAttachment)
+	mux.HandleFunc("GET /api/studio/attachments/{id}/{kind}/{version}", a.getStudioAttachmentRendition)
 	mux.HandleFunc("POST /api/studio/generations", a.createStudioGeneration)
 	mux.HandleFunc("POST /api/studio/folders", a.createStudioFolder)
 	mux.HandleFunc("PATCH /api/studio/folders/{id}", a.renameStudioFolder)

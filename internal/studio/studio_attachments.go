@@ -1,16 +1,13 @@
 package studio
 
 import (
-	"bytes"
 	"database/sql"
 	"errors"
 	_ "golang.org/x/image/webp"
-	"image"
 	_ "image/gif"
 	"io"
 	"net/http"
 	"path/filepath"
-	"strings"
 	"unicode/utf8"
 )
 
@@ -37,8 +34,8 @@ func (a *App) uploadStudioAttachment(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 400, "单张图片不能超过 20 MB")
 		return
 	}
-	cfg, format, err := image.DecodeConfig(bytes.NewReader(content))
-	if err != nil || !strings.Contains("|png|jpeg|webp|gif|", "|"+format+"|") || cfg.Width < 1 || cfg.Height < 1 || int64(cfg.Width)*int64(cfg.Height) > 64_000_000 {
+	cfg, format, _, err := attachmentPictureConfig(content)
+	if err != nil {
 		apiError(w, 400, "请选择有效的 PNG、JPG、WebP 或 GIF 图片（最多 6400 万像素）")
 		return
 	}
@@ -52,7 +49,9 @@ func (a *App) uploadStudioAttachment(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "保存附件失败")
 		return
 	}
-	jsonResponse(w, 201, Attachment{id, name, "/api/studio/attachments/" + id, cfg.Width, cfg.Height})
+	att := Attachment{ID: id, Name: name, Width: cfg.Width, Height: cfg.Height}
+	setAttachmentRenditionURLs(&att)
+	jsonResponse(w, 201, att)
 }
 
 func (a *App) getStudioAttachment(w http.ResponseWriter, r *http.Request) {

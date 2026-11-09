@@ -20,6 +20,7 @@
 | GET /api/studio/state | 返回 StudioData、priceVersions；普通用户仅自己的资料和资源，管理员可读取请求记录需要的全部记录；不含密码和图片二进制 |
 | POST /api/studio/attachments | multipart 的 image 字段，单张20MB、PNG/JPEG/WebP/GIF、最多6400万像素，返回服务端附件ID和私有URL |
 | GET /api/studio/attachments/{id} | 认证后按归属读取原始附件；管理员可查看请求中的附件 |
+| GET /api/studio/attachments/{id}/{kind}/1 | kind为thumbnail、preview或preview-large，分别返回256px方形、640px等比、1600px等比静态预览；首次访问懒生成，缓存命中及304/HEAD均先检查权限 |
 | POST /api/studio/generations | JSON：prompt、attachmentIds、options、requestId、expectedCredits；最多6附件、1–4输出；202接收，完全相同的requestId重放返回200且不重复入队或扣费，不同内容返回409 |
 | POST/PATCH/DELETE /api/studio/folders[/id] | 当前用户的单层文件夹；名称1–60字符、去首尾空白、同用户内不重名；删除仅清关联，不删图片 |
 | POST /api/studio/folder-memberships | imageIds、folderIds、remove；批量增补或移出当前关系，重复加入幂等；单次最多500图片/100文件夹；事务内检查所有资源归属，管理员也不能把他人的图归入自己的文件夹 |
@@ -34,7 +35,7 @@
 
 每个输出仍独立进入原队列并单独调用上游，保持现有冻结/成功结算/失败退款逻辑。服务端保存批内outputIndex，刷新后顺序稳定；批内部分完成时立即显示成功图，仍有运行任务则整批processing，全部结束且有失败则failed。成功图仍入图库，费用只包含服务端实际冻结或结算的任务；完成失败批次的管理记录显示实际消耗。旧多模型批次按模型拆成多轮，旧批内序号没有历史事实可恢复，保留旧创建时间/ID顺序。
 
-六张附件按上传次序存储并传给上游。GPT编辑采用多个image[]；Gemini采用多个原生inlineData。WebP/GIF在请求副本中转换为PNG，原件保留；其后仍走原有输入处理，4096边长、12MB请求副本预算、JPEG质量等压缩设定未改。原图下载和后续添加仍使用原图。生成结果提供版本化缩略图与高清预览URL；当前Attachment仅返回原图URL，对话框附件小图、悬停和历史附件仍读取原图，尚未接入衍生图。现状与待实施建议见 [图片预览策略](image-preview-strategy.md)。
+六张附件按上传次序存储并传给上游。GPT编辑采用多个image[]；Gemini采用多个原生inlineData。WebP/GIF在请求副本中转换为PNG，原件保留；其后仍走原有输入处理，4096边长、12MB请求副本预算、JPEG质量等压缩设定未改。原图下载和后续添加仍使用原图。Attachment新增可选thumbnailUrl（256方形）、previewUrl（640等比）、previewLargeUrl（1600等比），width/height表示方向校正后的可视原图尺寸；旧附件可在首次衍生缓存建立后纠正尺寸，旧任务输入兼容原有1600预览URL。生成ImageAsset继续提供原有640缩略图/1600预览URL语义。前端按实际显示尺寸与DPR选图，见 [图片预览策略](image-preview-strategy.md)。
 
 ## 参数与实测边界
 

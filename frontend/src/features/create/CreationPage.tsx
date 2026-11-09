@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
+import { RenditionImage } from "../../components/RenditionImage";
 import { DEFAULT_OPTIONS, MODELS, normalizeOptions } from "../../config/models";
 import { downloadImage, readImageFile } from "../../lib/images";
 import { useStudio } from "../../state/StudioContext";
@@ -228,7 +229,7 @@ export default function CreationPage({
                 {job.attachments.length > 0 && (
                   <div className="sent-attachments">
                     {job.attachments.map((a) => (
-                      <img src={a.url} alt={a.name} key={a.id} width={a.width} height={a.height} loading="lazy" decoding="async" />
+                      <RenditionImage source={a} fit="cover" purpose="thumbnail" displayWidth={56} displayHeight={56} alt={a.name} key={a.id} width={a.width} height={a.height} loading="lazy" decoding="async" />
                     ))}
                   </div>
                 )}
@@ -273,10 +274,8 @@ export default function CreationPage({
                         onClick={() => onPreview(image, images)}
                         aria-label={`查看${image.name}`}
                       >
-                        <img
-                          src={image.thumbnailUrl ?? image.previewUrl ?? image.url}
-                          srcSet={image.thumbnailUrl && image.previewUrl
-                            ? `${image.thumbnailUrl} 1x, ${image.previewUrl} 2x` : undefined}
+                        <RenditionImage
+                          source={image}
                           alt={image.name}
                           width={image.width}
                           height={image.height}

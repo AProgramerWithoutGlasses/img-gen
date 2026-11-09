@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
+import { RenditionImage } from "../../components/RenditionImage";
 import { downloadImage } from "../../lib/images";
 import type { ImageAsset, Notify, PreviewImage } from "../../types";
 import { errorText, useOutsideClose } from "./shared";
@@ -124,8 +125,11 @@ export function GalleryImage({
         aria-pressed={selecting ? selected : undefined}
         onClick={selecting ? onToggle : () => onPreview(image, collection)}
       >
-        <img
-          src={image.thumbnailUrl ?? image.url}
+        <RenditionImage
+          source={image}
+          displayWidth={width}
+          displayHeight={height}
+          fit="cover"
           alt={image.name}
           loading="lazy"
           decoding="async"

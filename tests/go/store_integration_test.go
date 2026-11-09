@@ -48,7 +48,7 @@ func TestMySQLWorkflow(t *testing.T) {
 		t.Fatal("integration requires a completely empty dedicated database")
 	}
 	t.Cleanup(func() {
-		for _, table := range []string{"studio_image_folders", "studio_folders", "studio_batch_attachments", "studio_attachments", "studio_batch_jobs", "studio_batches", "credit_ledger", "model_prices", "job_image_previews", "image_thumbnails", "images", "jobs", "sessions", "users"} {
+		for _, table := range []string{"studio_image_folders", "studio_folders", "studio_batch_attachments", "studio_attachment_renditions", "studio_attachments", "studio_batch_jobs", "studio_batches", "credit_ledger", "model_prices", "job_image_previews", "image_thumbnails", "images", "jobs", "sessions", "users"} {
 			if _, err := DB.Exec("DROP TABLE IF EXISTS " + table); err != nil {
 				t.Error(err)
 			}

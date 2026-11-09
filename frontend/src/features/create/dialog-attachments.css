@@ -136,18 +136,22 @@
 .dialog-attachment-card:focus-within .dialog-attachment-remove:disabled { opacity: .5; }
 .dialog-attachment-remove:focus-visible { outline: 2px solid #fffa00; outline-offset: 1px; }
 .dialog-attachment-preview {
-  position: absolute;
+  position: fixed;
   z-index: 60;
-  bottom: calc(100% + 10.188px);
-  left: 0;
   box-sizing: border-box;
-  width: 324px;
-  max-width: 100%;
   border: 1px solid var(--dialog-border, #858585);
   border-radius: 12px;
   background: var(--dialog-surface, #2a2a2a);
   color: var(--dialog-text, #f2f2f2);
   animation: dialog-attachment-preview-enter 140ms ease both;
+}
+.dialog-attachment-preview::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 11px;
 }
 .dialog-attachment-preview-image {
   position: absolute;

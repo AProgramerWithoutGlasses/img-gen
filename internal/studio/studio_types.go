@@ -15,11 +15,14 @@ type GenerationOptions struct {
 }
 
 type Attachment struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	URL    string `json:"url"`
-	Width  int    `json:"width"`
-	Height int    `json:"height"`
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	URL             string `json:"url"`
+	Width           int    `json:"width"`
+	Height          int    `json:"height"`
+	ThumbnailURL    string `json:"thumbnailUrl,omitempty"`
+	PreviewURL      string `json:"previewUrl,omitempty"`
+	PreviewLargeURL string `json:"previewLargeUrl,omitempty"`
 }
 
 type Asset struct {

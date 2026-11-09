@@ -62,7 +62,7 @@ export async function verifyDialog({ page, screenshot }) {
   const composer = creation.locator(".composer");
   const toolbar = creation.locator(".composer-toolbar");
   const model = creation.getByRole("combobox", { name: "模型", exact: true });
-  const preview = creation.getByRole("region", { name: "参考图预览", exact: true });
+  const preview = page.getByRole("region", { name: "参考图预览", exact: true });
   const tooltip = page.getByRole("tooltip");
   const moveAway = async () => { await page.mouse.move(16, 80); };
   const check = async (name, action) => {
@@ -350,15 +350,21 @@ export async function verifyDialog({ page, screenshot }) {
     await expect.poll(() => removalNames(creation)).toEqual(["移除dialog-reference-1.png"]);
     await expect(preview.getByRole("img")).toHaveAttribute("src", await cards.first().getByRole("img").getAttribute("src"));
     const previewBox = await preview.boundingBox();
-    expect(previewBox.width).toBeCloseTo(324, 0);
-    expect(previewBox.height).toBeCloseTo(324, 0);
+    expect(previewBox.width).toBeLessThanOrEqual(324);
+    expect(previewBox.width).toBeGreaterThanOrEqual(128);
+    expect(previewBox.height).toBeLessThanOrEqual(324);
     const imageArea = await preview.locator(".dialog-attachment-preview-image").boundingBox();
-    expect(imageArea.width).toBeCloseTo(316, 0);
-    expect(imageArea.height).toBeCloseTo(288, 0);
+    expect(imageArea.width).toBeCloseTo(previewBox.width - 8, 0);
+    expect(imageArea.height).toBeCloseTo(previewBox.height - 36, 0);
     const filename = await preview.locator(".dialog-attachment-preview-name").boundingBox();
-    expect(filename.width).toBeCloseTo(308, 0);
+    expect(filename.width).toBeCloseTo(previewBox.width - 16, 0);
     expect(filename.height).toBeCloseTo(20, 0);
-    expect(compactBox.y - previewBox.y - previewBox.height).toBeCloseTo(10.188, 1);
+    const firstCard = await cards.first().boundingBox();
+    expect(firstCard.y - previewBox.y - previewBox.height).toBeCloseTo(10, 1);
+    expect(previewBox.x).toBeGreaterThanOrEqual(7.5);
+    if (firstCard.x + firstCard.width / 2 - previewBox.width / 2 >= 8) {
+      expect(previewBox.x + previewBox.width / 2).toBeCloseTo(firstCard.x + firstCard.width / 2, 0);
+    }
     await screenshot("dialog-attachment-hover-first");
     for (let index = 0; index < 6; index++) {
       const card = cards.nth(index), name = `dialog-reference-${index + 1}.png`;
@@ -372,6 +378,11 @@ export async function verifyDialog({ page, screenshot }) {
       const ratio = await picture.evaluate(image => image.naturalWidth / image.naturalHeight);
       const pictureBox = await picture.boundingBox();
       expect(pictureBox.width / pictureBox.height).toBeCloseTo(ratio, 2);
+      const cardBox = await card.boundingBox(), floatingBox = await preview.boundingBox();
+      expect(cardBox.y - floatingBox.y - floatingBox.height).toBeCloseTo(10, 1);
+      if (cardBox.x + cardBox.width / 2 - floatingBox.width / 2 >= 8) {
+        expect(floatingBox.x + floatingBox.width / 2).toBeCloseTo(cardBox.x + cardBox.width / 2, 0);
+      }
       await expect(card.getByRole("img")).toHaveCSS("object-fit", "cover");
     }
     await screenshot("dialog-six-attachments-hover-last");

@@ -42,7 +42,9 @@ try {
   await expect(page.locator('.balance-card')).toHaveCount(0);
   const estimate = page.getByRole('button', { name: '预计 2 积分', exact: true });
   await expect(estimate).toHaveText('2');
-  await expect(estimate.locator('svg')).toHaveCount(1);
+  await estimate.click();
+  await expect(estimate).toHaveText('2');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   await shot('01-authenticated');
   const creation = page.getByRole('region', { name: '图像创作', exact: true });
   const before = await creation.getByTestId('generation-turn').count();
@@ -52,8 +54,8 @@ try {
   await chooseDialogOption(page, creation.getByRole('combobox', { name: '生成数量', exact: true }), '1张');
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
   await page.getByLabel('上传图片文件').setInputFiles(Array.from({ length: 6 }, (_, i) => ({ name: `browser-${i}.png`, mimeType: 'image/png', buffer: png })));
-  await creation.getByRole('button', { name: '展开参考图', exact: true }).click();
   await expect(creation.locator('.attachment-item')).toHaveCount(6);
+  for (const card of await creation.locator('.attachment-item').all()) await expect(card).toBeVisible();
   await shot('02-six-attachments');
   await creation.getByRole('textbox', { name: '提示词', exact: true }).fill('six-inputs browser');
   await creation.getByRole('button', { name: '生成', exact: true }).click();
@@ -75,6 +77,23 @@ try {
   expect(download.suggestedFilename()).toMatch(/\.png$/);
   expect(await download.failure()).toBeNull();
   await shot('03-generated-and-download');
+  // Exercise the new display URLs through the real upload API, encoder, cache
+  // and CSP, using a repository fixture rather than production image data.
+  await page.getByLabel('上传图片文件', { exact: true }).setInputFiles(
+    fileURLToPath(new URL('../../../tests/fixtures/thumbnail-sample.jpg', import.meta.url)));
+  const uploaded = creation.locator('.dialog-attachment-card');
+  await expect(uploaded).toHaveCount(1);
+  const uploadedThumbnail = uploaded.locator('img');
+  await expect(uploadedThumbnail).toHaveAttribute('src', /\/thumbnail\/1$/);
+  await expect.poll(() => uploadedThumbnail.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  await uploaded.hover({ position: { x: 8, y: 48 } });
+  const attachmentPreview = page.getByRole('region', { name: '参考图预览', exact: true });
+  await expect(attachmentPreview).toHaveCSS('opacity', '1');
+  await expect(attachmentPreview.locator('img')).toHaveAttribute('src', /\/preview\/1$/);
+  await expect(attachmentPreview.locator('img')).toHaveCSS('opacity', '1');
+  await shot('attachment-adaptive-real-go');
+  await uploaded.getByRole('button', { name: '移除thumbnail-sample.jpg', exact: true }).click();
+  await expect(creation.locator('.attachment-row')).toHaveCount(0);
   // Exercise real persisted personal usage, including partial settlement and pagination.
   const readState = async () => {
     const response = await context.request.get(origin + '/api/studio/state');

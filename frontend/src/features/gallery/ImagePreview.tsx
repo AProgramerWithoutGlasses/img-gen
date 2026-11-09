@@ -1,5 +1,6 @@
 import { Icon } from "../../components/Icon";
 import { Modal } from "../../components/Modal";
+import { RenditionImage } from "../../components/RenditionImage";
 import { useStudio } from "../../state/StudioContext";
 import { MODELS } from "../../config/models";
 import { downloadImage } from "../../lib/images";
@@ -31,9 +32,10 @@ export function ImagePreview({
     <Modal title="图片预览" className="image-preview" onClose={() => onClose()}>
       <div className="preview-grid">
         <div className="preview-stage">
-          <img
-            src={selectedImage.previewUrl ?? selectedImage.url}
+          <RenditionImage
+            source={selectedImage}
             alt={selectedImage.name}
+            decoding="async"
           />
           <button
             className="icon-button preview-prev"

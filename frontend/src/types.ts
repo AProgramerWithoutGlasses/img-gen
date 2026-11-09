@@ -32,10 +32,11 @@ export interface Attachment {
   url: string;
   width: number;
   height: number;
-}
-export interface ImageAsset extends Attachment {
   thumbnailUrl?: string;
   previewUrl?: string;
+  previewLargeUrl?: string;
+}
+export interface ImageAsset extends Attachment {
   userId: string;
   createdAt: string;
   batchId: string;
