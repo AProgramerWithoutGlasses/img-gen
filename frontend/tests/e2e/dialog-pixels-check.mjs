@@ -78,7 +78,7 @@ try {
     }
     if (ratio === 1.25) {
       // Put the actual old CSS back: this pixel check must reject the reported bug.
-      await page.locator(".dialog-select-accent").evaluate(el => {
+      await page.getByRole("combobox", { name: "模型", exact: true }).evaluate(el => {
         el.style.position = "fixed";
         el.style.left = "529px";
         el.style.top = "537px";
@@ -91,12 +91,12 @@ try {
         border-radius:calc(var(--dialog-control-height,36px)/2 - 2px);pointer-events:none }` });
       await settle(page);
       const png = utils.PNG.sync.read(await page.screenshot({ path: `${output}/old-css-rejected.png` }));
-      const model = await page.locator(".dialog-select-accent").boundingBox();
+      const model = await page.getByRole("combobox", { name: "模型", exact: true }).boundingBox();
       assert(symmetry(png, model, ratio) > 12, "The old independently painted border must fail the visual check");
       await old.evaluate(el => el.remove());
       await settle(page);
       const fixed = utils.PNG.sync.read(await page.screenshot({ path: `${output}/fractional-position-fixed.png` }));
-      const bounds = await page.locator(".dialog-select-accent .dialog-button-surface rect").first().boundingBox();
+      const bounds = await page.getByRole("combobox", { name: "模型", exact: true }).locator(".dialog-button-surface rect").first().boundingBox();
       assert(symmetry(fixed, bounds, ratio) <= 12);
     }
     if (ratio === 1) {
@@ -113,7 +113,7 @@ try {
         const buffer = Buffer.from(capture.data, "base64");
         await writeFile(`${output}/live-scale-${nextRatio}.png`, buffer);
         const png = utils.PNG.sync.read(buffer);
-        const bounds = await page.locator(".dialog-select-accent .dialog-button-surface rect").first().boundingBox();
+        const bounds = await page.getByRole("combobox", { name: "模型", exact: true }).locator(".dialog-button-surface rect").first().boundingBox();
         assert(symmetry(png, bounds, nextRatio) <= 12);
         results.push({ ratio: nextRatio, liveScaleChange: true, status: "passed" });
       }

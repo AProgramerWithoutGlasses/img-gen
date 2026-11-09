@@ -385,7 +385,7 @@ export default function CreationPage({
               options={MODELS.map(item => ({ value: item.id, label: dialogModelNames[item.id] ?? item.name }))}
               onChange={modelId => updateOption({ modelId })}
               disabled={sending}
-              accent
+              variant="model"
               tooltip="选择生成模型"
               tooltipDisabled={!active}
               openMenu={openMenu}

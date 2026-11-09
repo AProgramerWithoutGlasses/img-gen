@@ -94,11 +94,14 @@
   line-height: 18px;
   text-align: center;
 }
-.dialog-select-accent {
-  width: 194px;
-  padding-right: 9px;
+.dialog-select-model,
+.dialog-menu-model {
+  width: 166px;
 }
-.dialog-select-accent .dialog-button-label,
+.dialog-select-model {
+  gap: 8px;
+  padding: 0 6px 0 14px;
+}
 .dialog-button-generate .dialog-button-label {
   margin-right: 6px;
 }
@@ -158,6 +161,9 @@
 }
 .dialog-menu[data-state="open"] {
   animation: dialog-menu-enter 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+.dialog-menu-model .dialog-option[aria-selected="false"] .dialog-selected-dot {
+  visibility: hidden;
 }
 .dialog-menu[data-state="closed"] {
   opacity: 0;

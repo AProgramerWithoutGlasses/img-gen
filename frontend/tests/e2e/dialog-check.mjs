@@ -14,6 +14,49 @@ export async function removeDialogAttachment(creation, label) {
   await button.click();
 }
 
+export async function verifyCompactModelControls(control, menu) {
+  const button = await control.evaluate(element => {
+    const rect = element.getBoundingClientRect(), label = element.querySelector('.dialog-button-label');
+    const range = document.createRange(); range.selectNodeContents(label);
+    const text = range.getBoundingClientRect(), arrow = element.querySelector('.dialog-arrow').getBoundingClientRect();
+    const middle = rect.top + rect.height / 2;
+    return { left: rect.left, right: rect.right, width: rect.width, height: rect.height, textWidth: text.width,
+      textLeftSpace: text.left - rect.left, textArrowGap: arrow.left - text.right,
+      arrowRightSpace: rect.right - arrow.right,
+      leftVisible: element.contains(document.elementFromPoint(rect.left + 1, middle)),
+      rightVisible: element.contains(document.elementFromPoint(rect.right - 1, middle)) };
+  });
+  expect(button.height).toBeCloseTo(36, 0);
+  expect(button.width, 'Model button should use the approved 166px length').toBeCloseTo(166, 1);
+  expect(button.textLeftSpace).toBeGreaterThanOrEqual(10);
+  expect(button.textArrowGap, 'Model text overlaps the arrow').toBeGreaterThanOrEqual(4);
+  expect(button.arrowRightSpace).toBeGreaterThanOrEqual(4);
+  expect(button.leftVisible && button.rightVisible, 'Model capsule is clipped').toBe(true);
+  if (!menu) return { button };
+  const options = await menu.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    const rows = Array.from(element.querySelectorAll('[role="option"]')).map(row => {
+      const label = row.querySelector('.dialog-option-label'), range = document.createRange();
+      range.selectNodeContents(label);
+      const text = range.getBoundingClientRect(), area = label.getBoundingClientRect();
+      const dot = row.querySelector('.dialog-selected-dot')?.getBoundingClientRect();
+      return { textWidth: text.width, availableWidth: area.width, left: text.left,
+        dotGap: dot ? dot.left - text.right : null, height: row.getBoundingClientRect().height };
+    });
+    return { left: rect.left, right: rect.right, width: rect.width, rows };
+  });
+  const longest = Math.max(...options.rows.map(row => row.textWidth));
+  expect(options.width, 'Model menu should use the approved 166px length').toBeCloseTo(166, 1);
+  expect(options.left, 'Model menu and button should align at their left edges').toBeCloseTo(button.left, 1);
+  expect(options.right, 'Model menu and button should align at their right edges').toBeCloseTo(button.right, 1);
+  for (const option of options.rows) {
+    expect(option.availableWidth + .1, 'Model option text is clipped').toBeGreaterThanOrEqual(option.textWidth);
+    expect(option.left).toBeCloseTo(options.rows[0].left, 1);
+    if (option.dotGap !== null) expect(option.dotGap, 'Selection marker overlaps model text').toBeGreaterThanOrEqual(8);
+  }
+  return { button, menuWidth: options.width, longestOptionText: longest };
+}
+
 // Read the actual preview provider's persisted result, without replacing its actions.
 async function previewGeneration(page, prompt) {
   return page.evaluate(async (text) => {
@@ -107,7 +150,7 @@ export async function verifyDialog({ page, screenshot }) {
     expect((await composer.boundingBox()).height).toBeCloseTo(beforeFocus.height, 0);
     const optical = await creation.getByRole("button", { name: "上传图片", exact: true }).evaluate(element => {
       const rect = element.getBoundingClientRect();
-      const model = document.querySelector('.dialog-select-accent').getBoundingClientRect();
+      const model = document.querySelector('[role="combobox"][aria-label="模型"]').getBoundingClientRect();
       const inner = element.querySelector('.dialog-button-surface rect:nth-child(2)');
       const surface = element.querySelector('.dialog-button-surface rect').getBoundingClientRect();
       const plus = element.querySelector('.dialog-button-surface-icon').getBoundingClientRect();
@@ -132,9 +175,18 @@ export async function verifyDialog({ page, screenshot }) {
     await model.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     const box = await model.boundingBox(), menu = await page.getByRole("listbox").boundingBox();
-    expect(box.width).toBeCloseTo(194, 0);
     await expect(model).toHaveCSS("font-size", "13px");
-    expect(menu.width).toBeCloseTo(246, 0);
+    await verifyCompactModelControls(model, page.getByRole("listbox"));
+    await moveAway();
+    const fills = await model.evaluate(element => {
+      const ordinary = document.querySelector('[role="combobox"][aria-label="生成数量"]');
+      const generate = document.querySelector('.dialog-button-generate');
+      const fill = node => getComputedStyle(node).getPropertyValue('--dialog-button-fill').trim();
+      return { model: fill(element), ordinary: fill(ordinary), generate: fill(generate) };
+    });
+    expect(fills.model, "Model selector should use the ordinary button colour").toBe(fills.ordinary);
+    expect(fills.model.toLowerCase()).not.toBe("#fffa00");
+    expect(fills.generate.toLowerCase(), "Generate should retain its yellow emphasis").toBe("#fffa00");
     const geometry = await model.evaluate(element => {
       const outer = getComputedStyle(element), inner = element.querySelector('.dialog-button-surface rect:nth-child(2)');
       return { outerRadius: outer.borderTopLeftRadius, innerRadius: Number(inner.getAttribute('rx')),

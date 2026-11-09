@@ -290,6 +290,7 @@ export interface DialogSelectProps<T extends string> {
   onChange: (value: T) => void;
   disabled?: boolean;
   accent?: boolean;
+  variant?: "default" | "model";
   tooltip?: string;
   tooltipDisabled?: boolean;
   openMenu: string | null;
@@ -305,6 +306,7 @@ export function DialogSelect<T extends string>({
   onChange,
   disabled = false,
   accent = false,
+  variant = "default",
   tooltip,
   tooltipDisabled = false,
   openMenu,
@@ -322,7 +324,8 @@ export function DialogSelect<T extends string>({
   const isOpen = openMenu === menuId && !disabled && options.length > 0;
   const present = useExitPresence(isOpen, 120);
   const theme = useDialogTheme();
-  const width = accent ? 246 : 116;
+  const isModel = variant === "model";
+  const width = isModel ? undefined : 116;
   const position = useFloatingPosition(button, popup, present, "above", width);
   const returnFocus = useCallback(() => button.current?.focus({ preventScroll: true }), []);
   const close = (focus = true) => {
@@ -409,7 +412,7 @@ export function DialogSelect<T extends string>({
         aria-activedescendant={isOpen ? `${id}-option-${highlighted}` : undefined}
         aria-hidden={!isOpen || undefined}
         tabIndex={-1}
-        className="dialog-menu"
+        className={`dialog-menu${isModel ? " dialog-menu-model" : ""}`}
         data-dialog-theme={theme}
         data-state={isOpen ? "open" : "closed"}
         style={style}
@@ -435,7 +438,7 @@ export function DialogSelect<T extends string>({
             onClick={() => choose(index)}
           >
             <span className="dialog-option-label">{option.label}</span>
-            {option.value === value && <span className="dialog-selected-dot" aria-hidden="true" />}
+            {(isModel || option.value === value) && <span className="dialog-selected-dot" aria-hidden="true" />}
           </div>
         ))}
       </div>,
@@ -446,7 +449,7 @@ export function DialogSelect<T extends string>({
     <>
       <DialogButton
         ref={button}
-        className={`dialog-select${accent ? " dialog-select-accent" : ""} ${className}`.trim()}
+        className={`dialog-select${isModel ? " dialog-select-model" : ""} ${className}`.trim()}
         role="combobox"
         aria-label={label}
         aria-expanded={isOpen}
@@ -467,7 +470,7 @@ export function DialogSelect<T extends string>({
         }}
       >
         <span className="dialog-button-label">{options.find(option => option.value === value)?.label ?? value}</span>
-        {accent && <DialogArrow />}
+        {isModel && <DialogArrow />}
       </DialogButton>
       {floating}
     </>
