@@ -21,6 +21,10 @@ const dialogModelNames: Record<string, string> = {
   "gemini-3.1-flash-image": "Gemini Image 3.1F",
   "gemini-3-pro-image": "Gemini Image 3Pro",
 };
+const imageDragType = "application/x-img-gen-image-id";
+function fileSourceKey(file: File): string {
+  return JSON.stringify([file.name, file.size, file.lastModified, file.type]);
+}
 function isReadyAttachment(item: DialogAttachmentItem): item is DialogAttachmentItem & Attachment {
   return item.status !== "uploading" && item.status !== "failed" &&
     typeof item.url === "string" && typeof item.width === "number" && typeof item.height === "number";
@@ -53,6 +57,7 @@ export default function CreationPage({
   const promptInput = useRef<HTMLTextAreaElement>(null);
   const uploadLock = useRef(false);
   const removedUploads = useRef(new Set<string>());
+  const attachmentSources = useRef(new Map<string, string>());
   const end = useRef<HTMLDivElement>(null);
   const composing = useRef(false);
   const lastAttachment = useRef("");
@@ -71,10 +76,10 @@ export default function CreationPage({
     if (!input || !active) return;
     const resize = () => {
       if (!input.clientWidth) return;
-      input.style.height = "48px";
-      const height = Math.max(48, Math.min(192, Math.ceil(input.scrollHeight / 24) * 24));
+      input.style.height = "56px";
+      const height = Math.max(56, Math.min(224, Math.ceil(input.scrollHeight / 28) * 28));
       input.style.height = `${height}px`;
-      input.style.overflowY = input.scrollHeight > 192 ? "auto" : "hidden";
+      input.style.overflowY = input.scrollHeight > 224 ? "auto" : "hidden";
     };
     resize();
     const observer = new ResizeObserver(resize);
@@ -90,12 +95,18 @@ export default function CreationPage({
   const generationHint = uploading ? "参考图上传中，请稍候。" : incompleteAttachments
     ? "请先移除上传失败的参考图。" : !quoteReady ? "正在获取报价…" : insufficientCredits
     ? "积分不足，请调整张数或联系管理员。" : "开始生成图片";
-  const addAttachment = (image: Attachment) =>
+  const addAttachment = (image: Attachment) => {
+    if (attachmentItems.some(item => item.id === image.id)) return;
+    if (attachmentItems.length >= 6) {
+      notify("最多添加 6 张图片");
+      return;
+    }
     setAttachmentItems((previous) =>
       previous.some((a) => a.id === image.id) || previous.length >= 6
         ? previous
         : [...previous, { ...image, status: "ready" }],
     );
+  };
   useEffect(() => {
     if (pendingAttachment && lastAttachment.current !== pendingAttachment.id) {
       lastAttachment.current = pendingAttachment.id;
@@ -114,6 +125,7 @@ export default function CreationPage({
     try {
       await actions.generate(prompt, attachments, normalizeOptions(options, editing));
       setPrompt("");
+      attachmentSources.current.clear();
       setAttachmentItems([]);
     } catch (error) {
       notify(error instanceof Error ? error.message : "生成失败，请重试");
@@ -123,23 +135,54 @@ export default function CreationPage({
   };
   async function upload(files: FileList | null) {
     if (!files?.length || sending || uploadLock.current) return;
-    const capacity = 6 - attachmentItems.length;
-    if (files.length > capacity) notify("最多添加 6 张图片");
-    if (capacity <= 0) return;
+    const selected = Array.from(files);
+    if (fileInput.current) fileInput.current.value = "";
+    const sources = new Set(attachmentItems.filter(item => item.status !== "failed")
+      .map(item => attachmentSources.current.get(item.id)).filter((source): source is string => !!source));
+    const failedSources = new Map(attachmentItems.filter(item => item.status === "failed")
+      .map(item => [attachmentSources.current.get(item.id), item.id]));
+    let capacity = 6 - attachmentItems.length;
+    let duplicates = false;
+    let overLimit = false;
+    const pending: { file: File; id: string; source: string; retry: boolean }[] = [];
+    for (const file of selected) {
+      const source = fileSourceKey(file);
+      if (sources.has(source)) {
+        duplicates = true;
+        continue;
+      }
+      const failedId = failedSources.get(source);
+      if (!failedId && capacity <= 0) {
+        overLimit = true;
+        continue;
+      }
+      sources.add(source);
+      if (!failedId) capacity--;
+      pending.push({ file, id: failedId ?? crypto.randomUUID(), source, retry: !!failedId });
+    }
+    if (overLimit) notify("最多添加 6 张图片");
+    else if (duplicates) notify("已忽略重复图片");
+    if (!pending.length) return;
     uploadLock.current = true;
     setUploading(true);
     setOpenMenu(null);
-    const pending = Array.from(files).slice(0, capacity).map(file => ({
-      file, id: crypto.randomUUID(),
-    }));
-    setAttachmentItems(previous => [...previous, ...pending.map(({ file, id }) => ({
-      id, name: file.name, status: "uploading" as const,
-    }))]);
+    for (const { id, source } of pending) attachmentSources.current.set(id, source);
+    const retryIds = new Set(pending.filter(item => item.retry).map(item => item.id));
+    setAttachmentItems(previous => [
+      ...previous.map(item => retryIds.has(item.id)
+        ? { ...item, status: "uploading" as const, error: undefined } : item),
+      ...pending.filter(item => !item.retry).map(({ file, id }) => ({
+        id, name: file.name, status: "uploading" as const,
+      })),
+    ]);
     try {
-      for (const { file, id } of pending) {
+      for (const { file, id, source } of pending) {
         if (removedUploads.current.delete(id)) continue;
         try {
           const image = await readImageFile(file);
+          if (removedUploads.current.has(id)) continue;
+          attachmentSources.current.delete(id);
+          attachmentSources.current.set(image.id, source);
           setAttachmentItems(previous => previous.map(item => item.id === id
             ? { ...image, status: "ready" } : item));
         } catch (e) {
@@ -208,6 +251,7 @@ export default function CreationPage({
                       onClick={() => {
                         setPrompt(job.prompt);
                         setOptions(normalizeOptions(job.options));
+                        attachmentSources.current.clear();
                         setAttachmentItems(job.attachments.map(item => ({ ...item, status: "ready" })));
                       }}
                     >
@@ -236,6 +280,11 @@ export default function CreationPage({
                           height={image.height}
                           loading="lazy"
                           decoding="async"
+                          draggable
+                          onDragStart={event => {
+                            event.dataTransfer.setData(imageDragType, image.id);
+                            event.dataTransfer.effectAllowed = "copy";
+                          }}
                         />
                       </button>
                       <div className="result-actions">
@@ -245,11 +294,7 @@ export default function CreationPage({
                         </button>
                         <button
                           disabled={sending}
-                          onClick={() => {
-                            if (attachmentItems.length >= 6)
-                              notify("最多添加 6 张图片");
-                            else addAttachment(image);
-                          }}
+                          onClick={() => addAttachment(image)}
                         >
                           <Icon name="plus" size={16} />
                           添加
@@ -266,10 +311,12 @@ export default function CreationPage({
       </div>
       <div className="composer-area dialog-composer-scope">
         <DialogAttachments
+          ownerId={currentUser.id}
           items={attachmentItems}
           disabled={sending}
           active={active && !expanded}
           onRemove={id => {
+            attachmentSources.current.delete(id);
             if (attachmentItems.some(item => item.id === id && item.status === "uploading")) {
               removedUploads.current.add(id);
             }
@@ -281,7 +328,14 @@ export default function CreationPage({
           onDragOver={event => event.preventDefault()}
           onDrop={event => {
             event.preventDefault();
-            if (!sending) void upload(event.dataTransfer.files);
+            if (sending) return;
+            const imageId = event.dataTransfer.getData(imageDragType);
+            if (imageId) {
+              const image = data.assets.find(item => item.id === imageId);
+              if (image) addAttachment(image);
+              return;
+            }
+            void upload(event.dataTransfer.files);
           }}
         >
           <div className="prompt-area dialog-prompt-area">
@@ -402,15 +456,12 @@ export default function CreationPage({
             <DialogButton
               className="dialog-button-credits"
               wrapperClassName="dialog-credit-anchor"
-              style={{ width: Math.max(56, 30 + costLabel.length * 10) }}
+              style={{ width: Math.max(68, 36 + costLabel.length * 11) }}
               aria-label={quoteReady ? `预计 ${cost} 积分` : "报价未就绪"}
               tooltip={quoteReady ? `预计消耗 ${costLabel} 积分` : "正在获取报价…"}
               tooltipDisabled={suppressTooltips}
               onClick={() => {
                 setOpenMenu(null);
-                notify(quoteReady
-                  ? `本次预计消耗 ${costLabel} 积分，可用 ${currentUser.balance.toLocaleString("zh-CN")} 积分。`
-                  : "正在获取报价…");
               }}
             >
               <DialogCoins />

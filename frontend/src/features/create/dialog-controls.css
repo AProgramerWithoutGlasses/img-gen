@@ -3,30 +3,30 @@
   flex: none;
   align-items: center;
   position: relative;
-  height: 36px;
+  height: 44px;
   vertical-align: middle;
 }
 .dialog-button {
-  --dialog-button-fill: #eeecec;
+  --dialog-button-fill: var(--dialog-control-fill, #eeecec);
   box-sizing: border-box;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 72px;
-  height: 36px;
-  min-height: 36px;
-  padding: 0 8px;
+  width: 88px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 10px;
   margin: 0;
   border: 0;
-  border-radius: 18px;
+  border-radius: 22px;
   background: var(--dialog-button-fill);
-  color: #4d4d4d;
+  color: var(--dialog-control-text, #4d4d4d);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
-  line-height: 20px;
+  line-height: 24px;
   white-space: nowrap;
   cursor: pointer;
   transition: background-color 140ms, color 140ms;
@@ -35,15 +35,15 @@
   content: "";
   position: absolute;
   inset: 2px;
-  border: 0.5px solid #333;
-  border-radius: 16px;
+  border: 1px solid #333;
+  border-radius: 20px;
   pointer-events: none;
 }
 .dialog-button:hover:not(:disabled) {
-  --dialog-button-fill: #fafaf5;
+  --dialog-button-fill: var(--dialog-control-hover, #fafaf5);
 }
 .dialog-button:active:not(:disabled) {
-  --dialog-button-fill: #c7c7c1;
+  --dialog-button-fill: var(--dialog-control-active, #c7c7c1);
 }
 .dialog-button-accent {
   --dialog-button-fill: #fffa00;
@@ -56,19 +56,22 @@
   --dialog-button-fill: #e6de00;
 }
 .dialog-button:disabled {
-  --dialog-button-fill: #64645d;
+  --dialog-button-fill: var(--dialog-disabled-fill, #64645d);
   opacity: 1;
-  color: #eeecec;
+  color: var(--dialog-disabled-text, #eeecec);
   cursor: default;
 }
 .dialog-button:disabled::before {
   border-color: #a3a3a3;
 }
+.dialog-button:disabled .dialog-arrow {
+  background: var(--dialog-disabled-arrow, #333);
+}
 .dialog-button:focus-visible,
 .dialog-control:focus-visible {
   outline: 2px solid #6b5d00;
   outline-offset: 3px;
-  border-radius: 18px;
+  border-radius: 22px;
 }
 :root[data-theme="dark"] .dialog-button:focus-visible,
 :root[data-theme="dark"] .dialog-control:focus-visible {
@@ -81,12 +84,12 @@
   flex: 1;
   align-self: stretch;
   min-width: 0;
-  line-height: 20px;
+  line-height: 24px;
   text-align: center;
 }
 .dialog-select-accent {
-  width: 188px;
-  padding-right: 8px;
+  width: 232px;
+  padding-right: 10px;
 }
 .dialog-select-accent .dialog-button-label,
 .dialog-button-generate .dialog-button-label {
@@ -97,8 +100,8 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: #333;
   color: var(--dialog-button-fill, #fffa00);
@@ -109,17 +112,17 @@
   flex: none;
 }
 .dialog-button-icon {
-  width: 36px;
+  width: 44px;
   padding: 0;
 }
 .dialog-button-credits {
-  width: 56px;
-  gap: 5px;
+  width: 68px;
+  gap: 6px;
   color: #333;
   font-variant-numeric: tabular-nums;
 }
 .dialog-button-generate {
-  width: 96px;
+  width: 120px;
 }
 .dialog-button-fit {
   width: auto;
@@ -138,8 +141,8 @@
   color: #333;
   color-scheme: light;
   font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 16px;
+  line-height: 24px;
   outline: none;
   transform-origin: left bottom;
   opacity: 1;
@@ -159,10 +162,10 @@
   align-items: center;
   gap: 12px;
   box-sizing: border-box;
-  height: 34px;
-  min-height: 34px;
+  height: 42px;
+  min-height: 42px;
   margin-bottom: 2px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border: 1px solid transparent;
   border-radius: 8px;
   color: #333;
@@ -187,8 +190,8 @@
   white-space: nowrap;
 }
 .dialog-selected-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   flex: none;
   border-radius: 50%;
   background: #333;
@@ -199,16 +202,16 @@
   box-sizing: border-box;
   width: max-content;
   max-width: calc(100vw - 16px);
-  min-height: 20px;
-  padding: 3px 8px;
+  min-height: 26px;
+  padding: 4px 10px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 13px;
   background: #fffa00;
   color: #333;
   font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
-  line-height: 14px;
+  line-height: 18px;
   text-align: center;
   pointer-events: auto;
   user-select: none;
@@ -227,6 +230,10 @@
   border-bottom: 4px solid #fffa00;
   pointer-events: none;
 }
+.dialog-menu[data-dialog-theme="light"] { background: #fff; }
+.dialog-menu[data-dialog-theme="light"] .dialog-option[data-highlighted="true"] { background: #e8e8e8; }
+.dialog-menu[data-dialog-theme="light"] .dialog-option[aria-selected="true"] { background: #d0d0d0; }
+.dialog-menu[data-dialog-theme="light"] .dialog-option:active { background: #d6d6d6; }
 @keyframes dialog-menu-enter {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }

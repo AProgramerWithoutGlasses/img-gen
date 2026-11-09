@@ -1,4 +1,6 @@
 import { expect } from "@playwright/test";
+import { mkdir, stat, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 export async function chooseDialogOption(page, control, label) {
   await control.click();
@@ -99,6 +101,7 @@ export async function verifyDialog({ page, screenshot }) {
     await model.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     const box = await model.boundingBox(), menu = await page.getByRole("listbox").boundingBox();
+    expect(menu.width).toBeCloseTo(288, 0);
     expect(menu.y + menu.height).toBeLessThan(box.y + 1);
     await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
     await page.keyboard.press("End");
@@ -112,20 +115,30 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(model).toHaveText("GPT Image 2");
     await expect(model).toBeFocused();
     await prompt.fill("");
+    await creation.getByRole("button", { name: "展开提示词", exact: true }).click();
+    const editor = page.getByRole("dialog", { name: "编辑提示词", exact: true });
+    expect((await editor.boundingBox()).width).toBeCloseTo(1000, 0);
+    expect((await editor.boundingBox()).height).toBeCloseTo(650, 0);
+    const text = editor.getByRole("textbox", { name: "完整提示词", exact: true });
+    await expect(text).toHaveCSS("font-size", "18px");
+    await expect(text).toHaveCSS("line-height", "28px");
+    await screenshot("dialog-expanded-editor");
+    await editor.getByRole("button", { name: "取消", exact: true }).click();
   });
 
   await check("input-grows-up-and-scrolls", async () => {
     const lines = Array.from({ length: 12 }, (_, index) => `第${index + 1}行：树林、薄雾与柔和光线。`);
     await prompt.fill(lines.slice(0, 2).join("\n"));
     const baseline = await composer.boundingBox(), bottom = baseline.y + baseline.height;
-    expect(baseline.width).toBeCloseTo(840, 0);
-    expect(baseline.height).toBeCloseTo(140, 0);
-    expect((await prompt.boundingBox()).width).toBeCloseTo(682, 0);
+    expect(baseline.width).toBeCloseTo(1080, 0);
+    expect(baseline.height).toBeCloseTo(180, 0);
+    await expect(prompt).toHaveCSS("font-size", "18px");
+    expect((await toolbar.boundingBox()).height).toBeCloseTo(44, 0);
     const toolbarBaseline = await toolbar.boundingBox();
     const stages = [];
     for (const count of [3, 4, 6, 8]) {
       await prompt.fill(lines.slice(0, count).join("\n"));
-      await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(baseline.height + (count - 2) * 24, 0);
+      await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(baseline.height + (count - 2) * 28, 0);
       const actual = await composer.boundingBox();
       expect(actual.y + actual.height).toBeCloseTo(bottom, 0);
       expect((await toolbar.boundingBox()).y).toBeCloseTo(toolbarBaseline.y, 0);
@@ -160,10 +173,10 @@ export async function verifyDialog({ page, screenshot }) {
         hit: element.contains(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)),
       };
     });
-    expect(metrics.font).toBe("10px"); expect(metrics.lineHeight).toBe("14px");
+    expect(metrics.font).toBe("12px"); expect(metrics.lineHeight).toBe("18px");
     expect(metrics.border).toBe("0px"); expect(metrics.shadow).toBe("none");
-    expect(metrics.height).toBeCloseTo(20, 0);
-    expect(metrics.width - metrics.textWidth).toBeCloseTo(16, 0);
+    expect(metrics.height).toBeCloseTo(26, 0);
+    expect(metrics.width - metrics.textWidth).toBeCloseTo(20, 0);
     expect(metrics.left).toBeGreaterThanOrEqual(0); expect(metrics.top).toBeGreaterThanOrEqual(0);
     expect(metrics.right).toBeLessThanOrEqual(metrics.viewportWidth);
     expect(metrics.bottom).toBeLessThanOrEqual(metrics.viewportHeight);
@@ -186,6 +199,53 @@ export async function verifyDialog({ page, screenshot }) {
     return { shortWidth: short.width, longWidth: long.width, bottomSpace: page.viewportSize().height - box.y - box.height };
   });
 
+  await check("credits-click-without-message", async () => {
+    const credits = creation.locator(".dialog-button-credits");
+    await credits.click();
+    await expect(page.getByText(/^本次预计消耗.*可用.*积分/)).toHaveCount(0);
+    await verifyTooltip(credits);
+    await expect(tooltip).toContainText("预计消耗");
+    await moveAway();
+  });
+
+  await check("duplicate-file-and-result-drops", async () => {
+    const sample = (await imageFiles(page))[0];
+    const folder = new URL("../../outputs/preview/", import.meta.url);
+    await mkdir(folder, { recursive: true });
+    const path = fileURLToPath(new URL("dialog-duplicate.png", folder));
+    await writeFile(path, sample.buffer);
+    const modified = Math.floor((await stat(path)).mtimeMs);
+    const input = creation.getByLabel("上传图片文件", { exact: true });
+    const cards = creation.locator(".attachment-item");
+    const drop = () => composer.evaluate((target, file) => {
+      const bytes = Uint8Array.from(atob(file.base64), character => character.charCodeAt(0));
+      const transfer = new DataTransfer();
+      transfer.items.add(new File([bytes], "dialog-duplicate.png", { type: "image/png", lastModified: file.modified }));
+      target.dispatchEvent(new DragEvent("drop", { bubbles: true, cancelable: true, dataTransfer: transfer }));
+    }, { base64: sample.buffer.toString("base64"), modified });
+    await input.setInputFiles([path, path]);
+    await expect(cards).toHaveCount(1);
+    await expect(cards.getByRole("img")).toBeVisible();
+    expect((await creation.locator(".attachment-row").boundingBox()).width).toBeCloseTo(344, 0);
+    await input.setInputFiles(path);
+    await drop();
+    await expect(cards).toHaveCount(1);
+    await removeDialogAttachment(creation, "移除dialog-duplicate.png");
+    await expect(cards).toHaveCount(0);
+    await drop();
+    await expect(cards).toHaveCount(1);
+    await expect(cards.getByRole("img")).toBeVisible();
+    await removeDialogAttachment(creation, "移除dialog-duplicate.png");
+    const result = creation.locator(".result-open img").first();
+    await result.dragTo(composer);
+    await expect(cards).toHaveCount(1);
+    await result.dragTo(composer);
+    await expect(cards).toHaveCount(1);
+    const attachmentName = await cards.locator(".attachment-remove").getAttribute("aria-label");
+    await removeDialogAttachment(creation, attachmentName);
+    await expect(cards).toHaveCount(0);
+  });
+
   await check("six-attachments-hover-and-expanded-order", async () => {
     await chooseDialogOption(page, model, "Gemini Image 3.1F");
     await chooseDialogOption(page, creation.getByRole("combobox", { name: "清晰度", exact: true }), "0.5K");
@@ -200,12 +260,16 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(preview).toHaveCount(0);
     await expect(row.getByText(/^\+\d+$/, { exact: true })).toHaveCount(0);
     const compactBox = await row.boundingBox();
-    expect(compactBox.width).toBeCloseTo(312, 0);
+    expect(compactBox.width).toBeCloseTo(344, 0);
+    expect(compactBox.height).toBeCloseTo(88, 0);
+    expect((await cards.first().boundingBox()).width).toBeCloseTo(72, 0);
     await cards.first().hover({ position: { x: 8, y: 48 } });
     await expect(preview).toBeVisible();
     await expect.poll(() => removalNames(creation)).toEqual(["移除dialog-reference-1.png"]);
     await expect(preview.getByRole("img")).toHaveAttribute("src", await cards.first().getByRole("img").getAttribute("src"));
     const previewBox = await preview.boundingBox();
+    expect(previewBox.width).toBeCloseTo(384, 0);
+    expect(previewBox.height).toBeCloseTo(384, 0);
     expect(previewBox.y + previewBox.height).toBeLessThan(compactBox.y);
     await screenshot("dialog-attachment-hover-first");
     await creation.getByRole("button", { name: "展开参考图", exact: true }).hover();
@@ -242,6 +306,19 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(preview).toHaveCount(0);
     await creation.getByLabel("上传图片文件", { exact: true }).setInputFiles((await imageFiles(page)).slice(0, 2));
     await expect(cards).toHaveCount(2);
+    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(1080, 0);
+    await page.reload();
+    await expect(prompt).toBeVisible();
+    await creation.getByLabel("上传图片文件", { exact: true }).setInputFiles((await imageFiles(page)).slice(0, 2));
+    await expect(cards).toHaveCount(2);
+    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(1080, 0);
+    await creation.getByRole("button", { name: "收起参考图", exact: true }).click();
+    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(344, 0);
+    await page.reload();
+    await expect(prompt).toBeVisible();
+    await creation.getByLabel("上传图片文件", { exact: true }).setInputFiles((await imageFiles(page)).slice(0, 2));
+    await expect(cards).toHaveCount(2);
+    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(344, 0);
     await prompt.fill("dialog attachments disabled visibility");
     await moveAway();
     await page.clock.install();
@@ -263,6 +340,13 @@ export async function verifyDialog({ page, screenshot }) {
       await page.getByRole("button", { name: label, exact: true }).click();
       await page.getByRole("button", { name: "返回创作", exact: true }).click();
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      if (theme === "light") {
+        await expect(composer).toHaveCSS("background-color", "rgb(242, 242, 242)");
+        await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", "rgb(224, 224, 224)");
+        await prompt.fill("");
+        await expect(creation.getByRole("button", { name: "生成", exact: true })).toHaveCSS("background-color", "rgb(214, 214, 214)");
+        await screenshot("dialog-light-idle-neutral-colors");
+      }
       await prompt.fill("亮暗主题与动效核对");
       await prompt.focus();
       await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("255, 250, 0");

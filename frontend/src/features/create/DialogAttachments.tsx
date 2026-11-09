@@ -13,16 +13,22 @@ export interface DialogAttachmentItem {
 }
 
 interface Props {
+  ownerId: string;
   items: DialogAttachmentItem[];
   disabled: boolean;
   onRemove: (id: string) => void;
   active: boolean;
 }
 
-export default function DialogAttachments({ items, disabled, onRemove, active }: Props) {
-  const [expanded, setExpanded] = useState(false);
+function readExpanded(key: string) {
+  try { return localStorage.getItem(key) === "true"; } catch { return false; }
+}
+
+export default function DialogAttachments({ ownerId, items, disabled, onRemove, active }: Props) {
+  const preferenceKey = `img-gen:dialog-attachments-expanded:${ownerId}`;
+  const [expanded, setExpanded] = useState(() => readExpanded(preferenceKey));
   const [previewId, setPreviewId] = useState<string | null>(null);
-  const [previewHeight, setPreviewHeight] = useState(312);
+  const [previewHeight, setPreviewHeight] = useState(384);
   const [imageState, setImageState] = useState<{ key: string; state: "loading" | "ready" | "failed" }>({ key: "", state: "loading" });
   const strip = useRef<HTMLDivElement>(null);
   const preview = useRef<HTMLDivElement>(null);
@@ -31,6 +37,7 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
   const pendingId = useRef<string | null>(null);
   const itemsRef = useRef(items);
   itemsRef.current = items;
+  useEffect(() => { setExpanded(readExpanded(preferenceKey)); }, [preferenceKey]);
 
   const clearOpen = useCallback(() => {
     if (openTimer.current) clearTimeout(openTimer.current);
@@ -80,7 +87,6 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
   useEffect(() => {
     if (!active || !items.length) {
       closePreview();
-      setExpanded(false);
       return;
     }
     const current = items.find((entry) => entry.id === previewId);
@@ -100,13 +106,13 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
   const previewKey = selected?.url ? `${selected.id}:${selected.url}` : "";
   const loadState = imageState.key === previewKey ? imageState.state : "loading";
   const pictureRatio = selected?.width && selected?.height ? selected.width / selected.height : 1;
-  const pictureWidth = Math.min(304, Math.max(1, previewHeight - 34) * pictureRatio);
-  const pictureHeight = Math.min(Math.max(1, previewHeight - 34), 304 / pictureRatio);
+  const pictureWidth = Math.min(376, Math.max(1, previewHeight - 40) * pictureRatio);
+  const pictureHeight = Math.min(Math.max(1, previewHeight - 40), 376 / pictureRatio);
   useLayoutEffect(() => {
     if (!previewId || !active) return;
     const measure = () => {
       const top = strip.current?.getBoundingClientRect().top ?? 340;
-      setPreviewHeight(Math.max(44, Math.min(312, top - 10.188 - 8)));
+      setPreviewHeight(Math.max(52, Math.min(384, top - 10.188 - 8)));
     };
     measure();
     const resize = new ResizeObserver(measure);
@@ -131,8 +137,8 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
 
   if (!active || !items.length) return null;
   const visibleItems = expanded ? items.slice(0, 6) : items.slice(0, 3);
-  const compactWidth = 96 + Math.min(items.length, 3) * 72;
-  const markerLeft = items.length === 1 ? 50 : items.length === 2 ? 86 : 111;
+  const compactWidth = 344;
+  const markerLeft = 121;
   const stripStyle = {
     width: expanded ? "100%" : compactWidth,
     "--dialog-attachment-marker-left": `${markerLeft}px`,
@@ -155,7 +161,7 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
               onBlur={leaveCard}
             >
               {item.url && item.status !== "uploading" && item.status !== "failed" ? (
-                <img className="dialog-attachment-thumbnail" src={item.url} alt={item.name} width={64} height={64} decoding="async" />
+                <img className="dialog-attachment-thumbnail" src={item.url} alt={item.name} width={72} height={72} decoding="async" />
               ) : (
                 <div className={`dialog-attachment-placeholder${item.status === "failed" ? " dialog-attachment-placeholder-failed" : ""}`} role="status" aria-label={item.error || undefined}>
                   <span>{item.status === "failed" ? "上传失败" : "上传中"}</span>
@@ -187,7 +193,9 @@ export default function DialogAttachments({ items, disabled, onRemove, active }:
           onFocus={scheduleClose}
           onClick={() => {
             closePreview();
-            setExpanded((value) => !value);
+            const next = !expanded;
+            setExpanded(next);
+            try { localStorage.setItem(preferenceKey, String(next)); } catch { /* Keep the choice in memory when storage is unavailable. */ }
           }}
         >
           <svg viewBox="0 0 6 12" aria-hidden="true"><path d={expanded ? "M6 0 0 6 6 12" : "M0 0 6 6 0 12"} /></svg>

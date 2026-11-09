@@ -529,39 +529,41 @@ try {
   expect(response?.ok()).toBe(true);
   await page.locator("#root > *").first().waitFor();
   await page.evaluate(() => document.fonts.ready);
-  await check("login-form", verifyLogin);
-  await check("creation-generation-and-attachments", verifyCreation);
-  await check("gallery-folder-memberships", verifyGallery);
-  await check("settings-preferences-and-prices", verifySettings);
-  await check("requests-and-ime-keyboard", verifyRequestsAndKeyboard);
-  await check("ordinary-user-boundary", verifyRoleBoundary);
-  const desktop = await browser.newContext({
-    viewport: { width: 1280, height: 900 },
-  });
-  await attachGuards(desktop);
-  page = await desktop.newPage();
-  await page.goto(origin);
-  await signInAs("admin");
-  await check("desktop-1280", async () => {
-    await expect(
-      page.getByRole("textbox", { name: "提示词", exact: true }),
-    ).toBeVisible();
-    const clipped = await page
-      .locator(".composer-toolbar")
-      .evaluate((element) => {
-        const bounds = element.getBoundingClientRect();
-        return Array.from(element.children)
-          .filter((child) => child.tagName !== "INPUT")
-          .some((child) => {
-            const rect = child.getBoundingClientRect();
-            return (
-              rect.width > 0 &&
-              (rect.left < bounds.left - 1 || rect.right > bounds.right + 1)
-            );
-          });
-      });
-    expect(clipped, "Composer controls clipped at 1280px").toBe(false);
-  });
+  if (!process.argv.includes("--dialog-only")) {
+    await check("login-form", verifyLogin);
+    await check("creation-generation-and-attachments", verifyCreation);
+    await check("gallery-folder-memberships", verifyGallery);
+    await check("settings-preferences-and-prices", verifySettings);
+    await check("requests-and-ime-keyboard", verifyRequestsAndKeyboard);
+    await check("ordinary-user-boundary", verifyRoleBoundary);
+    const desktop = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await attachGuards(desktop);
+    page = await desktop.newPage();
+    await page.goto(origin);
+    await signInAs("admin");
+    await check("desktop-1280", async () => {
+      await expect(
+        page.getByRole("textbox", { name: "提示词", exact: true }),
+      ).toBeVisible();
+      const clipped = await page
+        .locator(".composer-toolbar")
+        .evaluate((element) => {
+          const bounds = element.getBoundingClientRect();
+          return Array.from(element.children)
+            .filter((child) => child.tagName !== "INPUT")
+            .some((child) => {
+              const rect = child.getBoundingClientRect();
+              return (
+                rect.width > 0 &&
+                (rect.left < bounds.left - 1 || rect.right > bounds.right + 1)
+              );
+            });
+        });
+      expect(clipped, "Composer controls clipped at 1280px").toBe(false);
+    });
+  }
   const dialogContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await attachGuards(dialogContext);
   page = await dialogContext.newPage();
