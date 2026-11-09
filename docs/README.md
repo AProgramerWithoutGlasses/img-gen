@@ -16,7 +16,7 @@
 
 ## 目录速查
 
-`main.go` 是启动入口；`internal/studio/` 是后端；`frontend/src/` 是页面实现；`web/` 嵌入构建产物；`tests/` 与 `frontend/tests/` 是测试；`design/` 是当前设计；`research/` 是后续研究；`scripts/` 是日常工具；`deploy/` 是部署配置；`archive/` 是历史资料；`outputs/` 与 `.local/` 是不提交的本地证据和缓存。
+`main.go` 是启动入口；`internal/studio/` 是后端；`frontend/src/` 是页面实现；`web/` 嵌入构建产物；`tests/` 与 `frontend/tests/` 是测试；`design/` 是当前设计；`research/` 是后续研究；`scripts/` 是日常工具；`deploy/` 是部署配置；`docs/history/` 是项目历史资料；`outputs/` 与 `.local/` 是不提交的本地证据和缓存。
 
 根目录每个文件、文件夹及本地产物的用途与保留原因，见 [完整根目录清单](root-layout.md)。
 

@@ -38,7 +38,6 @@
 | [research/](../research/README.md) | 有共享价值的项目研究和必要参考素材 |
 | [scripts/](../scripts/) | 日常状态、检查、发布准备和设计工具 |
 | [deploy/](../deploy/README.md) | Nginx 等部署配置模板 |
-| [archive/](../archive/README.md) | 旧设计迁移备份；有独立恢复用途，保留 |
 
 ## 只在本机出现的项目
 
