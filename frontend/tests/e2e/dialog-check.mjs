@@ -96,19 +96,46 @@ export async function verifyDialog({ page, screenshot }) {
 
   await check("menus-keyboard-and-input-focus", async () => {
     await prompt.fill("输入焦点检查");
+    await prompt.evaluate(element => element.blur());
+    await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
+    const beforeFocus = await composer.boundingBox();
     await prompt.focus();
     await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("255, 250, 0");
+    const focusShadow = await composer.evaluate(element => getComputedStyle(element).boxShadow);
+    expect(focusShadow).not.toContain("inset");
+    expect(focusShadow).toContain("0px 0px 0px 2px");
+    expect((await composer.boundingBox()).height).toBeCloseTo(beforeFocus.height, 0);
+    const optical = await creation.getByRole("button", { name: "上传图片", exact: true }).evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      const model = document.querySelector('.dialog-select-accent').getBoundingClientRect();
+      const inner = getComputedStyle(element, "::before");
+      const centerX = rect.left + rect.width / 2;
+      return { width: rect.width, height: rect.height, center: rect.top + rect.height / 2,
+        modelHeight: model.height, modelCenter: model.top + model.height / 2,
+        innerRadius: inner.borderTopLeftRadius, insets: [inner.top, inner.right, inner.bottom, inner.left],
+        topVisible: element.contains(document.elementFromPoint(centerX, rect.top + .5)),
+        bottomVisible: element.contains(document.elementFromPoint(centerX, rect.bottom - .5)) };
+    });
+    expect(optical.width).toBeCloseTo(38, 0); expect(optical.height).toBeCloseTo(38, 0);
+    expect(optical.modelHeight).toBeCloseTo(36, 0);
+    expect(optical.center).toBeCloseTo(optical.modelCenter, 1);
+    expect(optical.innerRadius).toBe("17px");
+    expect(optical.insets).toEqual(["2px", "2px", "2px", "2px"]);
+    expect(optical.topVisible, "The 36px toolbar clips the enlarged upload circle's top").toBe(true);
+    expect(optical.bottomVisible, "The 36px toolbar clips the enlarged upload circle's bottom").toBe(true);
     await model.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     const box = await model.boundingBox(), menu = await page.getByRole("listbox").boundingBox();
-    expect(menu.width).toBeCloseTo(272, 0);
+    expect(box.width).toBeCloseTo(194, 0);
+    await expect(model).toHaveCSS("font-size", "13px");
+    expect(menu.width).toBeCloseTo(246, 0);
     const geometry = await model.evaluate(element => {
       const outer = getComputedStyle(element), inner = getComputedStyle(element, "::before");
       return { outerRadius: outer.borderTopLeftRadius, innerRadius: inner.borderTopLeftRadius,
         insets: [inner.top, inner.right, inner.bottom, inner.left] };
     });
-    expect(geometry.outerRadius).toBe("20px");
-    expect(geometry.innerRadius).toBe("18px");
+    expect(geometry.outerRadius).toBe("18px");
+    expect(geometry.innerRadius).toBe("16px");
     expect(geometry.insets).toEqual(["2px", "2px", "2px", "2px"]);
     expect(menu.y + menu.height).toBeLessThan(box.y + 1);
     await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
@@ -125,13 +152,13 @@ export async function verifyDialog({ page, screenshot }) {
     await prompt.fill("");
     await creation.getByRole("button", { name: "展开提示词", exact: true }).click();
     const editor = page.getByRole("dialog", { name: "编辑提示词", exact: true });
-    expect((await editor.boundingBox()).width).toBeCloseTo(960, 0);
-    expect((await editor.boundingBox()).height).toBeCloseTo(620, 0);
+    expect((await editor.boundingBox()).width).toBeCloseTo(864, 0);
+    expect((await editor.boundingBox()).height).toBeCloseTo(558, 0);
     const text = editor.getByRole("textbox", { name: "完整提示词", exact: true });
-    await expect(text).toHaveCSS("font-size", "16px");
-    await expect(text).toHaveCSS("line-height", "24px");
-    expect((await text.boundingBox()).width).toBeCloseTo(912, 0);
-    expect((await text.boundingBox()).height).toBeCloseTo(427, 0);
+    await expect(text).toHaveCSS("font-size", "14px");
+    await expect(text).toHaveCSS("line-height", "22px");
+    expect((await text.boundingBox()).width).toBeCloseTo(820, 0);
+    expect((await text.boundingBox()).height).toBeCloseTo(384, 0);
     await screenshot("dialog-expanded-editor");
     await editor.getByRole("button", { name: "取消", exact: true }).click();
   });
@@ -140,15 +167,15 @@ export async function verifyDialog({ page, screenshot }) {
     const lines = Array.from({ length: 12 }, (_, index) => `第${index + 1}行：树林、薄雾与柔和光线。`);
     await prompt.fill(lines.slice(0, 2).join("\n"));
     const baseline = await composer.boundingBox(), bottom = baseline.y + baseline.height;
-    expect(baseline.width).toBeCloseTo(1000, 0);
-    expect(baseline.height).toBeCloseTo(164, 0);
-    await expect(prompt).toHaveCSS("font-size", "16px");
-    expect((await toolbar.boundingBox()).height).toBeCloseTo(40, 0);
+    expect(baseline.width).toBeCloseTo(900, 0);
+    expect(baseline.height).toBeCloseTo(148, 0);
+    await expect(prompt).toHaveCSS("font-size", "14px");
+    expect((await toolbar.boundingBox()).height).toBeCloseTo(36, 0);
     const toolbarBaseline = await toolbar.boundingBox();
     const stages = [];
     for (const count of [3, 4, 6, 8]) {
       await prompt.fill(lines.slice(0, count).join("\n"));
-      await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(baseline.height + (count - 2) * 24, 0);
+      await expect.poll(async () => (await composer.boundingBox()).height).toBeCloseTo(baseline.height + (count - 2) * 22, 0);
       const actual = await composer.boundingBox();
       expect(actual.y + actual.height).toBeCloseTo(bottom, 0);
       expect((await toolbar.boundingBox()).y).toBeCloseTo(toolbarBaseline.y, 0);
@@ -171,6 +198,7 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(tooltip).toHaveCount(0);
     await control.hover();
     await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveCSS("opacity", "1");
     const metrics = await tooltip.evaluate((element) => {
       const style = getComputedStyle(element), rect = element.getBoundingClientRect();
       const range = document.createRange(); range.selectNodeContents(element);
@@ -183,10 +211,10 @@ export async function verifyDialog({ page, screenshot }) {
         hit: element.contains(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)),
       };
     });
-    expect(metrics.font).toBe("12px"); expect(metrics.lineHeight).toBe("18px");
+    expect(metrics.font).toBe("11px"); expect(metrics.lineHeight).toBe("16px");
     expect(metrics.border).toBe("0px"); expect(metrics.shadow).toBe("none");
-    expect(metrics.height).toBeCloseTo(26, 0);
-    expect(metrics.width - metrics.textWidth).toBeCloseTo(20, 0);
+    expect(metrics.height).toBeCloseTo(24, 0);
+    expect(metrics.width - metrics.textWidth).toBeCloseTo(18, 0);
     expect(metrics.left).toBeGreaterThanOrEqual(0); expect(metrics.top).toBeGreaterThanOrEqual(0);
     expect(metrics.right).toBeLessThanOrEqual(metrics.viewportWidth);
     expect(metrics.bottom).toBeLessThanOrEqual(metrics.viewportHeight);
@@ -236,7 +264,7 @@ export async function verifyDialog({ page, screenshot }) {
     await input.setInputFiles([path, path]);
     await expect(cards).toHaveCount(1);
     await expect(cards.getByRole("img")).toBeVisible();
-    expect((await creation.locator(".attachment-row").boundingBox()).width).toBeCloseTo(320, 0);
+    expect((await creation.locator(".attachment-row").boundingBox()).width).toBeCloseTo(288, 0);
     await input.setInputFiles(path);
     await drop();
     await expect(cards).toHaveCount(1);
@@ -270,16 +298,23 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(preview).toHaveCount(0);
     await expect(row.getByText(/^\+\d+$/, { exact: true })).toHaveCount(0);
     const compactBox = await row.boundingBox();
-    expect(compactBox.width).toBeCloseTo(320, 0);
-    expect(compactBox.height).toBeCloseTo(84, 0);
-    expect((await cards.first().boundingBox()).width).toBeCloseTo(68, 0);
+    expect(compactBox.width).toBeCloseTo(288, 0);
+    expect(compactBox.height).toBeCloseTo(78, 0);
+    expect((await cards.first().boundingBox()).width).toBeCloseTo(62, 0);
     await cards.first().hover({ position: { x: 8, y: 48 } });
     await expect(preview).toBeVisible();
+    await expect(preview).toHaveCSS("opacity", "1");
     await expect.poll(() => removalNames(creation)).toEqual(["移除dialog-reference-1.png"]);
     await expect(preview.getByRole("img")).toHaveAttribute("src", await cards.first().getByRole("img").getAttribute("src"));
     const previewBox = await preview.boundingBox();
-    expect(previewBox.width).toBeCloseTo(360, 0);
-    expect(previewBox.height).toBeCloseTo(360, 0);
+    expect(previewBox.width).toBeCloseTo(324, 0);
+    expect(previewBox.height).toBeCloseTo(324, 0);
+    const imageArea = await preview.locator(".dialog-attachment-preview-image").boundingBox();
+    expect(imageArea.width).toBeCloseTo(316, 0);
+    expect(imageArea.height).toBeCloseTo(288, 0);
+    const filename = await preview.locator(".dialog-attachment-preview-name").boundingBox();
+    expect(filename.width).toBeCloseTo(308, 0);
+    expect(filename.height).toBeCloseTo(20, 0);
     expect(previewBox.y + previewBox.height).toBeLessThan(compactBox.y);
     await screenshot("dialog-attachment-hover-first");
     await creation.getByRole("button", { name: "展开参考图", exact: true }).hover();
@@ -316,19 +351,19 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(preview).toHaveCount(0);
     await creation.getByLabel("上传图片文件", { exact: true }).setInputFiles((await imageFiles(page)).slice(0, 2));
     await expect(cards).toHaveCount(2);
-    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(1000, 0);
+    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(900, 0);
     await page.reload();
     await expect(prompt).toBeVisible();
     await creation.getByLabel("上传图片文件", { exact: true }).setInputFiles((await imageFiles(page)).slice(0, 2));
     await expect(cards).toHaveCount(2);
-    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(1000, 0);
+    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(900, 0);
     await creation.getByRole("button", { name: "收起参考图", exact: true }).click();
-    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(320, 0);
+    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(288, 0);
     await page.reload();
     await expect(prompt).toBeVisible();
     await creation.getByLabel("上传图片文件", { exact: true }).setInputFiles((await imageFiles(page)).slice(0, 2));
     await expect(cards).toHaveCount(2);
-    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(320, 0);
+    await expect.poll(async () => (await row.boundingBox()).width).toBeCloseTo(288, 0);
     await prompt.fill("dialog attachments disabled visibility");
     await moveAway();
     await page.clock.install();
@@ -354,12 +389,17 @@ export async function verifyDialog({ page, screenshot }) {
         await expect(composer).toHaveCSS("background-color", "rgb(242, 242, 242)");
         await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", "rgb(224, 224, 224)");
         await prompt.fill("");
+        await prompt.evaluate(element => element.blur());
+        await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain("255, 250, 0");
         await expect(creation.getByRole("button", { name: "生成", exact: true })).toHaveCSS("background-color", "rgb(214, 214, 214)");
         await screenshot("dialog-light-idle-neutral-colors");
       }
       await prompt.fill("亮暗主题与动效核对");
       await prompt.focus();
       await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("255, 250, 0");
+      const shadow = await composer.evaluate(element => getComputedStyle(element).boxShadow);
+      expect(shadow).not.toContain("inset");
+      expect(shadow).toContain("0px 0px 0px 2px");
       await verifyTooltip(model);
       await screenshot("dialog-" + theme + "-tooltip");
       await moveAway(); await page.keyboard.press("Escape");

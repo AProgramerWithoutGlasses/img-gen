@@ -76,10 +76,10 @@ export default function CreationPage({
     if (!input || !active) return;
     const resize = () => {
       if (!input.clientWidth) return;
-      input.style.height = "48px";
-      const height = Math.max(48, Math.min(192, Math.ceil(input.scrollHeight / 24) * 24));
+      input.style.height = "44px";
+      const height = Math.max(44, Math.min(176, Math.ceil(input.scrollHeight / 22) * 22));
       input.style.height = `${height}px`;
-      input.style.overflowY = input.scrollHeight > 192 ? "auto" : "hidden";
+      input.style.overflowY = input.scrollHeight > 176 ? "auto" : "hidden";
     };
     resize();
     const observer = new ResizeObserver(resize);
@@ -393,7 +393,7 @@ export default function CreationPage({
               disabled={uploading || sending || attachmentItems.length >= 6}
               onClick={() => { setOpenMenu(null); fileInput.current?.click(); }}
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 0v20M0 10h20" />
               </svg>
             </DialogButton>
@@ -456,7 +456,7 @@ export default function CreationPage({
             <DialogButton
               className="dialog-button-credits"
               wrapperClassName="dialog-credit-anchor"
-              style={{ width: Math.max(64, 34 + costLabel.length * 10) }}
+              style={{ width: Math.max(58, 30 + costLabel.length * 9) }}
               aria-label={quoteReady ? `预计 ${cost} 积分` : "报价未就绪"}
               tooltip={quoteReady ? `预计消耗 ${costLabel} 积分` : "正在获取报价…"}
               tooltipDisabled={suppressTooltips}

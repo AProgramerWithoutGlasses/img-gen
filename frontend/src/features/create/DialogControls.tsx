@@ -263,7 +263,7 @@ export const DialogButton = forwardRef<HTMLButtonElement, DialogButtonProps>(fun
 export function DialogArrow({ submit = false }: { submit?: boolean }) {
   return (
     <span className="dialog-arrow" aria-hidden="true">
-      <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
         <path d={submit ? "M1 6 6 1 11 6M6 1v10" : "m1 8 5-5 5 5"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </span>
@@ -272,7 +272,7 @@ export function DialogArrow({ submit = false }: { submit?: boolean }) {
 
 export function DialogCoins() {
   return (
-    <svg className="dialog-coins" aria-hidden="true" width="13" height="16" viewBox="0 0 11 13" fill="currentColor">
+    <svg className="dialog-coins" aria-hidden="true" width="11" height="14" viewBox="0 0 11 13" fill="currentColor">
       <ellipse cx="5.5" cy="1.5" rx="5.5" ry="1.5" />
       <ellipse cx="5.5" cy="6.5" rx="5.5" ry="1.5" />
       <ellipse cx="5.5" cy="11.5" rx="5.5" ry="1.5" />
@@ -319,7 +319,7 @@ export function DialogSelect<T extends string>({
   const isOpen = openMenu === menuId && !disabled && options.length > 0;
   const present = useExitPresence(isOpen, 120);
   const theme = useDialogTheme();
-  const width = accent ? 272 : 128;
+  const width = accent ? 246 : 116;
   const position = useFloatingPosition(button, popup, present, "above", width);
   const returnFocus = useCallback(() => button.current?.focus({ preventScroll: true }), []);
   const close = (focus = true) => {
