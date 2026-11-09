@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef } from "react";
  * CSS borders/backgrounds can snap independently. Draw both contours together,
  * aligning only the outside bounds to device pixels; CSS layout stays intact.
  */
-export function DialogButtonSurface() {
+export function DialogButtonSurface({ icon }: { icon?: "plus" }) {
   const surface = useRef<SVGSVGElement>(null);
   const redraw = useRef<() => void>(() => {});
 
@@ -34,6 +34,10 @@ export function DialogButtonSurface() {
           height: height - 2 * offset, rx: Math.max(0, height / 2 - offset) };
         for (const [key, value] of Object.entries(attributes)) rect.setAttribute(key, String(value));
       });
+      // The plus shares the painted circle's centre and coordinate system.
+      // A separate SVG would independently snap its viewport at fractional scales.
+      const centerX = x + width / 2, centerY = y + height / 2;
+      svg.querySelector("path")?.setAttribute("d", `M${centerX - 9} ${centerY}h18M${centerX} ${centerY - 9}v18`);
     };
     redraw.current = update;
     const observer = new ResizeObserver(update);
@@ -57,7 +61,7 @@ export function DialogButtonSurface() {
       resolution.removeEventListener("change", watchResolution);
       window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [icon]);
 
   // Prompt growth, model options and other React layout changes also move buttons.
   useLayoutEffect(() => { redraw.current(); });
@@ -67,6 +71,7 @@ export function DialogButtonSurface() {
       <rect />
       <rect className="dialog-button-surface-line" />
       <rect />
+      {icon === "plus" && <path className="dialog-button-surface-icon" />}
     </svg>
   );
 }

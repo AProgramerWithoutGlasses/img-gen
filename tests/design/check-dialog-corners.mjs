@@ -30,6 +30,9 @@ export function validateTrees(trees) {
     if (node.pluginData?.referenceOnly === true || node.pluginData?.referenceOnly === 'true') return;
     annotation ||= role(node) === 'annotation';
     hidden ||= node.visible === false;
+    if (!hidden && role(node) === 'button.upload' && (!near(node.width, 36) || !near(node.height, 36))) {
+      errors.push(`${node.id} ${node.name}: 上传圆钮应为36×36，不能恢复旧38px光学补偿`);
+    }
     if (!hidden && !annotation && parent?.clip && role(node) === 'button.upload' &&
       (node.x < -.025 || node.y < -.025 || node.x + node.width > parent.width + .025 || node.y + node.height > parent.height + .025)) {
       errors.push(`${node.id} ${node.name}: 上传圆钮超出已裁切父框，可见轮廓会被截断`);
@@ -64,10 +67,13 @@ function verifyRegressionGuard() {
   const shape = { id: 1, type: 'RECTANGLE', name: '回归样本', width: 100, height: 40, cornerRadius: 12, cornerSmoothing: .6 };
   assert.equal(validateTrees([shape]).errors.length, 0);
   assert.equal(validateTrees([{ ...shape, cornerSmoothing: 0 }]).errors.length, 1, '漏设平滑必须被发现');
-  const circle = { id: 2, type: 'FRAME', name: 'B圆钮', x: 0, y: -1, width: 38, height: 38, cornerRadius: 19, pluginData: { handoffRole: 'button.upload' } };
+  const circle = { id: 2, type: 'FRAME', name: '上传圆钮', x: 0, y: 0, width: 36, height: 36, cornerRadius: 18, pluginData: { handoffRole: 'button.upload' } };
   const toolbar = { id: 3, type: 'FRAME', name: '36px工具栏', width: 440, height: 36, clip: false, children: [circle] };
   assert.equal(validateTrees([toolbar]).errors.length, 0);
-  assert.equal(validateTrees([{ ...toolbar, clip: true }]).errors.length, 1, '36px工具栏裁切38px圆钮的真实错误必须被发现');
+  assert.equal(validateTrees([{ ...toolbar, clip: true }]).errors.length, 0);
+  const enlarged = { ...circle, y: -1, width: 38, height: 38 };
+  assert.equal(validateTrees([{ ...toolbar, children: [enlarged] }]).errors.length, 1, '旧38px补偿应被拒绝');
+  assert(validateTrees([{ ...toolbar, clip: true, children: [enlarged] }]).errors.some(error => error.includes('裁切') || error.includes('截断')), '工具栏裁切圆钮的错误必须被发现');
 }
 
 async function main() {

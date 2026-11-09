@@ -123,24 +123,9 @@ async function verifyCreation() {
   ).toHaveCount(0);
   await chooseDialogOption(page, model, "GPT Image 2.5S");
   await chooseDialogOption(page, creation.getByRole("combobox", { name: "生成数量", exact: true }), "2张");
-  await creation
-    .getByRole("button", { name: "展开提示词", exact: true })
-    .click();
-  const expanded = page.getByRole("dialog", {
-    name: "编辑提示词",
-    exact: true,
-  });
   const testPrompt = "线框预览自动检查：一张灰色几何图形，保持横向构图。";
-  const fullPrompt = expanded.getByRole("textbox", { name: "完整提示词", exact: true });
-  await expect(fullPrompt).toHaveCSS("line-height", "24px");
-  await expect(fullPrompt).toHaveCSS("resize", "none");
-  const editorBox = await fullPrompt.boundingBox();
-  expect(editorBox.width).toBeCloseTo(792, 0);
-  expect(editorBox.height).toBeCloseTo(465, 0);
-  await expanded
-    .getByRole("textbox", { name: "完整提示词", exact: true })
-    .fill(testPrompt);
-  await expanded.getByRole("button", { name: "完成", exact: true }).click();
+  await expect(creation.getByRole("button", { name: "展开提示词", exact: true })).toHaveCount(0);
+  await prompt.fill(testPrompt);
   await expect(prompt).toHaveValue(testPrompt);
   const beforeUpload = await prompt.boundingBox();
   const pixel = Buffer.from(
@@ -190,9 +175,6 @@ async function verifyCreation() {
       .locator(".result-actions")
       .getByRole("button", { name: "添加", exact: true })
       .first(),
-  ).toBeDisabled();
-  await expect(
-    creation.getByRole("button", { name: "展开提示词", exact: true }),
   ).toBeDisabled();
   await creation.locator(".result-open").first().click();
   const preview = page.getByRole("dialog", { name: "图片预览", exact: true });

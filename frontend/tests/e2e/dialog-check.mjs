@@ -109,20 +109,26 @@ export async function verifyDialog({ page, screenshot }) {
       const rect = element.getBoundingClientRect();
       const model = document.querySelector('.dialog-select-accent').getBoundingClientRect();
       const inner = element.querySelector('.dialog-button-surface rect:nth-child(2)');
+      const surface = element.querySelector('.dialog-button-surface rect').getBoundingClientRect();
+      const plus = element.querySelector('.dialog-button-surface-icon').getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       return { width: rect.width, height: rect.height, center: rect.top + rect.height / 2,
         modelHeight: model.height, modelCenter: model.top + model.height / 2,
+        plusOffsetX: plus.left + plus.width / 2 - (surface.left + surface.width / 2),
+        plusOffsetY: plus.top + plus.height / 2 - (surface.top + surface.height / 2),
         innerRadius: Number(inner.getAttribute('rx')), inset: Number(inner.getAttribute('y')),
         topVisible: element.contains(document.elementFromPoint(centerX, rect.top + .5)),
         bottomVisible: element.contains(document.elementFromPoint(centerX, rect.bottom - .5)) };
     });
-    expect(optical.width).toBeCloseTo(38, 0); expect(optical.height).toBeCloseTo(38, 0);
+    expect(optical.width).toBeCloseTo(36, 0); expect(optical.height).toBeCloseTo(36, 0);
     expect(optical.modelHeight).toBeCloseTo(36, 0);
     expect(optical.center).toBeCloseTo(optical.modelCenter, 1);
-    expect(optical.innerRadius).toBe(17);
+    expect(optical.plusOffsetX, "Upload plus must be horizontally centered").toBeCloseTo(0, 2);
+    expect(optical.plusOffsetY, "Upload plus must be vertically centered").toBeCloseTo(0, 2);
+    expect(optical.innerRadius).toBe(16);
     expect(optical.inset).toBe(2);
-    expect(optical.topVisible, "The 36px toolbar clips the enlarged upload circle's top").toBe(true);
-    expect(optical.bottomVisible, "The 36px toolbar clips the enlarged upload circle's bottom").toBe(true);
+    expect(optical.topVisible, "The toolbar clips the upload circle's top").toBe(true);
+    expect(optical.bottomVisible, "The toolbar clips the upload circle's bottom").toBe(true);
     await model.click();
     await expect(page.getByRole("listbox")).toBeVisible();
     const box = await model.boundingBox(), menu = await page.getByRole("listbox").boundingBox();
@@ -150,17 +156,9 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(model).toHaveText("GPT Image 2");
     await expect(model).toBeFocused();
     await prompt.fill("");
-    await creation.getByRole("button", { name: "展开提示词", exact: true }).click();
-    const editor = page.getByRole("dialog", { name: "编辑提示词", exact: true });
-    expect((await editor.boundingBox()).width).toBeCloseTo(864, 0);
-    expect((await editor.boundingBox()).height).toBeCloseTo(558, 0);
-    const text = editor.getByRole("textbox", { name: "完整提示词", exact: true });
-    await expect(text).toHaveCSS("font-size", "14px");
-    await expect(text).toHaveCSS("line-height", "22px");
-    expect((await text.boundingBox()).width).toBeCloseTo(820, 0);
-    expect((await text.boundingBox()).height).toBeCloseTo(384, 0);
-    await screenshot("dialog-expanded-editor");
-    await editor.getByRole("button", { name: "取消", exact: true }).click();
+    await expect(creation.getByRole("button", { name: "展开提示词", exact: true, includeHidden: true })).toHaveCount(0);
+    await expect(page.getByRole("dialog", { name: "编辑提示词", exact: true, includeHidden: true })).toHaveCount(0);
+    await expect(page.getByRole("textbox", { name: "完整提示词", exact: true, includeHidden: true })).toHaveCount(0);
   });
 
   await check("input-grows-up-and-scrolls", async () => {

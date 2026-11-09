@@ -88,8 +88,7 @@
 .result-actions button:hover {
   text-decoration: underline;
 }
-.dialog-composer-scope,
-.dialog-prompt-modal {
+.dialog-composer-scope {
   --dialog-control-height: 36px;
   --dialog-control-inset: 2px;
   --dialog-surface: #f2f2f2;
@@ -108,8 +107,7 @@
   --dialog-disabled-arrow: #777;
   font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
 }
-:root[data-theme="dark"] .dialog-composer-scope,
-:root[data-theme="dark"] .dialog-prompt-modal {
+:root[data-theme="dark"] .dialog-composer-scope {
   --dialog-surface: #2a2a2a;
   --dialog-input: #333333;
   --dialog-text: #f2f2f2;
@@ -173,30 +171,6 @@
   scrollbar-color: var(--dialog-secondary) transparent;
 }
 .dialog-prompt-input::placeholder { color: var(--dialog-secondary); opacity: 1; }
-.dialog-expand-editor {
-  position: absolute;
-  top: 14px;
-  right: 20px;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border-radius: 50%;
-  color: #333;
-  background: var(--dialog-control-fill);
-  transition: background-color 140ms ease;
-}
-.dialog-expand-editor::after {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  border: .5px solid #333;
-  border-radius: inherit;
-  pointer-events: none;
-}
-.dialog-expand-editor:hover:not(:disabled) { background: var(--dialog-control-hover); }
-.dialog-expand-editor:active:not(:disabled) { background: var(--dialog-control-active); }
 .dialog-composer .composer-toolbar {
   display: flex;
   align-items: center;
@@ -207,7 +181,6 @@
   border: 0;
 }
 .dialog-upload-button {
-  --dialog-control-height: 38px;
   margin-right: 0;
 }
 .dialog-credit-anchor { margin-left: auto; }
@@ -219,63 +192,8 @@
   text-align: center;
 }
 .dialog-button-generate .dialog-arrow { margin-left: auto; }
-.modal.dialog-prompt-modal {
-  display: flex;
-  flex-direction: column;
-  width: 864px;
-  height: min(558px, calc(100dvh - 48px));
-  border: 0;
-  border-radius: 12px;
-  background: var(--dialog-surface);
-  color: var(--dialog-text);
-  box-shadow: inset 0 0 0 1px var(--dialog-border);
-}
-.dialog-prompt-modal .modal-header {
-  flex: none;
-  height: 66px;
-  padding: 16px 22px;
-}
-.dialog-prompt-modal .modal-header h2 { font-size: 18px; font-weight: 500; }
-.dialog-prompt-modal .modal-header .icon-button {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  color: var(--dialog-secondary);
-}
-.dialog-prompt-modal .modal-header .icon-button:hover { background: var(--dialog-input); }
-.dialog-prompt-modal .modal-body {
-  flex: 1;
-  min-height: 0;
-  padding: 0 22px 24px;
-}
-.modal.dialog-prompt-modal textarea {
-  display: block;
-  width: 100%;
-  height: 100%;
-  padding: 16px 20px 16px;
-  resize: none;
-  border: 0;
-  border-radius: 10px;
-  background: var(--dialog-input);
-  box-shadow: inset 0 0 0 .7px var(--dialog-border);
-  color: var(--dialog-text);
-  font-size: 14px;
-  line-height: 22px;
-}
-.modal.dialog-prompt-modal textarea:focus { box-shadow: inset 0 0 0 .7px #fffa00; }
-.dialog-prompt-modal .modal-footer {
-  flex: none;
-  height: 84px;
-  margin: 0 22px;
-  padding: 23px 0 24px;
-  gap: 9px;
-  border-top: 1px solid var(--dialog-line);
-}
-.dialog-prompt-modal .dialog-editor-cancel { width: 80px; }
-.dialog-prompt-modal .dialog-editor-done { width: 100px; }
 @media (prefers-reduced-motion: reduce) {
-  .dialog-composer,
-  .dialog-expand-editor { transition: none; }
+  .dialog-composer { transition: none; }
 }
 .creation-empty {
   height: 100%;

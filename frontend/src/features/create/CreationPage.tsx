@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
-import { Modal } from "../../components/Modal";
 import { DEFAULT_OPTIONS, MODELS, normalizeOptions } from "../../config/models";
 import { downloadImage, readImageFile } from "../../lib/images";
 import { useStudio } from "../../state/StudioContext";
@@ -48,8 +47,6 @@ export default function CreationPage({
   const [prompt, setPrompt] = useState("");
   const [attachmentItems, setAttachmentItems] = useState<DialogAttachmentItem[]>([]);
   const [options, setOptions] = useState<GenerationOptions>(DEFAULT_OPTIONS);
-  const [expanded, setExpanded] = useState(false);
-  const [expandedDraft, setExpandedDraft] = useState("");
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -69,8 +66,8 @@ export default function CreationPage({
     setOptions(previous => normalizeOptions(previous, editing));
   }, [editing]);
   useEffect(() => {
-    if (!active || expanded) setOpenMenu(null);
-  }, [active, expanded]);
+    if (!active) setOpenMenu(null);
+  }, [active]);
   useLayoutEffect(() => {
     const input = promptInput.current;
     if (!input || !active) return;
@@ -91,7 +88,7 @@ export default function CreationPage({
   const quoteReady = Number.isFinite(cost) && cost >= 0;
   const insufficientCredits = quoteReady && cost > currentUser.balance;
   const costLabel = quoteReady ? cost.toLocaleString("zh-CN") : "…";
-  const suppressTooltips = !active || expanded || openMenu !== null;
+  const suppressTooltips = !active || openMenu !== null;
   const generationHint = uploading ? "参考图上传中，请稍候。" : incompleteAttachments
     ? "请先移除上传失败的参考图。" : !quoteReady ? "正在获取报价…" : insufficientCredits
     ? "积分不足，请调整张数或联系管理员。" : "开始生成图片";
@@ -314,7 +311,7 @@ export default function CreationPage({
           ownerId={currentUser.id}
           items={attachmentItems}
           disabled={sending}
-          active={active && !expanded}
+          active={active}
           onRemove={id => {
             attachmentSources.current.delete(id);
             if (attachmentItems.some(item => item.id === id && item.status === "uploading")) {
@@ -359,21 +356,6 @@ export default function CreationPage({
               }}
             />
           </div>
-          <button
-            type="button"
-            className="dialog-expand-editor"
-            aria-label="展开提示词"
-            disabled={sending}
-            onClick={() => {
-              setOpenMenu(null);
-              setExpandedDraft(prompt);
-              setExpanded(true);
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true">
-              <rect x="3" y="2.5" width="10" height="11" rx="2" />
-            </svg>
-          </button>
           <div className="composer-toolbar dialog-composer-toolbar">
             <input
               ref={fileInput}
@@ -386,17 +368,14 @@ export default function CreationPage({
             />
             <DialogButton
               className="dialog-button-icon dialog-upload-button"
+              surfaceIcon="plus"
               aria-label="上传图片"
               tooltip="添加图片，也可拖入图片到对话框。"
               tooltipAlign="start"
               tooltipDisabled={suppressTooltips}
               disabled={uploading || sending || attachmentItems.length >= 6}
               onClick={() => { setOpenMenu(null); fileInput.current?.click(); }}
-            >
-              <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M10 0v20M0 10h20" />
-              </svg>
-            </DialogButton>
+            />
             <DialogSelect
               label="模型"
               value={options.modelId}
@@ -405,7 +384,7 @@ export default function CreationPage({
               disabled={sending}
               accent
               tooltip="选择生成模型"
-              tooltipDisabled={!active || expanded}
+              tooltipDisabled={!active}
               openMenu={openMenu}
               onOpenChange={setOpenMenu}
             />
@@ -416,7 +395,7 @@ export default function CreationPage({
               onChange={quality => updateOption({ quality })}
               disabled={sending}
               tooltip="图像质量"
-              tooltipDisabled={!active || expanded}
+              tooltipDisabled={!active}
               openMenu={openMenu}
               onOpenChange={setOpenMenu}
             />}
@@ -427,7 +406,7 @@ export default function CreationPage({
               onChange={ratio => updateOption({ ratio })}
               disabled={sending}
               tooltip="画面比例"
-              tooltipDisabled={!active || expanded}
+              tooltipDisabled={!active}
               openMenu={openMenu}
               onOpenChange={setOpenMenu}
             />}
@@ -438,7 +417,7 @@ export default function CreationPage({
               onChange={resolution => updateOption({ resolution })}
               disabled={sending}
               tooltip="图像分辨率"
-              tooltipDisabled={!active || expanded}
+              tooltipDisabled={!active}
               openMenu={openMenu}
               onOpenChange={setOpenMenu}
             />}
@@ -449,7 +428,7 @@ export default function CreationPage({
               onChange={count => updateOption({ count: Number(count) })}
               disabled={sending}
               tooltip="生成张数"
-              tooltipDisabled={!active || expanded}
+              tooltipDisabled={!active}
               openMenu={openMenu}
               onOpenChange={setOpenMenu}
             />
@@ -481,37 +460,6 @@ export default function CreationPage({
           </div>
         </div>
       </div>
-      {expanded && (
-        <Modal
-          title="编辑提示词"
-          className="prompt-modal dialog-prompt-modal"
-          onClose={() => setExpanded(false)}
-          footer={
-            <>
-              <DialogButton className="dialog-editor-cancel" onClick={() => setExpanded(false)}>
-                取消
-              </DialogButton>
-              <DialogButton
-                className="dialog-editor-done"
-                accent
-                onClick={() => {
-                  setPrompt(expandedDraft);
-                  setExpanded(false);
-                }}
-              >
-                完成
-              </DialogButton>
-            </>
-          }
-        >
-          <textarea
-            aria-label="完整提示词"
-            autoFocus
-            value={expandedDraft}
-            onChange={(e) => setExpandedDraft(e.target.value)}
-          />
-        </Modal>
-      )}
     </section>
   );
 }

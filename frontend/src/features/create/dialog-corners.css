@@ -5,8 +5,6 @@
 @supports (corner-shape: superellipse(1.6)) {
   .dialog-composer,
   .dialog-prompt-area.prompt-area,
-  .modal.dialog-prompt-modal,
-  .modal.dialog-prompt-modal textarea,
   .dialog-menu,
   .dialog-option,
   .dialog-attachments .dialog-attachments-track,
@@ -24,12 +22,9 @@
 
   .dialog-button,
   .dialog-control:focus-visible,
-  .dialog-expand-editor,
-  .dialog-expand-editor::after,
   .dialog-arrow,
   .dialog-attachment-remove,
-  .dialog-tooltip,
-  .dialog-prompt-modal .modal-header .icon-button {
+  .dialog-tooltip {
     corner-shape: round;
   }
 }

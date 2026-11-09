@@ -223,6 +223,7 @@ function useDialogTooltip(text: string | undefined, disabled: boolean, align: "s
 }
 
 export interface DialogButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  surfaceIcon?: "plus";
   tooltip?: string;
   tooltipDisabled?: boolean;
   tooltipAlign?: "start" | "center";
@@ -231,7 +232,7 @@ export interface DialogButtonProps extends ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export const DialogButton = forwardRef<HTMLButtonElement, DialogButtonProps>(function DialogButton(
-  { tooltip, tooltipDisabled = false, tooltipAlign = "center", accent = false, wrapperClassName = "", className = "", disabled, children, type = "button", ...props },
+  { surfaceIcon, tooltip, tooltipDisabled = false, tooltipAlign = "center", accent = false, wrapperClassName = "", className = "", disabled, children, type = "button", ...props },
   ref,
 ) {
   const hint = useDialogTooltip(tooltip, tooltipDisabled, tooltipAlign);
@@ -254,7 +255,7 @@ export const DialogButton = forwardRef<HTMLButtonElement, DialogButtonProps>(fun
         className={`dialog-button${accent ? " dialog-button-accent" : ""} ${className}`.trim()}
         aria-describedby={hint.description ?? props["aria-describedby"]}
       >
-        <DialogButtonSurface />
+        <DialogButtonSurface icon={surfaceIcon} />
         {children}
       </button>
       {hint.tooltip}

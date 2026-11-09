@@ -47,6 +47,7 @@
   transition: fill 140ms;
 }
 .dialog-button-surface .dialog-button-surface-line { fill: var(--dialog-button-line); }
+.dialog-button-surface-icon { fill: none; stroke: currentColor; stroke-width: 2; }
 .dialog-button:hover:not(:disabled) {
   --dialog-button-fill: var(--dialog-control-hover, #fafaf5);
 }
