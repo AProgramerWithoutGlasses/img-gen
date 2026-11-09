@@ -150,7 +150,7 @@
   max-width: calc(100% - 90px);
   padding: 12px 14px;
   border-radius: 10px;
-  background: var(--dialog-input);
+  background: var(--dialog-surface);
 }
 .dialog-prompt-input {
   display: block;

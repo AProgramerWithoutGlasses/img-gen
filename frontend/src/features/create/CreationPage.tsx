@@ -308,7 +308,6 @@ export default function CreationPage({
       </div>
       <div className="composer-area dialog-composer-scope">
         <DialogAttachments
-          ownerId={currentUser.id}
           items={attachmentItems}
           disabled={sending}
           active={active}

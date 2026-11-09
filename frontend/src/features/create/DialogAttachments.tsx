@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { CSSProperties, FocusEvent } from "react";
+import type { FocusEvent } from "react";
 import "./dialog-attachments.css";
 
 export interface DialogAttachmentItem {
@@ -13,20 +13,13 @@ export interface DialogAttachmentItem {
 }
 
 interface Props {
-  ownerId: string;
   items: DialogAttachmentItem[];
   disabled: boolean;
   onRemove: (id: string) => void;
   active: boolean;
 }
 
-function readExpanded(key: string) {
-  try { return localStorage.getItem(key) === "true"; } catch { return false; }
-}
-
-export default function DialogAttachments({ ownerId, items, disabled, onRemove, active }: Props) {
-  const preferenceKey = `img-gen:dialog-attachments-expanded:${ownerId}`;
-  const [expanded, setExpanded] = useState(() => readExpanded(preferenceKey));
+export default function DialogAttachments({ items, disabled, onRemove, active }: Props) {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [previewHeight, setPreviewHeight] = useState(324);
   const [imageState, setImageState] = useState<{ key: string; state: "loading" | "ready" | "failed" }>({ key: "", state: "loading" });
@@ -37,7 +30,6 @@ export default function DialogAttachments({ ownerId, items, disabled, onRemove, 
   const pendingId = useRef<string | null>(null);
   const itemsRef = useRef(items);
   itemsRef.current = items;
-  useEffect(() => { setExpanded(readExpanded(preferenceKey)); }, [preferenceKey]);
 
   const clearOpen = useCallback(() => {
     if (openTimer.current) clearTimeout(openTimer.current);
@@ -136,19 +128,14 @@ export default function DialogAttachments({ ownerId, items, disabled, onRemove, 
   };
 
   if (!active || !items.length) return null;
-  const visibleItems = expanded ? items.slice(0, 6) : items.slice(0, 3);
-  const compactWidth = 288;
-  const markerLeft = 100;
-  const stripStyle = {
-    width: expanded ? "100%" : compactWidth,
-    "--dialog-attachment-marker-left": `${markerLeft}px`,
-  } as CSSProperties;
+  const columns = Math.max(4, Math.min(6, items.length));
+  const stripWidth = 16 + columns * 62 + (columns - 1) * 7;
 
   return (
-    <div className="dialog-attachments" data-expanded={expanded} style={{ "--dialog-attachment-marker-left": `${markerLeft}px` } as CSSProperties}>
-      <div ref={strip} className="attachment-row dialog-attachments-track" style={stripStyle} aria-label="附件栏">
+    <div className="dialog-attachments">
+      <div ref={strip} className="attachment-row dialog-attachments-track" style={{ width: stripWidth }} aria-label="附件栏">
         <div className="dialog-attachments-cards">
-          {visibleItems.map((item) => (
+          {items.map((item) => (
             <div
               className="attachment-item dialog-attachment-card"
               key={item.id}
@@ -184,22 +171,6 @@ export default function DialogAttachments({ ownerId, items, disabled, onRemove, 
             </div>
           ))}
         </div>
-        <button
-          type="button"
-          className="dialog-attachment-toggle"
-          aria-label={expanded ? "收起参考图" : "展开参考图"}
-          aria-expanded={expanded}
-          onMouseEnter={scheduleClose}
-          onFocus={scheduleClose}
-          onClick={() => {
-            closePreview();
-            const next = !expanded;
-            setExpanded(next);
-            try { localStorage.setItem(preferenceKey, String(next)); } catch { /* Keep the choice in memory when storage is unavailable. */ }
-          }}
-        >
-          <svg viewBox="0 0 6 12" aria-hidden="true"><path d={expanded ? "M6 0 0 6 6 12" : "M0 0 6 6 0 12"} /></svg>
-        </button>
       </div>
       {selected?.url && (
         <div

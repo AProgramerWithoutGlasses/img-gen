@@ -2,20 +2,9 @@
   position: relative;
   width: 100%;
   max-width: 900px;
-  height: 93.056px;
-  flex: 0 0 93.056px;
+  height: 84px;
+  flex: 0 0 84px;
   overflow: visible;
-}
-.dialog-attachments::after {
-  content: "";
-  position: absolute;
-  top: 82.528px;
-  left: var(--dialog-attachment-marker-left, 100px);
-  width: 64px;
-  height: 6px;
-  border-radius: 3px;
-  background: #fffa00;
-  pointer-events: none;
 }
 .dialog-attachments .dialog-attachments-track {
   position: relative;
@@ -146,45 +135,6 @@
 .dialog-attachment-card:hover .dialog-attachment-remove:disabled,
 .dialog-attachment-card:focus-within .dialog-attachment-remove:disabled { opacity: .5; }
 .dialog-attachment-remove:focus-visible { outline: 2px solid #fffa00; outline-offset: 1px; }
-.dialog-attachments .dialog-attachment-toggle {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 62px;
-  width: 62px;
-  height: 62px;
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0 0 0 7px;
-  border: 0;
-  border-radius: 12px;
-  background: var(--dialog-control-fill, #eeecec);
-  color: #333;
-  cursor: pointer;
-  transition: background-color 140ms ease;
-}
-.dialog-attachment-toggle::after {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  border: 1px solid #333;
-  border-radius: 10px;
-  pointer-events: none;
-}
-.dialog-attachments .dialog-attachment-toggle:hover { background: #fffa00; }
-.dialog-attachments .dialog-attachment-toggle:active { background: #e6de00; }
-.dialog-attachment-toggle:focus-visible { outline: 2px solid #fffa00; outline-offset: -2px; }
-.dialog-attachment-toggle svg {
-  width: 6px;
-  height: 12px;
-  overflow: visible;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
 .dialog-attachment-preview {
   position: absolute;
   z-index: 60;
@@ -254,7 +204,6 @@
 @keyframes dialog-attachment-preview-enter { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   .dialog-attachments .dialog-attachments-track,
-  .dialog-attachments .dialog-attachment-toggle,
   .dialog-attachments .dialog-attachment-remove { transition: none; }
   .dialog-attachment-preview { animation: none; }
 }
