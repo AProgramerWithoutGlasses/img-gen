@@ -13,12 +13,21 @@
 - 应用：`img-gen.service`，以 `imggen` 用户运行，监听 `127.0.0.1:18080`。
 - 当前二进制：`/opt/img-gen/current`，指向 `/opt/img-gen/releases/` 下的版本文件。
 - 应用配置：`/opt/img-gen/.env`，权限 `root:imggen 0640`；保留服务器原有 API Key、Base URL 和数据库连接。
-- HTTPS 会话需要 `COOKIE_SECURE=true`。首次账号迁移使用 `ADMIN_PASSWORD`，未设置时兼容原 `APP_PASSWORD`；已有账号不会被环境变量重置密码。
+- HTTPS 会话需要 `COOKIE_SECURE=true`。首次账号迁移使用 `ADMIN_PASSWORD`，未设置时兼容原 `APP_PASSWORD`；已有账号不会被环境变量重置密码，初始化完成后应移除这些明文初始密码变量。
 - MySQL：独立容器 `img-gen-mysql`，数据卷 `img-gen-mysql-data`，监听 `127.0.0.1:13306`，数据库名 `imggen`。此部署沿用既有 MySQL 8.2 容器。
+- MySQL 容器通过 `MYSQL_ROOT_PASSWORD_FILE`、`MYSQL_PASSWORD_FILE` 读取密码；文件仅留服务器 `/opt/img-gen/secrets/`，归属 root、权限 `0600`，整目录只读挂载至 `/run/secrets/imggen-mysql`。根客户端选项文件为该目录内的 `mysql-root.cnf`；容器健康检查使用 `mysql --defaults-extra-file=/run/secrets/imggen-mysql/mysql-root.cnf --protocol=socket --batch --skip-column-names -e 'SELECT 1'`。重建容器保留原数据卷、网络与资源参数。
 - 当前 MySQL 容器内存上限640MiB，额外swap额度512MiB；Docker的 `--memory-swap` 是两者总额，当前为1152MiB。此值已通过 `docker update` 持久化，现有64MiB缓冲池、30连接上限和关闭Performance Schema的配置保留。资源调整不重启数据库或修改业务数据。
 - Nginx：`/etc/nginx/sites-available/img-gen`；`client_max_body_size 25m` 覆盖新版每张附件20MB的独立上传及旧双图表单上限；证书由 `certbot.timer` 续期。调整后先执行 `nginx -t`，通过后 reload。
 - 升级备份：`/opt/img-gen/backups/<UTC时间>/`，目录权限 `0700`，备份文件权限 `0600`。
 - 发布信息：`/opt/img-gen/release.json`，记录代码提交、二进制 SHA256、前一版本与备份位置，不保存密钥。
+
+## 凭据与维护查询
+
+不要完整打印 `.env`、`docker inspect`、`env` 或 `set`，也不要用 `source .env` 配合多层引号拼接远程命令。脚本和 SQL 通过标准输入传递，凭据仅在服务器端读取；需要容器信息时只取必要字段，内部捕获完整输出后筛选，错误也不得原样回显含凭据的命令或配置。只查询本次所需字段，不为确认账号读取密码哈希。
+
+数据库凭据轮换须同步应用 DSN、容器密码文件和客户端选项文件，覆盖实际使用的应用账号与 root 的各 Host 记录，并验证连接。仅修改容器初始化环境变量不会更改已有数据卷中的密码。秘密文件按配置同等限制备份；回退业务版本或恢复旧配置时保留已轮换凭据，不能恢复曾暴露的密码。
+
+管理员密码重置使用应用兼容的密码哈希，并递增该账号的 `session_version`，使旧登录失效；正式密码只交给用户，不写入笔记、脚本或日志。已有账号无需保留明文初始化密码。
 
 ## 升级顺序
 
@@ -65,6 +74,12 @@ docker inspect --format '{{.State.Health.Status}}' img-gen-mysql
 curl -fsS http://127.0.0.1:18080/healthz
 nginx -t
 df -h /
+```
+
+数据库连通性检查通过标准输入传入 SQL，不把密码放入命令行：
+
+```powershell
+'SELECT 1;' | ssh me docker exec -i img-gen-mysql mysql --defaults-extra-file=/run/secrets/imggen-mysql/mysql-root.cnf --batch --skip-column-names
 ```
 
 部署证据、浏览器截图和本地操作脚本放在被 Git 忽略的 `outputs/` 中。不得在维护说明或 Git 提交中保存账号密码、API Key、数据库备份或完整上游响应。
