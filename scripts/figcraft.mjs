@@ -13,53 +13,65 @@ async function savedInfo(path) {
   return { ...JSON.parse(result.stdout), diagnostics: result.stderr };
 }
 
+async function auditSavedFile(file) {
+  const started = performance.now();
+  const before = hash(await readFile(file));
+  const info = await savedInfo(file);
+  const after = hash(await readFile(file));
+  if (before !== after) throw new Error('The file changed during audit; save it and retry.');
+  const report = {
+    input: file, source: 'saved file', sha256: after, bytes: (await stat(file)).size,
+    cliVersion: (await cli(['--version'])).stdout, ...info,
+    contentNodes: info.pages.reduce((total, page) => total + page.nodes, 0),
+    elapsedMs: Math.round(performance.now() - started),
+  };
+  await mkdir(resolve(output, 'design-audit'), { recursive: true });
+  const reportPath = resolve(output, 'design-audit', `${basename(file)}.json`);
+  await writeFile(reportPath, JSON.stringify(report, null, 2));
+  console.log(JSON.stringify({ contentNodes: report.contentNodes, pages: info.pages.length, missingFonts: info.missingFonts, notes: info.notes, report: reportPath }));
+  const passed = !info.missingFonts?.length && !info.notes?.length;
+  if (!passed) process.exitCode = 1;
+  return { info, passed };
+}
+
+async function exportSavedFile(file, auditedInfo) {
+  const info = auditedInfo ?? await savedInfo(file);
+  if (new Set(info.pages.map(page => page.name)).size !== info.pages.length) {
+    throw new Error('Batch export requires unique page names because the installed CLI selects pages by name. Rename duplicate pages first.');
+  }
+  const folder = resolve(output, 'design-export', basename(file, '.figcraft'));
+  await mkdir(folder, { recursive: true });
+  // Unique run folders prevent stale images from earlier deleted frames being mistaken for new exports.
+  const run = resolve(folder, new Date().toISOString().replaceAll(':', '-'));
+  await mkdir(run);
+  const results = [];
+  for (const [index, page] of info.pages.entries()) {
+    if (!page.nodes) { results.push({ page: page.name, skipped: 'empty page' }); continue; }
+    const pageFolder = resolve(run, `page-${index + 1}`);
+    await mkdir(pageFolder);
+    const result = await cli(['export', file, '--page', page.name, '--format', 'png', '--scale', '1', '--out', pageFolder, ...fileRoots]);
+    results.push({ page: page.name, folder: pageFolder, diagnostics: result.stderr });
+  }
+  await writeFile(resolve(folder, 'latest.json'), JSON.stringify({ input: file, run, results }, null, 2));
+  console.log(JSON.stringify({ manifest: resolve(folder, 'latest.json'), results }));
+}
+
 async function main() {
   if (action === 'open' && !input) throw new Error('请指定本次目标稿：npm run design:open -- "design/目标.figcraft"');
+  if (action === 'verify' && !input) throw new Error('请指定本次验收稿：npm run design:verify -- "design/目标.figcraft"');
   if (action === 'batch' && (!input || !extra)) throw new Error('批量修改必须指定命令文件和目标稿：npm run design:batch -- commands.json "design/目标.figcraft"');
   await prepare();
-  if (action === 'audit') {
-    const started = performance.now();
-    const before = hash(await readFile(file));
-    const info = await savedInfo(file);
-    const after = hash(await readFile(file));
-    if (before !== after) throw new Error('The file changed during audit; save it and retry.');
-    const report = {
-      input: file, source: 'saved file', sha256: after, bytes: (await stat(file)).size,
-      cliVersion: (await cli(['--version'])).stdout, ...info,
-      contentNodes: info.pages.reduce((total, page) => total + page.nodes, 0),
-      elapsedMs: Math.round(performance.now() - started),
-    };
-    await mkdir(resolve(output, 'design-audit'), { recursive: true });
-    const reportPath = resolve(output, 'design-audit', `${basename(file)}.json`);
-    await writeFile(reportPath, JSON.stringify(report, null, 2));
-    console.log(JSON.stringify({ contentNodes: report.contentNodes, pages: info.pages.length, missingFonts: info.missingFonts, notes: info.notes, report: reportPath }));
-    if (info.missingFonts?.length || info.notes?.length) process.exitCode = 1;
+  if (action === 'audit' || action === 'verify') {
+    const { info, passed } = await auditSavedFile(file);
+    if (action === 'verify' && passed) await exportSavedFile(file, info);
     return;
   }
   if (action === 'export') {
-    const info = await savedInfo(file);
-    if (new Set(info.pages.map(page => page.name)).size !== info.pages.length) {
-      throw new Error('Batch export requires unique page names because the installed CLI selects pages by name. Rename duplicate pages first.');
-    }
-    const folder = resolve(output, 'design-export', basename(file, '.figcraft'));
-    await mkdir(folder, { recursive: true });
-    // Unique run folders prevent stale images from earlier deleted frames being mistaken for new exports.
-    const run = resolve(folder, new Date().toISOString().replaceAll(':', '-'));
-    await mkdir(run);
-    const results = [];
-    for (const [index, page] of info.pages.entries()) {
-      if (!page.nodes) { results.push({ page: page.name, skipped: 'empty page' }); continue; }
-      const pageFolder = resolve(run, `page-${index + 1}`);
-      await mkdir(pageFolder);
-      const result = await cli(['export', file, '--page', page.name, '--format', 'png', '--scale', '1', '--out', pageFolder, ...fileRoots]);
-      results.push({ page: page.name, folder: pageFolder, diagnostics: result.stderr });
-    }
-    await writeFile(resolve(folder, 'latest.json'), JSON.stringify({ input: file, run, results }, null, 2));
-    console.log(JSON.stringify({ manifest: resolve(folder, 'latest.json'), results }));
+    await exportSavedFile(file);
     return;
   }
   if (!['open', 'status', 'snapshot', 'batch'].includes(action)) {
-    throw new Error('Usage: figcraft.mjs open <file> | status | audit [file] | export [file] | snapshot [node-id] [document-path] | batch <commands.json> <document-path>');
+    throw new Error('Usage: figcraft.mjs open <file> | status | audit [file] | export [file] | verify <file> | snapshot [node-id] [document-path] | batch <commands.json> <document-path>');
   }
   if (action === 'status') {
     const state = await appStatus();

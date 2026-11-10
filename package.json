@@ -26,7 +26,7 @@
     "design:snapshot": "node scripts/figcraft.mjs snapshot",
     "design:batch": "node scripts/figcraft.mjs batch",
     "design:smoke": "node tests/design/figcraft-smoke.mjs",
-    "design:verify": "npm run design:audit && npm run design:export",
+    "design:verify": "node scripts/figcraft.mjs verify",
     "design:compare": "node tests/design/check-design-browser.mjs",
     "test:go": "go test ./tests/go/..."
   },

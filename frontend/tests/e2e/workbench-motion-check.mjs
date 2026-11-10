@@ -1,12 +1,15 @@
 // Real production frontend, local API/image fixtures only. No generation requests.
-import { chromium, expect } from '@playwright/test';
-import { preview } from 'vite';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { prepareEvidenceOutput } from './evidence-output.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const output = new URL('../../outputs/workbench-motion/', import.meta.url);
-await mkdir(output, { recursive: true });
+const { url: output } = await prepareEvidenceOutput(process.argv.slice(2), {
+  defaultDirectory: 'frontend/outputs/workbench-motion',
+});
+const [{ chromium, expect }, { preview }] = await Promise.all([
+  import('@playwright/test'), import('vite'),
+]);
 const server = await preview({ root, preview: { host: '127.0.0.1', port: 4184, strictPort: true } });
 const origin = 'http://127.0.0.1:4184';
 // Fine edges make blur visible; 4:3 deliberately differs from the auto frame.

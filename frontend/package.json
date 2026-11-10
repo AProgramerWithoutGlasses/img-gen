@@ -10,7 +10,7 @@
     "dev": "vite",
     "dev:preview": "vite --mode preview",
     "check": "tsc --noEmit && node scripts/check-scripts.mjs",
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/build.mjs",
     "sync:server": "node scripts/sync-server.mjs",
     "build:server": "npm run build && npm run sync:server",
     "preview": "vite preview",

@@ -1,13 +1,17 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { chromium, expect } from "@playwright/test";
-import { createServer } from "vite";
-import { chooseDialogOption, removeDialogAttachment, verifyDialog } from "./dialog-check.mjs";
+import { prepareEvidenceOutput } from "./evidence-output.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
-const output = new URL("../../outputs/preview/", import.meta.url);
+const evidence = await prepareEvidenceOutput(process.argv.slice(2), {
+  defaultDirectory: "frontend/outputs/preview",
+  booleanFlags: ["--dialog-only"],
+});
+const output = evidence.url;
 const origin = "http://127.0.0.1:5175";
-await mkdir(output, { recursive: true });
+const [{ chromium, expect }, { createServer }, { chooseDialogOption, removeDialogAttachment, verifyDialog }] = await Promise.all([
+  import("@playwright/test"), import("vite"), import("./dialog-check.mjs"),
+]);
 const server = await createServer({
   mode: "preview",
   root,
@@ -703,7 +707,7 @@ try {
   expect(response?.ok()).toBe(true);
   await page.locator("#root > *").first().waitFor();
   await page.evaluate(() => document.fonts.ready);
-  if (!process.argv.includes("--dialog-only")) {
+  if (!evidence.flags.has("--dialog-only")) {
     await check("login-form", verifyLogin);
     await check("creation-generation-and-attachments", verifyCreation);
     await check("gallery-folder-memberships", verifyGallery);
@@ -761,7 +765,7 @@ try {
   console.log(
     "Browser check passed: " +
       results.length +
-      " flows + " + dialogChecks.length + " dialog checks; screenshots: outputs/preview/",
+      " flows + " + dialogChecks.length + " dialog checks; screenshots: " + evidence.path,
   );
 } catch (error) {
   errors.push(error instanceof Error ? error.message : String(error));
