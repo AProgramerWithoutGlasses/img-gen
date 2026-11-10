@@ -14,6 +14,8 @@ async function savedInfo(path) {
 }
 
 async function main() {
+  if (action === 'open' && !input) throw new Error('请指定本次目标稿：npm run design:open -- "design/目标.figcraft"');
+  if (action === 'batch' && (!input || !extra)) throw new Error('批量修改必须指定命令文件和目标稿：npm run design:batch -- commands.json "design/目标.figcraft"');
   await prepare();
   if (action === 'audit') {
     const started = performance.now();
@@ -59,8 +61,6 @@ async function main() {
   if (!['open', 'status', 'snapshot', 'batch'].includes(action)) {
     throw new Error('Usage: figcraft.mjs open <file> | status | audit [file] | export [file] | snapshot [node-id] [document-path] | batch <commands.json> <document-path>');
   }
-  if (action === 'open' && !input) throw new Error('请指定本次目标稿：npm run design:open -- "design/目标.figcraft"');
-  if (action === 'batch' && (!input || !extra)) throw new Error('批量修改必须指定命令文件和目标稿：npm run design:batch -- commands.json "design/目标.figcraft"');
   if (action === 'status') {
     const state = await appStatus();
     if (!state.running) { console.log(JSON.stringify({ ...state, documents: [], message: 'FigCraft 未运行；未启动应用或打开设计稿。' })); return; }

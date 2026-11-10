@@ -18,3 +18,4 @@
 | --- | --- |
 | 根目录不散放报告或独立专题研究目录 | `npm run check:tools` 中的结构检查；错误放置报告和研究目录的负例均已验证会被拒绝 |
 | 个人笔记目录及本机引用不混入项目 | `check:tools` 拒绝 personal-notes/、personal-research/；`check:docs` 拒绝仓库外及本机文件链接；内容归属按工作流程判断 |
+| 设计命令缺少必要目标时先拒绝，不依赖本机是否安装设计工具 | `tests/tools/figcraft-startup.test.mjs` 使用不存在的应用与CLI路径验证参数检查顺序 |
