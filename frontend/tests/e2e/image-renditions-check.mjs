@@ -194,6 +194,7 @@ try {
       await card.hover({ position: { x: 8, y: 48 } });
       await card.getByRole("button", { name: "移除" + shapes.find(shape => shape.id === id).name, exact: true }).click();
     }
+    await page.locator(".result-card").hover();
     await page.locator(".result-actions").getByRole("button", { name: "继续修图", exact: true }).click();
     const outputCard = page.locator(".dialog-attachment-card");
     await loaded(outputCard.locator("img"));

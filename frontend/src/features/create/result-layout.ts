@@ -19,7 +19,7 @@ export function resultLayout(
   if (width <= 0 || height <= 0) return null;
   const aspect = Number.isFinite(ratio) && ratio > 0 ? ratio : 1;
   const gap = width < 560 ? 12 : 16;
-  const toolbar = 44;
+  const toolbar = 0;
   const candidates = Array.from({ length: total }, (_, index) => index + 1)
     .filter(columns => !(total === 4 && columns === 3))
     .map(columns => {
@@ -39,7 +39,7 @@ export function resultLayout(
   // Keep an almost-equivalent layout while the composer grows or a panel moves.
   if (previous && previous.area >= best.area * .92) best = previous;
   const cardHeight = best.imageHeight + toolbar;
-  const top = (height - best.rows * cardHeight - (best.rows - 1) * gap) / 2;
+  const top = 0;
   const positions = Array.from({ length: total }, (_, index) => {
     const row = Math.floor(index / best.columns);
     const column = index % best.columns;

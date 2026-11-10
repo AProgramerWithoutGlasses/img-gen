@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import {
   ArrowLeft, ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, Coins,
   Copy, Download, Folder, FolderOpen, FolderPlus, Grid2X2, Image, Images,
-  Info, LoaderCircle, LogOut, Maximize, Minus, Moon, MoreHorizontal,
+  Info, LoaderCircle, LogOut, Maximize, Minus, Moon, MoreHorizontal, MoreVertical,
   PanelLeftClose, PanelLeftOpen, Pencil, Plus, RefreshCw, Search, Send,
   Settings, ShieldCheck, Sparkles, Sun, Trash2, UserRound, X, ZoomIn, ZoomOut,
   type LucideIcon,
@@ -11,7 +11,7 @@ import {
 const icons: Record<string, LucideIcon> = {
   image: Image, images: Images, library: Images, folder: Folder, folderOpen: FolderOpen,
   folderPlus: FolderPlus, plus: Plus, close: X, chevronLeft: ChevronLeft,
-  chevronRight: ChevronRight, chevronDown: ChevronDown, more: MoreHorizontal,
+  chevronRight: ChevronRight, chevronDown: ChevronDown, more: MoreHorizontal, moreVertical: MoreVertical,
   download: Download, check: Check, settings: Settings, expand: Maximize,
   maximize: Maximize, collapse: PanelLeftClose, panelLeftOpen: PanelLeftOpen,
   user: UserRound, sun: Sun, moon: Moon, arrowLeft: ArrowLeft, arrowUp: ArrowUp,

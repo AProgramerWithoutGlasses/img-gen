@@ -158,7 +158,7 @@ function StudioApp() {
         }}
         notify={notify}
       />
-      <main className="workspace">
+      <main className={`workspace${!isGallery && !isSettings ? " workbench-workspace" : ""}`}>
         {isSettings && <header className="page-header">
           <h1>
             {isSettings

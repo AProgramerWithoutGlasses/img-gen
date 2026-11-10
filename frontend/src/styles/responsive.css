@@ -1,9 +1,3 @@
-.app-shell {
-  --sidebar-width: 280px;
-}
-.app-shell.sidebar-collapsed {
-  --sidebar-width: 72px;
-}
 .gallery-page,
 .settings-content {
   flex: 1;

@@ -38,9 +38,6 @@ async function openPictureSection(name) {
   const navigation = page.getByRole('navigation', { name: '主导航', exact: true });
   const expandSidebar = page.getByRole('button', { name: '展开侧栏', exact: true });
   if (await expandSidebar.count()) await expandSidebar.click();
-  const galleryToggle = navigation.getByRole('button', { name: '我的图片', exact: true });
-  if ((await galleryToggle.getAttribute('aria-expanded')) !== 'true') await galleryToggle.click();
-  await expect(galleryToggle).toHaveAttribute('aria-expanded', 'true');
   const target = navigation.getByRole('button', { name, exact: true });
   await target.click();
 }
@@ -82,6 +79,7 @@ try {
   await expect(result.locator('.result-open img')).toHaveCount(1, { timeout: 15000 });
   const width = await result.locator('.result-card').evaluate(el => el.getBoundingClientRect().width);
   expect(width).toBeGreaterThan(300); // React CSSOM geometry under the actual Go CSP.
+  await result.locator('.result-card').hover();
   await result.getByRole('button', { name: '继续修图', exact: true }).click();
   await expect(creation.locator('.attachment-item')).toHaveCount(1);
   await expect(result.locator('.result-card')).toHaveCount(1);
@@ -89,6 +87,7 @@ try {
   await creation.locator('.attachment-remove').click();
   await expect(creation.locator('.attachment-row')).toHaveCount(0);
   const downloadEvent = page.waitForEvent('download');
+  await result.locator('.result-card').hover();
   await result.getByRole('button', { name: '下载', exact: true }).click();
   const download = await downloadEvent;
   expect(download.suggestedFilename()).toMatch(/\.png$/);
@@ -170,7 +169,7 @@ try {
   const originalCount = await gallery.locator('.gallery-tile').count();
   for (const name of ['浏览器 A', '浏览器 B']) {
     await openPictureSection('文件夹管理');
-    await page.getByRole('button', { name: '新建文件夹', exact: true }).click();
+    await page.locator('.sidebar').getByRole('button', { name: '新建文件夹', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: '新建文件夹', exact: true });
     await dialog.getByLabel('文件夹名称', { exact: true }).fill(name);
     await dialog.getByRole('button', { name: '创建', exact: true }).click();

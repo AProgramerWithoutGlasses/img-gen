@@ -79,9 +79,6 @@ async function openPictureSection(name) {
   const navigation = page.getByRole("navigation", { name: "主导航", exact: true });
   const expandSidebar = page.getByRole("button", { name: "展开侧栏", exact: true });
   if (await expandSidebar.count()) await expandSidebar.click();
-  const galleryToggle = navigation.getByRole("button", { name: "我的图片", exact: true });
-  if ((await galleryToggle.getAttribute("aria-expanded")) !== "true") await galleryToggle.click();
-  await expect(galleryToggle).toHaveAttribute("aria-expanded", "true");
   const target = navigation.getByRole("button", { name, exact: true });
   await target.click();
 }
@@ -169,6 +166,7 @@ async function verifyCreation() {
   await expect(creation.locator(".attachment-row")).toHaveCount(0);
   const originalBatch = await creation.getByTestId("generation-turn").getAttribute("data-generation-id");
   const originalImage = await creation.locator(".result-open img").first().getAttribute("alt");
+  await creation.locator(".result-card").first().hover();
   await creation
     .getByRole("button", { name: "继续修图", exact: true })
     .first()
@@ -181,6 +179,7 @@ async function verifyCreation() {
   await attachment.getByRole("button", { name: /^移除/ }).click();
   await expect(attachment).toHaveCount(0);
   const downloadEvent = page.waitForEvent("download");
+  await creation.locator(".result-card").first().hover();
   await creation
     .getByRole("button", { name: "下载", exact: true })
     .first()
@@ -329,7 +328,7 @@ async function verifyRoleBoundary() {
   await page.getByRole("button", { name: "图像创作", exact: true }).click();
   const creation = page.getByRole("region", { name: "图像创作", exact: true });
   const failedBatch = await creation.getByTestId("generation-turn").getAttribute("data-generation-id");
-  await creation.getByRole("button", { name: "查看错误", exact: true }).click();
+  await creation.locator(".workbench-header").getByRole("button", { name: "查看错误", exact: true }).click();
   const failure = page.getByRole("dialog", { name: "生成未全部完成", exact: true });
   const retry = failure.getByRole("button", { name: "重新编辑", exact: true });
   await expect(retry).toBeEnabled();
@@ -374,7 +373,7 @@ async function verifyGallery() {
   const folderB = "预览测试 B";
   for (const name of [folderA, folderB]) {
     await openPictureSection("文件夹管理");
-    await page.getByRole("button", { name: "新建文件夹", exact: true }).click();
+    await page.locator(".sidebar").getByRole("button", { name: "新建文件夹", exact: true }).click();
     const dialog = page.getByRole("dialog", {
       name: "新建文件夹",
       exact: true,

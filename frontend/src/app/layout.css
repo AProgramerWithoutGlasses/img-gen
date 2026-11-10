@@ -1,35 +1,8 @@
-.app-shell { display:grid; grid-template-columns:248px minmax(0,1fr); gap:16px; padding:16px; height:100dvh; overflow:hidden; transition:grid-template-columns 220ms var(--ease-out); }
-.app-shell.sidebar-collapsed { grid-template-columns:72px minmax(0,1fr); }
-.sidebar { background:var(--sidebar); border:1px solid var(--border); border-radius:20px; box-shadow:var(--shadow-panel); display:flex; flex-direction:column; min-height:0; position:relative; z-index:10; }
-.sidebar-brand { height:88px; display:flex; align-items:center; gap:12px; padding:0 20px; flex:none; }
-.sidebar-brand strong { font-size:18px; font-weight:650; white-space:nowrap; }
-.brand-mark { width:32px; height:32px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); flex:none; }
-.sidebar-toggle { margin-left:auto; color:var(--muted); }
-.sidebar-collapsed .sidebar-brand { justify-content:center; padding:0; gap:0; }
-.sidebar-collapsed .brand-mark { display:none; }
-.sidebar-collapsed .sidebar-toggle { margin-left:0; }
-.primary-nav { flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; padding:8px 12px; }
-.nav-label { font-size:11px; color:var(--muted); padding:0 8px 22px; }
-.nav-item { width:100%; min-height:44px; display:flex; align-items:center; gap:12px; text-align:left; padding:11px 14px; border-radius:10px; margin-bottom:10px; font-weight:500; white-space:nowrap; }
-.nav-item > span { flex:1; }
-.nav-item svg { flex:none; }
-.nav-item:hover,.nav-subitem:hover { background:var(--surface-alt); }
-.nav-item.active,.nav-subitem.active { background:var(--accent-soft); color:var(--selected-text); }
-.nav-group-toggle.is-current { color:var(--accent); }
-.nav-chevron { transition:transform 180ms var(--ease-out); transform:rotate(-90deg); }
-.nav-chevron.open { transform:rotate(0); }
-.nav-submenu { display:grid; grid-template-rows:0fr; transition:grid-template-rows 180ms var(--ease-out); }
-.nav-submenu.open { grid-template-rows:1fr; }
-.nav-submenu-inner { overflow:hidden; min-height:0; padding-left:32px; }
-.nav-subitem { display:flex; align-items:center; gap:12px; min-height:40px; width:100%; padding:9px 14px; margin-bottom:6px; border-radius:9px; text-align:left; color:var(--secondary-text); font-size:13px; white-space:nowrap; }
-.sidebar-collapsed .primary-nav { padding:8px; }
-.sidebar-collapsed .nav-item { justify-content:center; padding:11px; }
-.sidebar-bottom { padding:16px 20px 20px; flex:none; }
-.account-trigger { display:flex; gap:12px; align-items:center; width:100%; padding:18px 0 0; border-top:1px solid var(--border); text-align:left; }
-.account-trigger > span:nth-child(2) { flex:1; min-width:0; display:grid; gap:3px; }
-.account-trigger small { overflow:hidden; text-overflow:ellipsis; font-size:11px; }
+@import "./sidebar.css";
+
+.app-shell { --sidebar-width:224px; display:grid; grid-template-columns:var(--sidebar-width) minmax(0,1fr); height:100dvh; overflow:hidden; transition:grid-template-columns 220ms var(--ease-out); }
+.app-shell.sidebar-collapsed { --sidebar-width:72px; }
 .avatar { width:32px; height:32px; display:flex; flex:none; align-items:center; justify-content:center; border-radius:50%; background:var(--accent-soft); color:var(--selected-text); font-size:12px; font-weight:600; }
-.sidebar-collapsed .sidebar-bottom { padding:16px 19px 20px; }
 .account-menu-wrap { position:relative; }
 .account-menu { position:absolute; bottom:60px; left:0; width:304px; border:1px solid var(--border); border-radius:16px; padding:8px; background:var(--surface); z-index:32; box-shadow:var(--shadow-menu); animation:menu-enter 160ms var(--ease-out); }
 .account-menu-header { display:flex; align-items:center; gap:10px; padding:8px 8px 16px; }
@@ -49,37 +22,15 @@
 .account-menu-footer button { justify-content:center; color:var(--error); }
 .account-menu-footer button:hover { background:var(--surface-alt); }
 .menu-dismiss { position:fixed; inset:0; cursor:default; z-index:30; }
-.workspace { min-width:0; min-height:0; height:100%; display:flex; flex-direction:column; overflow:hidden; background:var(--surface); border:1px solid var(--border); border-radius:24px; box-shadow:var(--shadow-panel); }
+.workspace { min-width:0; min-height:0; height:100%; display:flex; flex-direction:column; overflow:hidden; background:var(--surface); }
+.workbench-workspace { background:var(--canvas); }
 .page-header { min-height:72px; padding:0 32px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex:none; }
 .preview-badge { font-size:11px; color:var(--muted); border:1px solid var(--border); border-radius:6px; padding:4px 8px; }
-.admin-label { padding-top:20px; }
-.back-create { margin-bottom:24px; }
 @keyframes menu-enter { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
-@media(max-width:900px) {
-  .app-shell { padding:10px; gap:10px; grid-template-columns:216px minmax(0,1fr); }
-  .sidebar-brand { padding:0 14px; gap:8px; }
-  .sidebar-brand strong { font-size:16px; }
-  .sidebar-bottom { padding-left:14px; padding-right:14px; }
-}
 @media(max-width:680px) {
-  .app-shell,.app-shell.sidebar-collapsed { padding:6px; gap:6px; grid-template-columns:58px minmax(0,1fr); }
-  .sidebar { border-radius:16px; }
-  .workspace { border-radius:18px; }
-  .sidebar-brand { padding:0; justify-content:center; height:68px; }
-  .sidebar-brand strong,.brand-mark { display:none; }
-  .sidebar-toggle { margin-left:0; }
-  .primary-nav { padding:6px; }
-  .nav-label { display:none; }
-  .nav-item { padding:10px; justify-content:center; gap:0; }
-  .nav-item > span,.nav-chevron { display:none; }
-  .nav-submenu-inner { padding-left:0; }
-  .nav-subitem { padding:10px; justify-content:center; gap:0; }
-  .nav-subitem > span { display:none; }
-  .sidebar-bottom,.sidebar-collapsed .sidebar-bottom { padding:12px; }
-  .account-trigger { gap:0; justify-content:center; }
-  .account-trigger > span:nth-child(2),.account-trigger > svg { display:none; }
+  .app-shell,.app-shell.sidebar-collapsed { --sidebar-width:58px; }
   .account-menu { position:fixed; left:12px; bottom:76px; width:min(304px,calc(100vw - 24px)); }
   .account-submenu { left:0; bottom:calc(100% + 4px); width:100%; }
   .page-header { padding:0 20px; }
 }
-@media(prefers-reduced-motion:reduce) { .app-shell,.nav-chevron,.nav-submenu { transition:none; } .account-menu,.account-submenu { animation:none; } }
+@media(prefers-reduced-motion:reduce) { .app-shell { transition:none; } .account-menu,.account-submenu { animation:none; } }

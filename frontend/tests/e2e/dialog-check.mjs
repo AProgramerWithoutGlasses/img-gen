@@ -224,15 +224,17 @@ export async function verifyDialog({ page, screenshot }) {
     const lines = Array.from({ length: 12 }, (_, index) => `第${index + 1}行：树林、薄雾与柔和光线。`);
     await prompt.fill(lines.slice(0, 2).join("\n"));
     const baseline = await composer.boundingBox(), bottom = baseline.y + baseline.height;
-    expect(baseline.width).toBeCloseTo(900, 0);
+    const resultStage = await creation.locator('.workbench-stage').boundingBox();
+    expect(baseline.x, 'Composer and results should share the same left edge').toBeCloseTo(resultStage.x, 0);
+    expect(baseline.width, 'Composer and results should share the available width').toBeCloseTo(resultStage.width, 0);
     expect(baseline.height).toBeCloseTo(148, 0);
     await expect(prompt).toHaveCSS("font-size", "16px");
     await expect(prompt).toHaveCSS("line-height", "24px");
     const area = await creation.locator(".dialog-prompt-area").boundingBox();
     const text = await prompt.boundingBox();
-    expect(area.width).toBeCloseTo(782, 0);
+    expect(baseline.width - area.width).toBeCloseTo(118, 0);
     expect(area.height).toBeCloseTo(68, 0);
-    expect(text.width).toBeCloseTo(754, 0);
+    expect(area.width - text.width).toBeCloseTo(28, 0);
     expect(text.height).toBeCloseTo(48, 0);
     expect(text.x - baseline.x).toBeCloseTo(28, 0);
     expect(text.y - baseline.y, "Text must start 14px below the composer top").toBeCloseTo(14, 0);
@@ -308,8 +310,8 @@ export async function verifyDialog({ page, screenshot }) {
     const long = await verifyTooltip(creation.getByRole("button", { name: "上传图片", exact: true }));
     expect(long.width).toBeGreaterThan(short.width);
     const box = await composer.boundingBox();
-    expect(page.viewportSize().height - box.y - box.height).toBeCloseTo(40, 0);
-    expect(page.viewportSize().height - long.bottom).toBeGreaterThanOrEqual(18);
+    expect(page.viewportSize().height - box.y - box.height).toBeCloseTo(16, 0);
+    expect(page.viewportSize().height - long.bottom).toBeGreaterThanOrEqual(8);
     await screenshot("dialog-tooltip-upload");
     await page.keyboard.press("Escape");
     await expect(tooltip).toHaveCount(0);
@@ -495,7 +497,7 @@ export async function verifyDialog({ page, screenshot }) {
         await prompt.fill("");
         await prompt.evaluate(element => element.blur());
         await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain(accent.rgb);
-        await expect(creation.getByRole("button", { name: "生成", exact: true }).locator('.dialog-button-surface rect').first()).toHaveCSS("fill", "rgb(238, 238, 238)");
+        await expect(creation.getByRole("button", { name: "生成", exact: true }).locator('.dialog-button-surface rect').first()).toHaveCSS("fill", "rgb(241, 242, 244)");
         await screenshot("dialog-light-idle-neutral-colors");
       }
       await prompt.fill("亮暗主题与动效核对");
