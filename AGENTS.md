@@ -2,6 +2,7 @@
 
 - 默认中文回复。在各自的 `img-gen` 仓库根目录开发，路径因协作者而异；开工先运行 `npm run status`，需要远端即时状态才运行 `npm run status:remote`。
 - 项目是两人维护的 React/Vite + Go/MySQL 单实例生图网站，前端嵌入 Go；现行导航见 [docs/README.md](docs/README.md)，不要把历史交接与研究建议当作当前需求。
+- 当前为尚无用户使用的测试阶段，小改默认采用 [快速验证与人工复核](tests/README.md#测试阶段快速默认)，不把完整回归或等待 CI 当作上线前置；用户宣布正式运营或调整策略后再切换要求。
 - 按任务明确读取局部规则：前端 [frontend/AGENTS.md](frontend/AGENTS.md)，后端 [internal/AGENTS.md](internal/AGENTS.md)，调研 [research/AGENTS.md](research/AGENTS.md)。跨端适配读 [接口契约](docs/api-contract.md)；设计读 [设计流程](design/README.md)；检查读 [测试说明](tests/README.md)；发布读 [部署流程](docs/DEPLOYMENT.md)。不依赖局部规则是否自动加载。
 - 涉及 UI 外观、布局、控件或文案的变动，先修改并保存用户指定稿的对应画面；未指定时使用 `design/ui-studio-design.figcraft`，再同步局部代码并核对真实浏览器。新风格按本次要求探索，不把旧草稿或其他组件的尺寸、配色当作全站限制；只适配明确批准的对象，保留用户未保存设计、原稿与参考图。具体阶段和提效方式见 [设计流程](design/README.md)。纯组件提取和源码移动保持界面不变，不重制设计稿。
 - 提交、推送和部署由 agent 根据本次任务规模、验证和风险自动判断。小改先在本地完整完成并验证后统一提交；大任务分成可验证、可回退的批次。发布业务变更前核对远端分歧、产物、队列、备份和健康检查；文档等无需上线的变化不重启生产。遇到无法确认的发布条件先说明阻塞，不以失败或跳过冒充成功。
