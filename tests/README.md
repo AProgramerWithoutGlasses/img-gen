@@ -10,7 +10,7 @@ Go 测试保留在同一个外部测试包，文件名区分主题，既有 49 �
 | --- | --- |
 | 仅说明文档 | npm run check:docs |
 | 根工具、状态命令、构建缓存 | npm run check:tools；实际执行相关安全命令；构建入口变化时再执行一次 npm run build 并核对复用摘要 |
-| 前端 | npm --prefix frontend run check；npm run build；受影响浏览器流程，完整模拟用 npm run verify；同时改说明时补 check:docs |
+| 前端 | node frontend/scripts/check-scripts.mjs；npm run build（内含类型检查）；受影响浏览器流程；需要完整模拟时改用 npm run verify，再用 npm --prefix frontend run sync:server 同步嵌入，不先重复检查与构建；同时改说明时补 check:docs |
 | 工作区生成进度与图内操作 | node frontend/tests/e2e/workbench-motion-check.mjs；检查真实单图排队／生成与独立计时、解码后数字／白条随清晰化推进且清晰才100%、成图返回不改变画框、失败保图、悬浮与预览及390px导航；只用本地响应样本，过渡采样不禁用动画 |
 | 后端 | 前端嵌入产物可用后 go test ./...、go vet ./...、go build ./... |
 | 跨端、构建与 CI | npm run verify:all；真实数据库/浏览器按下节启用 |
@@ -23,6 +23,8 @@ Go 测试保留在同一个外部测试包，文件名区分主题，既有 49 �
 | 上游探测脚本 | Python 语法和安全 dry-run、Go 显式编译；不自动实际收费探测 |
 
 检查针对一批累计改动，源码、配置或依赖变化后补受影响检查；输入完全相同才复用证据。根 `npm run check` 是包含前端及工具检查的聚合入口，适合同时影响两者的变化；纯前端小改按上表执行，不因根聚合命令重复运行未变的 Git fixture 等工具测试。npm run verify 包含一次前端构建、7 条模拟流程和加载检查；verify:all 再同步嵌入并做 Go 检查，不重复构建同一输入。
+
+小修在开始验证前选定受影响流程，全部通过即收尾；只有新增改动、失败或尚未解决的风险才扩大范围。需要构建时复用构建内的 `tsc --noEmit`，不再先跑前端 `check`；暂不构建时才用 `npm --prefix frontend run check`。同一输入已构建后，需要补浏览器检查就直接运行对应脚本，不追加会再次构建的 `verify`。
 
 并行任务指定一位执行者统一验收；其他执行者只提供改动范围、输入是否变化和已有结果，避免重复运行同一检查。截图等待图片和动画稳定；几何数值不能单独代替视觉及可见性检查。仅文档与历史文件清理不构建业务，不启动测试数据库。
 
