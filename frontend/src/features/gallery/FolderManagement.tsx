@@ -105,13 +105,14 @@ export function FolderManagement({
   const saveLock = useRef(false);
   const folders = data.folders.filter((folder) => folder.userId === currentUser.id);
   const counts = useMemo(() => {
+    if (data.imageSummary) return new Map(Object.entries(data.imageSummary.folderCounts));
     const result = new Map<string, number>();
     for (const image of data.assets) {
       if (image.userId !== currentUser.id) continue;
       for (const folderId of image.folderIds) result.set(folderId, (result.get(folderId) ?? 0) + 1);
     }
     return result;
-  }, [data.assets, currentUser.id]);
+  }, [data.assets, data.imageSummary, currentUser.id]);
   const selectedFolder = dialog ? folders.find((folder) => folder.id === dialog.id) : undefined;
 
   function openDialog(folder: Folder, kind: "rename" | "delete") {

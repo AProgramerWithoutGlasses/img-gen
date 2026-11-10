@@ -169,6 +169,7 @@ try {
   await page.getByRole('button', { name: '返回创作', exact: true }).click();
   await openPictureSection('全部图片');
   const gallery = page.getByRole('region', { name: '我的图片', exact: true });
+  await expect(gallery.locator('.gallery-tile').first()).toBeVisible();
   const originalCount = await gallery.locator('.gallery-tile').count();
   for (const name of ['浏览器 A', '浏览器 B']) {
     await openPictureSection('文件夹管理');

@@ -7,6 +7,7 @@ import { MODELS } from "../../config/models";
 import type { Generation, PreviewImage } from "../../types";
 import { statusLabel, formatTime, Heading, Field } from "./shared";
 import type { Props } from "./types";
+import { useHistoryLoad } from "./useHistoryLoad";
 
 interface Filters {
   user: string;
@@ -28,6 +29,7 @@ export function Requests({
   onPreview,
 }: Pick<Props, "requestUserFilter" | "onPreview">) {
   const { data } = useStudio();
+  const historyLoad = useHistoryLoad();
   const [filters, setFilters] = useState<Filters>(() =>
     emptyFilters(requestUserFilter),
   );
@@ -90,7 +92,13 @@ export function Requests({
     setFilterError("");
     setApplied(filters);
     setPage(1);
+    void historyLoad.reload();
   }
+  if (historyLoad.loading || historyLoad.error) return <>
+    <Heading title="请求记录" />
+    <p role={historyLoad.error ? "alert" : "status"}>{historyLoad.error || "加载中…"}</p>
+    {historyLoad.error && <button className="btn" onClick={() => void historyLoad.reload()}>重试</button>}
+  </>;
   return (
     <>
       <Heading title="请求记录" />

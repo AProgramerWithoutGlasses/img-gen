@@ -14,8 +14,11 @@ dialog.image-preview::backdrop { background: #101114b8; backdrop-filter: blur(8p
 .image-preview .preview-close { display: flex; align-items: center; justify-content: center; flex: none; width: 38px; height: 38px; border-radius: 50%; color: var(--text); background: var(--surface-alt); }
 .image-preview .preview-close:hover { background: var(--selected); }
 .image-preview .preview-content { display: flex; flex: 1; gap: 16px; min-width: 0; min-height: 0; padding: 0 20px 20px; }
-.image-preview .preview-thumbnails { width: 72px; flex: 0 0 72px; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 8px 4px; min-height: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: none; }
+.image-preview .preview-thumbnails { --preview-thumbnail-size: 64px; width: 72px; flex: 0 0 72px; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 8px 4px; min-height: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: none; overflow-anchor: none; }
 .image-preview .preview-thumbnails::-webkit-scrollbar { display: none; }
+.image-preview .preview-thumbnail-track { position: relative; flex: none; }
+.image-preview .preview-thumbnail-track > .preview-thumbnail { position: absolute; left: 0; top: 0; }
+.image-preview .preview-thumbnail-more { color: var(--muted); font-size: 11px; }
 .image-preview .preview-thumbnail { position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; padding: 4px; flex: none; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-alt); transition: border-color 150ms ease, background-color 150ms ease; }
 .image-preview .preview-thumbnail:hover { background: var(--selected); }
 .image-preview .preview-thumbnail.is-current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
@@ -74,7 +77,7 @@ dialog.image-preview::backdrop { background: #101114b8; backdrop-filter: blur(8p
   .image-preview .preview-heading-mark { display: none; }
   .image-preview .preview-heading h2 { font-size: 14px; }
   .image-preview .preview-content { position: relative; padding: 0 10px 10px; gap: 10px; flex-direction: column; }
-  .image-preview .preview-thumbnails { width: 100%; flex: 0 0 62px; order: 2; flex-direction: row; justify-content: safe center; padding: 3px; gap: 8px; overflow-x: auto; overflow-y: hidden; }
+  .image-preview .preview-thumbnails { --preview-thumbnail-size: 54px; width: 100%; flex: 0 0 62px; order: 2; flex-direction: row; justify-content: safe center; padding: 3px; gap: 8px; overflow-x: auto; overflow-y: hidden; }
   .image-preview .preview-thumbnail { width: 54px; height: 54px; border-radius: 9px; }
   .image-preview .preview-image-area { gap: 8px; }
   .image-preview .preview-stage { border-radius: 10px; }

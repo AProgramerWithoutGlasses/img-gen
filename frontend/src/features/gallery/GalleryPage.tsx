@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useStudio } from "../../state/StudioContext";
 import { Modal } from "../../components/Modal";
@@ -90,10 +90,41 @@ export default function GalleryPage({
   const [width, setWidth] = useState(1040);
   const gridRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const pageRequest = useRef<AbortController | null>(null);
+  const [pages, setPages] = useState<{ key: string; ids: string[]; total: number; nextCursor?: string }>({ key: "", ids: [], total: 0 });
+  const [pageLoading, setPageLoading] = useState(false);
+  const [pageError, setPageError] = useState("");
+  const listImages = actions.listImages;
+  const queryFolder = sourceTarget ? "all" : activeFolder;
+  const queryKey = `${currentUser.id}\n${queryFolder}`;
+  const queryCount = queryFolder === "all" ? data.imageSummary?.total : data.imageSummary?.folderCounts[queryFolder];
+  const loadPage = useCallback(async (cursor?: string, reset = false) => {
+    if (!listImages || queryFolder === "folders" || pageRequest.current) return;
+    const controller = new AbortController();
+    pageRequest.current = controller;
+    setPageLoading(true);
+    setPageError("");
+    try {
+      const result = await listImages({ folderId: queryFolder, cursor, signal: controller.signal });
+      if (controller.signal.aborted) return;
+      setPages(previous => ({ key: queryKey, total: result.total, nextCursor: result.nextCursor,
+        ids: [...new Set([...(reset || previous.key !== queryKey ? [] : previous.ids), ...result.images.map(image => image.id)])],
+      }));
+    } catch (failure) {
+      if (!controller.signal.aborted) setPageError(errorText(failure));
+    } finally {
+      if (pageRequest.current === controller) {
+        pageRequest.current = null;
+        setPageLoading(false);
+      }
+    }
+  }, [listImages, queryFolder, queryKey]);
   const userAssets = useMemo(
     () => data.assets.filter((image) => image.userId === currentUser.id),
     [data.assets, currentUser.id],
   );
+  const assetsByID = useMemo(() => new Map(userAssets.map(image => [image.id, image])), [userAssets]);
   const userFolders = data.folders.filter(
     (folder) => folder.userId === currentUser.id,
   );
@@ -101,6 +132,28 @@ export default function GalleryPage({
     (folder) => folder.id === activeFolder,
   );
   useOutsideClose(menuRef, () => setFolderMenu(false));
+
+  useEffect(() => {
+    pageRequest.current?.abort();
+    pageRequest.current = null;
+    setPages({ key: queryKey, ids: [], total: queryCount ?? 0 });
+    setPageLoading(false);
+    setPageError("");
+    if (listImages && queryFolder !== "folders") void loadPage(undefined, true);
+    return () => {
+      pageRequest.current?.abort();
+      pageRequest.current = null;
+    };
+  }, [listImages, loadPage, queryKey, queryFolder, queryCount]);
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || !listImages || pages.key !== queryKey || !pages.nextCursor || pageLoading || pageError) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) void loadPage(pages.nextCursor);
+    }, { root: target.closest(".gallery-page"), rootMargin: "320px" });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [listImages, pages.key, pages.nextCursor, queryKey, pageLoading, pageError, loadPage]);
 
   useEffect(() => {
     setSelecting(false);
@@ -121,8 +174,11 @@ export default function GalleryPage({
   }, [activeFolder]);
 
   const images = useMemo(
-    () =>
-      userAssets
+    () => {
+      const assets = listImages
+        ? (pages.key === queryKey ? pages.ids.map(id => assetsByID.get(id)).filter((image): image is ImageAsset => !!image) : [])
+        : userAssets;
+      return assets
         .filter(
           (image) =>
             sourceTarget ||
@@ -135,9 +191,12 @@ export default function GalleryPage({
           a.batchId === b.batchId
             ? a.outputIndex - b.outputIndex
             : b.createdAt.localeCompare(a.createdAt),
-        ),
-    [userAssets, activeFolder, sourceTarget],
+        );
+    },
+    [userAssets, assetsByID, activeFolder, sourceTarget, listImages, pages.key, pages.ids, queryKey],
   );
+  const imageTotal = listImages ? (pages.key === queryKey ? pages.total : queryCount ?? 0) : images.length;
+  const hasUserAssets = (data.imageSummary?.total ?? userAssets.length) > 0;
   const groups = useMemo(() => {
     const result: { key: string; date: string; images: ImageAsset[] }[] = [];
     for (const image of images) {
@@ -249,7 +308,7 @@ export default function GalleryPage({
           )}
           <div className="gallery-heading-title">
             <h1>{title}</h1>
-            <span>{images.length} 张</span>
+            <span>{imageTotal} 张</span>
           </div>
           <p>{sourceTarget ? "选中要加入此文件夹的图片。" : currentFolder ? "属于这个文件夹的图片，也会保留在全部图片中。" : "所有生成的图片都在这里，按时间整理。"}</p>
         </div>
@@ -329,7 +388,9 @@ export default function GalleryPage({
                     selecting={selecting}
                     selected={selectedVisible.includes(image.id)}
                     onToggle={() => toggle(image.id)}
-                    onPreview={onPreview}
+                    onPreview={(image, collection) => onPreview(image, collection, listImages ? {
+                      folderId: queryFolder, total: imageTotal, nextCursor: pages.nextCursor,
+                    } : undefined)}
                     folderId={sourceTarget ? undefined : currentFolder?.id}
                     onOrganize={setOrganizing}
                     onRemove={(ids) => void remove(ids)}
@@ -340,17 +401,25 @@ export default function GalleryPage({
             ))}
           </section>
         ))}
-        {images.length === 0 && (
+        {listImages && (pageLoading || pageError || pages.nextCursor) && (
+          <div ref={loadMoreRef} className="gallery-load-more">
+            {pageError && <p className="field-error" role="alert">{pageError}</p>}
+            <button className="btn" disabled={pageLoading} onClick={() => void loadPage(pages.nextCursor, !pages.ids.length)}>
+              {pageLoading ? "加载中…" : pageError ? "重试" : "加载更多"}
+            </button>
+          </div>
+        )}
+        {images.length === 0 && !pageLoading && !pageError && (
           <div className="gallery-empty">
             <Icon name={currentFolder ? "folder" : "image"} />
             <h2>
               {currentFolder
                 ? "这个文件夹还没有图片"
-                : activeFolder === "unfiled" && userAssets.length
+                : activeFolder === "unfiled" && hasUserAssets
                   ? "所有图片都已归类"
                   : "还没有生成的图片"}
             </h2>
-            {currentFolder && userAssets.length ? (
+            {currentFolder && hasUserAssets ? (
               <button
                 className="btn"
                 onClick={() => {
@@ -360,7 +429,7 @@ export default function GalleryPage({
               >
                 从图库选择
               </button>
-            ) : activeFolder === "unfiled" && userAssets.length ? (
+            ) : activeFolder === "unfiled" && hasUserAssets ? (
               <button className="btn" onClick={() => onChangeFolder("all")}>
                 查看全部图片
               </button>

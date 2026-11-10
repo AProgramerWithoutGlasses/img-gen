@@ -512,3 +512,4 @@
     animation: none;
   }
 }
+.gallery-load-more { display: flex; justify-content: center; padding: 20px 0; }

@@ -45,6 +45,21 @@ export interface ImageAsset extends Attachment {
   options: GenerationOptions;
   folderIds: string[];
 }
+export interface ImagePage {
+  images: ImageAsset[];
+  total: number;
+  nextCursor?: string;
+}
+export interface ImageListOptions {
+  folderId?: string;
+  cursor?: string;
+  signal?: AbortSignal;
+}
+export interface PreviewCollectionOptions {
+  folderId?: string;
+  total?: number;
+  nextCursor?: string;
+}
 export interface Folder {
   id: string;
   userId: string;
@@ -96,6 +111,7 @@ export interface StudioData {
   priceUpdatedAt: Partial<Record<ModelId, string>>;
   priceVersions?: Partial<Record<ModelId, number>>;
   preferences: Preferences;
+  imageSummary?: { total: number; folderCounts: Record<string, number> };
 }
 export type Notify = (
   message: string,
@@ -104,6 +120,7 @@ export type Notify = (
 export type PreviewImage = (
   image: ImageAsset,
   collection: ImageAsset[],
+  options?: PreviewCollectionOptions,
 ) => void;
 export interface CreateUserInput {
   username: string;
@@ -132,6 +149,8 @@ export interface StudioActions {
   adjustCredits: (id: string, amount: number) => Promise<void>;
   savePrice: (id: ModelId, amount: number, version?: number) => Promise<void>;
   refreshData?: () => Promise<StudioData>;
+  listImages?: (options?: ImageListOptions) => Promise<ImagePage>;
+  loadHistory?: () => Promise<void>;
   changePassword: (current: string, next: string) => Promise<void>;
   signOut: () => void;
   signIn: (username: string, password: string) => Promise<void>;

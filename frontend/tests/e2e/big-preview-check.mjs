@@ -9,13 +9,14 @@ import { prepareEvidenceOutput } from "./evidence-output.mjs";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const evidence = await prepareEvidenceOutput(process.argv.slice(2), {
   defaultDirectory: "frontend/outputs/big-preview",
-  booleanFlags: ["--probe", "--negative-thumbnails", "--rail-only", "--negative-rail"],
+  booleanFlags: ["--probe", "--negative-thumbnails", "--rail-only", "--negative-rail", "--pagination-only"],
 });
 const output = evidence.url;
 const probe = evidence.flags.has("--probe");
 const negativeThumbnails = evidence.flags.has("--negative-thumbnails");
 const railOnly = evidence.flags.has("--rail-only");
 const negativeRail = evidence.flags.has("--negative-rail");
+const paginationOnly = evidence.flags.has("--pagination-only");
 const origin = "http://127.0.0.1:5178";
 await mkdir(output, { recursive: true });
 const options = { modelId: "gpt-image-2", ratio: "自动", count: 3 };
@@ -40,11 +41,36 @@ let delay = 120;
 // browser must keep showing both the preview and a visible loading control.
 const originalResponses = new Map();
 const requests = [];
+const pageRequests = [];
+let failPageCursor, expectedPageFailures = 0;
 const apiFixture = (request, response, next) => {
-  const path = new URL(request.url, origin).pathname;
+  const url = new URL(request.url, origin), path = url.pathname;
   const json = data => { response.setHeader("Content-Type", "application/json"); response.setHeader("Cache-Control", "no-store"); response.end(JSON.stringify(data)); };
-  if (path === "/api/studio/state") return json(state);
+  if (path === "/api/studio/state") return json(paginationOnly && url.searchParams.get("view") === "workspace" ? {
+    ...state, assets: assets.slice(0, 4), generations: state.generations.slice(0, 4),
+    imageSummary: { total: assets.length, folderCounts: Object.fromEntries(state.folders.map(folder =>
+      [folder.id, assets.filter(image => image.folderIds.includes(folder.id)).length])) },
+  } : state);
   if (path === "/api/studio/models") return json(models);
+  if (path === "/api/studio/images") {
+    const folderId = url.searchParams.get("folderId") || "all";
+    const collection = assets.filter(image => folderId === "all" || (folderId === "unfiled"
+      ? !image.folderIds.length : image.folderIds.includes(folderId)));
+    const cursor = url.searchParams.get("cursor") || "", offset = Number(cursor.split(":")[1] || 0);
+    const limit = Math.min(50, Number(url.searchParams.get("limit") || 50));
+    const images = collection.slice(offset, offset + limit);
+    const record = { folderId, cursor, limit, ids: images.map(image => image.id), failed: false };
+    pageRequests.push(record);
+    if (failPageCursor === cursor) {
+      failPageCursor = undefined;
+      expectedPageFailures++;
+      record.failed = true;
+      response.statusCode = 503;
+      return json({ error: "本地分页读取暂时失败" });
+    }
+    return json({ images, total: collection.length,
+      ...(offset + images.length < collection.length ? { nextCursor: `fixture:${offset + images.length}` } : {}) });
+  }
   if (!path.startsWith("/api/images/")) return next();
   const asset = assets.find(a => a.id === path.split("/")[3]);
   if (!asset) { response.statusCode = 404; return response.end(); }
@@ -122,7 +148,7 @@ async function readyThumbnails(modal) {
 const originalGets = asset => requests.filter(request => request.path === asset.url && request.method === "GET");
 try {
   browser = await chromium.launch({ channel: process.platform === "win32" ? "msedge" : undefined });
-  for (const dpr of railOnly ? [] : probe ? [1] : [1, 2]) {
+  for (const dpr of railOnly || paginationOnly ? [] : probe ? [1] : [1, 2]) {
     originalResponses.clear();
     delay = 120;
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: dpr });
@@ -295,7 +321,7 @@ try {
     }
     await context.close();
   }
-  if (!probe) {
+  if (!probe && !paginationOnly) {
     originalResponses.clear();
     delay = 0;
     // Many independent single-image generations reproduce the real long rail
@@ -325,7 +351,8 @@ try {
         await ready(modal.locator(".preview-stage img"));
         const rail = modal.getByRole("navigation", { name: "图片切换", exact: true });
         const buttons = rail.getByRole("button");
-        await expect(buttons).toHaveCount(36);
+        await expect.poll(() => buttons.count()).toBeGreaterThan(0);
+        expect(await buttons.count(), "The long rail must only mount nearby thumbnails").toBeLessThanOrEqual(24);
         if (negativeRail) await page.addStyleTag({ content: ".image-preview .preview-thumbnails { overflow:auto!important; scrollbar-width:thin!important; } .image-preview .preview-thumbnails::-webkit-scrollbar { display:block!important; width:15px!important; height:15px!important; }" });
         const metrics = await rail.evaluate(element => {
           const style = getComputedStyle(element);
@@ -355,24 +382,125 @@ try {
           return box.left >= parent.left - 1 && box.right <= parent.right + 1
             && box.top >= parent.top - 1 && box.bottom <= parent.bottom + 1;
         });
-        await buttons.first().focus();
-        await expect.poll(() => visibleInRail(buttons.first())).toBe(true);
-        await page.keyboard.press("Enter");
+        await rail.focus();
+        await page.keyboard.press("Home");
         await expect(modal.locator(".preview-index")).toHaveText("1 / 36");
-        await buttons.last().focus();
-        await expect.poll(() => visibleInRail(buttons.last())).toBe(true);
-        await page.keyboard.press("Enter");
+        await expect.poll(() => visibleInRail(rail.getByRole("button", { name: "查看第 1 张图片", exact: true }))).toBe(true);
+        await rail.focus();
+        await page.keyboard.press("End");
         await expect(modal.locator(".preview-index")).toHaveText("36 / 36");
+        await expect.poll(() => visibleInRail(rail.getByRole("button", { name: "查看第 36 张图片", exact: true }))).toBe(true);
+        expect(await buttons.count()).toBeLessThanOrEqual(24);
         await ready(modal.locator(".preview-stage img"));
         await page.screenshot({ path: fileURLToPath(new URL(`thumbnail-rail-36-${viewport.width}px.png`, output)), animations: "disabled" });
         results.push({ name: `36-image-rail-scroll-and-keyboard-${viewport.width}px`, metrics, status: "passed" });
       } finally { await context.close(); }
     }
   }
+  if (paginationOnly) {
+    delay = 0;
+    const folderId = "pagination-folder";
+    state.folders.push({ id: folderId, userId: user.id, name: "分页文件夹", createdAt: user.createdAt });
+    const template = assets[0];
+    assets.splice(0, assets.length, ...Array.from({ length: 125 }, (_, index) => ({
+      ...template, id: `pagination-${index + 1}`, name: `pagination-${index + 1}.png`,
+      url: `/api/images/pagination-${index + 1}`, thumbnailUrl: `/api/images/pagination-${index + 1}/thumbnail/1`,
+      previewUrl: `/api/images/pagination-${index + 1}/preview/1`, batchId: `pagination-batch-${index + 1}`,
+      createdAt: new Date(Date.parse(user.createdAt) - index * 1000).toISOString(),
+      options: { ...options, count: 1 }, outputIndex: 0, folderIds: index < 75 ? [folderId] : [],
+    })));
+    state.generations.splice(0, state.generations.length, ...assets.map(asset => ({
+      id: asset.batchId, userId: user.id, username: user.username, prompt: asset.prompt,
+      attachments: [], options: asset.options, status: "completed", imageIds: [asset.id], createdAt: asset.createdAt, cost: 1,
+    })));
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    try {
+      const page = await context.newPage();
+      page.on("pageerror", error => errors.push(error.message));
+      page.on("console", message => {
+        if (message.type() === "error" && !(expectedPageFailures && /503/.test(message.text())
+          && message.location().url.includes("/api/studio/images"))) errors.push(message.text());
+      });
+      await page.goto(origin + "/#/gallery");
+      const gallery = page.getByRole("region", { name: "我的图片", exact: true });
+      const galleryImages = gallery.locator(".gallery-tile");
+      await expect(galleryImages).toHaveCount(50);
+      await expect(gallery.locator(".gallery-heading-title")).toContainText("125 张");
+      expect(pageRequests.length).toBeGreaterThan(0);
+      expect(pageRequests.every(request => request.cursor === "" && request.limit === 50),
+        "Initial gallery reads must all request only the first 50-image page").toBe(true);
+      for (const request of pageRequests) expect(request.ids).toEqual(assets.slice(0, 50).map(image => image.id));
+      results.push({ name: "gallery-initial-page-50-and-global-total-125", status: "passed" });
+
+      await gallery.getByRole("button", { name: "查看 pagination-1.png", exact: true }).click();
+      const modal = page.getByRole("dialog", { name: "图片预览", exact: true });
+      const rail = modal.getByRole("navigation", { name: "图片切换", exact: true });
+      const index = modal.locator(".preview-index");
+      const photo = modal.locator(".preview-stage img");
+      await ready(photo);
+      await expect(index).toHaveText("1 / 125");
+      expect(await rail.getByRole("button").count()).toBeLessThanOrEqual(24);
+      await rail.focus();
+      await page.keyboard.press("End");
+      await expect(index).toHaveText("50 / 125");
+      await modal.getByRole("button", { name: "下一张", exact: true }).click();
+      await expect(index).toHaveText("51 / 125");
+      await expect(photo).toHaveAttribute("alt", "pagination-51.png");
+      expect(pageRequests.find(request => request.cursor === "fixture:50")?.ids).toEqual(assets.slice(50, 100).map(image => image.id));
+      results.push({ name: "preview-50-to-51-loads-next-page-without-skipping", status: "passed" });
+
+      failPageCursor = "fixture:100";
+      await rail.focus();
+      await page.keyboard.press("End");
+      await expect(index).toHaveText("100 / 125");
+      const retry = rail.getByRole("button", { name: "重试", exact: true });
+      await expect(retry).toBeVisible();
+      expect(pageRequests.filter(request => request.cursor === "fixture:100")).toHaveLength(1);
+      await modal.getByRole("button", { name: "下一张", exact: true }).click();
+      await expect(index).toHaveText("100 / 125");
+      expect(pageRequests.filter(request => request.cursor === "fixture:100")).toHaveLength(1);
+      await retry.click();
+      await expect(retry).toHaveCount(0);
+      await modal.getByRole("button", { name: "下一张", exact: true }).click();
+      await expect(index).toHaveText("101 / 125");
+      await expect(photo).toHaveAttribute("alt", "pagination-101.png");
+      expect(pageRequests.filter(request => request.cursor === "fixture:100")).toHaveLength(2);
+      results.push({ name: "preview-100-to-101-read-failure-keeps-image-and-manual-retry", status: "passed" });
+
+      await rail.focus();
+      await page.keyboard.press("End");
+      await expect(index).toHaveText("125 / 125");
+      expect(await rail.getByRole("button").count()).toBeLessThanOrEqual(24);
+      await expect(rail.getByRole("button", { name: "查看第 125 张图片", exact: true })).toBeInViewport();
+      await rail.focus();
+      await page.keyboard.press("Home");
+      await expect(index).toHaveText("1 / 125");
+      await expect(rail.getByRole("button", { name: "查看第 1 张图片", exact: true })).toBeInViewport();
+      await page.screenshot({ path: fileURLToPath(new URL("pagination-preview-125-bounded-rail.png", output)), animations: "disabled" });
+      results.push({ name: "virtual-rail-keeps-at-most-24-buttons-and-reaches-both-ends", status: "passed" });
+      await modal.getByRole("button", { name: "关闭", exact: true }).click();
+
+      await gallery.evaluate(element => { element.scrollTop = element.scrollHeight; });
+      await expect(galleryImages).toHaveCount(100);
+      await expect(gallery.locator(".gallery-heading-title")).toContainText("125 张");
+      results.push({ name: "gallery-near-bottom-loads-next-50", status: "passed" });
+      await page.getByRole("navigation", { name: "主导航", exact: true }).getByRole("button", { name: "分页文件夹", exact: true }).click();
+      await expect(gallery.locator(".gallery-heading-title")).toContainText("75 张");
+      await expect(galleryImages).toHaveCount(50);
+      expect(pageRequests.at(-1).folderId).toBe(folderId);
+      await gallery.evaluate(element => { element.scrollTop = element.scrollHeight; });
+      await expect(galleryImages).toHaveCount(75);
+      expect((await galleryImages.locator("img").evaluateAll(images => images.map(image => image.alt))))
+        .toEqual(assets.slice(0, 75).map(image => image.name));
+      await page.screenshot({ path: fileURLToPath(new URL("pagination-folder-total-75.png", output)), animations: "disabled" });
+      results.push({ name: "folder-pagination-is-scoped-and-total-is-not-loaded-count", status: "passed" });
+      expect(pageRequests.every(request => request.limit === 50)).toBe(true);
+    } finally { await context.close(); }
+  }
   expect(errors).toEqual([]);
   await writeFile(new URL(probe ? "before.json" : "regression.json", output), JSON.stringify({
     evidence: "real frontend + synthetic local HTTP API/image bytes; browser cache enabled; no production images or paid upstream",
-    results, failures, errors,
+    results, failures, errors, ...(paginationOnly ? { pageRequests, expectedPageFailures } : {}),
   }, null, 2));
   console.log(JSON.stringify({ results: results.map(({ trace, ...result }) => result), failures, errors }));
   if (!probe) expect(failures).toEqual([]);

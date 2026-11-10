@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { MODELS, setModels } from "../config/models";
-import type { Attachment, Generation, ModelConfig, Preferences, StudioActions, StudioData, StudioUser } from "../types";
+import type { Attachment, Generation, ImagePage, ModelConfig, Preferences, StudioActions, StudioData, StudioUser } from "../types";
 import { api, apiBlob, APIError, requestID } from "../services/api";
 import { Context } from "./context";
 export { useStudio } from "./context";
@@ -22,6 +22,11 @@ function preferences(userId: string): Preferences {
       enterToSend: typeof saved?.enterToSend === "boolean" ? saved.enterToSend : true };
   } catch { return defaults; }
 }
+function mergeRecords<T extends { id: string }>(existing: T[], incoming: T[]): T[] {
+  const records = new Map(existing.map(record => [record.id, record]));
+  for (const record of incoming) records.set(record.id, record);
+  return [...records.values()];
+}
 function RemoteStudioProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<ServerData>(emptyData);
   const [ready, setReady] = useState(false);
@@ -32,16 +37,41 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
   const pendingSubmission = useRef<{ signature: string; id: string } | null>(null);
   const legacyAttachments = useRef(new Map<string, string>());
   const creditRequests = useRef(new Map<string, string>());
+  const pendingReads = useRef(new Set<AbortController>());
+  const historyRequest = useRef<Promise<void> | null>(null);
   function publish(next: ServerData) { ref.current = next; setData(next); }
-  function clear() { epoch.current++; pendingSubmission.current = null; legacyAttachments.current.clear(); creditRequests.current.clear(); publish(emptyData()); }
-  function refresh() {
+  function clear() {
+    epoch.current++;
+    for (const controller of pendingReads.current) controller.abort();
+    pendingReads.current.clear();
+    historyRequest.current = null;
+    pendingSubmission.current = null;
+    legacyAttachments.current.clear();
+    creditRequests.current.clear();
+    publish(emptyData());
+  }
+  function refresh(fullHistory = false) {
     const generation = epoch.current;
     const task = refreshQueue.current.catch(() => undefined).then(async () => {
       if (generation !== epoch.current) return;
-      const next = await api<ServerData>("/api/studio/state");
-      if (generation !== epoch.current) return;
-      next.preferences = preferences(next.currentUserId);
-      publish(next);
+      const controller = new AbortController();
+      pendingReads.current.add(controller);
+      try {
+        const query = new URLSearchParams({ view: "workspace" });
+        const processing = [...new Set(ref.current.generations
+          .filter(record => record.userId === ref.current.currentUserId && record.status === "processing")
+          .map(record => record.id.match(/^[a-f0-9]{32}/)?.[0])
+          .filter((id): id is string => !!id))].slice(0, 100);
+        if (processing.length) query.set("watch", processing.join(","));
+        const next = await api<ServerData>(fullHistory ? "/api/studio/state" : "/api/studio/state?" + query, { signal: controller.signal });
+        if (generation !== epoch.current || controller.signal.aborted) return;
+        const previous = ref.current.currentUserId === next.currentUserId ? ref.current : emptyData();
+        publish({ ...next, preferences: preferences(next.currentUserId),
+          assets: mergeRecords(previous.assets, next.assets),
+          generations: mergeRecords(previous.generations, next.generations),
+          imageSummary: next.imageSummary ?? previous.imageSummary,
+        });
+      } finally { pendingReads.current.delete(controller); }
     });
     refreshQueue.current = task;
     return task;
@@ -79,11 +109,11 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
         if (active && !(cause instanceof APIError && cause.status === 401))
           window.dispatchEvent(new CustomEvent("studio:error", { detail: cause instanceof Error ? cause.message : "更新失败" }));
       }
-      if (active) timer = setTimeout(poll, ref.current.generations.some(g => g.status === "processing") ? 1500 : 15000);
+      if (active) timer = setTimeout(poll, ref.current.generations.some(g => g.userId === ref.current.currentUserId && g.status === "processing") ? 1500 : 15000);
     };
-    timer = setTimeout(poll, data.generations.some(g => g.status === "processing") ? 1500 : 15000);
+    timer = setTimeout(poll, data.generations.some(g => g.userId === data.currentUserId && g.status === "processing") ? 1500 : 15000);
     return () => { active = false; clearTimeout(timer); };
-  }, [ready, data.currentUserId, data.generations.some(g => g.status === "processing")]);
+  }, [ready, data.currentUserId, data.generations.some(g => g.userId === data.currentUserId && g.status === "processing")]);
   const actions = useMemo<StudioActions>(() => {
     async function mutate<T>(path: string, method: string, body?: unknown): Promise<T> {
       const result = await api<T>(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
@@ -137,9 +167,29 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
       },
       createFolder: name => mutate("/api/studio/folders", "POST", { name }),
       renameFolder: (id, name) => mutate("/api/studio/folders/" + id, "PATCH", { name }),
-      deleteFolder: id => mutate("/api/studio/folders/" + id, "DELETE"),
-      addToFolders: (imageIds, folderIds) => mutate("/api/studio/folder-memberships", "POST", { imageIds, folderIds, remove: false }),
-      removeFromFolder: (imageIds, folderId) => mutate("/api/studio/folder-memberships", "POST", { imageIds, folderIds: [folderId], remove: true }),
+      async deleteFolder(id) {
+        const generation = epoch.current;
+        await mutate("/api/studio/folders/" + id, "DELETE");
+        if (generation === epoch.current) publish({ ...ref.current,
+          assets: ref.current.assets.map(image => ({ ...image, folderIds: image.folderIds.filter(folderId => folderId !== id) })),
+        });
+      },
+      async addToFolders(imageIds, folderIds) {
+        const generation = epoch.current;
+        await mutate("/api/studio/folder-memberships", "POST", { imageIds, folderIds, remove: false });
+        if (generation === epoch.current) publish({ ...ref.current,
+          assets: ref.current.assets.map(image => imageIds.includes(image.id)
+            ? { ...image, folderIds: [...new Set([...image.folderIds, ...folderIds])] } : image),
+        });
+      },
+      async removeFromFolder(imageIds, folderId) {
+        const generation = epoch.current;
+        await mutate("/api/studio/folder-memberships", "POST", { imageIds, folderIds: [folderId], remove: true });
+        if (generation === epoch.current) publish({ ...ref.current,
+          assets: ref.current.assets.map(image => imageIds.includes(image.id)
+            ? { ...image, folderIds: image.folderIds.filter(id => id !== folderId) } : image),
+        });
+      },
       async setPreferences(patch) {
         const next = { ...ref.current.preferences, ...patch };
         localStorage.setItem("studio-preferences:" + ref.current.currentUserId, JSON.stringify(next));
@@ -167,6 +217,30 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
         }
       },
       refreshData: async () => { await refresh(); return ref.current; },
+      async listImages(options = {}) {
+        const generation = epoch.current;
+        const userId = ref.current.currentUserId;
+        const controller = new AbortController();
+        pendingReads.current.add(controller);
+        const signal = options.signal ? AbortSignal.any([controller.signal, options.signal]) : controller.signal;
+        const query = new URLSearchParams({ limit: "50" });
+        if (options.folderId) query.set("folderId", options.folderId);
+        if (options.cursor) query.set("cursor", options.cursor);
+        try {
+          const result = await api<ImagePage>("/api/studio/images?" + query, { signal });
+          if (signal.aborted || generation !== epoch.current || userId !== ref.current.currentUserId) {
+            throw new DOMException("图片读取已取消", "AbortError");
+          }
+          publish({ ...ref.current, assets: mergeRecords(ref.current.assets, result.images) });
+          return result;
+        } finally { pendingReads.current.delete(controller); }
+      },
+      loadHistory() {
+        if (historyRequest.current) return historyRequest.current;
+        const task = refresh(true).finally(() => { if (historyRequest.current === task) historyRequest.current = null; });
+        historyRequest.current = task;
+        return task;
+      },
       async savePrice(id, amount, version) {
         try { await mutate("/api/admin/prices/" + id, "PATCH", { credits: amount, version: version ?? ref.current.priceVersions[id] }); }
         catch (cause) { if (cause instanceof APIError && cause.status === 409) await refresh().catch(() => undefined); throw cause; }
@@ -182,6 +256,9 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
       async signIn(username, password) {
         await api("/api/auth/login", { method: "POST", body: JSON.stringify({ username, password }) });
         epoch.current++;
+        for (const controller of pendingReads.current) controller.abort();
+        pendingReads.current.clear();
+        historyRequest.current = null;
         await loadWorkspace();
       },
     };

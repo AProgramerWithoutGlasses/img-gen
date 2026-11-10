@@ -7,6 +7,7 @@ import type { ContainerRect, ControllerRef, ZoomRef } from "yet-another-react-li
 import "yet-another-react-lightbox/styles.css";
 import { Icon } from "../../components/Icon";
 import { RenditionImage } from "../../components/RenditionImage";
+import { PreviewThumbnails } from "./PreviewThumbnails";
 import { useStudio } from "../../state/StudioContext";
 import { MODELS } from "../../config/models";
 import { downloadImage } from "../../lib/images";
@@ -25,6 +26,11 @@ interface Props {
   onAdd: (image: ImageAsset) => void;
   onCreate: () => void;
   isGallery?: boolean;
+  hasMore?: boolean;
+  loadingMore?: boolean;
+  loadError?: string;
+  onLoadMore?: () => void;
+  onRetryMore?: () => void;
 }
 
 type OriginalStatus = "idle" | "loading" | "loaded" | "failed";
@@ -99,7 +105,8 @@ function PreviewPhoto({ image, rect, originalStatus, onOriginalLoaded, onOrigina
   );
 }
 
-export function ImagePreview({ selectedImage, collection, previewIndex, total, switchPreview, onClose, onFolder, onAdd, onCreate }: Props) {
+export function ImagePreview({ selectedImage, collection, previewIndex, total, switchPreview, onClose, onFolder, onAdd, onCreate,
+  hasMore, loadingMore, loadError, onLoadMore, onRetryMore }: Props) {
   const { data } = useStudio();
   const dialog = useRef<HTMLDialogElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -122,7 +129,6 @@ export function ImagePreview({ selectedImage, collection, previewIndex, total, s
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const [reduceMotion, setReduceMotion] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches);
   const images = collection?.length ? collection : [selectedImage];
-  const selectedThumbnail = useRef<HTMLButtonElement>(null);
   const slides = useMemo(() => [{ src: selectedImage.previewUrl || selectedImage.url, alt: selectedImage.name,
     width: selectedImage.width, height: selectedImage.height }],
   [selectedImage.id, selectedImage.url, selectedImage.previewUrl, selectedImage.name, selectedImage.width, selectedImage.height]);
@@ -158,7 +164,6 @@ export function ImagePreview({ selectedImage, collection, previewIndex, total, s
   }, []);
   useEffect(() => {
     setZoomLevel(1);
-    selectedThumbnail.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [selectedImage.id]);
 
   useEffect(() => {
@@ -247,17 +252,8 @@ export function ImagePreview({ selectedImage, collection, previewIndex, total, s
       </header>
       <div className="preview-content">
         {total > 1 && images.length > 1 && (
-          <nav className="preview-thumbnails" aria-label="图片切换">
-            {images.map((image, index) => (
-              <button key={image.id} ref={image.id === selectedImage.id ? selectedThumbnail : undefined}
-                className={`preview-thumbnail${image.id === selectedImage.id ? " is-current" : ""}`}
-                aria-label={`查看第 ${index + 1} 张图片`} aria-current={image.id === selectedImage.id ? "true" : undefined}
-                onClick={() => switchPreview(index - previewIndex)}>
-                <RenditionImage source={image} fit="contain" purpose="thumbnail" displayWidth={56} displayHeight={56} alt="" loading="lazy" decoding="async" />
-                <span>{index + 1}</span>
-              </button>
-            ))}
-          </nav>
+          <PreviewThumbnails images={images} selectedIndex={previewIndex} switchPreview={switchPreview}
+            hasMore={hasMore} loadingMore={loadingMore} loadError={loadError} onLoadMore={onLoadMore} onRetryMore={onRetryMore} />
         )}
         <div className="preview-image-area">
           <div className="preview-stage" ref={stage}>

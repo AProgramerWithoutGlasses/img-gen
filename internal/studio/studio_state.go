@@ -1,7 +1,6 @@
 package studio
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	_ "golang.org/x/image/webp"
@@ -16,6 +15,32 @@ func (a *App) studioState(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	actor := currentUser(r)
 	scope, args := ownerScope(r, "jobs.user_id")
+	workspace := r.URL.Query().Get("view") == "workspace"
+	if workspace {
+		watch := []string{}
+		if raw := r.URL.Query().Get("watch"); raw != "" {
+			watch = strings.Split(raw, ",")
+			if len(watch) > 100 {
+				apiError(w, 400, "跟踪任务过多")
+				return
+			}
+			for _, id := range watch {
+				if !ValidID(id) {
+					apiError(w, 400, "无效的任务编号")
+					return
+				}
+			}
+		}
+		batchIDs, err := a.workspaceBatchIDs(ctx, actor.ID)
+		if err != nil {
+			apiError(w, 500, "读取工作区失败")
+			return
+		}
+		batchIDs = append(batchIDs, watch...)
+		scope, args = selectedScope("jobs.batch_id", batchIDs)
+		scope += " AND jobs.user_id=?"
+		args = append(args, actor.ID)
+	}
 	users := []StudioUser{}
 	userSQL := "SELECT id,username,role,active,created_at,credits FROM users"
 	userArgs := []any{}
@@ -84,76 +109,8 @@ func (a *App) studioState(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取任务失败")
 		return
 	}
-	// Read metadata in bulk; no binary image content is included in the snapshot.
-	opts := map[string]GenerationOptions{}
-	positions := map[string]int{}
-	attachments := map[string][]Attachment{}
-	batchScope, batchArgs := ownerScope(r, "b.user_id")
-	rows, err = a.DB.QueryContext(ctx, "SELECT b.id,b.options FROM studio_batches b WHERE 1=1"+batchScope, batchArgs...)
-	if err != nil {
-		apiError(w, 500, "读取任务参数失败")
-		return
-	}
-	for rows.Next() {
-		var id string
-		var raw []byte
-		var o GenerationOptions
-		if err = rows.Scan(&id, &raw); err != nil {
-			break
-		}
-		if err = json.Unmarshal(raw, &o); err != nil {
-			break
-		}
-		opts[id] = o
-	}
-	err = errors.Join(err, rows.Err())
-	rows.Close()
-	if err != nil {
-		apiError(w, 500, "读取任务参数失败")
-		return
-	}
-	rows, err = a.DB.QueryContext(ctx, "SELECT bj.job_id,bj.output_index FROM studio_batch_jobs bj JOIN studio_batches b ON b.id=bj.batch_id WHERE 1=1"+batchScope, batchArgs...)
-	if err != nil {
-		apiError(w, 500, "读取输出顺序失败")
-		return
-	}
-	for rows.Next() {
-		var id string
-		var pos int
-		if err = rows.Scan(&id, &pos); err != nil {
-			break
-		}
-		positions[id] = pos
-	}
-	err = errors.Join(err, rows.Err())
-	rows.Close()
-	if err != nil {
-		apiError(w, 500, "读取输出顺序失败")
-		return
-	}
-	rows, err = a.DB.QueryContext(ctx, "SELECT b.id,a.id,a.name,COALESCE(p.source_width,a.width),COALESCE(p.source_height,a.height) FROM studio_batch_attachments ba JOIN studio_batches b ON b.id=ba.batch_id JOIN studio_attachments a ON a.id=ba.attachment_id LEFT JOIN studio_attachment_renditions p ON p.attachment_id=a.id AND p.kind='thumbnail' AND p.version=1 WHERE 1=1"+batchScope+" ORDER BY ba.position", batchArgs...)
-	if err != nil {
-		apiError(w, 500, "读取附件失败")
-		return
-	}
-	for rows.Next() {
-		var id string
-		var att Attachment
-		if err = rows.Scan(&id, &att.ID, &att.Name, &att.Width, &att.Height); err != nil {
-			break
-		}
-		setAttachmentRenditionURLs(&att)
-		attachments[id] = append(attachments[id], att)
-	}
-	err = errors.Join(err, rows.Err())
-	rows.Close()
-	if err != nil {
-		apiError(w, 500, "读取附件失败")
-		return
-	}
 	// Memberships and folders always belong to the current workspace, even for administrators.
 	folders := []Folder{}
-	memberships := map[string][]string{}
 	rows, err = a.DB.QueryContext(ctx, "SELECT id,user_id,name,created_at FROM studio_folders WHERE user_id=? ORDER BY created_at,id", actor.ID)
 	if err != nil {
 		apiError(w, 500, "读取文件夹失败")
@@ -172,55 +129,21 @@ func (a *App) studioState(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取文件夹失败")
 		return
 	}
-	rows, err = a.DB.QueryContext(ctx, "SELECT m.image_id,m.folder_id FROM studio_image_folders m JOIN studio_folders f ON f.id=m.folder_id WHERE f.user_id=?", actor.ID)
+	generations, assets, err := a.loadStudioHistory(ctx, jobs, actor.ID)
 	if err != nil {
-		apiError(w, 500, "读取归类失败")
+		apiError(w, 500, "读取图片历史失败")
 		return
 	}
-	for rows.Next() {
-		var id, fid string
-		if err = rows.Scan(&id, &fid); err != nil {
-			break
+	response := map[string]any{"version": 1, "users": users, "currentUserId": actor.ID, "prices": prices, "priceVersions": versions, "priceUpdatedAt": updated, "assets": assets, "folders": folders, "generations": generations, "preferences": map[string]any{"theme": "system", "enterToSend": true}}
+	if workspace {
+		summary, err := a.studioImageSummary(ctx, actor.ID)
+		if err != nil {
+			apiError(w, 500, "读取图片数量失败")
+			return
 		}
-		memberships[id] = append(memberships[id], fid)
+		response["imageSummary"] = summary
 	}
-	err = errors.Join(err, rows.Err())
-	rows.Close()
-	if err != nil {
-		apiError(w, 500, "读取归类失败")
-		return
-	}
-	// Read image metadata once for the whole authorized snapshot. Querying once
-	// per job made startup and every poll slower as history accumulated.
-	rows, err = a.DB.QueryContext(ctx, `SELECT images.job_id,images.id,images.mime,images.width,images.height,images.byte_size
-		FROM images JOIN jobs ON jobs.id=images.job_id WHERE 1=1`+scope+` ORDER BY images.job_id,images.id`, args...)
-	if err != nil {
-		apiError(w, 500, "读取图片失败")
-		return
-	}
-	pictures := map[string][]Picture{}
-	for rows.Next() {
-		var jobID string
-		var p Picture
-		if err = rows.Scan(&jobID, &p.ID, &p.MIME, &p.Width, &p.Height, &p.Bytes); err != nil {
-			break
-		}
-		p.URL = "/api/images/" + p.ID
-		p.ThumbnailURL = p.URL + "/thumbnail/" + thumbnailVersion
-		p.PreviewURL = p.URL + "/preview/" + previewVersion
-		pictures[jobID] = append(pictures[jobID], p)
-	}
-	err = errors.Join(err, rows.Err())
-	rows.Close()
-	if err != nil {
-		apiError(w, 500, "读取图片失败")
-		return
-	}
-	for i := range jobs {
-		jobs[i].Images = pictures[jobs[i].ID]
-	}
-	generations, assets := studioHistory(jobs, opts, positions, attachments, memberships)
-	jsonResponse(w, 200, map[string]any{"version": 1, "users": users, "currentUserId": actor.ID, "prices": prices, "priceVersions": versions, "priceUpdatedAt": updated, "assets": assets, "folders": folders, "generations": generations, "preferences": map[string]any{"theme": "system", "enterToSend": true}})
+	jsonResponse(w, 200, response)
 }
 
 func studioHistory(jobs []Job, opts map[string]GenerationOptions, positions map[string]int, attachments map[string][]Attachment, memberships map[string][]string) ([]Generation, []Asset) {

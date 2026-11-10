@@ -10,6 +10,7 @@ import (
 
 func (a *App) studioRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/studio/state", a.studioState)
+	mux.HandleFunc("GET /api/studio/images", a.studioImages)
 	mux.HandleFunc("GET /api/studio/models", func(w http.ResponseWriter, r *http.Request) { jsonResponse(w, 200, studioModels()) })
 	mux.HandleFunc("POST /api/studio/attachments", a.uploadStudioAttachment)
 	mux.HandleFunc("GET /api/studio/attachments/{id}", a.getStudioAttachment)

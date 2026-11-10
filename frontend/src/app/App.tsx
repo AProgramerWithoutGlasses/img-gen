@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Toast } from "../components/Toast";
 import { Sidebar } from "./Sidebar";
 import { settingsLabels } from "./navigation";
@@ -10,7 +10,7 @@ import { FolderPicker } from "../features/gallery/FolderPicker";
 import { ImagePreview } from "../features/gallery/ImagePreview";
 import SettingsPage from "../features/settings/SettingsPage";
 import { StudioProvider, useStudio } from "../state/StudioContext";
-import type { ImageAsset, Notify, SettingsSection } from "../types";
+import type { ImageAsset, Notify, PreviewCollectionOptions, SettingsSection } from "../types";
 
 function routeFromHash() {
   return location.hash.replace(/^#/, "") || "/create";
@@ -25,9 +25,16 @@ function StudioApp() {
   const [savingFolder, setSavingFolder] = useState(false);
   const [requestUserFilter, setRequestUserFilter] = useState<string>();
   const [preview, setPreview] = useState<{
-    ids: string[];
+    images: ImageAsset[];
     activeId: string;
+    options?: PreviewCollectionOptions;
+    loading?: boolean;
+    loadError?: string;
   } | null>(null);
+  const previewRef = useRef(preview);
+  previewRef.current = preview;
+  const previewEpoch = useRef(0);
+  const previewRead = useRef<{ controller: AbortController; promise: Promise<ImageAsset[] | undefined> } | null>(null);
   const [previewFolder, setPreviewFolder] = useState<string[] | null>(null);
   const [pendingAttachment, setPendingAttachment] = useState<ImageAsset | null>(
     null,
@@ -97,19 +104,75 @@ function StudioApp() {
     media.addEventListener("change", apply);
     return () => media.removeEventListener("change", apply);
   }, [data.preferences.theme]);
-  useEffect(() => {
+  const closePreview = useCallback(() => {
+    previewEpoch.current++;
+    previewRead.current?.controller.abort();
+    previewRead.current = null;
+    previewRef.current = null;
     setPreview(null);
+  }, []);
+  useEffect(() => {
+    closePreview();
     setPreviewFolder(null);
-  }, [currentUser.id]);
-  const openPreview = (image: ImageAsset, collection: ImageAsset[]) =>
-    setPreview({ ids: collection.map((a) => a.id), activeId: image.id });
+    return () => { previewRead.current?.controller.abort(); };
+  }, [currentUser.id, closePreview]);
+  const openPreview = (image: ImageAsset, collection: ImageAsset[], options?: PreviewCollectionOptions) => {
+    closePreview();
+    const next = { images: collection, activeId: image.id, options };
+    previewRef.current = next;
+    setPreview(next);
+  };
+  const assetsById = useMemo(() => new Map(data.assets.map(image => [image.id, image])), [data.assets]);
+  const previewImages = useMemo(() => preview?.images.map(image => assetsById.get(image.id) ?? image) ?? [], [preview?.images, assetsById]);
   const selectedImage = preview
-    ? data.assets.find((a) => a.id === preview.activeId)
+    ? assetsById.get(preview.activeId) ?? preview.images.find(image => image.id === preview.activeId)
     : undefined;
-  const previewIndex = preview?.ids.indexOf(preview.activeId) ?? -1;
+  const previewIndex = preview?.images.findIndex(image => image.id === preview.activeId) ?? -1;
+  const loadMorePreview = (manual = false): Promise<ImageAsset[] | undefined> => {
+    if (previewRead.current) return previewRead.current.promise;
+    const current = previewRef.current;
+    const cursor = current?.options?.nextCursor;
+    if (!current || !cursor || !actions.listImages || (current.loadError && !manual)) return Promise.resolve(undefined);
+    const session = previewEpoch.current;
+    const controller = new AbortController();
+    setPreview(previous => previous ? { ...previous, loading: true, loadError: undefined } : previous);
+    const promise = actions.listImages({ folderId: current.options?.folderId, cursor, signal: controller.signal })
+      .then(page => {
+        if (controller.signal.aborted || session !== previewEpoch.current) return undefined;
+        const latest = previewRef.current;
+        if (!latest) return undefined;
+        const merged = new Map(latest.images.map(image => [image.id, image]));
+        for (const image of page.images) merged.set(image.id, image);
+        const images = [...merged.values()];
+        const next = { ...latest, images, loading: false, loadError: undefined,
+          options: { ...latest.options, total: page.total, nextCursor: page.nextCursor } };
+        previewRef.current = next;
+        setPreview(next);
+        return images;
+      }).catch((error: unknown) => {
+        if (!controller.signal.aborted && session === previewEpoch.current) {
+          const message = error instanceof Error ? error.message : "图片加载失败";
+          const latest = previewRef.current;
+          if (latest) { previewRef.current = { ...latest, loading: false, loadError: message }; setPreview(previewRef.current); }
+        }
+        return undefined;
+      }).finally(() => { if (previewRead.current?.controller === controller) previewRead.current = null; });
+    previewRead.current = { controller, promise };
+    return promise;
+  };
   const switchPreview = (step: number) => {
-    if (preview && preview.ids[previewIndex + step])
-      setPreview({ ...preview, activeId: preview.ids[previewIndex + step] });
+    const current = previewRef.current;
+    if (!current) return;
+    const target = current.images.findIndex(image => image.id === current.activeId) + step;
+    const select = (images?: ImageAsset[]) => {
+      const latest = previewRef.current;
+      const image = images?.[target];
+      if (!latest || !image) return;
+      previewRef.current = { ...latest, activeId: image.id };
+      setPreview(previewRef.current);
+    };
+    if (target >= 0 && target < current.images.length) select(current.images);
+    else if (target >= current.images.length) void loadMorePreview().then(select);
   };
   const newFolder = () => {
     setFolderName("");
@@ -262,14 +325,19 @@ function StudioApp() {
         <ImagePreview
           selectedImage={selectedImage}
           previewIndex={previewIndex}
-          total={preview.ids.length}
+          total={preview.options?.total ?? preview.images.length}
           switchPreview={switchPreview}
-          onClose={() => setPreview(null)}
+          onClose={closePreview}
           onFolder={(id) => setPreviewFolder([id])}
           onAdd={setPendingAttachment}
           onCreate={() => navigate("/create")}
           isGallery={isGallery}
-          collection={preview.ids.map(id => data.assets.find(image => image.id === id)).filter((image): image is ImageAsset => !!image)}
+          collection={previewImages}
+          hasMore={!!preview.options?.nextCursor}
+          loadingMore={preview.loading}
+          loadError={preview.loadError}
+          onLoadMore={() => { void loadMorePreview(); }}
+          onRetryMore={() => { void loadMorePreview(true); }}
         />
       )}
       {previewFolder && (

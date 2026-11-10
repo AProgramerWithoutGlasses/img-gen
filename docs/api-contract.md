@@ -17,7 +17,9 @@
 | 接口 | 行为 |
 | --- | --- |
 | GET /api/studio/models | 五模型的现有界面选项，保持控件范围；表示可提交参数，不是逐项上游实测认证 |
-| GET /api/studio/state | 返回 StudioData、priceVersions；普通用户仅自己的资料和资源，管理员可读取请求记录需要的全部记录；不含密码和图片二进制 |
+| GET /api/studio/state | 默认保留完整历史兼容协议，按需用于请求／积分历史；普通用户仅自己的资料和资源，管理员可读取请求记录需要的全部记录；不含密码和图片二进制 |
+| GET /api/studio/state?view=workspace | 日常启动与轮询：当前用户最近10个完整批次及仍在排队／运行的批次，附 imageSummary.total/folderCounts；watch可携最多100个批次ID，跟踪已知旧任务至终态，仍严格校验归属 |
+| GET /api/studio/images | 当前用户图片分页：limit缺省50、最大50，cursor为不透明稳定游标，folderId可为all／unfiled／自有文件夹ID；返回images、完整total、可选nextCursor。只读取该页命中批次的元数据，不读取图片二进制 |
 | POST /api/studio/attachments | multipart 的 image 字段，单张20MB、PNG/JPEG/WebP/GIF、最多6400万像素，返回服务端附件ID和私有URL |
 | GET /api/studio/attachments/{id} | 认证后按归属读取原始附件；管理员可查看请求中的附件 |
 | GET /api/studio/attachments/{id}/{kind}/1 | kind为thumbnail、preview或preview-large，分别返回256px方形、640px等比、1600px等比静态预览；首次访问懒生成，缓存命中及304/HEAD均先检查权限 |
@@ -50,4 +52,6 @@ Generation新增兼容字段 `outputs`，每项为 `{outputIndex,status,startedA
 
 ## 数据规模
 
-现有UI在内存中搜索、筛选、分页和计算数量。为确保记录超过24条时不漏图、不把单页统计当全局统计，当前state返回该角色有权读取的全部元数据，图片内容按独立URL读取。图片元数据按权限一次批量读取，不随任务数逐条查询；启动时模型与状态并行加载。图片列表延迟加载，资源缓存与 Nginx 配置见[加载性能配置](../deploy/README.md)。此适配面向现有单实例私有工作室；记录规模扩大时应按相同界面接入独立图片分页和请求查询缓存，避免全量元数据轮询。处理中1.5秒刷新，空闲15秒刷新，无跨站同步。
+图库与文件夹每批最多读取50张，接近底部继续加载，并保留手动加载／重试。分页按创建时间与图片ID稳定排序，游标后继续读取，期间新增图片不会挤动后续页。总数与文件夹数量由服务端完整统计，不能用已加载页推算。左侧缩略轨道仅渲染可见项与少量缓冲项，图片内容通过独立压缩URL按需读取。
+
+启动时模型与轻量workspace并行加载；处理中1.5秒刷新、空闲15秒刷新，已加载页保留在当前账号缓存，切换账号清理并取消旧请求。旧活跃任务通过watch取到终态，避免离开最近10批后一直显示处理中。请求／积分历史打开时按需读取旧完整state；请求页再次查询会重新读取历史，日常工作区不轮询全部历史。资源缓存与 Nginx 配置见[加载性能配置](../deploy/README.md)，无跨站同步。

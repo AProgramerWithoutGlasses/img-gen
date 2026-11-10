@@ -4,9 +4,11 @@ import { Icon } from "../../components/Icon";
 import { MODELS } from "../../config/models";
 import type { Notify } from "../../types";
 import { statusLabel, formatTime, Heading } from "./shared";
+import { useHistoryLoad } from "./useHistoryLoad";
 
 export function Credits({ notify }: { notify: Notify }) {
   const { currentUser, data } = useStudio();
+  const historyLoad = useHistoryLoad();
   const [page, setPage] = useState(1);
   const history = data.generations
     .filter((generation) => generation.userId === currentUser.id)
@@ -16,6 +18,11 @@ export function Credits({ notify }: { notify: Notify }) {
     );
   const totalPages = Math.max(1, Math.ceil(history.length / 10));
   const visiblePage = Math.min(page, totalPages);
+  if (historyLoad.loading || historyLoad.error) return <>
+    <Heading title="积分历史" />
+    <p role={historyLoad.error ? "alert" : "status"}>{historyLoad.error || "加载中…"}</p>
+    {historyLoad.error && <button className="btn" onClick={() => void historyLoad.reload()}>重试</button>}
+  </>;
   return (
     <>
       <Heading title="积分历史" />

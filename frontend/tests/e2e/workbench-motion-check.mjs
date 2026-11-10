@@ -57,13 +57,21 @@ const captureErrors = target => {
 const routeFixture = async (context, fixtureState) => {
   await context.route('**/api/**', async route => {
     const request = route.request();
-    const path = new URL(request.url()).pathname;
+    const url = new URL(request.url()), path = url.pathname;
     if (request.method() !== 'GET') {
       errors.push(`Unexpected write blocked: ${request.method()} ${path}`);
       return route.fulfill({ status: 405, json: { error: '本地验证禁止写请求' } });
     }
     if (path === '/api/studio/state') return route.fulfill({ json: fixtureState });
     if (path === '/api/studio/models') return route.fulfill({ json: models });
+    if (path === '/api/studio/images') {
+      const folderId = url.searchParams.get('folderId') || 'all';
+      const images = fixtureState.assets.filter(image => folderId === 'all' || (folderId === 'unfiled'
+        ? !image.folderIds.length : image.folderIds.includes(folderId)));
+      const offset = Number(url.searchParams.get('cursor') || 0), page = images.slice(offset, offset + 50);
+      return route.fulfill({ json: { images: page, total: images.length,
+        ...(offset + page.length < images.length ? { nextCursor: String(offset + page.length) } : {}) } });
+    }
     if (path.startsWith('/api/images/')) {
       imageRequests++;
       await heldImage;
@@ -104,7 +112,7 @@ try {
   });
   const seconds = async card => Number((await card.locator('.result-generation-number').innerText()).match(/(\d+)\s*秒/)?.[1]);
   const acceptState = async change => {
-    const response = page.waitForResponse(item => item.url().endsWith('/api/studio/state'));
+    const response = page.waitForResponse(item => new URL(item.url()).pathname === '/api/studio/state');
     change();
     await response;
   };
