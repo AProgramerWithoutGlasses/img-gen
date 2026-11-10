@@ -53,7 +53,7 @@ export function AccountMenu({
     >
       <div className="account-menu-header" onMouseEnter={() => setSubmenu(null)}>
         <span className="avatar">{currentUser.username.charAt(0).toUpperCase()}</span>
-        <strong title={currentUser.username}>{currentUser.username}</strong>
+        <strong>{currentUser.username}</strong>
         <span className="account-menu-balance" aria-label="积分余额">
           <Icon name="coins" size={16} />
           {currentUser.balance.toLocaleString()}
