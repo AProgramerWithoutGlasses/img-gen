@@ -1,5 +1,6 @@
 @import "./dialog-corners.css";
 @import "./result-stage.css";
+@import "./creation-texture.css";
 
 .creation-page {
   --workbench-gutter: 32px;
