@@ -1,10 +1,11 @@
 @import "./sidebar.css";
 
-.app-shell { --sidebar-width:224px; display:grid; grid-template-columns:var(--sidebar-width) minmax(0,1fr); height:100dvh; overflow:hidden; transition:grid-template-columns 220ms var(--ease-out); }
+.app-shell { --sidebar-expanded-width:224px; --sidebar-width:var(--sidebar-expanded-width); display:grid; grid-template-columns:var(--sidebar-width) minmax(0,1fr); height:100dvh; overflow:hidden; transition:grid-template-columns 220ms var(--ease-out); }
 .app-shell.sidebar-collapsed { --sidebar-width:72px; }
 .avatar { width:32px; height:32px; display:flex; flex:none; align-items:center; justify-content:center; border-radius:50%; background:var(--accent-soft); color:var(--selected-text); font-size:12px; font-weight:600; }
 .account-menu-wrap { position:relative; }
-.account-menu { position:absolute; bottom:60px; left:0; width:304px; border:1px solid var(--border); border-radius:16px; padding:8px; background:var(--surface); z-index:32; box-shadow:var(--shadow-menu); animation:menu-enter 160ms var(--ease-out); }
+.account-menu { position:absolute; bottom:60px; left:-16px; width:var(--sidebar-expanded-width); border:1px solid var(--border); border-radius:16px; padding:8px; background:var(--surface); z-index:32; box-shadow:var(--shadow-menu); animation:menu-enter 160ms var(--ease-out); }
+.sidebar.is-compact .account-menu { left:0; }
 .account-menu-header { display:flex; align-items:center; gap:10px; padding:8px 8px 16px; }
 .account-menu-header strong { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
 .account-menu-header .avatar { border-radius:10px; width:36px; height:36px; }
@@ -29,7 +30,8 @@
 @keyframes menu-enter { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
 @media(max-width:680px) {
   .app-shell,.app-shell.sidebar-collapsed { --sidebar-width:58px; }
-  .account-menu { position:fixed; left:12px; bottom:76px; width:min(304px,calc(100vw - 24px)); }
+  .account-menu, .sidebar.is-compact .account-menu { position:fixed; left:12px; bottom:76px; width:min(var(--sidebar-expanded-width),calc(100vw - 24px)); }
+  .sidebar.is-mobile-open .account-menu { left:0; }
   .account-submenu { left:0; bottom:calc(100% + 4px); width:100%; }
   .page-header { padding:0 20px; }
 }

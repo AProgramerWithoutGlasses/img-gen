@@ -8,7 +8,7 @@
 }
 .dialog-button {
   --dialog-button-fill: var(--dialog-control-fill, #eeecec);
-  --dialog-button-line: var(--control-border);
+  --dialog-button-line: var(--dialog-control-border, var(--control-border));
   box-sizing: border-box;
   position: relative;
   display: inline-flex;
@@ -56,6 +56,7 @@
 }
 .dialog-button-accent {
   --dialog-button-fill: var(--accent);
+  --dialog-button-line: var(--accent);
   color: var(--on-accent);
 }
 .dialog-button-accent:hover:not(:disabled) {
@@ -66,13 +67,10 @@
 }
 .dialog-button:disabled {
   --dialog-button-fill: var(--dialog-disabled-fill, #64645d);
-  --dialog-button-line: #a3a3a3;
+  --dialog-button-line: var(--dialog-disabled-line, #a3a3a3);
   opacity: 1;
   color: var(--dialog-disabled-text, #eeecec);
   cursor: default;
-}
-.dialog-button:disabled .dialog-arrow {
-  background: var(--dialog-disabled-arrow, #333);
 }
 .dialog-button:focus-visible,
 .dialog-control:focus-visible {
@@ -117,8 +115,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--dialog-control-text, var(--text));
-  color: var(--dialog-button-fill, var(--surface));
+  background: var(--dialog-control-arrow-fill, var(--dialog-control-text, var(--text)));
+  color: var(--dialog-control-arrow-text, var(--dialog-button-fill, var(--surface)));
 }
 .dialog-arrow svg,
 .dialog-coins {
@@ -248,6 +246,10 @@
   pointer-events: none;
 }
 .dialog-button-accent .dialog-arrow { background: var(--on-accent); color: var(--accent); }
+.dialog-button:disabled .dialog-arrow {
+  background: var(--dialog-disabled-arrow, #333);
+  color: var(--dialog-disabled-arrow-text, var(--dialog-disabled-text));
+}
 .dialog-menu[data-dialog-theme="light"] { background: var(--surface); }
 @keyframes dialog-menu-enter {
   from { opacity: 0; transform: translateY(4px); }

@@ -18,7 +18,7 @@ dialog.image-preview::backdrop { background: #101114b8; backdrop-filter: blur(8p
 .image-preview .preview-thumbnail { position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; padding: 4px; flex: none; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-alt); transition: border-color 150ms ease, background-color 150ms ease; }
 .image-preview .preview-thumbnail:hover { background: var(--selected); }
 .image-preview .preview-thumbnail.is-current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.image-preview .preview-thumbnail img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 7px; }
+.image-preview .preview-thumbnail img { display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 7px; }
 .image-preview .preview-thumbnail > span { position: absolute; right: 4px; bottom: 3px; min-width: 17px; padding: 1px 3px; border-radius: 4px; color: var(--text); background: var(--surface); font-size: 10px; font-variant-numeric: tabular-nums; }
 .image-preview .preview-image-area { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 0; gap: 14px; }
 .image-preview .preview-stage { position: relative; display: block; flex: 1; width: 100%; height: auto; min-width: 0; min-height: 0; padding: 0; overflow: hidden; background: var(--surface-alt); border: 0; border-radius: 14px; }
@@ -36,12 +36,16 @@ dialog.image-preview::backdrop { background: #101114b8; backdrop-filter: blur(8p
 .image-preview .preview-nav-button:disabled { opacity: .3; }
 .image-preview .preview-nav-button:hover:not(:disabled) { background: var(--selected); }
 .image-preview .preview-bottom-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; min-height: 42px; flex: none; }
-.image-preview .preview-zoom-tools { display: flex; align-items: center; gap: 4px; }
+.image-preview .preview-zoom-tools { display: flex; align-items: center; flex-wrap: wrap; max-width: 100%; gap: 4px; }
 .image-preview .preview-tool-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 36px; padding: 0 10px; color: var(--muted); border: 1px solid transparent; border-radius: 9px; font-size: 13px; white-space: nowrap; transition: color 140ms ease, background-color 140ms ease; }
 .image-preview .preview-tool-button:hover:not(:disabled) { color: var(--text); background: var(--surface-alt); }
 .image-preview .preview-tool-button.is-active { color: var(--accent); background: var(--selected); }
 .image-preview .preview-zoom-icon { width: 36px; padding: 0; }
 .image-preview .preview-original-size { font-variant-numeric: tabular-nums; }
+.image-preview .preview-original-toggle { width: 136px; flex: none; }
+.image-preview .preview-original-toggle:disabled { cursor: default; }
+.image-preview .preview-original-toggle.is-active:disabled { opacity: 1; }
+.image-preview .preview-original-toggle.is-error { color: var(--error); }
 .image-preview .preview-zoom-value { min-width: 42px; text-align: center; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .image-preview .preview-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; }
 .image-preview .preview-action-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 0 14px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 10px; white-space: nowrap; font-size: 13px; transition: background-color 140ms ease, transform 140ms ease; }
@@ -59,6 +63,7 @@ dialog.image-preview::backdrop { background: #101114b8; backdrop-filter: blur(8p
 @media (max-width: 1080px) {
   .image-preview .preview-details { width: 264px; flex-basis: 264px; padding: 16px; }
   .image-preview .preview-bottom-bar, .image-preview .preview-actions { justify-content: center; }
+  .image-preview .preview-zoom-tools { justify-content: center; }
   .image-preview .preview-zoom-value { display: none; }
 }
 @media (max-width: 760px) {

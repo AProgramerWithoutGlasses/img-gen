@@ -18,7 +18,7 @@ Go 测试保留在同一个外部测试包，文件名区分主题，既有 49 �
 | 现行创作对话框圆角或尺寸 | 保存指定稿后 node tests/design/check-dialog-corners.mjs；检查当前批准参数与适配组，浏览器只补受影响流程。新风格先更新相应规则与用例，其他区域不硬套旧参数和节点 ID |
 | 对话框按钮轮廓或栅格绘制 | node frontend/tests/e2e/dialog-pixels-check.mjs；覆盖 0.9、1、1.1、1.125、1.25、1.5、2 DPR 的亮暗及输入增长，比较截图可见对边，并用旧 CSS 负例确认能发现不均；不以几何值代替截图 |
 | 图片资源选择、附件自适应预览 | node frontend/tests/e2e/image-renditions-check.mjs；按实际尺寸/DPR核对压缩URL、当前卡片锚点、比例/小图/长图、输入增高、快速切换与失败回退；真实编码及权限由Go测试验证，不读生产图片 |
-| 点击大图的打开时序、资源切换 | node frontend/tests/e2e/big-preview-check.mjs；DPR1/2的冷加载与暖缓存重开、快速切图及失败回退；隐藏dialog不得按1px先选缩略图，原实现须能触发回归失败 |
+| 点击大图的打开时序、资源切换 | node frontend/tests/e2e/big-preview-check.mjs；DPR1/2的冷加载与暖缓存重开、导航缩略图实际加载、原图按钮及放大同步状态、失败保预览和手动重试、快速切图／关闭取消旧加载；隐藏dialog不得按1px先选缩略图，旧零尺寸缩略图实现须能触发回归失败 |
 | 设计连接工具 | npm run design:smoke，相关命令实际验证 |
 | 上游探测脚本 | Python 语法和安全 dry-run、Go 显式编译；不自动实际收费探测 |
 

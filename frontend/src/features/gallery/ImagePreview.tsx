@@ -11,6 +11,7 @@ import { useStudio } from "../../state/StudioContext";
 import { MODELS } from "../../config/models";
 import { downloadImage } from "../../lib/images";
 import type { ImageAsset } from "../../types";
+import type { SyntheticEvent } from "react";
 import "./image-preview.css";
 
 interface Props {
@@ -26,46 +27,72 @@ interface Props {
   isGallery?: boolean;
 }
 
-// Preserve authenticated rendition selection. Decode an original only after a
-// detail-zoom request, keeping the preview visible until that decode succeeds.
-function PreviewPhoto({ image, rect, originalRequested }: {
+type OriginalStatus = "idle" | "loading" | "loaded" | "failed";
+interface OriginalResource {
+  status: OriginalStatus;
+  attempt: number;
+}
+const originalLabels: Record<OriginalStatus, string> = {
+  idle: "显示原图", loading: "原图加载中…", loaded: "原图已加载", failed: "重试原图",
+};
+function isOriginalURL(candidate: string, original: string) {
+  if (!candidate) return false;
+  try { return new URL(candidate, location.href).href === new URL(original, location.href).href; }
+  catch { return candidate === original; }
+}
+
+// Preserve authenticated rendition selection and report originals that were
+// loaded through the shared rendition fallback as well as explicit requests.
+function PreviewPhoto({ image, rect, originalStatus, onOriginalLoaded, onOriginalFailed }: {
   image: ImageAsset;
   rect: ContainerRect;
-  originalRequested: boolean;
+  originalStatus: OriginalStatus;
+  onOriginalLoaded: () => void;
+  onOriginalFailed: () => void;
 }) {
-  const [originalReady, setOriginalReady] = useState(false);
-  const [originalFailed, setOriginalFailed] = useState(false);
   const [failed, setFailed] = useState(false);
+  const alive = useRef(true);
+  const displayVersion = useRef(0);
   useEffect(() => {
-    if (!originalRequested || originalReady || originalFailed) return;
-    let current = true;
-    const original = new Image();
-    original.decoding = "async";
-    original.onload = () => {
-      const complete = () => { if (current) setOriginalReady(true); };
-      if (original.decode) void original.decode().then(complete, complete);
-      else complete();
-    };
-    original.onerror = () => { if (current) setOriginalFailed(true); };
-    original.src = image.url;
-    return () => { current = false; original.onload = null; original.onerror = null; };
-  }, [image.url, originalRequested, originalReady, originalFailed]);
+    alive.current = true;
+    return () => { alive.current = false; displayVersion.current++; };
+  }, []);
+  async function loaded(event: SyntheticEvent<HTMLImageElement>) {
+    const element = event.currentTarget;
+    const source = element.currentSrc || element.src;
+    if (!isOriginalURL(source, image.url)) return;
+    const version = ++displayVersion.current;
+    try { await element.decode(); }
+    catch {
+      if (alive.current && version === displayVersion.current && element.currentSrc === source) onOriginalFailed();
+      return;
+    }
+    if (alive.current && version === displayVersion.current && element.currentSrc === source) onOriginalLoaded();
+  }
   const fit = Math.min(rect.width / image.width, rect.height / image.height, 1);
   const width = Math.max(0, image.width * fit);
   const height = Math.max(0, image.height * fit);
+  const originalReady = originalStatus === "loaded";
   const source = originalReady ? { url: image.url, width: image.width, height: image.height } : image;
   return (
     <div className="preview-photo" style={{ width, height }}>
-      {failed ? (
+      {failed && !originalReady ? (
         <div className="preview-load-error" role="status"><Icon name="image" size={28} /><span>图片暂时无法显示</span></div>
       ) : (
         <RenditionImage source={source} alt={image.name} width={image.width} height={image.height}
           displayWidth={width || undefined} displayHeight={height || undefined} decoding="async"
-          draggable={false} onError={() => setFailed(true)} />
+          draggable={false} onLoad={event => { void loaded(event); }} onError={event => {
+            displayVersion.current++;
+            if (isOriginalURL(event.currentTarget.currentSrc || event.currentTarget.src, image.url)) {
+              onOriginalFailed();
+              if (!originalReady) setFailed(true);
+            }
+            else setFailed(true);
+          }} />
       )}
-      {originalRequested && !originalReady && !failed && (
+      {originalStatus === "loading" && !failed && (
         <span className="preview-resolution-status" role="status">
-          {originalFailed ? "原图暂未加载，仍显示预览" : "正在载入原图…"}
+          原图加载中…
         </span>
       )}
     </div>
@@ -84,7 +111,14 @@ export function ImagePreview({ selectedImage, collection, previewIndex, total, s
   const detailsId = useId();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [originalRequestedFor, setOriginalRequestedFor] = useState<string | null>(null);
+  const [originals, setOriginals] = useState<Record<string, OriginalResource>>({});
+  const originalsRef = useRef(originals);
+  originalsRef.current = originals;
+  const resourceKey = `${selectedImage.id}\n${selectedImage.url}`;
+  const selectedResource = useRef(resourceKey);
+  selectedResource.current = resourceKey;
+  const alive = useRef(true);
+  const originalState = originals[resourceKey] ?? { status: "idle" as const, attempt: 0 };
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const [reduceMotion, setReduceMotion] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches);
   const images = collection?.length ? collection : [selectedImage];
@@ -127,7 +161,58 @@ export function ImagePreview({ selectedImage, collection, previewIndex, total, s
     selectedThumbnail.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [selectedImage.id]);
 
-  const requestOriginal = () => setOriginalRequestedFor(selectedImage.id);
+  useEffect(() => {
+    alive.current = true;
+    return () => { alive.current = false; };
+  }, []);
+  useEffect(() => {
+    const state = originalsRef.current[resourceKey];
+    if (state?.status !== "loading") return;
+    const attempt = state.attempt;
+    let current = true;
+    const original = new Image();
+    original.decoding = "async";
+    const update = (status: "loaded" | "failed") => {
+      if (!current || !alive.current || selectedResource.current !== resourceKey) return;
+      setOriginals(previous => {
+        const latest = previous[resourceKey];
+        if (latest?.attempt !== attempt || latest.status !== "loading") return previous;
+        return { ...previous, [resourceKey]: { status, attempt } };
+      });
+    };
+    original.onload = () => {
+      void original.decode().then(() => update("loaded"), () => update("failed"));
+    };
+    original.onerror = () => update("failed");
+    original.src = selectedImage.url;
+    return () => {
+      current = false;
+      original.onload = null;
+      original.onerror = null;
+      original.removeAttribute("src");
+      if (alive.current && selectedResource.current !== resourceKey) setOriginals(previous => {
+        const latest = previous[resourceKey];
+        return latest?.attempt === attempt && latest.status === "loading"
+          ? { ...previous, [resourceKey]: { status: "idle" as const, attempt } } : previous;
+      });
+    };
+  }, [resourceKey, originalState.attempt, selectedImage.url]);
+
+  const requestOriginal = (retry = false) => {
+    if (selectedResource.current !== resourceKey) return;
+    setOriginals(previous => {
+      const state: OriginalResource = previous[resourceKey] ?? { status: "idle", attempt: 0 };
+      if (state.status === "loading" || state.status === "loaded" || (state.status === "failed" && !retry)) return previous;
+      return { ...previous, [resourceKey]: { status: "loading" as const, attempt: state.attempt + 1 } };
+    });
+  };
+  const reportDisplayedOriginal = (status: "loaded" | "failed") => {
+    if (selectedResource.current !== resourceKey) return;
+    setOriginals(previous => {
+      const state: OriginalResource = previous[resourceKey] ?? { status: "idle", attempt: 0 };
+      return state.status === status ? previous : { ...previous, [resourceKey]: { ...state, status } };
+    });
+  };
   const focusImage = () => controller.current?.focus();
   const showOriginalSize = () => {
     requestOriginal();
@@ -182,7 +267,8 @@ export function ImagePreview({ selectedImage, collection, previewIndex, total, s
               zoom={{ ref: zoom, maxZoomPixelRatio: 2, scrollToZoom: true, zoomInMultiplier: 1.5 }}
               animation={{ fade: reduceMotion ? 0 : 140, swipe: 0, navigation: 0, zoom: reduceMotion ? 0 : 160 }}
               render={{ buttonPrev: () => null, buttonNext: () => null, buttonClose: () => null, buttonZoom: () => null,
-                slide: ({ rect }) => <PreviewPhoto key={selectedImage.id} image={selectedImage} rect={rect} originalRequested={originalRequestedFor === selectedImage.id} /> }}
+                slide: ({ rect }) => <PreviewPhoto key={resourceKey} image={selectedImage} rect={rect} originalStatus={originalState.status}
+                  onOriginalLoaded={() => reportDisplayedOriginal("loaded")} onOriginalFailed={() => reportDisplayedOriginal("failed")} /> }}
               on={{ zoom: ({ zoom: value }) => { setZoomLevel(value); if (value > 1.001) requestOriginal(); } }}
               labels={{ Lightbox: "图片查看器", Slide: "图片", Carousel: "图片", "Photo gallery": "图片查看器" }} />
             {total > 1 && <>
@@ -197,6 +283,14 @@ export function ImagePreview({ selectedImage, collection, previewIndex, total, s
               <button className="preview-tool-button preview-original-size" aria-label="原始尺寸 100%" onClick={showOriginalSize}>100%</button>
               <button className="preview-tool-button preview-zoom-icon" aria-label="放大" onClick={() => { requestOriginal(); zoom.current?.zoomIn(); focusImage(); }}><Icon name="zoomIn" size={18} /></button>
               <span className="preview-zoom-value" aria-live="polite">{zoomPercent}%</span>
+              <button className={`preview-tool-button preview-original-toggle${originalState.status === "loaded" ? " is-active" : ""}${originalState.status === "failed" ? " is-error" : ""}`}
+                data-original-status={originalState.status} disabled={originalState.status === "loading" || originalState.status === "loaded"}
+                aria-busy={originalState.status === "loading"}
+                title={originalState.status === "failed" ? "原图加载失败，仍显示预览。点击重试。" : originalState.status === "idle" ? "显示原图，保持当前缩放" : originalLabels[originalState.status]}
+                onClick={() => requestOriginal(true)}>
+                <Icon name={originalState.status === "loaded" ? "check" : "image"} size={17} />
+                <span aria-live="polite">{originalLabels[originalState.status]}</span>
+              </button>
             </div>
             <div className="preview-actions" role="group" aria-label="图片操作">
               <button className="preview-action-button preview-action-primary" onClick={edit}><Icon name="edit" size={17} /><span>继续修图</span></button>

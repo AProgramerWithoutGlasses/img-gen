@@ -106,6 +106,50 @@ async function approvedAccent(page) {
     : { hex: "#315cbb", rgb: "49, 92, 187" };
 }
 
+async function dialogContrast(creation) {
+  return creation.evaluate(async region => {
+    // Sample the settled painted colours, rather than a frame halfway through
+    // the existing enable/disable or theme transition.
+    await Promise.all(region.querySelector(".composer-toolbar").getAnimations({ subtree: true })
+      .map(animation => animation.finished.catch(() => {})));
+    const canvas = document.createElement("canvas"); canvas.width = canvas.height = 1;
+    const context = canvas.getContext("2d");
+    const luminance = color => {
+      context.clearRect(0, 0, 1, 1); context.fillStyle = color; context.fillRect(0, 0, 1, 1);
+      const rgb = Array.from(context.getImageData(0, 0, 1, 1).data).slice(0, 3).map(value => {
+        const channel = value / 255;
+        return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
+      });
+      return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
+    };
+    const contrast = (first, second) => {
+      const values = [luminance(first), luminance(second)].sort((a, b) => b - a);
+      return (values[0] + .05) / (values[1] + .05);
+    };
+    const button = selector => {
+      const element = region.querySelector(selector);
+      const fill = getComputedStyle(element.querySelector(".dialog-button-surface rect")).fill;
+      const color = getComputedStyle(element).color;
+      return { fill, color, textContrast: contrast(color, fill) };
+    };
+    const ordinary = button('[role="combobox"][aria-label="生成数量"]');
+    const generate = button(".dialog-button-generate");
+    const credits = button(".dialog-button-credits");
+    const icon = region.querySelector(".dialog-button-credits > svg:not(.dialog-button-surface)");
+    const iconStyle = getComputedStyle(icon), iconBox = icon.getBoundingClientRect();
+    const arrow = region.querySelector(".dialog-select-model .dialog-arrow");
+    const arrowStyle = getComputedStyle(arrow);
+    const composer = getComputedStyle(region.querySelector(".dialog-composer")).backgroundColor;
+    return { ordinary, generate, credits, composer,
+      neutralSurfaceContrast: contrast(ordinary.fill, composer),
+      icon: { width: iconBox.width, height: iconBox.height,
+        contrast: contrast(iconStyle.stroke === "none" ? iconStyle.fill : iconStyle.stroke, credits.fill) },
+      modelArrow: { fill: arrowStyle.backgroundColor, glyph: arrowStyle.color,
+        glyphContrast: contrast(arrowStyle.color, arrowStyle.backgroundColor),
+        surfaceContrast: contrast(arrowStyle.backgroundColor, ordinary.fill) } };
+  });
+}
+
 export async function verifyDialog({ page, screenshot }) {
   const results = [];
   const creation = page.getByRole("region", { name: "图像创作", exact: true });
@@ -501,17 +545,34 @@ export async function verifyDialog({ page, screenshot }) {
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const accent = await approvedAccent(page);
       await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", await composer.evaluate(element => getComputedStyle(element).backgroundColor));
+      await prompt.fill("");
+      await prompt.evaluate(element => element.blur());
+      await moveAway();
+      const generate = creation.getByRole("button", { name: "生成", exact: true });
+      await expect(generate).toBeDisabled();
+      const disabled = await dialogContrast(creation);
+      expect(disabled.ordinary.textContrast, `${theme} neutral controls need readable labels`).toBeGreaterThanOrEqual(4.5);
+      expect(disabled.generate.textContrast, `${theme} disabled Generate label disappears into its fill`).toBeGreaterThanOrEqual(3);
+      expect(disabled.icon.width, "Credits icon is too small to recognise").toBeGreaterThanOrEqual(16);
+      expect(disabled.icon.height, "Credits icon is too small to recognise").toBeGreaterThanOrEqual(16);
+      expect(disabled.icon.contrast, `${theme} credits icon disappears into its button`).toBeGreaterThanOrEqual(3);
       if (theme === "light") {
         await expect(composer).toHaveCSS("background-color", "rgb(255, 255, 255)");
         await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", "rgb(255, 255, 255)");
-        await prompt.fill("");
-        await prompt.evaluate(element => element.blur());
         await expect.poll(() => composer.evaluate(element => getComputedStyle(element).boxShadow)).not.toContain(accent.rgb);
-        await expect(creation.getByRole("button", { name: "生成", exact: true }).locator('.dialog-button-surface rect').first()).toHaveCSS("fill", "rgb(241, 242, 244)");
-        await screenshot("dialog-light-idle-neutral-colors");
+        expect(disabled.neutralSurfaceContrast, "Light controls must remain distinct from the white input surface").toBeGreaterThanOrEqual(1.15);
+        expect(disabled.modelArrow.surfaceContrast, "The blue model arrow circle is not distinct from its capsule").toBeGreaterThanOrEqual(3);
       }
+      expect(disabled.modelArrow.glyphContrast, `${theme} model arrow glyph is not readable`).toBeGreaterThanOrEqual(3);
+      await screenshot(`dialog-${theme}-idle-control-contrast`);
+      await toolbar.screenshot({ path: fileURLToPath(new URL(`../../outputs/preview/dialog-${theme}-toolbar-idle.png`, import.meta.url)) });
       await prompt.fill("亮暗主题与动效核对");
       await prompt.focus();
+      await expect(generate).toBeEnabled();
+      const enabled = await dialogContrast(creation);
+      expect(enabled.generate.fill, "Enabled and disabled Generate must remain visually distinct").not.toBe(disabled.generate.fill);
+      expect(enabled.generate.textContrast, `${theme} enabled Generate label is not readable`).toBeGreaterThanOrEqual(4.5);
+      await toolbar.screenshot({ path: fileURLToPath(new URL(`../../outputs/preview/dialog-${theme}-toolbar-enabled.png`, import.meta.url)) });
       await expect.poll(() => composer.evaluate((element) => getComputedStyle(element).boxShadow)).toContain(accent.rgb);
       const shadow = await composer.evaluate(element => getComputedStyle(element).boxShadow);
       expect(shadow).not.toContain("inset");
@@ -539,24 +600,74 @@ export async function verifyDialog({ page, screenshot }) {
     await removeDialogAttachment(creation, "移除dialog-reference-2.png");
     await prompt.fill("");
     await page.emulateMedia({ reducedMotion: "no-preference" });
+  });
+
+  await check("account-menu-sidebar-width-and-responsive-access", async () => {
+    const sidebar = page.locator(".sidebar"), account = page.locator(".account-menu");
+    const accessible = async (locator) => {
+      await expect(locator).toBeVisible();
+      const metrics = await locator.evaluate(element => {
+        const box = element.getBoundingClientRect();
+        const buttons = [...element.querySelectorAll("button")].filter(button => button.getBoundingClientRect().width > 0);
+        return { left: box.left, top: box.top, width: box.width, right: box.right, bottom: box.bottom,
+          viewport: { width: innerWidth, height: innerHeight },
+          reachable: buttons.every(button => {
+            const rect = button.getBoundingClientRect();
+            return rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight
+              && button.contains(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2));
+          }) };
+      });
+      expect(metrics.left).toBeGreaterThanOrEqual(0); expect(metrics.top).toBeGreaterThanOrEqual(0);
+      expect(metrics.right).toBeLessThanOrEqual(metrics.viewport.width); expect(metrics.bottom).toBeLessThanOrEqual(metrics.viewport.height);
+      expect(metrics.reachable, "Account actions are clipped, covered or outside the viewport").toBe(true);
+      return metrics;
+    };
+    const openAccount = async () => {
+      await page.getByRole("button", { name: "我的账户", exact: true }).click();
+      await expect(account).toHaveCSS("opacity", "1");
+      const metrics = await accessible(account);
+      expect(metrics.width, "Account popup should match the 224px expanded sidebar").toBeCloseTo(224, 0);
+      return metrics;
+    };
+    const closeAccount = async () => {
+      await page.keyboard.press("Escape");
+      await expect(account).toHaveCount(0);
+    };
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.getByRole("button", { name: "我的账户", exact: true }).click();
-    const account = page.locator(".account-menu");
-    await expect(account).toBeVisible();
-    const hits = await account.evaluate(menu => {
-      const floating = menu.getBoundingClientRect();
-      const composer = document.querySelector(".dialog-composer").getBoundingClientRect();
-      const left = Math.max(floating.left, composer.left), right = Math.min(floating.right, composer.right);
-      const top = Math.max(floating.top, composer.top), bottom = Math.min(floating.bottom, composer.bottom);
-      if (right <= left || bottom <= top) return { overlap: false, accountHit: false };
-      return { overlap: true, accountHit: menu.contains(document.elementFromPoint((left + right) / 2, (top + bottom) / 2)) };
-    });
-    expect(hits.overlap, "Use a desktop viewport with a real account-menu/composer overlap").toBe(true);
-    expect(hits.accountHit, "Composer obscures the account popup").toBe(true);
-    await screenshot("dialog-account-popup-above-composer");
+    const expand = page.getByRole("button", { name: "展开侧栏", exact: true });
+    if (await expand.count()) await expand.click();
+    await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(224, 0);
+    const expanded = await openAccount();
+    expect(expanded.left, "Expanded account popup must align with the sidebar's left edge").toBeCloseTo((await sidebar.boundingBox()).x, 0);
+    await screenshot("dialog-account-popup-expanded-sidebar");
+    await account.getByRole("button", { name: /^主题/ }).click();
+    await accessible(page.getByRole("radiogroup", { name: "主题", exact: true }));
     await page.keyboard.press("Escape");
+    await closeAccount();
+    await page.getByRole("button", { name: "收起侧栏", exact: true }).click();
+    await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(72, 0);
+    const collapsed = await openAccount();
+    await screenshot("dialog-account-popup-collapsed-sidebar");
+    await closeAccount();
+    await page.setViewportSize({ width: 390, height: 844 });
+    const narrow = await openAccount();
+    await account.getByRole("button", { name: /^主题/ }).click();
+    await accessible(page.getByRole("radiogroup", { name: "主题", exact: true }));
+    await screenshot("dialog-account-popup-390px-theme-access");
+    await page.keyboard.press("Escape");
+    await closeAccount();
+    await page.getByRole("button", { name: "展开侧栏", exact: true }).click();
+    await expect(sidebar).toHaveClass(/is-mobile-open/);
+    const mobileExpanded = await openAccount();
+    expect(mobileExpanded.left).toBeCloseTo((await sidebar.boundingBox()).x, 0);
+    await screenshot("dialog-account-popup-390px-expanded-sidebar");
+    await page.getByRole("button", { name: "关闭账户菜单", exact: true }).click({ position: { x: 300, y: 60 } });
     await expect(account).toHaveCount(0);
+    await page.getByRole("button", { name: "收起侧栏", exact: true }).click();
     await page.setViewportSize({ width: 1440, height: 900 });
+    if (await expand.count()) await expand.click();
+    await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(224, 0);
+    return { expanded, collapsed, narrow, mobileExpanded };
   });
 
   return results;

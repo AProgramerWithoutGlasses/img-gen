@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const output = new URL("../../outputs/big-preview/", import.meta.url);
 const probe = process.argv.includes("--probe");
+const negativeThumbnails = process.argv.includes("--negative-thumbnails");
 const origin = "http://127.0.0.1:5178";
 await mkdir(output, { recursive: true });
 const options = { modelId: "gpt-image-2", ratio: "自动", count: 3 };
@@ -28,6 +29,9 @@ const state = { version: 1, assets, folders: [], generations: [{ id: "fixture-ba
   createdAt: user.createdAt, cost: 1 }], users: [user], currentUserId: user.id,
   prices: Object.fromEntries(models.map(model => [model.id, 1])), priceUpdatedAt: {}, priceVersions: {} };
 let delay = 120;
+// Hold original responses independently from compressed previews so the real
+// browser must keep showing both the preview and a visible loading control.
+const originalResponses = new Map();
 const requests = [];
 const apiFixture = (request, response, next) => {
   const path = new URL(request.url, origin).pathname;
@@ -37,16 +41,24 @@ const apiFixture = (request, response, next) => {
   if (!path.startsWith("/api/images/")) return next();
   const asset = assets.find(a => a.id === path.split("/")[3]);
   if (!asset) { response.statusCode = 404; return response.end(); }
-  requests.push({ path, method: request.method });
+  const requestRecord = { path, method: request.method, closedEarly: false };
+  requests.push(requestRecord);
   response.setHeader("Cache-Control", "private, max-age=600");
   response.setHeader("Content-Type", "image/svg+xml");
   if (request.method === "HEAD") return response.end();
   if (asset.id === "broken" && path.includes("/preview/")) return response.end("invalid image bytes");
+  const original = path === asset.url ? originalResponses.get(asset.id) : undefined;
+  if (original?.fail) response.setHeader("Cache-Control", "no-store");
   const limit = path.includes("/thumbnail/") ? 640 : path.includes("/preview/") ? 1600 : Infinity;
   const scale = Math.min(1, limit / Math.max(asset.width, asset.height));
   const width = Math.round(asset.width * scale), height = Math.round(asset.height * scale);
   const bytes = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="${asset.color}"/><path d="M0 0L${width} ${height}" stroke="#52614f" stroke-width="2"/></svg>`;
-  setTimeout(() => response.end(bytes), path.includes("/preview/") ? delay : 0);
+  const timer = setTimeout(() => response.end(original?.fail ? "invalid original image bytes" : bytes),
+    original?.delay ?? (path.includes("/preview/") ? delay : 0));
+  response.on("close", () => {
+    requestRecord.closedEarly = !response.writableEnded;
+    clearTimeout(timer);
+  });
 };
 const server = await createServer({ root, server: { host: "127.0.0.1", port: 5178, strictPort: true },
   plugins: [{ name: "big-preview-fixture", configureServer(server) { server.middlewares.use(apiFixture); } }] });
@@ -60,11 +72,52 @@ async function trace(page) {
   return page.evaluate(() => window.previewTrace);
 }
 async function ready(image) {
-  await expect.poll(() => image.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  await expect.poll(() => image.evaluate(img => img.complete && img.naturalWidth > 0),
+    { timeout: negativeThumbnails ? 3000 : 5000 }).toBe(true);
 }
+async function visibleControl(control) {
+  await expect(control).toBeVisible();
+  const visibility = await control.evaluate(element => {
+    const box = element.getBoundingClientRect(), dialog = element.closest("dialog").getBoundingClientRect();
+    return { width: box.width, height: box.height, left: box.left, top: box.top, right: box.right, bottom: box.bottom,
+      dialog: { left: dialog.left, top: dialog.top, right: dialog.right, bottom: dialog.bottom },
+      viewport: { width: innerWidth, height: innerHeight },
+      hit: element.contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)) };
+  });
+  expect(visibility.width).toBeGreaterThan(0);
+  expect(visibility.height).toBeGreaterThan(0);
+  expect(visibility.left).toBeGreaterThanOrEqual(Math.max(0, visibility.dialog.left));
+  expect(visibility.top).toBeGreaterThanOrEqual(Math.max(0, visibility.dialog.top));
+  expect(visibility.right).toBeLessThanOrEqual(Math.min(visibility.viewport.width, visibility.dialog.right));
+  expect(visibility.bottom).toBeLessThanOrEqual(Math.min(visibility.viewport.height, visibility.dialog.bottom));
+  expect(visibility.hit, "Original-image state is clipped or covered").toBe(true);
+  return visibility;
+}
+async function readyThumbnails(modal) {
+  const thumbnails = modal.locator(".preview-thumbnail img");
+  await expect(thumbnails).toHaveCount(assets.length);
+  for (const thumbnail of await thumbnails.all()) await ready(thumbnail);
+  const metrics = await thumbnails.evaluateAll(images => images.map(image => {
+    const box = image.getBoundingClientRect(), button = image.closest("button").getBoundingClientRect();
+    const style = getComputedStyle(image);
+    return { src: image.getAttribute("src"), width: box.width, height: box.height,
+      inButton: box.left >= button.left && box.right <= button.right && box.top >= button.top && box.bottom <= button.bottom,
+      inViewport: box.left >= 0 && box.top >= 0 && box.right <= innerWidth && box.bottom <= innerHeight,
+      visible: style.visibility !== "hidden" && Number(style.opacity) > .1 };
+  }));
+  for (const thumbnail of metrics) {
+    expect(thumbnail.width, "Navigation thumbnail never acquired a rendered width").toBeGreaterThan(0);
+    expect(thumbnail.height, "Navigation thumbnail never acquired a rendered height").toBeGreaterThan(0);
+    expect(thumbnail.inButton && thumbnail.inViewport && thumbnail.visible, "Navigation thumbnail is clipped or invisible").toBe(true);
+  }
+  return metrics;
+}
+const originalGets = asset => requests.filter(request => request.path === asset.url && request.method === "GET");
 try {
   browser = await chromium.launch({ channel: process.platform === "win32" ? "msedge" : undefined });
   for (const dpr of probe ? [1] : [1, 2]) {
+    originalResponses.clear();
+    delay = 120;
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: dpr });
     const page = await context.newPage();
     page.on("pageerror", e => errors.push(e.message));
@@ -89,6 +142,7 @@ try {
     const before = requests.length;
     await page.goto(origin);
     await ready(page.locator(".result-card img").first());
+    if (negativeThumbnails) await page.addStyleTag({ content: ".preview-thumbnail img { width:auto!important; height:auto!important; }" });
     const modal = page.getByRole("dialog", { name: "图片预览", exact: true });
     const image = modal.locator(".preview-stage img");
     // At DPR2 the visible result list already needs the 1600px resource. The
@@ -100,11 +154,12 @@ try {
       await expect(modal).toBeVisible();
       await expect(image).toHaveAttribute("src", assets[0].previewUrl);
       await ready(image);
+      const thumbnails = await readyThumbnails(modal);
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       const snapshots = await trace(page);
       const sources = [...new Set(snapshots.map(s => s.src).filter(Boolean))];
       const openingRequests = requests.slice(requestStart);
-      results.push({ name: `${cache}-${dpr}x`, sources, requests: openingRequests, trace: snapshots });
+      results.push({ name: `${cache}-${dpr}x`, sources, requests: openingRequests, thumbnails, trace: snapshots });
       if (sources.length !== 1 || sources[0] !== assets[0].previewUrl) failures.push(`${cache}-${dpr}x first chooses ${sources.join(" → ")}`);
       if (cache === "warm-reopen" && openingRequests.length) failures.push(`${cache}-${dpr}x refetched a cached image`);
       await page.screenshot({ path: fileURLToPath(new URL(`${cache}-${dpr}x.png`, output)) });
@@ -127,6 +182,95 @@ try {
       await expect(image).toHaveAttribute("src", assets[0].previewUrl);
       results.push({ name: `rapid-next-previous-${dpr}x`, status: "passed", trace: await trace(page) });
       await modal.getByRole("button", { name: "关闭", exact: true }).click();
+
+      originalResponses.set("landscape", { delay: 1400 });
+      await page.getByRole("button", { name: "查看landscape.png", exact: true }).click();
+      await ready(image);
+      const initialZoom = await modal.locator(".preview-zoom-value").textContent();
+      const landscapeBefore = originalGets(assets[0]).length;
+      await modal.getByRole("button", { name: "显示原图", exact: true }).click();
+      const loading = modal.getByRole("button", { name: "原图加载中…", exact: true });
+      await visibleControl(loading);
+      await expect(modal.locator(".preview-zoom-value")).toHaveText(initialZoom);
+      await expect(image).toHaveAttribute("src", assets[0].previewUrl);
+      await ready(image);
+      // Zoom controls share the same pending request; its loading state must
+      // stay on screen even while the enlarged image is cropped by the stage.
+      await modal.getByRole("button", { name: "原始尺寸 100%", exact: true }).click();
+      await modal.getByRole("button", { name: "放大", exact: true }).click();
+      await visibleControl(loading);
+      await page.screenshot({ path: fileURLToPath(new URL(`original-loading-zoomed-${dpr}x.png`, output)) });
+      await expect(modal.getByRole("button", { name: "原图已加载", exact: true })).toBeVisible();
+      await expect(image).toHaveAttribute("src", assets[0].url);
+      await ready(image);
+      await visibleControl(modal.getByRole("button", { name: "原图已加载", exact: true }));
+      await modal.getByRole("button", { name: "放大", exact: true }).click();
+      expect(originalGets(assets[0]).length - landscapeBefore, "Original-image actions duplicated the same download").toBe(1);
+      await page.screenshot({ path: fileURLToPath(new URL(`original-loaded-${dpr}x.png`, output)) });
+      results.push({ name: `explicit-original-preserves-zoom-and-shares-request-${dpr}x`, status: "passed", initialZoom });
+      await modal.getByRole("button", { name: "关闭", exact: true }).click();
+
+      originalResponses.set("portrait", { delay: 850 });
+      await page.getByRole("button", { name: "查看portrait.png", exact: true }).click();
+      await ready(image);
+      const switchBefore = originalGets(assets[1]).length;
+      await modal.getByRole("button", { name: "放大", exact: true }).click();
+      await visibleControl(loading);
+      await expect.poll(() => originalGets(assets[1]).length).toBe(switchBefore + 1);
+      await modal.getByRole("button", { name: "上一张", exact: true }).click();
+      await expect(image).toHaveAttribute("alt", "landscape.png");
+      await ready(image);
+      await page.waitForTimeout(950);
+      await expect(image).toHaveAttribute("alt", "landscape.png");
+      await expect(image).not.toHaveAttribute("src", assets[1].url);
+      await expect(loading).toHaveCount(0);
+      expect(originalGets(assets[1]).slice(switchBefore).some(request => request.closedEarly), "Switching images did not cancel the pending original response").toBe(true);
+      await modal.getByRole("button", { name: "关闭", exact: true }).click();
+
+      await page.getByRole("button", { name: "查看portrait.png", exact: true }).click();
+      await ready(image);
+      const closeBefore = originalGets(assets[1]).length;
+      await modal.getByRole("button", { name: "原始尺寸 100%", exact: true }).click();
+      await visibleControl(loading);
+      await expect.poll(() => originalGets(assets[1]).length).toBe(closeBefore + 1);
+      await modal.getByRole("button", { name: "关闭", exact: true }).click();
+      await expect(modal).toHaveCount(0);
+      await page.getByRole("button", { name: "查看landscape.png", exact: true }).click();
+      await ready(image);
+      await page.waitForTimeout(950);
+      await expect(image).toHaveAttribute("alt", "landscape.png");
+      await expect(image).not.toHaveAttribute("src", assets[1].url);
+      await expect(loading).toHaveCount(0);
+      expect(originalGets(assets[1]).slice(closeBefore).some(request => request.closedEarly), "Closing the preview did not cancel the pending original response").toBe(true);
+      results.push({ name: `zoom-requests-cancel-on-switch-and-close-${dpr}x`, status: "passed" });
+      await modal.getByRole("button", { name: "关闭", exact: true }).click();
+
+      originalResponses.set("portrait", { delay: 400, fail: true });
+      await page.getByRole("button", { name: "查看portrait.png", exact: true }).click();
+      await ready(image);
+      const failureBefore = originalGets(assets[1]).length;
+      await modal.locator(".preview-stage").hover();
+      await page.mouse.wheel(0, -240);
+      await visibleControl(loading);
+      const retry = modal.getByRole("button", { name: "重试原图", exact: true });
+      await visibleControl(retry);
+      await expect(image).toHaveAttribute("src", assets[1].previewUrl);
+      await ready(image);
+      await page.waitForTimeout(450);
+      expect(originalGets(assets[1]).length - failureBefore, "A failed original download retried without user action").toBe(1);
+      await page.screenshot({ path: fileURLToPath(new URL(`original-failed-keeps-preview-${dpr}x.png`, output)) });
+      originalResponses.set("portrait", { delay: 700 });
+      await retry.click();
+      await visibleControl(loading);
+      await expect(image).toHaveAttribute("src", assets[1].previewUrl);
+      await expect(modal.getByRole("button", { name: "原图已加载", exact: true })).toBeVisible();
+      await expect(image).toHaveAttribute("src", assets[1].url);
+      await ready(image);
+      expect(originalGets(assets[1]).length - failureBefore).toBe(2);
+      results.push({ name: `wheel-original-failure-manual-retry-${dpr}x`, status: "passed" });
+      await page.screenshot({ path: fileURLToPath(new URL(`original-retry-loaded-${dpr}x.png`, output)) });
+      await modal.getByRole("button", { name: "关闭", exact: true }).click();
+
       await page.getByRole("button", { name: "查看broken.png", exact: true }).click();
       await expect(image).toHaveAttribute("src", assets[2].url);
       await ready(image);

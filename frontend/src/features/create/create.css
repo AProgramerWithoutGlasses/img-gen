@@ -21,14 +21,33 @@
   --dialog-line: var(--border);
   --dialog-border: var(--control-border, var(--border));
   --dialog-error: var(--error);
+  --dialog-control-fill: #e6e9ef;
+  --dialog-control-hover: #dce5f5;
+  --dialog-control-active: #d1ddf1;
+  --dialog-control-border: #8b96a8;
+  --dialog-control-text: #253047;
+  --dialog-control-arrow-fill: var(--accent);
+  --dialog-control-arrow-text: var(--on-accent);
+  --dialog-disabled-fill: #eef0f4;
+  --dialog-disabled-line: #cbd1db;
+  --dialog-disabled-text: #7b8494;
+  --dialog-disabled-arrow: #d0d6e0;
+  --dialog-disabled-arrow-text: #7b8494;
+  font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+}
+:root[data-theme="dark"] .dialog-composer-scope {
   --dialog-control-fill: var(--surface-alt);
   --dialog-control-hover: var(--selected);
   --dialog-control-active: var(--selected);
+  --dialog-control-border: var(--control-border);
   --dialog-control-text: var(--text);
+  --dialog-control-arrow-fill: var(--text);
+  --dialog-control-arrow-text: var(--surface-alt);
   --dialog-disabled-fill: var(--surface-alt);
+  --dialog-disabled-line: #555b66;
   --dialog-disabled-text: var(--muted);
-  --dialog-disabled-arrow: var(--muted);
-  font-family: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+  --dialog-disabled-arrow: #454b56;
+  --dialog-disabled-arrow-text: #929aa7;
 }
 .dialog-composer-scope.composer-area {
   container: composer / inline-size;

@@ -16,6 +16,7 @@ import type {
 } from "react";
 import { createPortal } from "react-dom";
 import { DialogButtonSurface } from "./DialogButtonSurface";
+import { Icon } from "../../components/Icon";
 import "./dialog-controls.css";
 
 const dismissTooltipsEvent = "dialog-dismiss-tooltips";
@@ -274,13 +275,7 @@ export function DialogArrow({ submit = false }: { submit?: boolean }) {
 }
 
 export function DialogCoins() {
-  return (
-    <svg className="dialog-coins" aria-hidden="true" width="11" height="14" viewBox="0 0 11 13" fill="currentColor">
-      <ellipse cx="5.5" cy="1.5" rx="5.5" ry="1.5" />
-      <ellipse cx="5.5" cy="6.5" rx="5.5" ry="1.5" />
-      <ellipse cx="5.5" cy="11.5" rx="5.5" ry="1.5" />
-    </svg>
-  );
+  return <Icon name="coins" size={16} className="dialog-coins" />;
 }
 
 export interface DialogSelectProps<T extends string> {
