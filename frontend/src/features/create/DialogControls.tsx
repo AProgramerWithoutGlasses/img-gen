@@ -59,6 +59,7 @@ type FloatingPosition = {
   width?: number;
   maxHeight?: number;
   arrowX?: number;
+  side?: "above" | "below";
 };
 
 function useFloatingPosition(
@@ -68,6 +69,7 @@ function useFloatingPosition(
   placement: "above" | "below",
   width?: number,
   align: "start" | "center" = "center",
+  gap = 8,
 ) {
   const [position, setPosition] = useState<FloatingPosition>({ left: 0 });
   useLayoutEffect(() => {
@@ -85,13 +87,21 @@ function useFloatingPosition(
       const desiredLeft = placement === "above" || align === "start" ? rect.left : center - popupWidth / 2;
       const left = Math.max(8, Math.min(desiredLeft, viewportWidth - popupWidth - 8));
       if (placement === "above") {
-        setPosition({ left, bottom: viewportHeight - rect.top + 8, width, maxHeight: Math.max(36, rect.top - 16) });
+        setPosition({ left, bottom: viewportHeight - rect.top + gap, width, maxHeight: Math.max(36, rect.top - gap - 8) });
       } else {
         const height = popup.getBoundingClientRect().height;
+        // Clear the whole toolbar when it wraps, while keeping the pointer
+        // aligned with the actual button. Menus above retain their own anchor.
+        const clearance = element.closest(".composer-toolbar")?.getBoundingClientRect() ?? rect;
+        const below = clearance.bottom + gap;
+        const above = clearance.top - gap - height;
+        const side = below + height <= viewportHeight - 8 || (above < 8 && viewportHeight - clearance.bottom >= clearance.top)
+          ? "below" : "above";
         setPosition({
           left,
-          top: Math.min(rect.bottom + 8, viewportHeight - height - 8),
+          top: Math.max(8, Math.min(side === "below" ? below : above, viewportHeight - height - 8)),
           arrowX: Math.max(10, Math.min(center - left, popupWidth - 10)),
+          side,
         });
       }
     };
@@ -103,6 +113,8 @@ function useFloatingPosition(
     const observer = new ResizeObserver(schedule);
     observer.observe(anchor.current);
     observer.observe(floating.current);
+    const toolbar = anchor.current.closest(".composer-toolbar");
+    if (toolbar) observer.observe(toolbar);
     window.addEventListener("resize", schedule);
     document.addEventListener("scroll", schedule, true);
     return () => {
@@ -111,7 +123,7 @@ function useFloatingPosition(
       window.removeEventListener("resize", schedule);
       document.removeEventListener("scroll", schedule, true);
     };
-  }, [anchor, floating, enabled, placement, width, align]);
+  }, [anchor, floating, enabled, placement, width, align, gap]);
   return position;
 }
 
@@ -132,7 +144,7 @@ function DialogTooltip({
 }) {
   const floating = useRef<HTMLDivElement>(null);
   const theme = useDialogTheme();
-  const position = useFloatingPosition(anchor, floating, true, "below", undefined, align);
+  const position = useFloatingPosition(anchor, floating, true, "below", undefined, align, 12);
   const style = { left: position.left, top: position.top, "--dialog-tip-arrow-x": `${position.arrowX ?? 10}px` } as CSSProperties;
   return createPortal(
     <div
@@ -141,6 +153,7 @@ function DialogTooltip({
       role="tooltip"
       className="dialog-tooltip"
       data-dialog-theme={theme}
+      data-placement={position.side ?? "below"}
       style={style}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}

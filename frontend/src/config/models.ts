@@ -50,7 +50,7 @@ export let MODELS: ModelConfig[] = [
 export const DEFAULT_OPTIONS: GenerationOptions = {
   modelId: "gpt-image-2.5-sunburst",
   ratio: "自动",
-  count: 2,
+  count: 1,
 };
 export function setModels(models: ModelConfig[]) {
   if (!models.length) throw new Error("服务端未提供可用模型");

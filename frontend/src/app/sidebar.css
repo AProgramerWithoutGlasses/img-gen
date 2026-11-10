@@ -17,7 +17,8 @@
 .nav-folder-row { position:relative; display:flex; align-items:center; height:44px; border-radius:6px; }
 .nav-folder-link { min-width:0; flex:1; }
 .nav-folder-row.active .nav-folder-link:hover { background:transparent; }
-.nav-folder-toggle { width:32px; height:32px; min-width:32px; min-height:32px; margin-right:4px; color:var(--muted); }
+.nav-folder-toggle { width:28px; height:32px; min-width:28px; min-height:32px; margin-right:0; color:var(--muted); }
+.nav-folder-row .sidebar-new-folder { margin:0 4px 0 0; flex:none; }
 .nav-chevron { transition:transform 180ms var(--ease-out); transform:rotate(-90deg); }
 .nav-chevron.open { transform:rotate(0); }
 .nav-submenu { display:grid; grid-template-rows:0fr; transition:grid-template-rows 180ms var(--ease-out); }
@@ -30,6 +31,7 @@
 .account-trigger > span:nth-child(2) { flex:1; min-width:0; display:grid; gap:0; line-height:20px; }
 .account-trigger small { overflow:hidden; text-overflow:ellipsis; font-size:11px; line-height:16px; }
 .account-trigger > .avatar { width:30px; height:30px; border-radius:7px; }
+.account-trigger .account-trigger-balance { flex:none; color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; line-height:20px; }
 .sidebar.is-compact .sidebar-brand { justify-content:center; padding:0 0 4px; gap:0; }
 .sidebar.is-compact .brand-mark { display:none; }
 .sidebar.is-compact .sidebar-toggle { margin:0; }

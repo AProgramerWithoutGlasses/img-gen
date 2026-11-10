@@ -245,6 +245,12 @@
   border-bottom: 4px solid var(--accent);
   pointer-events: none;
 }
+.dialog-tooltip[data-placement="above"]::before {
+  top: auto;
+  bottom: -4px;
+  border-bottom: 0;
+  border-top: 4px solid var(--accent);
+}
 .dialog-button-accent .dialog-arrow { background: var(--on-accent); color: var(--accent); }
 .dialog-button:disabled .dialog-arrow {
   background: var(--dialog-disabled-arrow, #333);

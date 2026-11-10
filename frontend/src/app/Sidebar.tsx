@@ -69,6 +69,8 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
     else setCollapsed(!collapsed);
   };
   const toggleLabel = compact ? "展开侧栏" : "收起侧栏";
+  const createFolderButton = <button className="icon-button sidebar-new-folder" aria-label="新建文件夹" title="新建文件夹"
+    onClick={() => { newFolder(); setMobileOpen(false); }}><Icon name="plus" size={18} /></button>;
 
   return <>
     {mobileOpen && <button className="sidebar-backdrop" tabIndex={-1} aria-label="关闭侧栏"
@@ -113,8 +115,7 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
           </button>
           <div className="nav-group-heading">
             {!compact && <span>我的图片</span>}
-            <button className="icon-button sidebar-new-folder" aria-label="新建文件夹" title="新建文件夹"
-              onClick={() => { newFolder(); setMobileOpen(false); }}><Icon name="plus" size={18} /></button>
+            {compact && createFolderButton}
           </div>
           <button className={"nav-item " + (isGallery && activeFolder === "all" ? "active" : "")}
             aria-label="全部图片" title="全部图片" aria-current={isGallery && activeFolder === "all" ? "page" : undefined}
@@ -122,13 +123,14 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
           <div className={"nav-folder-row " + (isGallery && activeFolder === "folders" ? "active" : "")}>
             <button className="nav-item nav-folder-link" aria-label="文件夹管理" title="文件夹管理"
               aria-current={isGallery && activeFolder === "folders" ? "page" : undefined} onClick={() => go("/gallery/folders")}>
-              <Icon name="folder" size={18} />{!compact && <span>文件夹</span>}
+              <Icon name="folders" size={18} />{!compact && <span>文件夹</span>}
             </button>
             {!compact && <button className="icon-button nav-folder-toggle" aria-label="文件夹列表"
               title={foldersOpen ? "收起文件夹列表" : "展开文件夹列表"}
               aria-expanded={foldersOpen} aria-controls="folder-navigation" onClick={() => setFoldersOpen(value => !value)}>
               <Icon name="chevronDown" size={15} className={"nav-chevron" + (foldersOpen ? " open" : "")} />
             </button>}
+            {!compact && createFolderButton}
           </div>
           {!compact && <div className={"nav-submenu " + (foldersOpen ? "open" : "")} id="folder-navigation" inert={!foldersOpen}>
             <div className="nav-submenu-inner">
@@ -143,7 +145,9 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
         <button ref={accountTrigger} className="account-trigger" aria-label="我的账户" title="我的账户" aria-expanded={accountMenu}
           onClick={() => setAccountMenu(value => !value)} onKeyDown={event => { if (event.key === "Escape") setAccountMenu(false); }}>
           <span className="avatar">{currentUser.username.charAt(0).toUpperCase()}</span>
-          {!compact && <><span><span>我的账户</span><small>{currentUser.username}</small></span><Icon name="chevronDown" size={15} /></>}
+          {!compact && <><span><span>我的账户</span><small>{currentUser.username}</small></span>
+            <span className="account-trigger-balance" aria-label={`积分余额 ${currentUser.balance.toLocaleString("zh-CN")}`}
+              title={`${currentUser.balance.toLocaleString("zh-CN")} 积分`}>{currentUser.balance.toLocaleString("zh-CN")}</span></>}
         </button>
         {accountMenu && <><button className="menu-dismiss" tabIndex={-1} aria-label="关闭账户菜单" onClick={() => setAccountMenu(false)} />
           <AccountMenu onNavigate={target => { go(target); setAccountMenu(false); }}

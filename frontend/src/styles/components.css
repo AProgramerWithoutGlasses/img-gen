@@ -129,26 +129,30 @@
 }
 .toast {
   position: fixed;
-  bottom: 28px;
+  top: max(20px, env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   background: var(--strong);
   color: var(--on-strong);
   padding: 10px 16px;
-  border-radius: 7px;
+  border-radius: 12px;
   box-shadow: 0 4px 24px #0002;
-  max-width: 80vw;
+  width: max-content;
+  max-width: min(520px, calc(100vw - 32px));
   font-size: 14px;
 }
+.toast > span { min-width: 0; overflow-wrap: anywhere; }
 .toast > button:not(.icon-button) {
+  flex: none;
   color: inherit;
   text-decoration: underline;
 }
 .toast .icon-button {
+  flex: none;
   width: 24px;
   height: 24px;
 }

@@ -82,6 +82,9 @@ try {
   const creation = page.getByRole('region', { name: '图像创作', exact: true });
   const cards = creation.locator('.result-card');
   await expect(cards).toHaveCount(4);
+  await expect(creation.locator('.workbench-status')).toHaveCount(0);
+  await expect(creation.getByRole('button', { name: '查看完整提示词', exact: true })).toHaveCount(0);
+  await expect(cards.locator('.result-select-control input[type="checkbox"]')).toHaveCount(0);
   const first = cards.nth(0), second = cards.nth(1), third = cards.nth(2), fourth = cards.nth(3);
   const progress = first.getByRole('progressbar');
   const screenshot = async (name, target = page, moving = false) => {
@@ -131,6 +134,7 @@ try {
   await expect.poll(() => imageRequests).toBeGreaterThan(0);
   await expect(progress).not.toHaveAttribute('aria-valuenow', '100');
   await expect(first.locator('.result-open')).toBeDisabled();
+  await expect(first.locator('.result-select-control input[type="checkbox"]')).toHaveCount(0);
   await expect(first).toContainText('正在载入');
   await page.waitForTimeout(250); // Let any unintended layout transition settle.
   unchangedFrames(initialFrames, await readFrames());
@@ -188,6 +192,7 @@ try {
   expect(samples[2].blur, 'Reveal remains perceptible after one second').toBeGreaterThan(1);
   expect(samples[2].blur).toBeLessThan(samples[1].blur);
   await expect(first.locator('.result-open')).toBeEnabled();
+  await expect(first.locator('.result-select-control input[type="checkbox"]')).toBeEnabled();
   const readyAfterMs = await page.evaluate(() => performance.now() - window.workbenchDecodedAt);
   expect(readyAfterMs, 'Finish, reveal and overlay exit form one perceptible sequence').toBeGreaterThanOrEqual(1450);
   await expect(first.getByRole('progressbar')).toHaveCount(0);
@@ -212,6 +217,8 @@ try {
   await expect(fourth).toContainText('排队中');
   await expect(first.locator('.result-open')).toBeEnabled();
   await expect(first.locator('img')).toBeVisible();
+  for (const card of [second, third, fourth])
+    await expect(card.locator('.result-select-control input[type="checkbox"]')).toHaveCount(0);
   results.push({ name: 'individual-failure-keeps-success-while-batch-is-processing' });
 
   const actions = first.locator('.result-actions');
@@ -224,6 +231,15 @@ try {
   await expect(first.getByRole('button', { name: '加入文件夹', exact: true })).toBeVisible();
   await expect(first.getByRole('button', { name: '下载', exact: true })).toBeVisible();
   await screenshot('hover-actions-light');
+  await first.getByRole('checkbox', { name: '选择第 1 张图片', exact: true }).check();
+  const selection = creation.getByRole('toolbar', { name: '已选图片操作', exact: true });
+  await expect(selection).toContainText('已选 1 张');
+  await expect(selection.getByRole('button', { name: '继续修图', exact: true })).toBeEnabled();
+  await expect(selection.getByRole('button', { name: '加入文件夹', exact: true })).toBeEnabled();
+  await expect(first).toHaveClass(/is-selected/);
+  await screenshot('partial-success-selects-only-ready-image');
+  await selection.getByRole('button', { name: '取消选择', exact: true }).click();
+  await expect(selection).toHaveCount(0);
   await page.mouse.move(0, 0);
   await expect(actions).toHaveCSS('visibility', 'hidden');
   await expect(actions).toHaveCSS('opacity', '0');
@@ -233,6 +249,11 @@ try {
   await screenshot('image-center-preview');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '图片预览', exact: true })).toHaveCount(0);
+  await creation.getByRole('button', { name: '本轮提示词', exact: true }).click();
+  const promptDetails = page.getByRole('dialog', { name: '本轮提示词', exact: true });
+  await expect(promptDetails).toContainText(batch.prompt);
+  await page.keyboard.press('Escape');
+  await expect(promptDetails).toHaveCount(0);
   results.push({ name: 'hover-shows-leave-hides-and-center-opens-preview' });
 
   await page.emulateMedia({ colorScheme: 'dark' });
@@ -247,6 +268,7 @@ try {
   await first.getByRole('button', { name: '更多图片操作', exact: true }).click();
   const menu = page.getByRole('menu', { name: '图片操作', exact: true });
   await expect(menu).toBeVisible();
+  await expect(menu.getByRole('menuitem', { name: '查看大图', exact: true })).toHaveCount(0);
   for (const name of ['继续修图', '加入文件夹', '下载'])
     await expect(menu.getByRole('menuitem', { name, exact: true })).toBeEnabled();
   await screenshot('compact-image-menu');
@@ -264,6 +286,14 @@ try {
   const sidebar = page.getByRole('complementary', { name: '工作空间导航', exact: true });
   await expect(sidebar).toHaveClass(/is-mobile-open/);
   const foldersToggle = sidebar.getByRole('button', { name: '文件夹列表', exact: true });
+  const folderRow = sidebar.locator('.nav-folder-row');
+  const newFolder = folderRow.getByRole('button', { name: '新建文件夹', exact: true });
+  await expect(newFolder).toBeVisible();
+  const foldersIcon = folderRow.getByRole('button', { name: '文件夹管理', exact: true }).locator('svg.lucide-folders');
+  await expect(foldersIcon).toHaveCount(1);
+  expect(await foldersIcon.locator('path').count(), 'The folder-management icon should visibly contain stacked folders').toBeGreaterThanOrEqual(2);
+  const toggleBox = await foldersToggle.boundingBox(), newFolderBox = await newFolder.boundingBox();
+  expect(toggleBox.x + toggleBox.width, 'Folder-list arrow should sit to the left of the new-folder action').toBeLessThanOrEqual(newFolderBox.x + 1);
   await expect(foldersToggle).toHaveAttribute('aria-expanded', 'true');
   await foldersToggle.click();
   await expect(foldersToggle).toHaveAttribute('aria-expanded', 'false');

@@ -80,7 +80,7 @@ function StudioApp() {
   }, []);
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(null), toast.action ? 9000 : 4500);
+    const t = setTimeout(() => setToast(null), toast.action ? 6000 : 3000);
     return () => clearTimeout(t);
   }, [toast]);
   useEffect(() => {

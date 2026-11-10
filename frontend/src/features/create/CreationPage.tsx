@@ -23,6 +23,13 @@ const dialogModelNames: Record<string, string> = {
   "gemini-3-pro-image": "Gemini Image 3Pro",
 };
 const imageDragType = "application/x-img-gen-image-id";
+const countPreferenceKey = (userId: string) => `imggen-generation-count:${userId}`;
+function rememberedCount(userId: string): number {
+  try {
+    const count = Number(localStorage.getItem(countPreferenceKey(userId)));
+    return Number.isInteger(count) && count >= 1 && count <= 4 ? count : 1;
+  } catch { return 1; }
+}
 function fileSourceKey(file: File): string {
   return JSON.stringify([file.name, file.size, file.lastModified, file.type]);
 }
@@ -52,7 +59,9 @@ export default function CreationPage({
   const [attachmentItems, setAttachmentItems] = useState<DialogAttachmentItem[]>([]);
   const [baseAttachmentId, setBaseAttachmentId] = useState<string | null>(null);
   const [acceptedBatch, setAcceptedBatch] = useState<Generation | null>(null);
-  const [options, setOptions] = useState<GenerationOptions>(DEFAULT_OPTIONS);
+  const [options, setOptions] = useState<GenerationOptions>(() => ({
+    ...DEFAULT_OPTIONS, count: rememberedCount(currentUser.id),
+  }));
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -69,6 +78,10 @@ export default function CreationPage({
   const attachments = attachmentItems.filter(isReadyAttachment);
   const editing = attachmentItems.length > 0;
   const incompleteAttachments = attachmentItems.some(item => !isReadyAttachment(item));
+  useEffect(() => {
+    try { localStorage.setItem(countPreferenceKey(currentUser.id), String(options.count)); }
+    catch { /* The current choice still works when browser storage is unavailable. */ }
+  }, [currentUser.id, options.count]);
   useEffect(() => {
     setOptions(previous => normalizeOptions(previous, editing));
   }, [editing]);
@@ -266,7 +279,7 @@ export default function CreationPage({
           onFolder={onFolder}
           onRestore={() => {
             setPrompt(currentBatch.prompt);
-            setOptions(normalizeOptions(currentBatch.options));
+            setOptions(previous => normalizeOptions({ ...currentBatch.options, count: previous.count }));
             attachmentSources.current.clear();
             setAttachmentItems(currentBatch.attachments.map(item => ({ ...item, status: "ready" })));
             setBaseAttachmentId(null);

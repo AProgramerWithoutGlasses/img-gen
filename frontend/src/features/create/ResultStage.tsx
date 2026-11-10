@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { KeyboardEvent, SyntheticEvent } from "react";
 import { Icon } from "../../components/Icon";
@@ -33,6 +33,12 @@ interface SlotProps {
   height: number;
   left: number;
   top: number;
+  selecting: boolean;
+  selected: boolean;
+  multipleSelected: boolean;
+  selectionHintId: string;
+  onToggle: (imageId: string) => void;
+  onReadyChange: (imageId: string, ready: boolean) => void;
   onPreview: PreviewImage;
   onEdit: Props["onEdit"];
   onFolder: Props["onFolder"];
@@ -42,7 +48,8 @@ type ImagePhase = "loading" | "returned" | "revealing" | "finishing" | "ready" |
 const imageDragType = "application/x-img-gen-image-id";
 
 function ResultSlot({ image, collection, job, index, output, active, busy, reveal, width, height,
-  left, top, onPreview, onEdit, onFolder, onError }: SlotProps) {
+  left, top, selecting, selected, multipleSelected, selectionHintId, onToggle, onReadyChange,
+  onPreview, onEdit, onFolder, onError }: SlotProps) {
   const [phase, setPhase] = useState<ImagePhase>("loading");
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
@@ -95,7 +102,12 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
     media.addEventListener("change", skipMotion);
     return () => media.removeEventListener("change", skipMotion);
   }, []);
-  useEffect(() => { if (!active) setMenu(false); }, [active]);
+  useEffect(() => { setMenu(false); }, [active, selecting]);
+  useEffect(() => {
+    if (!image) return;
+    onReadyChange(image.id, isReady);
+    return () => onReadyChange(image.id, false);
+  }, [image?.id, isReady, onReadyChange]);
   useEffect(() => {
     if (!menu) return;
     const close = (event: PointerEvent) => {
@@ -104,6 +116,7 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
     };
     const escape = (event: globalThis.KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      event.preventDefault();
       setMenu(false);
       more.current?.focus({ preventScroll: true });
     };
@@ -150,7 +163,7 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
   function placeMenu() {
     const box = more.current?.getBoundingClientRect();
     if (!box) return;
-    const menuHeight = Math.min((compact ? 5 : 2) * 34 + 12, window.innerHeight - 16);
+    const menuHeight = Math.min((compact ? 4 : 1) * 34 + 12, window.innerHeight - 16);
     const below = window.innerHeight - box.bottom - 14;
     const top = below < menuHeight && box.top > below ? Math.max(8, box.top - menuHeight - 6) : box.bottom + 6;
     setMenuPosition({ left: Math.max(8, Math.min(box.right - 176, window.innerWidth - 184)), top,
@@ -173,7 +186,7 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
   }
 
   return <div
-    className={`result-card is-${phase}${shouldReveal.current ? " is-live" : " is-history"}${!image ? " result-card-pending" : ""}${failed || resourceFailed ? " is-error" : ""}${compact ? " result-card-compact" : ""}${width < 160 ? " result-card-narrow" : ""}${menu ? " is-menu-open" : ""}`}
+    className={`result-card is-${phase}${shouldReveal.current ? " is-live" : " is-history"}${!image ? " result-card-pending" : ""}${failed || resourceFailed ? " is-error" : ""}${compact ? " result-card-compact" : ""}${width < 160 ? " result-card-narrow" : ""}${menu ? " is-menu-open" : ""}${selecting ? " is-selecting" : ""}${selected ? " is-selected" : ""}`}
     ref={card}
     data-output-index={index}
     style={{ width, height, left, top }}
@@ -184,12 +197,14 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
   >
     <div className="result-backdrop" aria-hidden="true" />
     {image && <button className={`result-open${isReady ? " is-ready" : ""}`}
-      onClick={() => onPreview(image, collection)} aria-label={`查看${image.name}`} disabled={!isReady}>
+      onClick={() => selecting ? onToggle(image.id) : onPreview(image, collection)}
+      aria-label={selecting ? `${selected ? "取消选择" : "选择"}第 ${index + 1} 张图片` : `查看${image.name}`} disabled={!isReady}>
       <RenditionImage source={image} alt={image.name} width={image.width} height={image.height}
-        displayWidth={width} displayHeight={height} fit="contain" decoding="async" draggable
+        displayWidth={width} displayHeight={height} fit="contain" decoding="async" draggable={!selecting && isReady}
         onLoad={event => { void loaded(event); }}
         onError={() => { decodeVersion.current++; setPhase("failed"); }}
         onDragStart={event => {
+          if (selecting || !isReady) { event.preventDefault(); return; }
           event.dataTransfer.setData(imageDragType, image.id);
           event.dataTransfer.effectAllowed = "copy";
         }} />
@@ -212,9 +227,17 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
         </div>}
       </>}
     </div>}
+    {image && isReady && <label className="result-select-control" title={selected ? "取消选择" : "选择图片"}
+      onClick={event => event.stopPropagation()}>
+      <input type="checkbox" checked={selected} onChange={() => onToggle(image.id)} aria-label={`选择第 ${index + 1} 张图片`} />
+      <Icon name="check" size={14} />
+    </label>}
     {image && isReady && <div className="result-actions">
       <div className="result-left-actions">
-        <button disabled={busy} onClick={() => onEdit(image)} aria-label="继续修图"><Icon name="edit" size={17} /><span>继续修图</span></button>
+        <span className="result-edit-guard" tabIndex={multipleSelected ? 0 : undefined}
+          title={multipleSelected ? "多选时无法继续修图" : undefined} aria-describedby={multipleSelected ? selectionHintId : undefined}>
+          <button disabled={busy || multipleSelected} onClick={() => onEdit(image)} aria-label="继续修图"><Icon name="edit" size={17} /><span>继续修图</span></button>
+        </span>
         <button onClick={() => onFolder([image.id])} aria-label="加入文件夹"><Icon name="folderPlus" size={17} /><span>加入文件夹</span></button>
       </div>
       <button className="result-download" onClick={() => downloadImage(image)} aria-label="下载"><Icon name="download" size={17} /><span>下载</span></button>
@@ -231,11 +254,13 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
             if (!menuPanel.current?.querySelector(":focus-visible")) setMenu(false);
           }}>
           {compact && <>
-            <button role="menuitem" disabled={busy} onClick={() => { setMenu(false); onEdit(image); }}><Icon name="edit" size={16} />继续修图</button>
+            <span className="result-edit-guard" tabIndex={multipleSelected ? 0 : undefined}
+              title={multipleSelected ? "多选时无法继续修图" : undefined} aria-describedby={multipleSelected ? selectionHintId : undefined}>
+              <button role="menuitem" disabled={busy || multipleSelected} onClick={() => { setMenu(false); onEdit(image); }}><Icon name="edit" size={16} />继续修图</button>
+            </span>
             <button role="menuitem" onClick={() => { setMenu(false); onFolder([image.id]); }}><Icon name="folderPlus" size={16} />加入文件夹</button>
             <button role="menuitem" onClick={() => { setMenu(false); downloadImage(image); }}><Icon name="download" size={16} />下载</button>
           </>}
-          <button role="menuitem" onClick={() => { setMenu(false); onPreview(image, collection); }}><Icon name="expand" size={16} />查看大图</button>
           <button role="menuitem" onClick={() => { void copyPrompt(); }}><Icon name={copied === "copied" ? "check" : "copy"} size={16} />
             {copied === "copied" ? "已复制" : copied === "failed" ? "复制失败" : "复制提示词"}
           </button>
@@ -252,7 +277,23 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
   if (job.status === "processing") liveBatch.current = true;
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [details, setDetails] = useState<"prompt" | "error" | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [readyIds, setReadyIds] = useState<string[]>([]);
+  const selectionHintId = useId();
+  const readyChanged = useCallback((imageId: string, ready: boolean) => {
+    setReadyIds(previous => ready ? previous.includes(imageId) ? previous : [...previous, imageId]
+      : previous.includes(imageId) ? previous.filter(id => id !== imageId) : previous);
+    if (!ready) setSelectedIds(previous => previous.includes(imageId) ? previous.filter(id => id !== imageId) : previous);
+  }, []);
+  const toggleSelected = useCallback((imageId: string) => {
+    setSelectedIds(previous => previous.includes(imageId) ? previous.filter(id => id !== imageId) : [...previous, imageId]);
+  }, []);
   const ordered = [...images].sort((a, b) => a.outputIndex - b.outputIndex);
+  const selectedImages = ordered.filter(image => selectedIds.includes(image.id));
+  const readyImages = ordered.filter(image => readyIds.includes(image.id));
+  const selecting = selectedImages.length > 0;
+  const multipleSelected = selectedImages.length > 1;
+  const allSelected = readyImages.length > 0 && readyImages.every(image => selectedIds.includes(image.id));
   const [ratio] = useState(() => {
     const first = job.status !== "processing" ? images.find(image => image.width > 0 && image.height > 0) : undefined;
     // Keep a live batch's frame geometry stable when its real images arrive.
@@ -263,11 +304,20 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
   const layout = resultLayout(count, ratio, size.width, size.height, previousColumns.current);
   if (layout) previousColumns.current = layout.columns;
   const slots = Array.from({ length: count }, (_, outputIndex) => ordered.find(image => image.outputIndex === outputIndex));
-  const missing = slots.filter(image => !image).length;
-  const status = job.status === "processing" ? `已完成 ${count - missing} / ${count} 张`
-    : missing ? `${count - missing} 张完成，${missing} 张失败` : `${count} 张已完成`;
   const model = MODELS.find(item => item.id === job.options.modelId)?.name ?? job.options.modelId;
   const detail = [model, job.options.resolution, job.options.ratio !== "自动" ? job.options.ratio : null].filter(Boolean).join(" · ");
+  useEffect(() => { setSelectedIds([]); }, [active, job.id]);
+  useEffect(() => {
+    if (!active || !selecting) return;
+    const escape = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented
+        || document.querySelector('dialog[open], [role="dialog"][aria-modal="true"], .result-image-menu')) return;
+      event.preventDefault();
+      setSelectedIds([]);
+    };
+    document.addEventListener("keydown", escape);
+    return () => document.removeEventListener("keydown", escape);
+  }, [active, selecting]);
   useLayoutEffect(() => {
     const element = stage.current;
     if (!active || !element) return;
@@ -283,17 +333,26 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
   }, [active]);
   return <article className="conversation-turn workbench-turn" data-testid="generation-turn" data-generation-id={job.id}>
     <header className="workbench-header">
-      <div className="workbench-prompt-copy"><p className="workbench-prompt" aria-label="本轮提示词">{job.prompt}</p><p className="workbench-meta">{detail}</p></div>
-      <div className="workbench-header-actions">
-        <span className={`workbench-status${job.status === "failed" ? " is-error" : ""}`} role="status">{status}</span>
-        <button className="icon-button workbench-prompt-more" aria-label="查看完整提示词" title="查看完整提示词" onClick={() => setDetails("prompt")}><Icon name="more" size={18} /></button>
-        {job.status === "failed" && <button className="workbench-error-details" onClick={() => setDetails("error")}>查看错误</button>}
-      </div>
+      <div className="workbench-prompt-copy"><button type="button" className="workbench-prompt" aria-label="本轮提示词" title="查看完整提示词" onClick={() => setDetails("prompt")}>{job.prompt}</button><p className="workbench-meta">{detail}</p></div>
+      {job.status === "failed" && <div className="workbench-header-actions"><button className="workbench-error-details" onClick={() => setDetails("error")}>查看错误</button></div>}
     </header>
+    {active && selecting && <div className="workbench-selection-toolbar" role="toolbar" aria-label="已选图片操作">
+      <span className="workbench-selected-count">已选 {selectedImages.length} 张</span>
+      <button type="button" onClick={() => setSelectedIds(allSelected ? [] : readyImages.map(image => image.id))}>{allSelected ? "取消全选" : "全选"}</button>
+      <span className="workbench-edit-guard" tabIndex={multipleSelected ? 0 : undefined}
+        title={multipleSelected ? "多选时无法继续修图" : undefined} aria-describedby={multipleSelected ? selectionHintId : undefined}>
+        <button type="button" disabled={busy || multipleSelected} onClick={() => { if (selectedImages.length === 1) onEdit(selectedImages[0]); }}><Icon name="edit" size={16} />继续修图</button>
+        {multipleSelected && <span className="workbench-selection-hint" id={selectionHintId}>多选时无法继续修图</span>}
+      </span>
+      <button type="button" onClick={() => onFolder(selectedImages.map(image => image.id))}><Icon name="folderPlus" size={16} />加入文件夹</button>
+      <button type="button" className="workbench-selection-cancel" onClick={() => setSelectedIds([])}>取消选择</button>
+    </div>}
     <div className="result-images workbench-stage" ref={stage} aria-label="本轮生成结果" data-columns={layout?.columns}>
       {layout && slots.map((image, index) => <ResultSlot key={`${job.id}:${index}`}
         image={image} collection={ordered} job={job} index={index} output={job.outputs?.find(output => output.outputIndex === index)}
         active={active} busy={busy} reveal={liveBatch.current}
+        selecting={selecting} selected={selectedIds.includes(image?.id ?? "")} multipleSelected={multipleSelected}
+        selectionHintId={selectionHintId} onToggle={toggleSelected} onReadyChange={readyChanged}
         width={layout.imageWidth} height={layout.imageHeight} left={layout.positions[index].left} top={layout.positions[index].top}
         onPreview={onPreview} onEdit={onEdit} onFolder={onFolder} onError={() => setDetails("error")} />)}
     </div>

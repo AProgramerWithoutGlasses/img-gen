@@ -36,7 +36,7 @@ export function createSeed(): StudioData {
       batchId: index < 2 ? "seed-request" : "history-" + index,
       outputIndex: index,
       prompt,
-      options: { ...DEFAULT_OPTIONS, ratio: `${w}:${h}` },
+      options: { ...DEFAULT_OPTIONS, count: 2, ratio: `${w}:${h}` },
       folderIds: [
         ...(index < 6 ? ["inspiration"] : []),
         ...([0, 1, 4, 6].includes(index) ? ["poster"] : []),
@@ -58,7 +58,7 @@ export function createSeed(): StudioData {
         username: "admin",
         prompt,
         attachments: [],
-        options: DEFAULT_OPTIONS,
+        options: { ...DEFAULT_OPTIONS, count: 2 },
         status: "completed",
         imageIds: ["image-1", "image-2"],
         outputs: [0, 1].map(outputIndex => ({ outputIndex, status: "succeeded" as const, startedAt: new Date(today.getTime() - 12800).toISOString(), finishedAt: date })),

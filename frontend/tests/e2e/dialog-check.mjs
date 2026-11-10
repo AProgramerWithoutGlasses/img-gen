@@ -165,6 +165,32 @@ export async function verifyDialog({ page, screenshot }) {
     results.push({ name, status: "passed", screenshot: await screenshot("dialog-" + name), ...details });
   };
 
+  await check("generation-count-default-and-user-memory", async () => {
+    const count = creation.getByRole("combobox", { name: "生成数量", exact: true });
+    await expect(count).toHaveText("1张");
+    await chooseDialogOption(page, count, "3张");
+    await page.reload();
+    await expect(count).toHaveText("3张");
+    await chooseDialogOption(page, model, "Gemini Image 3.1F");
+    await expect(count).toHaveText("3张");
+    await creation.getByLabel("上传图片文件", { exact: true }).setInputFiles((await imageFiles(page)).slice(0, 1));
+    await expect(creation.locator(".attachment-item")).toHaveCount(1);
+    await expect(count).toHaveText("3张");
+    await removeDialogAttachment(creation, "移除dialog-reference-1.png");
+    await expect(count).toHaveText("3张");
+    await page.reload();
+    await expect(count).toHaveText("3张");
+    // Bad saved settings can survive a browser upgrade or manual import. The
+    // UI must recover to one image rather than submit an out-of-range count.
+    for (const invalid of ["5", "not-a-number"]) {
+      await page.evaluate(value => localStorage.setItem("imggen-generation-count:admin", value), invalid);
+      await page.reload();
+      await expect(count).toHaveText("1张");
+    }
+    await chooseDialogOption(page, count, "1张");
+    return { defaultCount: 1, rememberedCount: 3, invalidSavedValues: 2 };
+  });
+
   await check("model-aliases-and-persisted-identities", async () => {
     await chooseDialogOption(page, creation.getByRole("combobox", { name: "生成数量", exact: true }), "1张");
     const aliases = [
@@ -337,6 +363,7 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(tooltip).toHaveCSS("opacity", "1");
     const metrics = await tooltip.evaluate((element) => {
       const style = getComputedStyle(element), rect = element.getBoundingClientRect();
+      const arrow = getComputedStyle(element, "::before");
       const range = document.createRange(); range.selectNodeContents(element);
       return {
         font: style.fontSize, lineHeight: style.lineHeight, border: style.borderTopWidth,
@@ -344,9 +371,13 @@ export async function verifyDialog({ page, screenshot }) {
         textWidth: range.getBoundingClientRect().width,
         left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom,
         viewportWidth: innerWidth, viewportHeight: innerHeight,
+        placement: element.getAttribute("data-placement"),
+        arrowOutside: Math.max(0, -Number.parseFloat(element.getAttribute("data-placement") === "above" ? arrow.bottom : arrow.top)),
         hit: element.contains(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)),
       };
     });
+    const anchor = await control.boundingBox();
+    const gap = metrics.placement === "above" ? anchor.y - metrics.bottom : metrics.top - anchor.y - anchor.height;
     expect(metrics.font).toBe("11px"); expect(metrics.lineHeight).toBe("16px");
     expect(metrics.border).toBe("0px"); expect(metrics.shadow).toBe("none");
     expect(metrics.height).toBeCloseTo(24, 0);
@@ -355,7 +386,21 @@ export async function verifyDialog({ page, screenshot }) {
     expect(metrics.right).toBeLessThanOrEqual(metrics.viewportWidth);
     expect(metrics.bottom).toBeLessThanOrEqual(metrics.viewportHeight);
     expect(metrics.hit, "Tooltip is covered or clipped").toBe(true);
-    return metrics;
+    expect(metrics.placement).toMatch(/^(above|below)$/);
+    expect(gap, "Tooltip body must stay clear of its button").toBeGreaterThanOrEqual(11.5);
+    expect(gap - metrics.arrowOutside, "Tooltip arrow must leave a visible gap above its button").toBeGreaterThanOrEqual(7.5);
+    expect(await control.evaluate(element => {
+      const box = element.getBoundingClientRect();
+      return element.contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2));
+    }), "Tooltip covers its triggering button").toBe(true);
+    const coveredControls = await toolbar.locator("button").evaluateAll((buttons, tip) => buttons.filter(button => {
+      const box = button.getBoundingClientRect();
+      const top = tip.top - (tip.placement === "below" ? tip.arrowOutside : 0);
+      const bottom = tip.bottom + (tip.placement === "above" ? tip.arrowOutside : 0);
+      return box.width > 0 && box.height > 0 && box.left < tip.right && box.right > tip.left && box.top < bottom && box.bottom > top;
+    }).map(button => button.getAttribute("aria-label") || button.textContent), metrics);
+    expect(coveredControls, "Tooltip body or arrow covers another toolbar button").toEqual([]);
+    return { ...metrics, gap, netGap: gap - metrics.arrowOutside };
   };
 
   await check("compact-tooltips-and-bottom-space", async () => {
@@ -370,6 +415,14 @@ export async function verifyDialog({ page, screenshot }) {
     await page.keyboard.press("Escape");
     await expect(tooltip).toHaveCount(0);
     await moveAway();
+    await page.setViewportSize({ width: 390, height: 844 });
+    const generate = creation.getByRole("button", { name: "生成", exact: true });
+    const narrow = await verifyTooltip(generate);
+    expect(narrow.placement, "A bottom-row tooltip should flip above when the page bottom has no space").toBe("above");
+    await screenshot("dialog-tooltip-390px-flips-above");
+    await page.keyboard.press("Escape");
+    await moveAway();
+    await page.setViewportSize({ width: 1440, height: 900 });
     return { shortWidth: short.width, longWidth: long.width, bottomSpace: page.viewportSize().height - box.y - box.height };
   });
 
@@ -527,7 +580,8 @@ export async function verifyDialog({ page, screenshot }) {
     await page.clock.install();
     await page.clock.pauseAt(new Date(Date.now() + 1000));
     await creation.getByRole("button", { name: "生成", exact: true }).click();
-    await expect(creation.locator(".workbench-status")).toHaveText("已完成 0 / 1 张");
+    await expect(creation.locator(".workbench-status")).toHaveCount(0);
+    await expect(creation.locator(".result-slot-placeholder")).toHaveCount(1);
     await expect(row.locator(".attachment-remove").first()).toBeDisabled();
     await expect.poll(() => removalNames(creation)).toEqual([]);
     await screenshot("dialog-attachments-submitting");
@@ -637,6 +691,15 @@ export async function verifyDialog({ page, screenshot }) {
     const expand = page.getByRole("button", { name: "展开侧栏", exact: true });
     if (await expand.count()) await expand.click();
     await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(224, 0);
+    const accountTrigger = sidebar.getByRole("button", { name: "我的账户", exact: true });
+    const sidebarBalance = accountTrigger.locator(".account-trigger-balance");
+    await expect(sidebarBalance).toBeVisible();
+    await expect(sidebarBalance).toHaveText(/^[\d,]+$/);
+    await expect(sidebarBalance).toHaveAttribute("aria-label", /^积分余额 [\d,]+$/);
+    await expect(sidebarBalance).toHaveAttribute("title", /^[\d,]+ 积分$/);
+    await expect(accountTrigger.locator("svg.lucide-chevron-down")).toHaveCount(0);
+    const triggerBox = await accountTrigger.boundingBox(), balanceBox = await sidebarBalance.boundingBox();
+    expect(balanceBox.x + balanceBox.width, "Sidebar balance is clipped by the account trigger").toBeLessThanOrEqual(triggerBox.x + triggerBox.width + 1);
     const expanded = await openAccount();
     expect(expanded.left, "Expanded account popup must align with the sidebar's left edge").toBeCloseTo((await sidebar.boundingBox()).x, 0);
     await screenshot("dialog-account-popup-expanded-sidebar");

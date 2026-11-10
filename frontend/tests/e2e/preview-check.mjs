@@ -28,6 +28,19 @@ async function screenshot(name) {
   return filename;
 }
 
+async function topToast(text) {
+  const toast = page.locator(".toast");
+  await expect(toast).toContainText(text);
+  await expect(toast).toBeVisible();
+  const box = await toast.boundingBox();
+  expect(box.y, "Feedback should appear at the top of the page").toBeCloseTo(20, 0);
+  expect(box.x + box.width / 2, "Feedback should be centred in the page").toBeCloseTo(page.viewportSize().width / 2, 0);
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize().width);
+  await expect(toast.getByRole("button", { name: "关闭提示", exact: true })).toBeVisible();
+  return toast;
+}
+
 async function check(name, action) {
   await action();
   const overflow = await page.evaluate(
@@ -125,6 +138,7 @@ async function verifyCreation() {
   const model = creation.getByRole("combobox", { name: "模型", exact: true });
   const prompt = creation.getByRole("textbox", { name: "提示词", exact: true });
   await expect(prompt).toBeVisible();
+  await expect(creation.getByRole("combobox", { name: "生成数量", exact: true })).toHaveText("1张");
   await chooseDialogOption(page, model, "Gemini Image 3.1F");
   await expect(
     creation.getByRole("combobox", { name: "档位", exact: true }),
@@ -193,19 +207,64 @@ async function verifyCreation() {
   await expect(creation.getByTestId("generation-turn")).not.toHaveAttribute("data-generation-id", originalBatch);
   await expect(creation.getByTestId("generation-turn")).toHaveCount(1);
   await expect(creation.locator(".workbench-prompt")).toHaveText(testPrompt);
-  await expect(creation.locator(".workbench-status")).toHaveText("已完成 0 / 2 张");
+  await expect(creation.locator(".workbench-status")).toHaveCount(0);
+  await expect(creation.getByRole("button", { name: "查看完整提示词", exact: true })).toHaveCount(0);
   await expect(creation.locator(".result-card")).toHaveCount(2);
   await expect(creation.locator(".result-slot-placeholder")).toHaveCount(2);
   await expect(creation.locator(".result-open")).toHaveCount(0);
   await expect(creation.locator(".result-actions")).toHaveCount(0);
   await page.clock.resume();
   await expect(creation.locator(".result-open")).toHaveCount(2, { timeout: 15000 });
-  await expect(creation.locator(".workbench-status")).toHaveText("2 张已完成");
+  await expect(creation.locator(".workbench-status")).toHaveCount(0);
   await expect(prompt).toHaveValue("");
   await page.reload();
   await expect(creation.getByTestId("generation-turn")).toHaveCount(1);
   await expect(creation.locator(".result-open")).toHaveCount(2);
   await expect(creation.getByText(testPrompt, { exact: true })).toBeVisible();
+  const selection = creation.getByRole("toolbar", { name: "已选图片操作", exact: true });
+  const firstChoice = creation.getByRole("checkbox", { name: "选择第 1 张图片", exact: true });
+  const secondChoice = creation.getByRole("checkbox", { name: "选择第 2 张图片", exact: true });
+  const batchNames = await creation.locator(".result-open img").evaluateAll(images => images.map(image => image.alt));
+  await creation.locator(".result-card").first().hover();
+  await firstChoice.check();
+  await expect(selection).toBeVisible();
+  await expect(selection).toContainText("已选 1 张");
+  await expect(selection.getByRole("button", { name: "继续修图", exact: true })).toBeEnabled();
+  await secondChoice.check();
+  await expect(selection).toContainText("已选 2 张");
+  await expect(selection.getByRole("button", { name: "继续修图", exact: true })).toBeDisabled();
+  await expect(selection.getByText("多选时无法继续修图", { exact: true })).toBeVisible();
+  for (const edit of await creation.getByRole("button", { name: "继续修图", exact: true, includeHidden: true }).all())
+    await expect(edit).toBeDisabled();
+  // In selection mode a centre click toggles that image instead of opening a
+  // preview; the checked count and the selection styling must agree.
+  await creation.locator(".result-open").first().click();
+  await expect(firstChoice).not.toBeChecked();
+  await expect(selection).toContainText("已选 1 张");
+  await expect(page.getByRole("dialog", { name: "图片预览", exact: true })).toHaveCount(0);
+  await selection.getByRole("button", { name: "全选", exact: true }).click();
+  await expect(firstChoice).toBeChecked();
+  await expect(secondChoice).toBeChecked();
+  await expect(creation.locator(".result-card.is-selected")).toHaveCount(2);
+  await screenshot("creation-two-selected-bulk-toolbar");
+  await selection.getByRole("button", { name: "加入文件夹", exact: true }).click();
+  const batchPicker = page.getByRole("dialog", { name: "加入文件夹", exact: true });
+  await batchPicker.getByRole("checkbox", { name: "待整理", exact: true }).check();
+  await batchPicker.getByRole("button", { name: "加入", exact: true }).click();
+  await expect(batchPicker).toHaveCount(0);
+  const batchToast = await topToast("已将 2 张图片加入文件夹");
+  await screenshot("creation-bulk-folder-toast-top-centre");
+  await page.clock.fastForward(3200);
+  await expect(batchToast, "Ordinary feedback should disappear after three seconds").toHaveCount(0);
+  if (await selection.count()) await selection.getByRole("button", { name: "取消选择", exact: true }).click();
+  await openFolder("待整理");
+  const batchFolder = page.getByRole("region", { name: "我的图片", exact: true });
+  await expect(batchFolder.locator(".gallery-tile")).toHaveCount(2);
+  for (const name of batchNames) await expect(batchFolder.getByRole("img", { name, exact: true })).toBeVisible();
+  await page.reload();
+  await expect(batchFolder.locator(".gallery-tile")).toHaveCount(2);
+  for (const name of batchNames) await expect(batchFolder.getByRole("img", { name, exact: true })).toBeVisible();
+  await screenshot("creation-bulk-folder-persisted-after-reload");
   await openPictureSection("全部图片");
   await expect(page.getByRole("region", { name: "我的图片", exact: true }).getByRole("img", { name: originalImage, exact: true })).toHaveCount(1);
   await page.getByRole("button", { name: "图像创作", exact: true }).click();
@@ -291,6 +350,7 @@ async function verifyRequestsAndKeyboard() {
 }
 
 async function verifyRoleBoundary() {
+  const adminCount = await page.getByRole("combobox", { name: "生成数量", exact: true }).textContent();
   await page.getByRole("button", { name: "我的账户", exact: true }).click();
   await page.getByRole("button", { name: "设置", exact: true }).click();
   await page.getByRole("button", { name: "模型价格", exact: true }).click();
@@ -301,7 +361,7 @@ async function verifyRoleBoundary() {
   const pendingPrice = String(Number(await price.inputValue()) + 9);
   await price.fill(pendingPrice);
   await page.getByRole("button", { name: "我的账户", exact: true }).click();
-  await page.getByRole("button", { name: "退出登录", exact: true }).click();
+  await page.locator(".account-menu").getByRole("button", { name: "退出登录", exact: true }).click();
   const guard = page.getByRole("dialog", {
     name: "放弃未保存的修改？",
     exact: true,
@@ -310,7 +370,7 @@ async function verifyRoleBoundary() {
   await expect(price).toHaveValue(pendingPrice);
   await expect(page).toHaveURL(/#\/settings\/prices$/);
   await page.getByRole("button", { name: "我的账户", exact: true }).click();
-  await page.getByRole("button", { name: "退出登录", exact: true }).click();
+  await page.locator(".account-menu").getByRole("button", { name: "退出登录", exact: true }).click();
   await guard.getByRole("button", { name: "放弃修改", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "登录", exact: true }),
@@ -327,6 +387,9 @@ async function verifyRoleBoundary() {
   ).toHaveCount(0);
   await page.getByRole("button", { name: "图像创作", exact: true }).click();
   const creation = page.getByRole("region", { name: "图像创作", exact: true });
+  const userCount = creation.getByRole("combobox", { name: "生成数量", exact: true });
+  await expect(userCount, "A new user must not inherit the administrator's remembered count").toHaveText("1张");
+  await chooseDialogOption(page, userCount, "3张");
   const failedBatch = await creation.getByTestId("generation-turn").getAttribute("data-generation-id");
   await creation.locator(".workbench-header").getByRole("button", { name: "查看错误", exact: true }).click();
   const failure = page.getByRole("dialog", { name: "生成未全部完成", exact: true });
@@ -334,6 +397,8 @@ async function verifyRoleBoundary() {
   await expect(retry).toBeEnabled();
   await retry.click();
   await expect(failure).not.toBeVisible();
+  await expect(userCount, "Restoring historical settings must preserve the user's chosen count").toHaveText("3张");
+  await chooseDialogOption(page, userCount, "1张");
   const prompt = creation.getByRole("textbox", { name: "提示词", exact: true });
   await expect(prompt).toHaveValue("一张安静的海边照片");
   await prompt.fill("普通用户处理中检查");
@@ -359,6 +424,12 @@ async function verifyRoleBoundary() {
     page.getByRole("heading", { name: "没有访问权限", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "返回账户设置", exact: true }).click();
+  await page.getByRole("button", { name: "我的账户", exact: true }).click();
+  await page.locator(".account-menu").getByRole("button", { name: "退出登录", exact: true }).click();
+  await signInAs("admin");
+  const returnToCreation = page.getByRole("button", { name: "返回创作", exact: true });
+  await returnToCreation.click();
+  await expect(page.getByRole("combobox", { name: "生成数量", exact: true }), "Switching back must restore the administrator's own count").toHaveText(adminCount);
 }
 
 async function verifyGallery() {
@@ -423,6 +494,12 @@ async function verifyGallery() {
   await expect(
     gallery.getByRole("heading", { name: "这个文件夹还没有图片", exact: true }),
   ).toBeVisible();
+  const undoToast = await topToast(`已从“${folderA}”移出 1 张图片`);
+  await expect(undoToast.getByRole("button", { name: "撤销", exact: true })).toBeEnabled();
+  await page.clock.fastForward(3200);
+  await expect(undoToast, "Feedback with an action should remain available longer than ordinary feedback").toBeVisible();
+  await page.clock.fastForward(3000);
+  await expect(undoToast, "Feedback with an action should disappear after six seconds").toHaveCount(0);
   await openFolder(folderB);
   await expect(
     gallery.getByRole("img", { name: imageName, exact: true }),
