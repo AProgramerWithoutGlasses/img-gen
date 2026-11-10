@@ -267,6 +267,8 @@ func studioHistory(jobs []Job, opts map[string]GenerationOptions, positions map[
 		active, failed := false, false
 		var started, finished *time.Time
 		for i, j := range batch {
+			// Use the same stable slot index as Asset.OutputIndex, including legacy batches.
+			g.Outputs = append(g.Outputs, GenerationOutput{OutputIndex: i, Status: j.Status, StartedAt: j.StartedAt, FinishedAt: j.FinishedAt})
 			active = active || j.Status == "queued" || j.Status == "running"
 			failed = failed || j.Status == "failed"
 			if j.Error != "" {

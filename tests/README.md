@@ -11,7 +11,7 @@ Go 测试保留在同一个外部测试包，文件名区分主题，既有 49 �
 | 仅说明文档 | npm run check:docs |
 | 根工具、状态命令 | npm run check:tools；实际执行相关安全命令 |
 | 前端 | npm --prefix frontend run check；npm run build；受影响浏览器流程，完整模拟用 npm run verify；同时改说明时补 check:docs |
-| 工作区生成进度与图内操作 | node frontend/tests/e2e/workbench-motion-check.mjs；检查等待最高95%、解码后100%与渐显、失败保图、悬浮按钮、图片中心预览及390px文件夹导航；只用本地响应样本 |
+| 工作区生成进度与图内操作 | node frontend/tests/e2e/workbench-motion-check.mjs；检查真实单图排队／生成与独立计时、解码后100%和持续可见的渐显／进度收尾、成图返回不改变画框、失败保图、悬浮与预览及390px导航；只用本地响应样本，过渡采样不禁用动画 |
 | 后端 | 前端嵌入产物可用后 go test ./...、go vet ./...、go build ./... |
 | 跨端、构建与 CI | npm run verify:all；真实数据库/浏览器按下节启用 |
 | 设计稿变更 | 保存当前指定稿；按变动核对局部画面、字体及对应真实浏览器；需要时显式指定稿审计／导出，旧场景映射仍适用时才运行 design:compare |

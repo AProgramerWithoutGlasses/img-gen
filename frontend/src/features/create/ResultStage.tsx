@@ -8,7 +8,7 @@ import { MODELS } from "../../config/models";
 import { downloadImage } from "../../lib/images";
 import type { Generation, ImageAsset, PreviewImage } from "../../types";
 import { requestedRatio, resultLayout } from "./result-layout";
-import { estimatedResultProgress, resultElapsed } from "./result-progress";
+import { resultElapsed } from "./result-progress";
 
 interface Props {
   job: Generation;
@@ -25,6 +25,7 @@ interface SlotProps {
   collection: ImageAsset[];
   job: Generation;
   index: number;
+  output?: NonNullable<Generation["outputs"]>[number];
   active: boolean;
   busy: boolean;
   reveal: boolean;
@@ -37,25 +38,25 @@ interface SlotProps {
   onFolder: Props["onFolder"];
   onError: () => void;
 }
-type ImagePhase = "loading" | "returned" | "revealing" | "ready" | "failed";
+type ImagePhase = "loading" | "returned" | "revealing" | "finishing" | "ready" | "failed";
 const imageDragType = "application/x-img-gen-image-id";
 
-function ResultSlot({ image, collection, job, index, active, busy, reveal, width, height,
+function ResultSlot({ image, collection, job, index, output, active, busy, reveal, width, height,
   left, top, onPreview, onEdit, onFolder, onError }: SlotProps) {
   const [phase, setPhase] = useState<ImagePhase>("loading");
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
   const shouldReveal = useRef(reveal);
-  const failed = !image && job.status !== "processing";
-  const [elapsed, setElapsed] = useState(() => resultElapsed(job.createdAt,
-    failed && job.completedAt ? Date.parse(job.completedAt) : undefined));
-  const progress = useRef(0);
+  const failed = !image && (output?.status === "failed" || job.status !== "processing");
+  const queued = !image && output?.status === "queued";
+  const finishedAt = output?.finishedAt ?? image?.createdAt ?? (job.status !== "processing" ? job.completedAt : undefined);
+  const [elapsed, setElapsed] = useState(() => resultElapsed(output?.startedAt,
+    finishedAt ? Date.parse(finishedAt) : undefined));
   const isReady = phase === "ready";
   const resourceFailed = phase === "failed";
-  const hasDecoded = phase === "returned" || phase === "revealing" || isReady;
-  progress.current = Math.max(progress.current, estimatedResultProgress(elapsed));
-  const percent = hasDecoded ? 100 : progress.current;
+  const hasDecoded = phase === "returned" || phase === "revealing" || phase === "finishing" || isReady;
   const showProgress = shouldReveal.current || !image;
+  const progressLabel = hasDecoded ? "正在呈现" : image || output?.status === "succeeded" ? "正在载入" : queued ? "排队中" : "正在生成";
   const [menu, setMenu] = useState(false);
   const compact = width < 260 || height < 112;
   const [menuPosition, setMenuPosition] = useState({ left: 0, top: 0, maxHeight: 240 });
@@ -66,27 +67,34 @@ function ResultSlot({ image, collection, job, index, active, busy, reveal, width
   const menuPanel = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
   const decodeVersion = useRef(0);
-  const revealFrame = useRef(0);
-  const revealFrameNext = useRef(0);
-  const revealTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const revealTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
       decodeVersion.current++;
-      cancelAnimationFrame(revealFrame.current);
-      cancelAnimationFrame(revealFrameNext.current);
-      clearTimeout(revealTimer.current);
+      revealTimers.current.forEach(clearTimeout);
     };
   }, []);
   useEffect(() => {
-    if (!active || failed || resourceFailed || hasDecoded) return;
-    const update = () => setElapsed(previous => Math.max(previous, resultElapsed(job.createdAt)));
+    const update = () => setElapsed(resultElapsed(output?.startedAt,
+      finishedAt ? Date.parse(finishedAt) : undefined));
     update();
-    const interval = setInterval(update, 250);
+    if (!active || failed || resourceFailed || hasDecoded || image || output?.status !== "running" || !output.startedAt) return;
+    const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [active, failed, resourceFailed, hasDecoded, job.createdAt]);
+  }, [active, failed, resourceFailed, hasDecoded, image, output?.status, output?.startedAt, finishedAt]);
+  useEffect(() => {
+    const media = matchMedia("(prefers-reduced-motion: reduce)");
+    const skipMotion = () => {
+      if (!media.matches || !["returned", "revealing", "finishing"].includes(phaseRef.current)) return;
+      revealTimers.current.forEach(clearTimeout);
+      setPhase("ready");
+    };
+    media.addEventListener("change", skipMotion);
+    return () => media.removeEventListener("change", skipMotion);
+  }, []);
   useEffect(() => { if (!active) setMenu(false); }, [active]);
   useEffect(() => {
     if (!menu) return;
@@ -116,7 +124,7 @@ function ResultSlot({ image, collection, job, index, active, busy, reveal, width
   }, [menu]);
 
   async function loaded(event: SyntheticEvent<HTMLImageElement>) {
-    if (["ready", "revealing", "returned"].includes(phaseRef.current)) return;
+    if (["ready", "finishing", "revealing", "returned"].includes(phaseRef.current)) return;
     const element = event.currentTarget;
     const source = element.currentSrc;
     const version = ++decodeVersion.current;
@@ -131,15 +139,13 @@ function ResultSlot({ image, collection, job, index, active, busy, reveal, width
       return;
     }
     setPhase("returned");
-    revealFrame.current = requestAnimationFrame(() => {
-      revealFrameNext.current = requestAnimationFrame(() => {
-        if (!mounted.current || version !== decodeVersion.current) return;
-        setPhase("revealing");
-        revealTimer.current = setTimeout(() => {
-          if (mounted.current && version === decodeVersion.current) setPhase("ready");
-        }, 650);
-      });
-    });
+    // All phases share the decode instant: show the blurred result, clear it,
+    // then retire the completed progress layer only after the image is clear.
+    revealTimers.current.forEach(clearTimeout);
+    const schedule = (next: ImagePhase, delay: number) => setTimeout(() => {
+      if (mounted.current && version === decodeVersion.current) setPhase(next);
+    }, delay);
+    revealTimers.current = [schedule("revealing", 260), schedule("finishing", 1360), schedule("ready", 1620)];
   }
   function placeMenu() {
     const box = more.current?.getBoundingClientRect();
@@ -188,18 +194,21 @@ function ResultSlot({ image, collection, job, index, active, busy, reveal, width
           event.dataTransfer.effectAllowed = "copy";
         }} />
     </button>}
-    {!isReady && <div className={`result-generation-layer result-slot-placeholder${phase === "revealing" ? " is-leaving" : ""}`}>
+    {!isReady && <div className={`result-generation-layer result-slot-placeholder${phase === "finishing" ? " is-leaving" : ""}`}>
       {failed || resourceFailed ? <div className="result-generation-meta result-generation-error" role="alert">
         <span>{failed ? "生成失败" : "图片暂时无法加载"}</span>
         {failed && <button onClick={onError}>查看错误</button>}
       </div> : <>
         <div className="result-generation-meta">
-          <span>{hasDecoded ? "正在呈现" : image ? "正在载入" : "正在生成"}</span>
-          {showProgress && <span className="result-generation-number">{percent}% · {Math.floor(elapsed / 1000)}秒</span>}
+          <span>{progressLabel}</span>
+          {showProgress && !queued && (hasDecoded || elapsed !== undefined) && <span className="result-generation-number">
+            {hasDecoded ? "100%" : ""}{elapsed !== undefined ? `${hasDecoded ? " · " : ""}${Math.floor(elapsed / 1000)}秒` : ""}
+          </span>}
         </div>
-        {showProgress && <div className="result-progress-track" role="progressbar" aria-label={`第 ${index + 1} 张生成进度`}
-          aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}>
-          <span style={{ width: `${percent}%` }} />
+        {showProgress && <div className={`result-progress-track ${hasDecoded ? "is-complete" : queued ? "is-queued" : "is-active"}`}
+          role="progressbar" aria-label={`第 ${index + 1} 张生成进度`} aria-valuetext={progressLabel}
+          aria-valuemin={0} aria-valuemax={100} aria-valuenow={hasDecoded ? 100 : undefined}>
+          <span style={{ animationDelay: hasDecoded ? undefined : `${index * -.23}s` }} />
         </div>}
       </>}
     </div>}
@@ -239,15 +248,17 @@ function ResultSlot({ image, collection, job, index, active, busy, reveal, width
 export default function ResultStage({ job, images, active, busy, onPreview, onEdit, onFolder, onRestore }: Props) {
   const stage = useRef<HTMLDivElement>(null);
   const previousColumns = useRef<number | undefined>(undefined);
-  const confirmedRatio = useRef<number | null>(null);
   const liveBatch = useRef(job.status === "processing");
   if (job.status === "processing") liveBatch.current = true;
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [details, setDetails] = useState<"prompt" | "error" | null>(null);
   const ordered = [...images].sort((a, b) => a.outputIndex - b.outputIndex);
-  const first = ordered.find(image => image.width > 0 && image.height > 0);
-  if (confirmedRatio.current === null && first) confirmedRatio.current = first.width / first.height;
-  const ratio = confirmedRatio.current ?? requestedRatio(job.options.ratio, job.attachments[0]);
+  const [ratio] = useState(() => {
+    const first = job.status !== "processing" ? images.find(image => image.width > 0 && image.height > 0) : undefined;
+    // Keep a live batch's frame geometry stable when its real images arrive.
+    // Historical images already have dimensions and can use their actual ratio.
+    return first ? first.width / first.height : requestedRatio(job.options.ratio, job.attachments[0]);
+  });
   const count = Math.max(1, Math.min(4, Math.trunc(job.options.count) || 1));
   const layout = resultLayout(count, ratio, size.width, size.height, previousColumns.current);
   if (layout) previousColumns.current = layout.columns;
@@ -281,7 +292,8 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
     </header>
     <div className="result-images workbench-stage" ref={stage} aria-label="本轮生成结果" data-columns={layout?.columns}>
       {layout && slots.map((image, index) => <ResultSlot key={`${job.id}:${index}`}
-        image={image} collection={ordered} job={job} index={index} active={active} busy={busy} reveal={liveBatch.current}
+        image={image} collection={ordered} job={job} index={index} output={job.outputs?.find(output => output.outputIndex === index)}
+        active={active} busy={busy} reveal={liveBatch.current}
         width={layout.imageWidth} height={layout.imageHeight} left={layout.positions[index].left} top={layout.positions[index].top}
         onPreview={onPreview} onEdit={onEdit} onFolder={onFolder} onError={() => setDetails("error")} />)}
     </div>

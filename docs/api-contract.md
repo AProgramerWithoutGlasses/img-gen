@@ -35,6 +35,8 @@
 
 每个输出仍独立进入原队列并单独调用上游，保持现有冻结/成功结算/失败退款逻辑。服务端保存批内outputIndex，刷新后顺序稳定；批内部分完成时立即显示成功图，仍有运行任务则整批processing，全部结束且有失败则failed。成功图仍入图库，费用只包含服务端实际冻结或结算的任务；完成失败批次的管理记录显示实际消耗。旧多模型批次按模型拆成多轮，旧批内序号没有历史事实可恢复，保留旧创建时间/ID顺序。
 
+Generation新增兼容字段 `outputs`，每项为 `{outputIndex,status,startedAt?,finishedAt?}`，与ImageAsset的outputIndex共用同一稳定顺序。status直接反映单张任务的queued／running／succeeded／failed；startedAt是工作线程接手时间，包含服务端准备与上游等待，finishedAt是成功持久化或失败结算时间。单张失败可在整批仍processing时立即显示；成功图元数据已到达时，前端进入图片载入、解码与呈现阶段。现有上游没有真实生成百分比或中间图片流，等待时用活动条，不将耗时估算显示为实际完成百分比。state仍为version 1，原聚合status、计费和权限范围保持兼容；缺少outputs的旧记录由前端按已有图片与整批状态回退展示。
+
 最多六张附件按前端提交的attachmentIds顺序存储并传给上游。“继续修图”把编辑目标放在附件首位，其他参考图保持相对顺序；“基础图”仅为前端编辑目标标识，不增加服务端或上游角色字段，也不承诺渠道对该角色的特殊处理。GPT编辑采用多个image[]；Gemini采用多个原生inlineData。WebP/GIF在请求副本中转换为PNG，原件保留；其后仍走原有输入处理，4096边长、12MB请求副本预算、JPEG质量等压缩设定未改。原图下载和后续添加仍使用原图。Attachment新增可选thumbnailUrl（256方形）、previewUrl（640等比）、previewLargeUrl（1600等比），width/height表示方向校正后的可视原图尺寸；旧附件可在首次衍生缓存建立后纠正尺寸，旧任务输入兼容原有1600预览URL。生成ImageAsset继续提供原有640缩略图/1600预览URL语义。前端按实际显示尺寸与DPR选图，见 [图片预览策略](image-preview-strategy.md)。
 
 ## 参数与实测边界

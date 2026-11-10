@@ -9,7 +9,8 @@ const output = new URL('../../outputs/workbench-motion/', import.meta.url);
 await mkdir(output, { recursive: true });
 const server = await preview({ root, preview: { host: '127.0.0.1', port: 4184, strictPort: true } });
 const origin = 'http://127.0.0.1:4184';
-const fixture = '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="1600" height="900" fill="#b7c8b5"/><path d="M0 900L1600 0" stroke="#52614f" stroke-width="20"/></svg>';
+// Fine edges make blur visible; 4:3 deliberately differs from the auto frame.
+const fixture = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#6f93ab"/><stop offset="1" stop-color="#d8ddcf"/></linearGradient><pattern id="grass" width="24" height="36" patternUnits="userSpaceOnUse"><path d="M3 36 8 9M15 36 20 18" stroke="#d5c887" stroke-width="3"/></pattern></defs><path fill="url(#sky)" d="M0 0h1200v900H0z"/><circle cx="900" cy="150" r="65" fill="#f6e7bd"/><path d="M0 380 180 160 390 370 600 190 880 410 1050 230 1200 400V900H0Z" fill="#6d7b7d"/><path d="m112 241 68-81 95 95-94-36ZM525 262l75-72 105 83-98-37Z" fill="#e5e8df"/><path d="M0 520 220 400 470 560 720 410 1200 510V900H0Z" fill="#647866"/><path d="M640 480C850 570 375 625 620 900H890C520 670 1030 600 700 480Z" fill="#90b9bc" stroke="#d0ddd4" stroke-width="8"/><path d="M0 720Q170 650 370 780L450 900H0ZM1200 690Q1080 665 930 800L950 900h250Z" fill="url(#grass)"/><g fill="#233b30" stroke="#79916f" stroke-width="5"><path d="m120 470-50 130h100Z"/><path d="m230 510-45 120h90Z"/><path d="m1050 460-65 165h130Z"/></g></svg>';
 const startedAt = Date.now();
 const user = { id: 'fixture-user', username: 'fixture', role: 'admin', status: 'enabled', balance: 100, createdAt: new Date(startedAt).toISOString() };
 const models = [
@@ -17,11 +18,17 @@ const models = [
   ['gpt-image-2.5-sunburst', 'GPT Image 2.5 Sunburst'],
   ['gemini-3.1-flash-image', 'Gemini 3.1 Flash Image'], ['gemini-3-pro-image', 'Gemini 3 Pro Image'],
 ].map(([id, name]) => ({ id, name, qualities: [], resolutions: [], ratios: ['自动', '1:1', '16:9'] }));
-const options = { modelId: 'gpt-image-2', ratio: '16:9', count: 2 };
+const options = { modelId: 'gpt-image-2', ratio: '自动', count: 4 };
 const batch = {
   id: 'fixture-batch', userId: user.id, username: user.username, prompt: '清晨的山谷，柔和自然光',
   attachments: [], options, status: 'processing', imageIds: [],
-  createdAt: new Date(startedAt - 10000).toISOString(), cost: 2,
+  createdAt: new Date(startedAt - 20000).toISOString(), cost: 4,
+  outputs: [
+    { outputIndex: 0, status: 'running', startedAt: new Date(startedAt - 12000).toISOString() },
+    { outputIndex: 1, status: 'running', startedAt: new Date(startedAt - 3000).toISOString() },
+    { outputIndex: 2, status: 'queued' },
+    { outputIndex: 3, status: 'queued' },
+  ],
 };
 const state = {
   version: 1, assets: [],
@@ -32,7 +39,7 @@ const state = {
 const asset = {
   id: 'output-one', name: '本地结果.png', url: '/api/images/output-one',
   thumbnailUrl: '/api/images/output-one/thumbnail/1', previewUrl: '/api/images/output-one/preview/1',
-  width: 1600, height: 900, userId: user.id, createdAt: user.createdAt,
+  width: 1200, height: 900, userId: user.id, createdAt: user.createdAt,
   batchId: batch.id, outputIndex: 0, prompt: batch.prompt, options, folderIds: [],
 };
 
@@ -40,13 +47,11 @@ const browser = await chromium.launch({ channel: process.platform === 'win32' ? 
 const errors = [], results = [], screenshots = [];
 let page, failure, imageRequests = 0, releaseImage;
 const heldImage = new Promise(resolve => { releaseImage = resolve; });
-try {
-  const context = await browser.newContext({
-    viewport: { width: 1440, height: 900 }, colorScheme: 'light', reducedMotion: 'no-preference',
-  });
-  page = await context.newPage();
-  page.on('pageerror', error => errors.push(error.message));
-  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+const captureErrors = target => {
+  target.on('pageerror', error => errors.push(error.message));
+  target.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+};
+const routeFixture = async (context, fixtureState) => {
   await context.route('**/api/**', async route => {
     const request = route.request();
     const path = new URL(request.url()).pathname;
@@ -54,7 +59,7 @@ try {
       errors.push(`Unexpected write blocked: ${request.method()} ${path}`);
       return route.fulfill({ status: 405, json: { error: '本地验证禁止写请求' } });
     }
-    if (path === '/api/studio/state') return route.fulfill({ json: state });
+    if (path === '/api/studio/state') return route.fulfill({ json: fixtureState });
     if (path === '/api/studio/models') return route.fulfill({ json: models });
     if (path.startsWith('/api/images/')) {
       imageRequests++;
@@ -64,95 +69,150 @@ try {
     errors.push(`Unexpected API request: ${path}`);
     return route.fulfill({ status: 404, json: { error: 'Unknown fixture route' } });
   });
-  // Accelerate the wait without issuing extra image-generation requests.
-  await page.clock.install({ time: new Date(startedAt) });
+};
+try {
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 }, colorScheme: 'light', reducedMotion: 'no-preference',
+  });
+  await routeFixture(context, state);
+  page = await context.newPage();
+  captureErrors(page);
   await page.goto(origin);
+  await page.evaluate(() => document.fonts.ready);
   const creation = page.getByRole('region', { name: '图像创作', exact: true });
   const cards = creation.locator('.result-card');
-  await expect(cards).toHaveCount(2);
-  const first = cards.nth(0), second = cards.nth(1);
+  await expect(cards).toHaveCount(4);
+  const first = cards.nth(0), second = cards.nth(1), third = cards.nth(2), fourth = cards.nth(3);
   const progress = first.getByRole('progressbar');
-  const percent = async () => Number(await progress.getAttribute('aria-valuenow'));
-  const screenshot = async name => {
-    await page.screenshot({ path: fileURLToPath(new URL(name + '.png', output)), animations: 'disabled' });
+  const screenshot = async (name, target = page, moving = false) => {
+    await target.screenshot({ path: fileURLToPath(new URL(name + '.png', output)), animations: moving ? 'allow' : 'disabled' });
     screenshots.push(name + '.png');
   };
-  const initial = await percent();
-  expect(initial).toBeGreaterThan(0);
-  expect(initial).toBeLessThan(95);
-  await page.clock.fastForward(20000);
-  await expect.poll(percent).toBeGreaterThan(initial);
-  const advanced = await percent();
-  await page.clock.fastForward(120000);
-  await expect(progress).toHaveAttribute('aria-valuenow', '95');
-  await page.clock.fastForward(300000);
-  await expect(progress).toHaveAttribute('aria-valuenow', '95');
-  await screenshot('waiting-95-light');
-  results.push({ name: 'waiting-progress-increases-and-caps', initial, advanced, maximum: await percent() });
+  const readFrames = () => cards.evaluateAll(elements => elements.map(element => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+  }));
+  const unchangedFrames = (before, after) => before.forEach((rect, index) => {
+    for (const key of ['left', 'top', 'width', 'height'])
+      expect(after[index][key], `Returned image must keep slot ${index + 1} ${key}`).toBeCloseTo(rect[key], 1);
+  });
+  const seconds = async card => Number((await card.locator('.result-generation-number').innerText()).match(/(\d+)\s*秒/)?.[1]);
+  const acceptState = async change => {
+    const response = page.waitForResponse(item => item.url().endsWith('/api/studio/state'));
+    change();
+    await response;
+  };
+  for (const card of [first, second]) {
+    await expect(card).toContainText('正在生成');
+    await expect(card.getByRole('progressbar')).not.toHaveAttribute('aria-valuenow');
+    await expect(card.locator('.result-generation-meta')).not.toContainText('%');
+  }
+  for (const card of [third, fourth]) {
+    await expect(card).toContainText('排队中');
+    await expect(card.getByRole('progressbar')).not.toHaveAttribute('aria-valuenow');
+    await expect(card.locator('.result-generation-number')).toHaveCount(0);
+  }
+  const runningSeconds = await Promise.all([seconds(first), seconds(second)]);
+  expect(runningSeconds.every(Number.isFinite)).toBe(true);
+  expect(runningSeconds[0] - runningSeconds[1], 'Each image uses its own server start time').toBeGreaterThanOrEqual(8);
+  await expect.poll(async () => (await readFrames()).every(rect => rect.width > 0 && rect.height > 0)).toBe(true);
+  const initialFrames = await readFrames();
+  const initialColumns = await creation.locator('.workbench-stage').getAttribute('data-columns');
+  await screenshot('mixed-running-queued-light');
+  results.push({ name: 'real-output-status-and-independent-running-times', runningSeconds, initialFrames, initialColumns });
 
   // A successful state response is insufficient: the image loader is still held.
-  state.assets.push(asset);
-  batch.imageIds.push(asset.id);
-  const imageState = page.waitForResponse(response => response.url().endsWith('/api/studio/state'));
-  await page.clock.fastForward(2000);
-  await imageState;
+  await acceptState(() => {
+    state.assets.push(asset);
+    batch.imageIds.push(asset.id);
+    batch.outputs[0] = { ...batch.outputs[0], status: 'succeeded', finishedAt: new Date().toISOString() };
+  });
   await expect(first.locator('img')).toHaveCount(1);
   await expect.poll(() => imageRequests).toBeGreaterThan(0);
-  await expect(progress).toHaveAttribute('aria-valuenow', '95');
+  await expect(progress).not.toHaveAttribute('aria-valuenow', '100');
   await expect(first.locator('.result-open')).toBeDisabled();
   await expect(first).toContainText('正在载入');
-  results.push({ name: 'undecoded-image-does-not-complete', progress: await percent() });
+  await page.waitForTimeout(250); // Let any unintended layout transition settle.
+  unchangedFrames(initialFrames, await readFrames());
+  results.push({ name: 'server-success-awaits-image-decode-with-stable-four-slot-layout' });
 
-  // Record actual visible transition states so the short 100% phase cannot be
-  // missed by a polling assertion. The final frame must become clear and usable.
+  // Observe decode, then sample actual wall-clock frames. A fake clock or
+  // animation-disabled screenshot would conceal the brief-fade regression.
   await page.evaluate(() => {
-    window.workbenchMotionEvidence = [];
+    window.workbenchDecodedAt = undefined;
     const capture = () => {
       const card = document.querySelector('.result-card');
-      if (!card) return;
-      const image = card.querySelector('img');
-      const style = image && getComputedStyle(image);
-      const sample = {
-        percent: card.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow') ?? null,
-        opacity: style ? Number(style.opacity) : null,
-        filter: style?.filter ?? null,
-      };
-      const evidence = window.workbenchMotionEvidence;
-      if (JSON.stringify(evidence.at(-1)) !== JSON.stringify(sample)) evidence.push(sample);
+      if (window.workbenchDecodedAt === undefined && card?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow') === '100')
+        window.workbenchDecodedAt = performance.now();
     };
     const observer = new MutationObserver(capture);
     observer.observe(document.querySelector('.workbench-stage'), { subtree: true, childList: true, attributes: true });
-    window.stopWorkbenchMotionCapture = () => { capture(); observer.disconnect(); };
+    window.stopWorkbenchMotionCapture = () => observer.disconnect();
     capture();
   });
   releaseImage();
+  await page.waitForFunction(() => Number.isFinite(window.workbenchDecodedAt));
+  const samples = [];
+  for (const targetMs of [180, 500, 1100]) {
+    await page.evaluate(async target => {
+      const remaining = window.workbenchDecodedAt + target - performance.now();
+      if (remaining > 0) await new Promise(resolve => setTimeout(resolve, remaining));
+    }, targetMs);
+    const sample = await first.evaluate(element => {
+      const image = element.querySelector('img'), layer = element.querySelector('.result-generation-layer');
+      const actions = element.querySelector('.result-actions');
+      const style = getComputedStyle(image);
+      return {
+        elapsed: performance.now() - window.workbenchDecodedAt,
+        opacity: Number(style.opacity),
+        blur: Number(style.filter.match(/blur\(([\d.]+)px\)/)?.[1] ?? 0),
+        progress: element.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow'),
+        overlayOpacity: layer ? Number(getComputedStyle(layer).opacity) : 0,
+        disabled: element.querySelector('.result-open').disabled,
+        actionsVisible: !!actions && getComputedStyle(actions).visibility !== 'hidden' && Number(getComputedStyle(actions).opacity) > .01,
+      };
+    });
+    samples.push(sample);
+    expect(sample.elapsed).toBeGreaterThanOrEqual(targetMs - 20);
+    expect(sample.progress, 'Completion progress stays visible throughout the reveal').toBe('100');
+    expect(sample.disabled, 'Actions wait until the image has visibly revealed').toBe(true);
+    expect(sample.actionsVisible).toBe(false);
+    expect(sample.overlayOpacity).toBeGreaterThan(.5);
+    await screenshot(`motion-${String(targetMs).padStart(4, '0')}ms`, first, true);
+  }
+  expect(samples[0].blur, 'Blur must remain visible, not flash for two frames').toBeGreaterThanOrEqual(15);
+  expect(samples[0].opacity).toBeGreaterThanOrEqual(.3);
+  expect(samples[0].opacity).toBeLessThan(.8);
+  expect(samples[1].blur, 'The middle frame should still visibly reveal').toBeGreaterThan(6);
+  expect(samples[1].blur).toBeLessThan(samples[0].blur);
+  expect(samples[2].blur, 'Reveal remains perceptible after one second').toBeGreaterThan(1);
+  expect(samples[2].blur).toBeLessThan(samples[1].blur);
   await expect(first.locator('.result-open')).toBeEnabled();
+  const readyAfterMs = await page.evaluate(() => performance.now() - window.workbenchDecodedAt);
+  expect(readyAfterMs, 'Finish, reveal and overlay exit form one perceptible sequence').toBeGreaterThanOrEqual(1450);
   await expect(first.getByRole('progressbar')).toHaveCount(0);
   await expect(first.locator('img')).toHaveCSS('filter', 'none');
   await expect(first.locator('img')).toHaveCSS('opacity', '1');
-  const motion = await page.evaluate(() => {
-    window.stopWorkbenchMotionCapture();
-    return window.workbenchMotionEvidence;
-  });
-  expect(motion.some(sample => sample.percent === '100'), 'decoded image reaches 100 before progress exits').toBe(true);
-  expect(motion.some(sample => sample.percent === '100' && sample.opacity < 1 && sample.filter?.includes('blur')),
-    'decoded image passes through a blurred translucent frame').toBe(true);
+  await expect(first.locator('img')).toHaveCSS('object-fit', 'contain');
+  unchangedFrames(initialFrames, await readFrames());
+  await page.evaluate(() => window.stopWorkbenchMotionCapture());
+  await screenshot('motion-ready', first);
   await screenshot('first-image-revealed-light');
-  results.push({ name: 'image-reveals-then-progress-exits', motion });
+  results.push({ name: 'visible-reveal-linked-to-completion-without-frame-resize', samples, readyAfterMs });
 
-  batch.status = 'failed';
-  batch.completedAt = new Date(startedAt + 450000).toISOString();
-  batch.error = '本地验证：第二张图片生成失败';
-  const failedState = page.waitForResponse(response => response.url().endsWith('/api/studio/state'));
-  await page.clock.fastForward(2000);
-  await failedState;
+  // A failed output stops even while its batch has other queued/running outputs.
+  await acceptState(() => {
+    batch.outputs[1] = { ...batch.outputs[1], status: 'failed', finishedAt: new Date().toISOString() };
+    batch.outputs[2] = { outputIndex: 2, status: 'running', startedAt: new Date().toISOString() };
+    batch.error = '本地验证：第二张图片生成失败';
+  });
   await expect(second.getByRole('alert')).toContainText('生成失败');
   await expect(second.getByRole('progressbar')).toHaveCount(0);
-  await page.clock.fastForward(60000);
-  await expect(second.getByRole('progressbar')).toHaveCount(0);
+  await expect(third).toContainText('正在生成');
+  await expect(fourth).toContainText('排队中');
   await expect(first.locator('.result-open')).toBeEnabled();
   await expect(first.locator('img')).toBeVisible();
-  results.push({ name: 'failure-stops-progress-and-preserves-successful-image' });
+  results.push({ name: 'individual-failure-keeps-success-while-batch-is-processing' });
 
   const actions = first.locator('.result-actions');
   await page.mouse.move(0, 0);
@@ -224,6 +284,36 @@ try {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await screenshot('mobile-390-workbench');
   results.push({ name: 'mobile-390-drawer-folder-navigation-and-return' });
+
+  for (const scenario of ['history', 'reduced-motion']) {
+    const directContext = await browser.newContext({
+      viewport: { width: 1440, height: 900 }, reducedMotion: scenario === 'reduced-motion' ? 'reduce' : 'no-preference',
+    });
+    const singleOptions = { ...options, count: 1 };
+    const singleBatch = { ...batch, options: singleOptions, status: scenario === 'history' ? 'completed' : 'processing',
+      outputs: [{ ...batch.outputs[0] }], error: undefined };
+    await routeFixture(directContext, { ...state, generations: [singleBatch], assets: [{ ...asset, options: singleOptions }] });
+    const directPage = await directContext.newPage();
+    captureErrors(directPage);
+    await directPage.addInitScript(() => {
+      window.directRevealSeen = false;
+      const observer = new MutationObserver(() => {
+        if (document.querySelector('.result-card [role="progressbar"][aria-valuenow="100"]'))
+          window.directRevealSeen = true;
+      });
+      observer.observe(document, { subtree: true, childList: true, attributes: true });
+    });
+    await directPage.goto(origin);
+    const directCard = directPage.locator('.result-card').first();
+    await expect(directCard.locator('.result-open')).toBeEnabled();
+    await expect(directCard.locator('img')).toHaveCSS('filter', 'none');
+    await expect(directCard.locator('img')).toHaveCSS('opacity', '1');
+    await expect(directCard.getByRole('progressbar')).toHaveCount(0);
+    expect(await directPage.evaluate(() => window.directRevealSeen), 'Historical/reduced-motion images must not replay completion animation').toBe(false);
+    await screenshot(scenario + '-direct-clear', directPage);
+    results.push({ name: scenario + '-displays-clear-without-replaying-reveal' });
+    await directContext.close();
+  }
   expect(errors).toEqual([]);
 } catch (cause) {
   failure = cause;

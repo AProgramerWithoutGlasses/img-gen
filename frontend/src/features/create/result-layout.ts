@@ -53,10 +53,11 @@ export function resultLayout(
   return { ...best, cardHeight, positions };
 }
 
+/** UI frame reservation only; automatic generation does not promise an output ratio. */
 export function requestedRatio(value: string, attachment?: { width: number; height: number }): number {
   const dimensions = value.split(":").map(Number);
   if (dimensions.length === 2 && dimensions.every(n => Number.isFinite(n) && n > 0))
     return dimensions[0] / dimensions[1];
   return attachment && attachment.width > 0 && attachment.height > 0
-    ? attachment.width / attachment.height : 1;
+    ? attachment.width / attachment.height : 16 / 9;
 }

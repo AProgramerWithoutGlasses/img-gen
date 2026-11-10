@@ -38,20 +38,28 @@ type Asset struct {
 	FolderIDs    []string          `json:"folderIds"`
 }
 
+type GenerationOutput struct {
+	OutputIndex int        `json:"outputIndex"`
+	Status      string     `json:"status"`
+	StartedAt   *time.Time `json:"startedAt,omitempty"`
+	FinishedAt  *time.Time `json:"finishedAt,omitempty"`
+}
+
 type Generation struct {
-	ID          string            `json:"id"`
-	UserID      string            `json:"userId"`
-	Username    string            `json:"username"`
-	Prompt      string            `json:"prompt"`
-	Attachments []Attachment      `json:"attachments"`
-	Options     GenerationOptions `json:"options"`
-	Status      string            `json:"status"`
-	ImageIDs    []string          `json:"imageIds"`
-	CreatedAt   time.Time         `json:"createdAt"`
-	CompletedAt *time.Time        `json:"completedAt,omitempty"`
-	DurationMS  *int64            `json:"durationMs,omitempty"`
-	Cost        int64             `json:"cost"`
-	Error       string            `json:"error,omitempty"`
+	ID          string             `json:"id"`
+	UserID      string             `json:"userId"`
+	Username    string             `json:"username"`
+	Prompt      string             `json:"prompt"`
+	Attachments []Attachment       `json:"attachments"`
+	Options     GenerationOptions  `json:"options"`
+	Status      string             `json:"status"`
+	ImageIDs    []string           `json:"imageIds"`
+	Outputs     []GenerationOutput `json:"outputs,omitempty"`
+	CreatedAt   time.Time          `json:"createdAt"`
+	CompletedAt *time.Time         `json:"completedAt,omitempty"`
+	DurationMS  *int64             `json:"durationMs,omitempty"`
+	Cost        int64              `json:"cost"`
+	Error       string             `json:"error,omitempty"`
 }
 
 type Folder struct {

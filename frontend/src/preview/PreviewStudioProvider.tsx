@@ -16,6 +16,16 @@ import type {
 
 import { Context } from "../state/context";
 const id = () => crypto.randomUUID();
+function failUnfinishedOutputs(record: Generation, finishedAt: string): number {
+  const unfinished = record.outputs?.filter(output => output.status === "queued" || output.status === "running");
+  const billable = record.outputs?.filter(output => output.status !== "failed").length ?? record.options.count;
+  const refund = billable ? Math.floor(record.cost * (unfinished?.length ?? billable) / billable) : 0;
+  unfinished?.forEach(output => { output.status = "failed"; output.finishedAt = finishedAt; });
+  record.status = "failed";
+  record.completedAt = finishedAt;
+  record.cost -= refund;
+  return refund;
+}
 export default function PreviewStudioProvider({
   children,
 }: {
@@ -35,11 +45,10 @@ export default function PreviewStudioProvider({
       for (const job of loaded.generations.filter(
         (j) => j.status === "processing",
       )) {
-        job.status = "failed";
+        const refund = failUnfinishedOutputs(job, new Date().toISOString());
         job.error = "本地预览已重新加载，请重新发送。";
         const user = loaded.users.find((u) => u.id === job.userId);
-        if (user) user.balance += job.cost;
-        job.cost = 0;
+        if (user) user.balance += refund;
       }
       await persistData(loaded);
       return loaded;
@@ -122,6 +131,7 @@ export default function PreviewStudioProvider({
             options: normalized,
             status: "processing",
             imageIds: [],
+            outputs: Array.from({ length: normalized.count }, (_, outputIndex) => ({ outputIndex, status: "queued" as const })),
             createdAt: new Date().toISOString(),
             cost,
           };
@@ -130,53 +140,69 @@ export default function PreviewStudioProvider({
           return record;
         });
         onAccepted?.(job);
-        await new Promise((resolve) => setTimeout(resolve, 1300));
+        let nextOutput = 0;
+        let halted = false;
         try {
-          return await update<Generation>((d) => {
-            const record = d.generations.find((j) => j.id === job.id)!;
-            const ratio = normalized.ratio.replace(" HD", "");
-            const [rw, rh] = ratio.includes(":")
-              ? ratio.split(":").map(Number)
-              : [1, 1];
-            const width = Math.round((1024 * rw) / rh),
-              height = 1024,
-              date = new Date().toISOString();
-            const images: ImageAsset[] = Array.from(
-              { length: normalized.count },
-              (_, outputIndex) => ({
-                id: id(),
-                userId: job.userId,
-                name: `生成图片-${outputIndex + 1}.svg`,
-                url: placeholderImage(
-                  `生成图片 ${outputIndex + 1}`,
-                  width,
-                  height,
-                ),
-                width,
-                height,
-                createdAt: date,
-                batchId: job.id,
-                outputIndex,
-                prompt: job.prompt,
-                options: normalized,
-                folderIds: [],
-              }),
-            );
-            d.assets.unshift(...images);
-            record.status = "completed";
-            record.completedAt = date;
-            record.durationMs = Date.now() - new Date(job.createdAt).getTime();
-            record.imageIds = images.map((a) => a.id);
-            return record;
-          });
+          // Match the server's two queue consumers. Each slot is started and
+          // completed separately; these timers belong only to the local preview.
+          const worker = async () => {
+            while (!halted) {
+              const outputIndex = nextOutput++;
+              if (outputIndex >= normalized.count) return;
+              try {
+                await update(d => {
+                  const output = d.generations.find(j => j.id === job.id)!.outputs![outputIndex];
+                  output.status = "running";
+                  output.startedAt = new Date().toISOString();
+                });
+                await new Promise(resolve => setTimeout(resolve, 1000 + outputIndex * 180));
+                await update(d => {
+                  const record = d.generations.find(j => j.id === job.id)!;
+                  const ratio = normalized.ratio.replace(" HD", "");
+                  const [rw, rh] = ratio.includes(":") ? ratio.split(":").map(Number)
+                    : attachments[0]?.width && attachments[0]?.height ? [attachments[0].width, attachments[0].height] : [1, 1];
+                  const width = Math.round(1024 * rw / rh), height = 1024;
+                  const date = new Date().toISOString();
+                  const image: ImageAsset = {
+                    id: id(),
+                    userId: job.userId,
+                    name: `生成图片-${outputIndex + 1}.svg`,
+                    url: placeholderImage(`生成图片 ${outputIndex + 1}`, width, height),
+                    width,
+                    height,
+                    createdAt: date,
+                    batchId: job.id,
+                    outputIndex,
+                    prompt: job.prompt,
+                    options: normalized,
+                    folderIds: [],
+                  };
+                  d.assets.unshift(image);
+                  const output = record.outputs![outputIndex];
+                  output.status = "succeeded";
+                  output.finishedAt = date;
+                  record.imageIds = d.assets.filter(asset => asset.batchId === job.id)
+                    .sort((a, b) => a.outputIndex - b.outputIndex).map(asset => asset.id);
+                  if (record.outputs!.every(item => item.status === "succeeded")) {
+                    record.status = "completed";
+                    record.completedAt = date;
+                    record.durationMs = Date.now() - new Date(job.createdAt).getTime();
+                  }
+                });
+              } catch (cause) { halted = true; throw cause; }
+            }
+          };
+          const workers = await Promise.allSettled([worker(), worker()]);
+          const failure = workers.find(result => result.status === "rejected");
+          if (failure?.status === "rejected") throw failure.reason;
+          return ref.current.generations.find(record => record.id === job.id)!;
         } catch (e) {
           await update((d) => {
             const record = d.generations.find((j) => j.id === job.id)!;
-            record.status = "failed";
+            const refund = failUnfinishedOutputs(record, new Date().toISOString());
             record.error = "保存结果失败，请重试";
             const user = d.users.find((u) => u.id === job.userId);
-            if (user) user.balance += record.cost;
-            record.cost = 0;
+            if (user) user.balance += refund;
           }).catch(() => undefined);
           throw e;
         }

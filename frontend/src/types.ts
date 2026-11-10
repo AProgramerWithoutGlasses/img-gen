@@ -51,6 +51,12 @@ export interface Folder {
   name: string;
   createdAt: string;
 }
+export interface GenerationOutput {
+  outputIndex: number;
+  status: "queued" | "running" | "succeeded" | "failed";
+  startedAt?: string;
+  finishedAt?: string;
+}
 export interface Generation {
   id: string;
   userId: string;
@@ -60,6 +66,7 @@ export interface Generation {
   options: GenerationOptions;
   status: "processing" | "completed" | "failed";
   imageIds: string[];
+  outputs?: GenerationOutput[];
   createdAt: string;
   completedAt?: string;
   durationMs?: number;

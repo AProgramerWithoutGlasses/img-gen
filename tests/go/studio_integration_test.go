@@ -66,6 +66,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 	}
 	var calls atomic.Int32
 	var partialCalls atomic.Int32
+	partialSuccess := make(chan struct{})
 	Upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		prompt := ""
@@ -116,9 +117,16 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 				t.Error("GPT controls not forwarded")
 			}
 		}
-		if strings.Contains(prompt, "partial") && partialCalls.Add(1)%2 == 0 {
-			w.WriteHeader(503)
-			return
+		if strings.Contains(prompt, "partial") {
+			if partialCalls.Add(1)%2 == 0 {
+				w.WriteHeader(503)
+				return
+			}
+			select {
+			case <-partialSuccess:
+			case <-r.Context().Done():
+				return
+			}
 		}
 		encoded := base64.StdEncoding.EncodeToString(testPNG())
 		if gemini {
@@ -142,9 +150,6 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 	defer server.Close()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer func() { cancel(); a.WaitWorkers() }()
-	for range 2 {
-		a.StartWorkers(ctx, 1)
-	}
 	jar, _ := cookiejar.New(nil)
 	Client := &http.Client{Jar: jar}
 	request := func(c *http.Client, method, path string, body any, want int) []byte {
@@ -170,6 +175,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 		return raw
 	}
 	state := func(c *http.Client) struct {
+		Version     int
 		Assets      []studio.Asset
 		Generations []studio.Generation
 		Users       []studio.StudioUser
@@ -177,6 +183,7 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 	} {
 		t.Helper()
 		var s struct {
+			Version     int
 			Assets      []studio.Asset
 			Generations []studio.Generation
 			Users       []studio.StudioUser
@@ -200,12 +207,64 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 	}
 	bad["prompt"] = "changed"
 	request(Client, "POST", "/api/studio/generations", bad, 409)
+	queued := state(Client)
+	if queued.Version != 1 || len(queued.Generations) != 1 || len(queued.Generations[0].Outputs) != 2 {
+		t.Fatalf("single-output state or version missing: %+v", queued)
+	}
+	for i, output := range queued.Generations[0].Outputs {
+		if output.OutputIndex != i || output.Status != "queued" || output.StartedAt != nil || output.FinishedAt != nil {
+			t.Fatalf("queued output should not have started: %+v", output)
+		}
+	}
+	for range 2 {
+		a.StartWorkers(ctx, 1)
+	}
+	// Hold the successful fixture response so a failed slot must be visible while
+	// its sibling is genuinely running, without inventing an upstream percentage.
 	deadline := time.Now().Add(10 * time.Second)
+	for {
+		s := state(Client)
+		running, failed := 0, 0
+		for _, output := range s.Generations[0].Outputs {
+			switch output.Status {
+			case "running":
+				running++
+				if output.StartedAt == nil || output.FinishedAt != nil {
+					t.Fatal("running output timestamps invalid", output)
+				}
+			case "failed":
+				failed++
+				if output.StartedAt == nil || output.FinishedAt == nil {
+					t.Fatal("failed output timestamps missing", output)
+				}
+			}
+		}
+		if running == 1 && failed == 1 {
+			if s.Generations[0].Status != "processing" || len(s.Assets) != 0 {
+				t.Fatal("partial failure must preserve the active batch", s)
+			}
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("single-output failure was hidden until the whole batch ended", s)
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	close(partialSuccess)
+	deadline = time.Now().Add(10 * time.Second)
 	for {
 		s := state(Client)
 		if len(s.Generations) == 1 && s.Generations[0].Status != "processing" {
 			if s.Generations[0].Status != "failed" || len(s.Assets) != 1 || s.Generations[0].Cost != 1 || s.Users[0].Balance != 999 || s.Generations[0].Error == "" {
 				t.Fatalf("partial result/settlement lost: %+v", s)
+			}
+			for i, output := range s.Generations[0].Outputs {
+				if output.OutputIndex != i || output.StartedAt == nil || output.FinishedAt == nil || output.StartedAt.After(*output.FinishedAt) {
+					t.Fatalf("finished output order/timing lost: %+v", output)
+				}
+				if (output.Status == "succeeded") != (s.Assets[0].OutputIndex == output.OutputIndex) {
+					t.Fatalf("result attached to the wrong output status: %+v", s)
+				}
 			}
 			break
 		}
@@ -358,6 +417,11 @@ func TestStudioMySQLWorkflow(t *testing.T) {
 	for _, g := range state(Client).Generations {
 		if g.ID == orderedBatch && (len(g.ImageIDs) != 2 || g.ImageIDs[0] != expectedFirst) {
 			t.Fatal("refresh reordered batch outputs")
+		}
+		if g.ID == orderedBatch {
+			if len(g.Outputs) != 2 || g.Outputs[0].OutputIndex != 0 || g.Outputs[1].OutputIndex != 1 || g.Outputs[0].Status != "succeeded" || g.Outputs[1].Status != "succeeded" {
+				t.Fatal("refresh reordered per-output status", g.Outputs)
+			}
 		}
 	}
 	// Reusing a generated result as an attachment must preserve the original.
