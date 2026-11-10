@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       business: ${{ steps.scope.outputs.business }}
+      frontend: ${{ steps.scope.outputs.frontend }}
+      backend: ${{ steps.scope.outputs.backend }}
+      integration: ${{ steps.scope.outputs.integration }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -14,17 +17,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm run check:tools
       - id: scope
         env:
           CHANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
           CHANGE_HEAD: ${{ github.sha }}
         run: node scripts/ci-scope.mjs
+      - if: steps.scope.outputs.tools == 'true'
+        run: npm run check:tools
+      - if: steps.scope.outputs.tools != 'true'
+        run: npm run check:docs && node scripts/check-structure.mjs
   test:
     needs: scope
     if: needs.scope.outputs.business == 'true'
     concurrency:
-      group: project-checks-business-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      group: project-checks-mode-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-f${{ needs.scope.outputs.frontend }}-b${{ needs.scope.outputs.backend }}-i${{ needs.scope.outputs.integration }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -51,10 +57,26 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci && npx playwright install --with-deps chromium
         working-directory: frontend
-      - run: npm run verify && npm run sync:server
+      - name: Frontend checks and embedded assets
+        if: needs.scope.outputs.frontend == 'true'
+        run: npm run verify && npm run sync:server
         working-directory: frontend
-      - run: go vet ./...
-      - run: go test -race ./...
+      - name: Build embedded frontend for backend checks
+        if: needs.scope.outputs.frontend != 'true'
+        run: npm run build:server
+        working-directory: frontend
+      - name: Go vet
+        if: needs.scope.outputs.backend == 'true'
+        run: go vet ./...
+      - name: Backend race tests and real browser integration
+        if: needs.scope.outputs.backend == 'true'
+        run: go test -race ./...
+        env:
+          TEST_MYSQL_DSN: root:integration-only@tcp(127.0.0.1:3306)/imggen_test?parseTime=true
+          STUDIO_BROWSER_CHECK: '1'
+      - name: Frontend integration with real Go and CSP
+        if: needs.scope.outputs.integration == 'true' && needs.scope.outputs.backend != 'true'
+        run: go test ./tests/go -run '^TestStudioMySQLWorkflow$' -count=1 -timeout 5m
         env:
           TEST_MYSQL_DSN: root:integration-only@tcp(127.0.0.1:3306)/imggen_test?parseTime=true
           STUDIO_BROWSER_CHECK: '1'
