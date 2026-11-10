@@ -94,9 +94,13 @@
   line-height: 18px;
   text-align: center;
 }
-.dialog-select-model,
-.dialog-menu-model {
+.dialog-select-model {
   width: 166px;
+}
+.dialog-menu-model {
+  width: max-content;
+  min-width: 166px;
+  max-width: calc(100vw - 16px);
 }
 .dialog-select-model {
   gap: 8px;

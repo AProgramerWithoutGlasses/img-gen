@@ -43,12 +43,14 @@ export async function verifyCompactModelControls(control, menu) {
       return { textWidth: text.width, availableWidth: area.width, left: text.left,
         dotGap: dot ? dot.left - text.right : null, height: row.getBoundingClientRect().height };
     });
-    return { left: rect.left, right: rect.right, width: rect.width, rows };
+    return { left: rect.left, right: rect.right, width: rect.width, viewportWidth: document.documentElement.clientWidth, rows };
   });
   const longest = Math.max(...options.rows.map(row => row.textWidth));
-  expect(options.width, 'Model menu should use the approved 166px length').toBeCloseTo(166, 1);
-  expect(options.left, 'Model menu and button should align at their left edges').toBeCloseTo(button.left, 1);
-  expect(options.right, 'Model menu and button should align at their right edges').toBeCloseTo(button.right, 1);
+  expect(options.width, 'Model menu should be at least as wide as the approved button').toBeGreaterThanOrEqual(button.width - .1);
+  const expectedLeft = Math.max(8, Math.min(button.left, options.viewportWidth - options.width - 8));
+  expect(options.left, 'Model menu should align left with its button while staying inside the viewport').toBeCloseTo(expectedLeft, 1);
+  expect(options.left).toBeGreaterThanOrEqual(8);
+  expect(options.right).toBeLessThanOrEqual(options.viewportWidth - 8);
   for (const option of options.rows) {
     expect(option.availableWidth + .1, 'Model option text is clipped').toBeGreaterThanOrEqual(option.textWidth);
     expect(option.left).toBeCloseTo(options.rows[0].left, 1);
@@ -184,6 +186,14 @@ export async function verifyDialog({ page, screenshot }) {
     const box = await model.boundingBox(), menu = await page.getByRole("listbox").boundingBox();
     await expect(model).toHaveCSS("font-size", "13px");
     await verifyCompactModelControls(model, page.getByRole("listbox"));
+    const wideFont = await page.addStyleTag({ content: '.dialog-menu-model { font-family: monospace; }' });
+    try {
+      const wideMenu = await verifyCompactModelControls(model, page.getByRole("listbox"));
+      expect(wideMenu.menuWidth, "Wider fallback fonts should grow the menu without resizing its button").toBeGreaterThan(wideMenu.button.width);
+      await screenshot("dialog-model-menu-wide-font");
+    } finally {
+      await wideFont.evaluate(element => element.remove());
+    }
     await moveAway();
     const fills = await model.evaluate(element => {
       const ordinary = document.querySelector('[role="combobox"][aria-label="生成数量"]');
