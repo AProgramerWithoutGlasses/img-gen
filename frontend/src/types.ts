@@ -154,4 +154,5 @@ export interface StudioActions {
   changePassword: (current: string, next: string) => Promise<void>;
   signOut: () => void;
   signIn: (username: string, password: string) => Promise<void>;
+  register: (username: string, password: string) => Promise<void>;
 }

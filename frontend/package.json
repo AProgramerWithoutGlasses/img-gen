@@ -15,11 +15,13 @@
     "build:server": "npm run build && npm run sync:server",
     "preview": "vite preview",
     "preview:check": "node tests/e2e/preview-check.mjs",
+    "auth-gallery:check": "node tests/e2e/auth-gallery-check.mjs",
     "performance:check": "node tests/e2e/performance-check.mjs",
-    "verify:frontend": "node scripts/check-scripts.mjs && npm run build && npm run preview:check && npm run performance:check",
+    "verify:frontend": "node scripts/check-scripts.mjs && npm run build && npm run preview:check && npm run auth-gallery:check && npm run performance:check",
     "verify": "npm run verify:frontend"
   },
   "dependencies": {
+    "fflate": "0.8.2",
     "lucide-react": "1.70.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",

@@ -5,6 +5,7 @@ import { normalizeOptions } from "../config/models";
 import { placeholderImage } from "../lib/images";
 import { loadData, persistData } from "./persistence";
 import { acceptsPreviewCredentials } from "./auth";
+import { passwordLengthError, USERNAME_PATTERN } from "../lib/auth";
 import type {
   Folder,
   Generation,
@@ -16,6 +17,10 @@ import type {
 
 import { Context } from "../state/context";
 const id = () => crypto.randomUUID();
+async function previewPasswordFingerprint(password: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(password));
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+}
 function failUnfinishedOutputs(record: Generation, finishedAt: string): number {
   const unfinished = record.outputs?.filter(output => output.status === "queued" || output.status === "running");
   const billable = record.outputs?.filter(output => output.status !== "failed").length ?? record.options.count;
@@ -33,6 +38,8 @@ export default function PreviewStudioProvider({
 }) {
   const [data, setData] = useState<StudioData>(createSeed);
   const ref = useRef(data);
+  // Preview-only credentials stay in memory and are never saved in IndexedDB.
+  const registeredCredentials = useRef(new Map<string, string>());
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const queue = useRef<Promise<unknown>>(Promise.resolve());
@@ -325,16 +332,32 @@ export default function PreviewStudioProvider({
           d.currentUserId = "";
         }).catch((e) => setError(e.message));
       },
-      signIn: (username, password) =>
-        update((d) => {
+      signIn: async (username, password) => {
+        const fingerprint = await previewPasswordFingerprint(password);
+        return update((d) => {
           const user = d.users.find(
-            (u) => u.username === username && u.status === "enabled",
+            (u) => u.username.toLowerCase() === username.toLowerCase() && u.status === "enabled",
           );
-          if (!user || !acceptsPreviewCredentials(username, password)) {
+          if (!user || !(acceptsPreviewCredentials(user.username, password) || registeredCredentials.current.get(user.username.toLowerCase()) === fingerprint)) {
             throw new Error("用户名或密码不正确");
           }
           d.currentUserId = user.id;
-        }),
+        });
+      },
+      async register(username, password) {
+        username = username.trim();
+        if (!USERNAME_PATTERN.test(username)) throw new Error("用户名格式不正确");
+        const lengthError = passwordLengthError(password, true);
+        if (lengthError) throw new Error(lengthError);
+        const fingerprint = await previewPasswordFingerprint(password);
+        await update(d => {
+          if (d.users.some(user => user.username.toLowerCase() === username.toLowerCase())) throw new Error("用户名已存在");
+          const user: StudioUser = { id: id(), username, role: "user", status: "enabled", balance: 0, createdAt: new Date().toISOString() };
+          d.users.push(user);
+          d.currentUserId = user.id;
+        });
+        registeredCredentials.current.set(username.toLowerCase(), fingerprint);
+      },
     };
   }, []);
   if (error)

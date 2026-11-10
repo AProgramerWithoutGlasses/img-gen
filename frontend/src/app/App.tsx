@@ -196,6 +196,10 @@ function StudioApp() {
   if (!currentUser.id || route === "/login")
     return (
       <LoginPage
+        onRegister={async (username, password) => {
+          await actions.register(username, password);
+          navigate("/create");
+        }}
         onLogin={async (username, password) => {
           await actions.signIn(username, password);
           navigate(route === "/login" ? "/create" : route);
@@ -239,6 +243,10 @@ function StudioApp() {
             }
             onCreateFolder={newFolder}
             onCreate={() => navigate("/create")}
+            onEdit={image => {
+              setPendingAttachment(image);
+              navigate("/create");
+            }}
             onPreview={openPreview}
             notify={notify}
           />

@@ -25,6 +25,7 @@ func (a *App) Handler(static fs.FS) http.Handler {
 		jsonResponse(w, 200, map[string]any{"configured": a.Upstream.Key != "", "max_batch": maxBatchImages, "max_per_model": 4, "max_upload_mb": 12})
 	})
 	mux.HandleFunc("POST /api/auth/login", a.login)
+	mux.HandleFunc("POST /api/auth/register", a.register)
 	mux.HandleFunc("POST /api/auth/logout", a.logout)
 	mux.HandleFunc("GET /api/auth/me", a.profile)
 	mux.HandleFunc("GET /api/prices", a.listPrices)
@@ -68,7 +69,7 @@ func (a *App) Handler(static fs.FS) http.Handler {
 				}
 			}
 		}
-		if strings.HasPrefix(r.URL.Path, "/api/") && r.URL.Path != "/api/auth/login" {
+		if strings.HasPrefix(r.URL.Path, "/api/") && r.URL.Path != "/api/auth/login" && r.URL.Path != "/api/auth/register" {
 			var ok bool
 			r, ok = a.authenticate(w, r)
 			if !ok {

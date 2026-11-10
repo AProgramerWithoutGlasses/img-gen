@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useStudio } from "../../state/StudioContext";
 import { Modal } from "../../components/Modal";
 import { Icon } from "../../components/Icon";
+import { ImageSelectionToolbar } from "../../components/ImageSelectionToolbar";
+import { downloadImages } from "../../lib/images";
 import type { ImageAsset, Notify, PreviewImage } from "../../types";
 import "./gallery.css";
 import { errorText, useOutsideClose } from "./shared";
@@ -15,6 +17,7 @@ interface GalleryPageProps {
   onCreateFolder: () => void;
   onCreate?: () => void;
   onPreview: PreviewImage;
+  onEdit: (image: ImageAsset) => void;
   notify: Notify;
 }
 
@@ -73,6 +76,7 @@ export default function GalleryPage({
   onCreateFolder,
   onCreate,
   onPreview,
+  onEdit,
   notify,
 }: GalleryPageProps) {
   const { data, actions, currentUser } = useStudio();
@@ -86,6 +90,8 @@ export default function GalleryPage({
   const [folderName, setFolderName] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const selectionHintId = useId();
   const [sourceTarget, setSourceTarget] = useState<string | null>(null);
   const [width, setWidth] = useState(1040);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -207,9 +213,11 @@ export default function GalleryPage({
     }
     return result;
   }, [images]);
-  const selectedVisible = selected.filter((id) =>
-    images.some((image) => image.id === id),
-  );
+  const loadedIDs = new Set(images.map(image => image.id));
+  const selectedVisible = selected.filter(id => loadedIDs.has(id));
+  const selectedImages = selectedVisible.map(id => assetsByID.get(id)).filter((image): image is ImageAsset => !!image);
+  const allSelected = images.length > 0 && selectedVisible.length === images.length;
+  const multipleSelected = selectedVisible.length > 1;
   const title = sourceTarget
     ? "选择图片"
     : activeFolder === "all"
@@ -219,6 +227,8 @@ export default function GalleryPage({
         : (currentFolder?.name ?? "文件夹");
 
   function toggle(id: string) {
+    if (busy || downloading) return;
+    setSelecting(true);
     setSelected((previous) =>
       previous.includes(id)
         ? previous.filter((item) => item !== id)
@@ -229,6 +239,31 @@ export default function GalleryPage({
     setSelecting(false);
     setSelected([]);
     setSourceTarget(null);
+  }
+
+  useEffect(() => {
+    if (!selecting) return;
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented || busy || downloading
+        || document.querySelector('dialog[open], [role="dialog"][aria-modal="true"], [role="menu"]')) return;
+      event.preventDefault();
+      cancelSelection();
+    };
+    document.addEventListener("keydown", escape);
+    return () => document.removeEventListener("keydown", escape);
+  }, [selecting, busy, downloading]);
+
+  async function downloadSelected() {
+    if (!selectedImages.length || downloading) return;
+    setDownloading(true);
+    try {
+      await downloadImages(selectedImages);
+      notify(`已下载 ${selectedImages.length} 张图片`);
+    } catch (failure) {
+      notify(errorText(failure));
+    } finally {
+      setDownloading(false);
+    }
   }
 
   async function remove(imageIds: string[]) {
@@ -313,16 +348,8 @@ export default function GalleryPage({
           <p>{sourceTarget ? "选中要加入此文件夹的图片。" : currentFolder ? "属于这个文件夹的图片，也会保留在全部图片中。" : "所有生成的图片都在这里，按时间整理。"}</p>
         </div>
         <div className="gallery-heading-actions">
-          {images.length > 0 && (
-            <button
-              className={`btn${selecting ? "" : " btn-primary"}`}
-              onClick={() => {
-                if (selecting) cancelSelection();
-                else setSelecting(true);
-              }}
-            >
-              {selecting ? "取消选择" : "选择图片"}
-            </button>
+          {images.length > 0 && !selecting && (
+            <button className="btn btn-primary" onClick={() => setSelecting(true)}>选择图片</button>
           )}
           {currentFolder && !sourceTarget && (
             <div className="gallery-folder-menu-anchor" ref={menuRef}>
@@ -387,7 +414,10 @@ export default function GalleryPage({
                     height={row.height}
                     selecting={selecting}
                     selected={selectedVisible.includes(image.id)}
+                    multipleSelected={multipleSelected}
+                    busy={busy || downloading}
                     onToggle={() => toggle(image.id)}
+                    onEdit={onEdit}
                     onPreview={(image, collection) => onPreview(image, collection, listImages ? {
                       folderId: queryFolder, total: imageTotal, nextCursor: pages.nextCursor,
                     } : undefined)}
@@ -452,45 +482,45 @@ export default function GalleryPage({
           </div>
         )}
       </div>
-      {selecting && selectedVisible.length > 0 && (
-        <div
-          className="gallery-selection-toolbar"
-          role="toolbar"
-          aria-label="图片整理"
-        >
-          <span>已选 {selectedVisible.length} 张</span>
-          <button className="btn" onClick={cancelSelection} disabled={busy}>
-            取消选择
-          </button>
+      {selecting && (
+        <ImageSelectionToolbar count={selectedVisible.length} allSelected={allSelected}
+          label="图片整理" selectAllLabel={listImages && pages.nextCursor ? "全选已加载" : "全选"}
+          closeDisabled={busy || downloading} onClose={cancelSelection}
+          onSelectAll={() => { if (!busy && !downloading) setSelected(allSelected ? [] : images.map(image => image.id)); }}>
+          <span className="workbench-edit-guard" tabIndex={multipleSelected ? 0 : undefined}
+            title={multipleSelected ? "多选时无法继续修图" : undefined}
+            aria-describedby={multipleSelected ? selectionHintId : undefined}>
+            <button type="button" disabled={busy || downloading || selectedImages.length !== 1}
+              onClick={() => { if (selectedImages.length === 1) onEdit(selectedImages[0]); }}>
+              <Icon name="edit" size={16} />继续修图
+            </button>
+            {multipleSelected && <span className="workbench-selection-hint" id={selectionHintId}>多选时无法继续修图</span>}
+          </span>
           {sourceTarget ? (
-            <button
-              className="btn btn-primary"
-              onClick={() => void addToSource()}
-              disabled={busy}
-            >
+            <button type="button" onClick={() => void addToSource()} disabled={busy || downloading || !selectedVisible.length}>
+              <Icon name="folderPlus" size={16} />
               {busy ? "加入中…" : "加入此文件夹"}
             </button>
           ) : (
             <>
-              <button
-                className="btn btn-primary"
-                onClick={() => setOrganizing(selectedVisible)}
-                disabled={busy}
-              >
-                加入文件夹
+              <button type="button" onClick={() => setOrganizing(selectedVisible)} disabled={busy || downloading || !selectedVisible.length}>
+                <Icon name="folderPlus" size={16} />加入文件夹
               </button>
               {currentFolder && (
                 <button
-                  className="btn"
+                  type="button"
                   onClick={() => void remove(selectedVisible)}
-                  disabled={busy}
+                  disabled={busy || downloading || !selectedVisible.length}
                 >
-                  移出此文件夹
+                  <Icon name="arrowLeft" size={16} />移出此文件夹
                 </button>
               )}
             </>
           )}
-        </div>
+          <button type="button" onClick={() => void downloadSelected()} disabled={busy || downloading || !selectedVisible.length}>
+            <Icon name="download" size={16} />{downloading ? "准备下载…" : "下载"}
+          </button>
+        </ImageSelectionToolbar>
       )}
       {organizing && (
         <FolderPicker

@@ -24,6 +24,7 @@ CI 保持现有自动触发；小改本地通过上述验证即可发布，无�
 | 仅说明文档 | npm run check:docs |
 | 根工具、状态命令、构建缓存 | npm run check:tools；实际执行相关安全命令；构建入口变化时再执行一次 npm run build 并核对复用摘要 |
 | 前端 | node frontend/scripts/check-scripts.mjs；npm run build（内含类型检查）；受影响浏览器流程；需要完整模拟时改用 npm run verify，再用 npm --prefix frontend run sync:server 同步嵌入，不先重复检查与构建；同时改说明时补 check:docs |
+| 注册、图库／工作台批量操作 | node frontend/tests/e2e/auth-gallery-check.mjs；覆盖密码边界与显隐、普通用户0积分注册及刷新、共用悬停／多选、两处原图ZIP、文件名去重与失败不生成半成品。认证后端在空专用_test库运行 go test ./tests/go -run '^TestRegistration' -count=1，核对权限、会话、重名、输入及访客限流 |
 | 图片分页与缩略轨道渲染 | node frontend/tests/e2e/big-preview-check.mjs --pagination-only；覆盖125张集合的50／51与100／101边界、读取失败手动重试、可视缩略项上限、图库续载与完整文件夹统计；桌面／窄屏首尾用 --rail-only。后端使用空专用_test库运行 go test ./tests/go -run '^TestStudioImagePaginationMySQL$' -count=1，核对稳定游标、权限、批次完整与watch终态 |
 | 工作区生成进度与图内操作 | node frontend/tests/e2e/workbench-motion-check.mjs；检查真实单图排队／生成与独立计时、解码后数字／白条随清晰化推进且清晰才100%、成图返回不改变画框、失败保图、悬浮与预览及390px导航；只用本地响应样本，过渡采样不禁用动画 |
 | 后端 | 前端嵌入产物可用后 go test ./...、go vet ./...、go build ./... |

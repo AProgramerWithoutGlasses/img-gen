@@ -273,7 +273,7 @@ try {
   await expect(selection.getByRole('button', { name: '加入文件夹', exact: true })).toBeEnabled();
   await expect(first).toHaveClass(/is-selected/);
   await screenshot('partial-success-selects-only-ready-image');
-  await selection.getByRole('button', { name: '取消选择', exact: true }).click();
+  await selection.getByRole('button', { name: '退出多选', exact: true }).click();
   await expect(selection).toHaveCount(0);
   await page.mouse.move(0, 0);
   await expect(actions).toHaveCSS('visibility', 'hidden');

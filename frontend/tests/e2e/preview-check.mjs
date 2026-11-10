@@ -327,7 +327,7 @@ async function verifyCreation() {
   await page.getByRole("button", { name: "展开侧栏", exact: true }).click();
   await page.clock.runFor(300);
   await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(224, 0);
-  await selection.getByRole("button", { name: "取消选择", exact: true }).click();
+  await selection.getByRole("button", { name: "退出多选", exact: true }).click();
   await creation.locator(".result-open").first().click();
   const modal = page.getByRole("dialog", { name: "图片预览", exact: true });
   await expect(modal).toBeVisible();
@@ -341,7 +341,7 @@ async function verifyCreation() {
   await page.clock.resume();
   await page.clock.fastForward(3200);
   await expect(batchToast, "Ordinary feedback should disappear after three seconds").toHaveCount(0);
-  if (await selection.count()) await selection.getByRole("button", { name: "取消选择", exact: true }).click();
+  if (await selection.count()) await selection.getByRole("button", { name: "退出多选", exact: true }).click();
   await openFolder("待整理");
   const batchFolder = page.getByRole("region", { name: "我的图片", exact: true });
   await expect(batchFolder.locator(".gallery-tile")).toHaveCount(2);

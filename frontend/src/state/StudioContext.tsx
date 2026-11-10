@@ -261,6 +261,21 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
         historyRequest.current = null;
         await loadWorkspace();
       },
+      async register(username, password) {
+        await api("/api/auth/register", { method: "POST", body: JSON.stringify({ username, password }) });
+        // Registration is never retried. If login/read fails the account exists;
+        // use the normal login instead of registering the account again.
+        try {
+          await api("/api/auth/login", { method: "POST", body: JSON.stringify({ username, password }) });
+          epoch.current++;
+          for (const controller of pendingReads.current) controller.abort();
+          pendingReads.current.clear();
+          historyRequest.current = null;
+          await loadWorkspace();
+        } catch {
+          throw new Error("账号已创建，请切换到登录后进入。");
+        }
+      },
     };
   }, []);
   if (error) return <div className="boot-error"><h1>无法读取工作区</h1><p>{error}</p><button className="btn" onClick={() => location.reload()}>重试</button></div>;

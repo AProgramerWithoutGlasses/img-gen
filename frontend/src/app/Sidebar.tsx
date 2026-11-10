@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "../components/Icon";
+import { BrandMark } from "../components/BrandMark";
 import { AccountMenu } from "../components/AccountMenu";
 import { useStudio } from "../state/StudioContext";
 import { settingsLabels } from "./navigation";
@@ -79,7 +80,7 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
     <aside className={"sidebar" + (compact ? " is-compact" : "") + (mobileOpen ? " is-mobile-open" : "")}
       aria-label="工作空间导航">
       <div className="sidebar-brand">
-        <span className="brand-mark"><Icon name="sparkles" size={18} /></span>
+        <BrandMark size={28} />
         {!compact && <strong>AiCraft</strong>}
         {(narrow || !isSettings) && <button ref={sidebarToggle} className="icon-button sidebar-toggle" aria-label={toggleLabel}
           title={toggleLabel} aria-expanded={!compact} onClick={toggle}>
