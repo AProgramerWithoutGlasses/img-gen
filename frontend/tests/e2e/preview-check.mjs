@@ -252,24 +252,10 @@ async function verifyCreation() {
   await expect(selection.getByRole("button", { name: "继续修图", exact: true })).toBeEnabled();
   await secondChoice.check();
   await expect(selection).toContainText("已选 2 张");
-  await expect(selection.getByRole("button", { name: "继续修图", exact: true })).toBeDisabled();
-  const editGuard = selection.locator(".workbench-edit-guard");
-  await expect(editGuard).toHaveAttribute("title", "多选时无法继续修图");
-  await expect(editGuard).toHaveAccessibleDescription("多选时无法继续修图");
-  const selectionHint = selection.locator(".workbench-selection-hint");
-  await expect(selectionHint).toHaveText("多选时无法继续修图");
-  const hiddenHint = await selectionHint.evaluate(element => {
-    const box = element.getBoundingClientRect(), style = getComputedStyle(element);
-    return { width: box.width, height: box.height, position: style.position,
-      clipped: style.clipPath === "inset(50%)" || /^rect\(0px,? 0px,? 0px,? 0px\)$/.test(style.clip),
-      accessible: style.display !== "none" && style.visibility !== "hidden" && !element.hidden };
-  });
-  expect(hiddenHint.width, "The disabled reason must not take visible toolbar space").toBeLessThanOrEqual(1);
-  expect(hiddenHint.height).toBeLessThanOrEqual(1);
-  expect(hiddenHint.position).toBe("absolute");
-  expect(hiddenHint.clipped && hiddenHint.accessible, "Keep the disabled reason available to assistive technology without painting it").toBe(true);
+  await expect(selection.getByRole("button", { name: "继续修图", exact: true })).toBeEnabled();
+  await expect(selection.locator(".workbench-selection-hint")).toHaveCount(0);
   for (const edit of await creation.getByRole("button", { name: "继续修图", exact: true, includeHidden: true }).all())
-    await expect(edit).toBeDisabled();
+    await expect(edit).toBeEnabled();
   // In selection mode a centre click toggles that image instead of opening a
   // preview; the checked count and the selection styling must agree.
   await creation.locator(".result-open").first().click();

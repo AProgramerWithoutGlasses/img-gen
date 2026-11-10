@@ -16,8 +16,9 @@
     "preview": "vite preview",
     "preview:check": "node tests/e2e/preview-check.mjs",
     "auth-gallery:check": "node tests/e2e/auth-gallery-check.mjs",
+    "base-images:check": "node tests/e2e/base-images-check.mjs",
     "performance:check": "node tests/e2e/performance-check.mjs",
-    "verify:frontend": "node scripts/check-scripts.mjs && npm run build && npm run preview:check && npm run auth-gallery:check && npm run performance:check",
+    "verify:frontend": "node scripts/check-scripts.mjs && npm run build && npm run preview:check && npm run auth-gallery:check && npm run base-images:check && npm run performance:check",
     "verify": "npm run verify:frontend"
   },
   "dependencies": {

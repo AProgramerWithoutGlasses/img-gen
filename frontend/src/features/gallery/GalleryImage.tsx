@@ -5,16 +5,15 @@ import { downloadImage } from "../../lib/images";
 import type { ImageAsset, Notify, PreviewImage } from "../../types";
 import { errorText } from "./shared";
 
-export function GalleryImage({ image, collection, selecting, selected, multipleSelected,
+export function GalleryImage({ image, collection, selecting, selected,
   onToggle, onPreview, onEdit, folderId, onOrganize, onRemove, notify, busy, width, height }: {
   image: ImageAsset;
   collection: ImageAsset[];
   selecting: boolean;
   selected: boolean;
-  multipleSelected: boolean;
   onToggle: () => void;
   onPreview: PreviewImage;
-  onEdit: (image: ImageAsset) => void;
+  onEdit: (images: ImageAsset[]) => void;
   folderId?: string;
   onOrganize: (ids: string[]) => void;
   onRemove: (ids: string[]) => void;
@@ -35,13 +34,12 @@ export function GalleryImage({ image, collection, selecting, selected, multipleS
       </button>
       <ImageSelectionControl selected={selected} onToggle={onToggle} label={`选中 ${image.name}`} />
       <ImageCardActions image={image} selecting={selecting} compact={width < 260 || height < 112}
-        onEdit={() => onEdit(image)} onFolder={() => onOrganize([image.id])}
+        onEdit={() => onEdit([image])} onFolder={() => onOrganize([image.id])}
         onDownload={() => {
           try { downloadImage(image); }
           catch (failure) { notify(errorText(failure)); }
         }}
-        editDisabled={busy || multipleSelected}
-        editDisabledReason={multipleSelected ? "多选时无法继续修图" : undefined}
+        editDisabled={busy}
         extraActions={folderId ? [{ label: "从此文件夹移出", icon: "arrowLeft", onClick: () => onRemove([image.id]), disabled: busy }] : []}
       />
     </article>

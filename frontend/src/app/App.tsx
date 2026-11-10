@@ -10,7 +10,7 @@ import { FolderPicker } from "../features/gallery/FolderPicker";
 import { ImagePreview } from "../features/gallery/ImagePreview";
 import SettingsPage from "../features/settings/SettingsPage";
 import { StudioProvider, useStudio } from "../state/StudioContext";
-import type { ImageAsset, Notify, PreviewCollectionOptions, SettingsSection } from "../types";
+import type { ImageAsset, Notify, NotifyOptions, PreviewCollectionOptions, SettingsSection } from "../types";
 
 function routeFromHash() {
   return location.hash.replace(/^#/, "") || "/create";
@@ -36,19 +36,20 @@ function StudioApp() {
   const previewEpoch = useRef(0);
   const previewRead = useRef<{ controller: AbortController; promise: Promise<ImageAsset[] | undefined> } | null>(null);
   const [previewFolder, setPreviewFolder] = useState<string[] | null>(null);
-  const [pendingAttachment, setPendingAttachment] = useState<ImageAsset | null>(
+  const [pendingAttachments, setPendingAttachments] = useState<ImageAsset[] | null>(
     null,
   );
   const [toast, setToast] = useState<{
     text: string;
     action?: { label: string; run: () => void };
+    options?: NotifyOptions;
   } | null>(null);
   const [guardTarget, setGuardTarget] = useState<string | null>(null);
   const dirty = useRef(false);
   const routeRef = useRef(route);
   routeRef.current = route;
   const notify = useCallback<Notify>(
-    (text, action) => setToast({ text, action }),
+    (text, action, options) => setToast({ text, action, options }),
     [],
   );
   const isSettings = route.startsWith("/settings");
@@ -87,7 +88,7 @@ function StudioApp() {
   }, []);
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(null), toast.action ? 6000 : 3000);
+    const t = setTimeout(() => setToast(null), toast.options?.durationMs ?? (toast.action ? 6000 : 3000));
     return () => clearTimeout(t);
   }, [toast]);
   useEffect(() => {
@@ -232,8 +233,8 @@ function StudioApp() {
           onPreview={openPreview}
           onFolder={setPreviewFolder}
           notify={notify}
-          pendingAttachment={pendingAttachment}
-          onAttachmentHandled={() => setPendingAttachment(null)}
+          pendingAttachments={pendingAttachments}
+          onAttachmentHandled={() => setPendingAttachments(null)}
         />
         {isGallery && (
           <GalleryPage
@@ -243,8 +244,8 @@ function StudioApp() {
             }
             onCreateFolder={newFolder}
             onCreate={() => navigate("/create")}
-            onEdit={image => {
-              setPendingAttachment(image);
+            onEdit={images => {
+              setPendingAttachments(images);
               navigate("/create");
             }}
             onPreview={openPreview}
@@ -325,7 +326,7 @@ function StudioApp() {
           switchPreview={switchPreview}
           onClose={closePreview}
           onFolder={(id) => setPreviewFolder([id])}
-          onAdd={setPendingAttachment}
+          onAdd={image => setPendingAttachments([image])}
           onCreate={() => navigate("/create")}
           isGallery={isGallery}
           collection={previewImages}
@@ -377,7 +378,7 @@ function StudioApp() {
         </Modal>
       )}
       {toast && (
-        <Toast text={toast.text} action={toast.action} onClose={() => setToast(null)} />
+        <Toast text={toast.text} action={toast.action} dismissible={toast.options?.dismissible} onClose={() => setToast(null)} />
       )}
     </div>
   );

@@ -113,9 +113,14 @@ export interface StudioData {
   preferences: Preferences;
   imageSummary?: { total: number; folderCounts: Record<string, number> };
 }
+export interface NotifyOptions {
+  durationMs?: number;
+  dismissible?: boolean;
+}
 export type Notify = (
   message: string,
   action?: { label: string; run: () => void },
+  options?: NotifyOptions,
 ) => void;
 export type PreviewImage = (
   image: ImageAsset,

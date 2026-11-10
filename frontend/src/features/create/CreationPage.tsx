@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
 import { DEFAULT_OPTIONS, MODELS, normalizeOptions } from "../../config/models";
+import { MAX_ATTACHMENTS, MAX_BASE_IMAGES } from "../../config/attachments";
 import { readImageFile } from "../../lib/images";
 import { useStudio } from "../../state/StudioContext";
 import DialogAttachments, { type DialogAttachmentItem } from "./DialogAttachments";
@@ -43,7 +44,7 @@ interface Props {
   onPreview: PreviewImage;
   onFolder: (imageIds: string[]) => void;
   notify: Notify;
-  pendingAttachment: ImageAsset | null;
+  pendingAttachments: ImageAsset[] | null;
   onAttachmentHandled: () => void;
 }
 export default function CreationPage({
@@ -51,13 +52,18 @@ export default function CreationPage({
   onPreview,
   onFolder,
   notify,
-  pendingAttachment,
+  pendingAttachments,
   onAttachmentHandled,
 }: Props) {
   const { data, currentUser, actions } = useStudio();
   const [prompt, setPrompt] = useState("");
   const [attachmentItems, setAttachmentItems] = useState<DialogAttachmentItem[]>([]);
-  const [baseAttachmentId, setBaseAttachmentId] = useState<string | null>(null);
+  const [baseAttachmentIds, setBaseAttachmentIds] = useState<string[]>([]);
+  const baseAttachmentIdsRef = useRef<string[]>([]);
+  const updateBaseAttachmentIds = (ids: string[]) => {
+    baseAttachmentIdsRef.current = ids;
+    setBaseAttachmentIds(ids);
+  };
   const [acceptedBatch, setAcceptedBatch] = useState<Generation | null>(null);
   const [options, setOptions] = useState<GenerationOptions>(() => ({
     ...DEFAULT_OPTIONS, count: rememberedCount(currentUser.id),
@@ -137,41 +143,60 @@ export default function CreationPage({
     ? "积分不足，请调整张数或联系管理员。" : "开始生成图片";
   const addAttachment = (image: Attachment) => {
     if (attachmentItems.some(item => item.id === image.id)) return;
-    if (attachmentItems.length >= 6) {
+    if (attachmentItems.length >= MAX_ATTACHMENTS) {
       notify("最多添加 6 张图片");
       return;
     }
     setAttachmentItems((previous) =>
-      previous.some((a) => a.id === image.id) || previous.length >= 6
+      previous.some((a) => a.id === image.id) || previous.length >= MAX_ATTACHMENTS
         ? previous
         : [...previous, { ...image, status: "ready" }],
     );
   };
-  const continueEditing = (image: ImageAsset) => {
+  const continueEditing = (images: ImageAsset[]) => {
     if (sending) {
       notify("任务正在提交，请稍候再添加基础图。");
       return;
     }
-    const references = attachmentItemsRef.current.filter(item => item.id !== image.id && item.id !== baseAttachmentId);
-    if (references.length >= 6) {
-      notify("最多添加 6 张图片，请先移除一张参考图。");
+    const incoming = [...new Map(images.map(image => [image.id, image])).values()];
+    if (!incoming.length) return;
+    const current = attachmentItemsRef.current;
+    const itemsById = new Map(current.map(item => [item.id, item]));
+    const nextBaseIds = baseAttachmentIdsRef.current.filter(id => itemsById.has(id));
+    for (const image of incoming) {
+      if (!nextBaseIds.includes(image.id)) nextBaseIds.push(image.id);
+      itemsById.set(image.id, { ...image, status: "ready" });
+    }
+    if (nextBaseIds.length > MAX_BASE_IMAGES) {
+      notify(`最多添加 ${MAX_BASE_IMAGES} 张基础图，请先移除一张基础图。`);
       return;
     }
-    if (baseAttachmentId && baseAttachmentId !== image.id) attachmentSources.current.delete(baseAttachmentId);
-    setAttachmentItems([{ ...image, status: "ready" }, ...references]);
-    setBaseAttachmentId(image.id);
+    if (itemsById.size > MAX_ATTACHMENTS) {
+      notify(`最多添加 ${MAX_ATTACHMENTS} 张图片，请先移除一张参考图。`);
+      return;
+    }
+    const bases = new Set(nextBaseIds);
+    const next = [
+      ...nextBaseIds.map(id => itemsById.get(id)!),
+      ...current.filter(item => !bases.has(item.id)),
+    ];
+    attachmentItemsRef.current = next;
+    setAttachmentItems(next);
+    updateBaseAttachmentIds(nextBaseIds);
     setOpenMenu(null);
-    notify("已设为基础图，输入你想修改的内容。");
+    notify("已设为基础图，输入你想修改的内容。", undefined, { durationMs: 2000, dismissible: false });
     requestAnimationFrame(() => promptInput.current?.focus({ preventScroll: true }));
   };
   useEffect(() => {
-    if (pendingAttachment && lastAttachment.current !== pendingAttachment.id) {
-      lastAttachment.current = pendingAttachment.id;
-      continueEditing(pendingAttachment);
-      onAttachmentHandled();
-    }
-    if (!pendingAttachment) lastAttachment.current = "";
-  }, [pendingAttachment]);
+    if (pendingAttachments?.length) {
+      const key = JSON.stringify(pendingAttachments.map(image => image.id));
+      if (lastAttachment.current !== key) {
+        lastAttachment.current = key;
+        continueEditing(pendingAttachments);
+        onAttachmentHandled();
+      }
+    } else lastAttachment.current = "";
+  }, [pendingAttachments]);
   const submit = async () => {
     if (sending || uploading || incompleteAttachments || !quoteReady || insufficientCredits || !prompt.trim()) return;
     setOpenMenu(null);
@@ -182,7 +207,7 @@ export default function CreationPage({
       setPrompt("");
       attachmentSources.current.clear();
       setAttachmentItems([]);
-      setBaseAttachmentId(null);
+      updateBaseAttachmentIds([]);
     } catch (error) {
       notify(error instanceof Error ? error.message : "生成失败，请重试");
     } finally {
@@ -197,7 +222,7 @@ export default function CreationPage({
       .map(item => attachmentSources.current.get(item.id)).filter((source): source is string => !!source));
     const failedSources = new Map(attachmentItems.filter(item => item.status === "failed")
       .map(item => [attachmentSources.current.get(item.id), item.id]));
-    let capacity = 6 - attachmentItems.length;
+    let capacity = MAX_ATTACHMENTS - attachmentItems.length;
     let duplicates = false;
     let overLimit = false;
     const pending: { file: File; id: string; source: string; retry: boolean }[] = [];
@@ -282,7 +307,7 @@ export default function CreationPage({
             setOptions(previous => normalizeOptions({ ...currentBatch.options, count: previous.count }));
             attachmentSources.current.clear();
             setAttachmentItems(currentBatch.attachments.map(item => ({ ...item, status: "ready" })));
-            setBaseAttachmentId(null);
+            updateBaseAttachmentIds([]);
             requestAnimationFrame(() => promptInput.current?.focus({ preventScroll: true }));
           }}
         />}
@@ -290,15 +315,16 @@ export default function CreationPage({
       <div className="composer-area dialog-composer-scope">
         <DialogAttachments
           items={attachmentItems}
-          baseId={baseAttachmentId}
+          baseIds={baseAttachmentIds}
           disabled={sending}
           active={active}
           onRemove={id => {
             attachmentSources.current.delete(id);
-            if (baseAttachmentId === id) setBaseAttachmentId(null);
+            updateBaseAttachmentIds(baseAttachmentIdsRef.current.filter(baseId => baseId !== id));
             if (attachmentItems.some(item => item.id === id && item.status === "uploading")) {
               removedUploads.current.add(id);
             }
+            attachmentItemsRef.current = attachmentItemsRef.current.filter(item => item.id !== id);
             setAttachmentItems(items => items.filter(item => item.id !== id));
           }}
         />
@@ -355,7 +381,7 @@ export default function CreationPage({
               tooltip="添加图片，也可拖入图片到对话框。"
               tooltipAlign="start"
               tooltipDisabled={suppressTooltips}
-              disabled={uploading || sending || attachmentItems.length >= 6}
+              disabled={uploading || sending || attachmentItems.length >= MAX_ATTACHMENTS}
               onClick={() => { setOpenMenu(null); fileInput.current?.click(); }}
             />
             <DialogSelect

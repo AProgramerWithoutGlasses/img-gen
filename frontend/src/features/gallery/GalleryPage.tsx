@@ -5,6 +5,7 @@ import { Modal } from "../../components/Modal";
 import { Icon } from "../../components/Icon";
 import { ImageSelectionToolbar } from "../../components/ImageSelectionToolbar";
 import { downloadImages } from "../../lib/images";
+import { MAX_BASE_IMAGES } from "../../config/attachments";
 import type { ImageAsset, Notify, PreviewImage } from "../../types";
 import "./gallery.css";
 import { errorText, useOutsideClose } from "./shared";
@@ -17,7 +18,7 @@ interface GalleryPageProps {
   onCreateFolder: () => void;
   onCreate?: () => void;
   onPreview: PreviewImage;
-  onEdit: (image: ImageAsset) => void;
+  onEdit: (images: ImageAsset[]) => void;
   notify: Notify;
 }
 
@@ -217,7 +218,7 @@ export default function GalleryPage({
   const selectedVisible = selected.filter(id => loadedIDs.has(id));
   const selectedImages = selectedVisible.map(id => assetsByID.get(id)).filter((image): image is ImageAsset => !!image);
   const allSelected = images.length > 0 && selectedVisible.length === images.length;
-  const multipleSelected = selectedVisible.length > 1;
+  const editLimitExceeded = selectedImages.length > MAX_BASE_IMAGES;
   const title = sourceTarget
     ? "选择图片"
     : activeFolder === "all"
@@ -414,7 +415,6 @@ export default function GalleryPage({
                     height={row.height}
                     selecting={selecting}
                     selected={selectedVisible.includes(image.id)}
-                    multipleSelected={multipleSelected}
                     busy={busy || downloading}
                     onToggle={() => toggle(image.id)}
                     onEdit={onEdit}
@@ -487,14 +487,14 @@ export default function GalleryPage({
           label="图片整理" selectAllLabel={listImages && pages.nextCursor ? "全选已加载" : "全选"}
           closeDisabled={busy || downloading} onClose={cancelSelection}
           onSelectAll={() => { if (!busy && !downloading) setSelected(allSelected ? [] : images.map(image => image.id)); }}>
-          <span className="workbench-edit-guard" tabIndex={multipleSelected ? 0 : undefined}
-            title={multipleSelected ? "多选时无法继续修图" : undefined}
-            aria-describedby={multipleSelected ? selectionHintId : undefined}>
-            <button type="button" disabled={busy || downloading || selectedImages.length !== 1}
-              onClick={() => { if (selectedImages.length === 1) onEdit(selectedImages[0]); }}>
+          <span className="workbench-edit-guard" tabIndex={editLimitExceeded ? 0 : undefined}
+            title={editLimitExceeded ? `最多选择${MAX_BASE_IMAGES}张基础图` : undefined}
+            aria-describedby={editLimitExceeded ? selectionHintId : undefined}>
+            <button type="button" disabled={busy || downloading || !selectedImages.length || editLimitExceeded}
+              onClick={() => { if (selectedImages.length && !editLimitExceeded) onEdit(selectedImages); }}>
               <Icon name="edit" size={16} />继续修图
             </button>
-            {multipleSelected && <span className="workbench-selection-hint" id={selectionHintId}>多选时无法继续修图</span>}
+            {editLimitExceeded && <span className="workbench-selection-hint" id={selectionHintId}>最多选择{MAX_BASE_IMAGES}张基础图</span>}
           </span>
           {sourceTarget ? (
             <button type="button" onClick={() => void addToSource()} disabled={busy || downloading || !selectedVisible.length}>

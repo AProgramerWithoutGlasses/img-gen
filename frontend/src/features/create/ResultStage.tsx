@@ -7,6 +7,7 @@ import { ImageCardActions } from "../../components/ImageCardActions";
 import { ImageSelectionControl } from "../../components/ImageSelectionControl";
 import { ImageSelectionToolbar } from "../../components/ImageSelectionToolbar";
 import { MODELS } from "../../config/models";
+import { MAX_BASE_IMAGES } from "../../config/attachments";
 import { downloadImage, downloadImages } from "../../lib/images";
 import type { Generation, ImageAsset, PreviewImage } from "../../types";
 import { requestedRatio, resultLayout } from "./result-layout";
@@ -18,7 +19,7 @@ interface Props {
   active: boolean;
   busy: boolean;
   onPreview: PreviewImage;
-  onEdit: (image: ImageAsset) => void;
+  onEdit: (images: ImageAsset[]) => void;
   onFolder: (imageIds: string[]) => void;
   onRestore: () => void;
 }
@@ -37,7 +38,6 @@ interface SlotProps {
   top: number;
   selecting: boolean;
   selected: boolean;
-  multipleSelected: boolean;
   onToggle: (imageId: string) => void;
   onReadyChange: (imageId: string, ready: boolean) => void;
   onPreview: PreviewImage;
@@ -52,7 +52,7 @@ const revealDurationMs = 1700;
 const revealExitMs = 260;
 
 function ResultSlot({ image, collection, job, index, output, active, busy, reveal, width, height,
-  left, top, selecting, selected, multipleSelected, onToggle, onReadyChange,
+  left, top, selecting, selected, onToggle, onReadyChange,
   onPreview, onEdit, onFolder, onError }: SlotProps) {
   const [phase, setPhase] = useState<ImagePhase>("loading");
   const phaseRef = useRef(phase);
@@ -209,8 +209,8 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
     </div>}
     {image && isReady && <ImageSelectionControl selected={selected} onToggle={() => onToggle(image.id)} label={`选择第 ${index + 1} 张图片`} />}
     {image && isReady && <ImageCardActions image={image} compact={compact} active={active} selecting={selecting}
-      onEdit={() => onEdit(image)} onFolder={() => onFolder([image.id])} onDownload={() => downloadImage(image)}
-      editDisabled={busy || multipleSelected} editDisabledReason={multipleSelected ? "多选时无法继续修图" : undefined} />}
+      onEdit={() => onEdit([image])} onFolder={() => onFolder([image.id])} onDownload={() => downloadImage(image)}
+      editDisabled={busy} />}
 
   </div>;
 }
@@ -239,7 +239,7 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
   const selectedImages = ordered.filter(image => selectedIds.includes(image.id));
   const readyImages = ordered.filter(image => readyIds.includes(image.id));
   const selecting = selectedImages.length > 0;
-  const multipleSelected = selectedImages.length > 1;
+  const editLimitExceeded = selectedImages.length > MAX_BASE_IMAGES;
   const allSelected = readyImages.length > 0 && readyImages.every(image => selectedIds.includes(image.id));
   const [ratio] = useState(() => {
     const first = job.status !== "processing" ? images.find(image => image.width > 0 && image.height > 0) : undefined;
@@ -285,10 +285,10 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
     </header>
     {active && selecting && <ImageSelectionToolbar count={selectedImages.length} allSelected={allSelected}
       onSelectAll={() => setSelectedIds(allSelected ? [] : readyImages.map(image => image.id))} onClose={() => setSelectedIds([])}>
-      <span className="workbench-edit-guard" tabIndex={multipleSelected ? 0 : undefined}
-        title={multipleSelected ? "多选时无法继续修图" : undefined} aria-describedby={multipleSelected ? selectionHintId : undefined}>
-        <button type="button" disabled={busy || multipleSelected} onClick={() => { if (selectedImages.length === 1) onEdit(selectedImages[0]); }}><Icon name="edit" size={16} />继续修图</button>
-        {multipleSelected && <span className="workbench-selection-hint" id={selectionHintId}>多选时无法继续修图</span>}
+      <span className="workbench-edit-guard" tabIndex={editLimitExceeded ? 0 : undefined}
+        title={editLimitExceeded ? `最多选择${MAX_BASE_IMAGES}张基础图` : undefined} aria-describedby={editLimitExceeded ? selectionHintId : undefined}>
+        <button type="button" disabled={busy || !selectedImages.length || editLimitExceeded} onClick={() => { if (selectedImages.length && !editLimitExceeded) onEdit(selectedImages); }}><Icon name="edit" size={16} />继续修图</button>
+        {editLimitExceeded && <span className="workbench-selection-hint" id={selectionHintId}>最多选择{MAX_BASE_IMAGES}张基础图</span>}
       </span>
       <button type="button" onClick={() => onFolder(selectedImages.map(image => image.id))}><Icon name="folderPlus" size={16} />加入文件夹</button>
       <button type="button" disabled={downloading} onClick={() => {
@@ -303,7 +303,7 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
       {layout && slots.map((image, index) => <ResultSlot key={`${job.id}:${index}`}
         image={image} collection={ordered} job={job} index={index} output={job.outputs?.find(output => output.outputIndex === index)}
         active={active} busy={busy} reveal={liveBatch.current}
-        selecting={selecting} selected={selectedIds.includes(image?.id ?? "")} multipleSelected={multipleSelected}
+        selecting={selecting} selected={selectedIds.includes(image?.id ?? "")}
         onToggle={toggleSelected} onReadyChange={readyChanged}
         width={layout.imageWidth} height={layout.imageHeight} left={layout.positions[index].left} top={layout.positions[index].top}
         onPreview={onPreview} onEdit={onEdit} onFolder={onFolder} onError={() => setDetails("error")} />)}

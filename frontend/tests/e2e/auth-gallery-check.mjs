@@ -112,7 +112,7 @@ try {
   await tiles.nth(1).getByRole('checkbox').check();
   const galleryBar=page.getByRole('toolbar',{name:'图片整理',exact:true});
   await expect(galleryBar).toContainText('已选 2 张');
-  await expect(galleryBar.getByRole('button',{name:'继续修图',exact:true})).toBeDisabled();
+  await expect(galleryBar.getByRole('button',{name:'继续修图',exact:true})).toBeEnabled();
   await shot('gallery-selection');
   await archive(()=>galleryBar.getByRole('button',{name:'下载',exact:true}).click(),'gallery-originals',2);
   await galleryBar.getByRole('button',{name:'退出多选',exact:true}).click();
@@ -143,7 +143,7 @@ try {
   await creation.getByRole('checkbox',{name:'选择第 1 张图片',exact:true}).check();
   await creation.getByRole('checkbox',{name:'选择第 2 张图片',exact:true}).check();
   const workbenchBar=page.getByRole('toolbar',{name:'已选图片操作',exact:true});
-  await expect(workbenchBar.getByRole('button',{name:'继续修图',exact:true})).toBeDisabled();
+  await expect(workbenchBar.getByRole('button',{name:'继续修图',exact:true})).toBeEnabled();
   await expect(creation.locator('.workbench-prompt')).toHaveCSS('font-size','18px');
   await shot('workbench-selection');
   await archive(()=>workbenchBar.getByRole('button',{name:'下载',exact:true}).click(),'workbench-originals',2);

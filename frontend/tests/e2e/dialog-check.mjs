@@ -718,7 +718,7 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(sidebarBalance).toBeVisible();
     await expect(sidebarBalance).toHaveText(/^[\d,]+$/);
     await expect(sidebarBalance).toHaveAttribute("aria-label", /^积分余额 [\d,]+$/);
-    await expect(sidebarBalance).toHaveAttribute("title", /^[\d,]+ 积分$/);
+    await expect(sidebar.locator("[title]")).toHaveCount(0);
     await expect(sidebarBalance.locator("svg.lucide-coins")).toBeVisible();
     await expect(accountTrigger.locator("svg.lucide-chevron-down")).toHaveCount(0);
     const triggerBox = await accountTrigger.boundingBox(), balanceBox = await sidebarBalance.boundingBox();
@@ -742,7 +742,7 @@ export async function verifyDialog({ page, screenshot }) {
     for (const folder of await folderButtons.all()) {
       await expect(folder).toBeVisible();
       await expect(folder.locator("span")).toHaveCount(0);
-      await expect(folder).toHaveAttribute("title", await folder.getAttribute("aria-label"));
+      await expect(folder).not.toHaveAttribute("title");
       const shape = await folder.evaluate(element => {
         const button = element.getBoundingClientRect(), icon = element.querySelector("svg").getBoundingClientRect();
         return { height: button.height, iconWidth: icon.width, iconHeight: icon.height,
