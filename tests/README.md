@@ -9,7 +9,7 @@ Go 测试保留在同一个外部测试包，文件名区分主题，既有 49 �
 | 改动 | 命令及范围 |
 | --- | --- |
 | 仅说明文档 | npm run check:docs |
-| 根工具、状态命令 | npm run check:tools；实际执行相关安全命令 |
+| 根工具、状态命令、构建缓存 | npm run check:tools；实际执行相关安全命令；构建入口变化时再执行一次 npm run build 并核对复用摘要 |
 | 前端 | npm --prefix frontend run check；npm run build；受影响浏览器流程，完整模拟用 npm run verify；同时改说明时补 check:docs |
 | 工作区生成进度与图内操作 | node frontend/tests/e2e/workbench-motion-check.mjs；检查真实单图排队／生成与独立计时、解码后100%和持续可见的渐显／进度收尾、成图返回不改变画框、失败保图、悬浮与预览及390px导航；只用本地响应样本，过渡采样不禁用动画 |
 | 后端 | 前端嵌入产物可用后 go test ./...、go vet ./...、go build ./... |
@@ -44,7 +44,9 @@ npm run verify:all
 
 无 TEST_MYSQL_DSN 时数据库测试跳过，必须明确报告；上游仅为本地响应 fixture，不代表真实 Qiso 支持全部参数。实际覆盖迁移、权限、六附件、积分结算、失败退款、文件夹多归属/删除保图、下载和账户管理。浏览器使用真实 Go/CSP；Windows 用 Edge，Linux 用 Playwright Chromium。
 
-截图保存在 frontend/outputs/preview、integration、performance，设计证据在 outputs/design-browser-check；缓存、日志和数据不进入 Git。Go 跨包覆盖统计用 `go test '-coverpkg=./internal/...' '-coverprofile=outputs/coverage.out' ./tests/go/...`，数据库覆盖仍需启用专用库。
+截图默认保存在 frontend/outputs/preview、integration、performance，设计证据在 outputs/design-browser-check；缓存、日志和数据不进入 Git。`preview-check.mjs` 和 `workbench-motion-check.mjs` 支持 `--output-dir <目录>`，绝对路径及仓库根相对路径均可；preview 入口还可组合 `--dialog-only`。故障负例必须指定独立目录，例如 `node frontend/tests/e2e/preview-check.mjs --output-dir outputs/本批任务/negative`，不得覆盖已通过的 result.json；不用为恢复正例报告重跑未变输入。参数错误在创建目录、启动服务器及浏览器之前拒绝。
+
+Go 跨包覆盖统计用 `go test '-coverpkg=./internal/...' '-coverprofile=outputs/coverage.out' ./tests/go/...`，数据库覆盖仍需启用专用库。
 
 完整模拟流程另检查390px窄屏下工具栏按钮可点击、长文本增高及窗口来回缩放。浏览器初始化时单独捕获 ResizeObserver 循环错误，避免开发服务器拦截全局错误后漏报；旧同步回写实现已作为负例验证该检查会失败。
 

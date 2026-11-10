@@ -19,3 +19,6 @@
 | 根目录不散放报告或独立专题研究目录 | `npm run check:tools` 中的结构检查；错误放置报告和研究目录的负例均已验证会被拒绝 |
 | 个人笔记目录及本机引用不混入项目 | `check:tools` 拒绝 personal-notes/、personal-research/；`check:docs` 拒绝仓库外及本机文件链接；内容归属按工作流程判断 |
 | 设计命令缺少必要目标时先拒绝，不依赖本机是否安装设计工具 | `tests/tools/figcraft-startup.test.mjs` 使用不存在的应用与CLI路径验证参数检查顺序 |
+| 设计组合验收只处理显式指定的同一稿，审计失败不导出 | `figcraft-startup.test.mjs` 通过实际 npm 入口验证非默认目标与失败中止 |
+| 故障负例与通过证据分目录，不覆盖当前通过结果 | 浏览器检查支持 `--output-dir`；`evidence-output.test.mjs` 验证实际写入隔离与错误参数早退 |
+| 普通构建与发布共用缓存，源码或实际产物不符时拒绝复用 | `frontend-build.test.mjs` 覆盖输入变化、损坏产物、依赖缺失及构建中修改 |

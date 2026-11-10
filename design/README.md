@@ -72,7 +72,7 @@
 | `design:snapshot` | 截取当前相关节点／画布；可查看未保存现场，不拿旧截图冒充当前结果 |
 | `design:audit -- "design/目标.figcraft"` | 对明确的已保存文件检查字体等诊断；小改按风险选择，不替代视觉核对 |
 | `design:export -- "design/目标.figcraft"` | 导出指定稿；优先用 API 只导出本次相关画板，避免重复全稿输出 |
-| `design:verify` | 默认稿的审计加导出复合命令；追加路径不能假定两步都切换到指定稿 |
+| `design:verify -- "design/目标.figcraft"` | 对同一明确的已保存稿先审计后导出，复用本次审计信息；缺少目标先拒绝，审计失败即停止，不打开桌面文档 |
 | `design:compare` | 现有 37 个状态映射属于默认主稿；只有对应目标与场景仍适用时才使用 |
 | `design:smoke` | 设计连接、工具或自动化实现变化后的连通验证；先用 `design:open -- "design/目标.figcraft"` 建立会话，再运行自建临时 fixture 检查，不自动启动兜底稿；普通样式调整不重跑 |
 
