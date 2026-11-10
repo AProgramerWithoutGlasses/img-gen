@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { KeyboardEvent, SyntheticEvent } from "react";
+import type { CSSProperties, KeyboardEvent, SyntheticEvent } from "react";
 import { Icon } from "../../components/Icon";
 import { Modal } from "../../components/Modal";
 import { RenditionImage } from "../../components/RenditionImage";
@@ -46,6 +46,9 @@ interface SlotProps {
 }
 type ImagePhase = "loading" | "returned" | "revealing" | "finishing" | "ready" | "failed";
 const imageDragType = "application/x-img-gen-image-id";
+const revealHoldMs = 320;
+const revealDurationMs = 1700;
+const revealExitMs = 260;
 
 function ResultSlot({ image, collection, job, index, output, active, busy, reveal, width, height,
   left, top, selecting, selected, multipleSelected, selectionHintId, onToggle, onReadyChange,
@@ -53,6 +56,9 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
   const [phase, setPhase] = useState<ImagePhase>("loading");
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
+  const activeRef = useRef(active);
+  activeRef.current = active;
+  const [presentation, setPresentation] = useState(0);
   const shouldReveal = useRef(reveal);
   const failed = !image && (output?.status === "failed" || job.status !== "processing");
   const queued = !image && output?.status === "queued";
@@ -74,14 +80,19 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
   const menuPanel = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
   const decodeVersion = useRef(0);
-  const revealTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const revealFrame = useRef<number | null>(null);
+
+  function stopReveal() {
+    if (revealFrame.current !== null) cancelAnimationFrame(revealFrame.current);
+    revealFrame.current = null;
+  }
 
   useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
       decodeVersion.current++;
-      revealTimers.current.forEach(clearTimeout);
+      stopReveal();
     };
   }, []);
   useEffect(() => {
@@ -93,10 +104,19 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
     return () => clearInterval(interval);
   }, [active, failed, resourceFailed, hasDecoded, image, output?.status, output?.startedAt, finishedAt]);
   useEffect(() => {
+    if (active && !failed && !resourceFailed) return;
+    stopReveal();
+    if (!active && ["returned", "revealing", "finishing"].includes(phaseRef.current)) {
+      setPresentation(100);
+      setPhase("ready");
+    }
+  }, [active, failed, resourceFailed]);
+  useEffect(() => {
     const media = matchMedia("(prefers-reduced-motion: reduce)");
     const skipMotion = () => {
       if (!media.matches || !["returned", "revealing", "finishing"].includes(phaseRef.current)) return;
-      revealTimers.current.forEach(clearTimeout);
+      stopReveal();
+      setPresentation(100);
       setPhase("ready");
     };
     media.addEventListener("change", skipMotion);
@@ -147,18 +167,40 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
       return;
     }
     if (!mounted.current || version !== decodeVersion.current || element.currentSrc !== source) return;
-    if (!shouldReveal.current || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (!activeRef.current || !shouldReveal.current || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPresentation(100);
       setPhase("ready");
       return;
     }
+    stopReveal();
+    setPresentation(0);
     setPhase("returned");
-    // All phases share the decode instant: show the blurred result, clear it,
-    // then retire the completed progress layer only after the image is clear.
-    revealTimers.current.forEach(clearTimeout);
-    const schedule = (next: ImagePhase, delay: number) => setTimeout(() => {
-      if (mounted.current && version === decodeVersion.current) setPhase(next);
-    }, delay);
-    revealTimers.current = [schedule("revealing", 260), schedule("finishing", 1360), schedule("ready", 1620)];
+    // One presentation clock drives the number, bar and image clarity. Reaching
+    // 100% means the decoded image is clear, before the progress layer retires.
+    const started = performance.now();
+    let completedAt: number | undefined;
+    const present = (now: number) => {
+      if (!mounted.current || version !== decodeVersion.current || !activeRef.current) {
+        revealFrame.current = null;
+        return;
+      }
+      const elapsed = now - started;
+      if (elapsed >= revealHoldMs + revealDurationMs) {
+        completedAt ??= now;
+        setPresentation(100);
+        if (now - completedAt >= revealExitMs) {
+          setPhase("ready");
+          revealFrame.current = null;
+          return;
+        }
+        setPhase("finishing");
+      } else if (elapsed >= revealHoldMs) {
+        setPresentation((elapsed - revealHoldMs) / revealDurationMs * 100);
+        setPhase("revealing");
+      }
+      revealFrame.current = requestAnimationFrame(present);
+    };
+    revealFrame.current = requestAnimationFrame(present);
   }
   function placeMenu() {
     const box = more.current?.getBoundingClientRect();
@@ -189,7 +231,8 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
     className={`result-card is-${phase}${shouldReveal.current ? " is-live" : " is-history"}${!image ? " result-card-pending" : ""}${failed || resourceFailed ? " is-error" : ""}${compact ? " result-card-compact" : ""}${width < 160 ? " result-card-narrow" : ""}${menu ? " is-menu-open" : ""}${selecting ? " is-selecting" : ""}${selected ? " is-selected" : ""}`}
     ref={card}
     data-output-index={index}
-    style={{ width, height, left, top }}
+    style={{ width, height, left, top, "--result-reveal-progress": presentation / 100,
+      "--result-reveal-exit-duration": `${revealExitMs}ms` } as CSSProperties}
     onMouseLeave={event => {
       if (event.relatedTarget instanceof Node && menuPanel.current?.contains(event.relatedTarget)) return;
       if (!menuPanel.current?.querySelector(":focus-visible")) setMenu(false);
@@ -202,7 +245,7 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
       <RenditionImage source={image} alt={image.name} width={image.width} height={image.height}
         displayWidth={width} displayHeight={height} fit="contain" decoding="async" draggable={!selecting && isReady}
         onLoad={event => { void loaded(event); }}
-        onError={() => { decodeVersion.current++; setPhase("failed"); }}
+        onError={() => { decodeVersion.current++; stopReveal(); setPhase("failed"); }}
         onDragStart={event => {
           if (selecting || !isReady) { event.preventDefault(); return; }
           event.dataTransfer.setData(imageDragType, image.id);
@@ -217,13 +260,13 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
         <div className="result-generation-meta">
           <span>{progressLabel}</span>
           {showProgress && !queued && (hasDecoded || elapsed !== undefined) && <span className="result-generation-number">
-            {hasDecoded ? "100%" : ""}{elapsed !== undefined ? `${hasDecoded ? " · " : ""}${Math.floor(elapsed / 1000)}秒` : ""}
+            {hasDecoded ? `${Math.floor(presentation)}%` : ""}{elapsed !== undefined ? `${hasDecoded ? " · " : ""}${Math.floor(elapsed / 1000)}秒` : ""}
           </span>}
         </div>
-        {showProgress && <div className={`result-progress-track ${hasDecoded ? "is-complete" : queued ? "is-queued" : "is-active"}`}
+        {showProgress && <div className={`result-progress-track ${hasDecoded ? phase === "finishing" ? "is-complete" : "is-presenting" : queued ? "is-queued" : "is-active"}`}
           role="progressbar" aria-label={`第 ${index + 1} 张生成进度`} aria-valuetext={progressLabel}
-          aria-valuemin={0} aria-valuemax={100} aria-valuenow={hasDecoded ? 100 : undefined}>
-          <span style={{ animationDelay: hasDecoded ? undefined : `${index * -.23}s` }} />
+          aria-valuemin={0} aria-valuemax={100} aria-valuenow={hasDecoded ? Math.floor(presentation) : undefined}>
+          <span style={hasDecoded ? { width: `${presentation}%` } : { animationDelay: `${index * -.23}s` }} />
         </div>}
       </>}
     </div>}

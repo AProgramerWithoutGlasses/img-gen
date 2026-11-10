@@ -149,7 +149,7 @@ try {
     window.workbenchDecodedAt = undefined;
     const capture = () => {
       const card = document.querySelector('.result-card');
-      if (window.workbenchDecodedAt === undefined && card?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow') === '100')
+      if (window.workbenchDecodedAt === undefined && card?.classList.contains('is-returned'))
         window.workbenchDecodedAt = performance.now();
     };
     const observer = new MutationObserver(capture);
@@ -160,20 +160,23 @@ try {
   releaseImage();
   await page.waitForFunction(() => Number.isFinite(window.workbenchDecodedAt));
   const samples = [];
-  for (const targetMs of [180, 500, 1100]) {
+  for (const targetMs of [180, 900, 1600]) {
     await page.evaluate(async target => {
       const remaining = window.workbenchDecodedAt + target - performance.now();
       if (remaining > 0) await new Promise(resolve => setTimeout(resolve, remaining));
     }, targetMs);
     const sample = await first.evaluate(element => {
       const image = element.querySelector('img'), layer = element.querySelector('.result-generation-layer');
+      const track = element.querySelector('[role="progressbar"]');
       const actions = element.querySelector('.result-actions');
       const style = getComputedStyle(image);
       return {
         elapsed: performance.now() - window.workbenchDecodedAt,
         opacity: Number(style.opacity),
         blur: Number(style.filter.match(/blur\(([\d.]+)px\)/)?.[1] ?? 0),
-        progress: element.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow'),
+        progress: Number(track?.getAttribute('aria-valuenow')),
+        progressText: Number(element.querySelector('.result-generation-number')?.textContent.match(/(\d+)%/)?.[1]),
+        fillPercent: track ? track.firstElementChild.getBoundingClientRect().width / track.getBoundingClientRect().width * 100 : 0,
         overlayOpacity: layer ? Number(getComputedStyle(layer).opacity) : 0,
         disabled: element.querySelector('.result-open').disabled,
         actionsVisible: !!actions && getComputedStyle(actions).visibility !== 'hidden' && Number(getComputedStyle(actions).opacity) > .01,
@@ -181,23 +184,44 @@ try {
     });
     samples.push(sample);
     expect(sample.elapsed).toBeGreaterThanOrEqual(targetMs - 20);
-    expect(sample.progress, 'Completion progress stays visible throughout the reveal').toBe('100');
+    expect(sample.progress, 'The decoded image must not claim 100% before it is clear').toBeLessThan(100);
+    expect(sample.progress).toBeGreaterThanOrEqual(0);
+    expect(sample.progressText, 'Displayed percentage and accessible progress share the same clock').toBe(sample.progress);
+    expect(Math.abs(sample.fillPercent - sample.progress), 'The visible white fill must follow the displayed percentage').toBeLessThan(1.5);
     expect(sample.disabled, 'Actions wait until the image has visibly revealed').toBe(true);
     expect(sample.actionsVisible).toBe(false);
     expect(sample.overlayOpacity).toBeGreaterThan(.5);
     await screenshot(`motion-${String(targetMs).padStart(4, '0')}ms`, first, true);
   }
+  expect(samples[0].progress, 'The initial blurred preview holds before progress starts').toBe(0);
+  expect(samples[1].progress, 'Presentation progress should move visibly instead of jumping to 100%').toBeGreaterThan(samples[0].progress + 10);
+  expect(samples[2].progress).toBeGreaterThan(samples[1].progress + 10);
+  expect(samples[2].fillPercent).toBeGreaterThan(samples[1].fillPercent);
   expect(samples[0].blur, 'Blur must remain visible, not flash for two frames').toBeGreaterThanOrEqual(15);
   expect(samples[0].opacity).toBeGreaterThanOrEqual(.3);
   expect(samples[0].opacity).toBeLessThan(.8);
   expect(samples[1].blur, 'The middle frame should still visibly reveal').toBeGreaterThan(6);
   expect(samples[1].blur).toBeLessThan(samples[0].blur);
-  expect(samples[2].blur, 'Reveal remains perceptible after one second').toBeGreaterThan(1);
+  expect(samples[2].blur, 'Reveal remains perceptible after one and a half seconds').toBeGreaterThan(1);
   expect(samples[2].blur).toBeLessThan(samples[1].blur);
+  await page.waitForFunction(() => document.querySelector('.result-card [role="progressbar"][aria-valuenow="100"]'));
+  const completion = await first.evaluate(element => {
+    const image = element.querySelector('img'), track = element.querySelector('[role="progressbar"]');
+    const style = getComputedStyle(image);
+    return { elapsed: performance.now() - window.workbenchDecodedAt,
+      blur: Number(style.filter.match(/blur\(([\d.]+)px\)/)?.[1] ?? 0),
+      opacity: Number(style.opacity),
+      fillPercent: track.firstElementChild.getBoundingClientRect().width / track.getBoundingClientRect().width * 100,
+    };
+  });
+  expect(completion.elapsed, '100% follows the full visible reveal, not an immediate completion flash').toBeGreaterThanOrEqual(1950);
+  expect(completion.blur, 'The image is clear when presentation reaches 100%').toBe(0);
+  expect(completion.opacity).toBe(1);
+  expect(completion.fillPercent).toBeCloseTo(100, 0);
   await expect(first.locator('.result-open')).toBeEnabled();
   await expect(first.locator('.result-select-control input[type="checkbox"]')).toBeEnabled();
   const readyAfterMs = await page.evaluate(() => performance.now() - window.workbenchDecodedAt);
-  expect(readyAfterMs, 'Finish, reveal and overlay exit form one perceptible sequence').toBeGreaterThanOrEqual(1450);
+  expect(readyAfterMs, 'Finish, reveal and overlay exit form one perceptible sequence').toBeGreaterThanOrEqual(2200);
   await expect(first.getByRole('progressbar')).toHaveCount(0);
   await expect(first.locator('img')).toHaveCSS('filter', 'none');
   await expect(first.locator('img')).toHaveCSS('opacity', '1');
@@ -206,7 +230,7 @@ try {
   await page.evaluate(() => window.stopWorkbenchMotionCapture());
   await screenshot('motion-ready', first);
   await screenshot('first-image-revealed-light');
-  results.push({ name: 'visible-reveal-linked-to-completion-without-frame-resize', samples, readyAfterMs });
+  results.push({ name: 'visible-reveal-linked-to-completion-without-frame-resize', samples, completion, readyAfterMs });
 
   // A failed output stops even while its batch has other queued/running outputs.
   await acceptState(() => {
@@ -392,6 +416,26 @@ try {
     results.push({ name: scenario + '-displays-clear-without-replaying-reveal' });
     await directContext.close();
   }
+  const changingMotionContext = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  const changingOptions = { ...options, count: 1 };
+  await routeFixture(changingMotionContext, { ...state,
+    generations: [{ ...batch, options: changingOptions, status: 'processing', outputs: [{ ...batch.outputs[0] }], error: undefined }],
+    assets: [{ ...asset, options: changingOptions }],
+  });
+  const changingMotionPage = await changingMotionContext.newPage();
+  captureErrors(changingMotionPage);
+  await changingMotionPage.goto(origin);
+  const changingCard = changingMotionPage.locator('.result-card').first();
+  await expect(changingCard.getByRole('progressbar')).toHaveAttribute('aria-valuenow', /^\d+$/);
+  await changingMotionPage.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(changingCard.locator('.result-open')).toBeEnabled();
+  await changingMotionPage.waitForTimeout(900);
+  await expect(changingCard.locator('.result-open')).toBeEnabled();
+  await expect(changingCard.getByRole('progressbar')).toHaveCount(0);
+  await expect(changingCard.locator('img')).toHaveCSS('filter', 'none');
+  await screenshot('reduced-motion-change-direct-clear', changingMotionPage);
+  results.push({ name: 'reduced-motion-change-cancels-presentation' });
+  await changingMotionContext.close();
   expect(errors).toEqual([]);
 } catch (cause) {
   failure = cause;

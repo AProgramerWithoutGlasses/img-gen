@@ -140,10 +140,16 @@ async function dialogContrast(creation) {
     const arrow = region.querySelector(".dialog-select-model .dialog-arrow");
     const arrowStyle = getComputedStyle(arrow);
     const composer = getComputedStyle(region.querySelector(".dialog-composer")).backgroundColor;
+    const accountIcon = document.querySelector(".account-trigger-balance > svg");
+    const accountIconBox = accountIcon?.getBoundingClientRect();
+    const accountIconStyle = accountIcon && getComputedStyle(accountIcon);
+    const sidebarFill = getComputedStyle(document.querySelector(".sidebar")).backgroundColor;
     return { ordinary, generate, credits, composer,
       neutralSurfaceContrast: contrast(ordinary.fill, composer),
       icon: { width: iconBox.width, height: iconBox.height,
         contrast: contrast(iconStyle.stroke === "none" ? iconStyle.fill : iconStyle.stroke, credits.fill) },
+      accountIcon: { width: accountIconBox?.width ?? 0, height: accountIconBox?.height ?? 0,
+        contrast: accountIconStyle ? contrast(accountIconStyle.stroke, sidebarFill) : 0 },
       modelArrow: { fill: arrowStyle.backgroundColor, glyph: arrowStyle.color,
         glyphContrast: contrast(arrowStyle.color, arrowStyle.backgroundColor),
         surfaceContrast: contrast(arrowStyle.backgroundColor, ordinary.fill) } };
@@ -608,6 +614,8 @@ export async function verifyDialog({ page, screenshot }) {
       await page.getByRole("button", { name: label, exact: true }).click();
       await page.getByRole("button", { name: "返回创作", exact: true }).click();
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      const expandSidebar = page.getByRole("button", { name: "展开侧栏", exact: true });
+      if (await expandSidebar.count()) await expandSidebar.click();
       const accent = await approvedAccent(page);
       await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", await composer.evaluate(element => getComputedStyle(element).backgroundColor));
       await prompt.fill("");
@@ -621,6 +629,9 @@ export async function verifyDialog({ page, screenshot }) {
       expect(disabled.icon.width, "Credits icon is too small to recognise").toBeGreaterThanOrEqual(16);
       expect(disabled.icon.height, "Credits icon is too small to recognise").toBeGreaterThanOrEqual(16);
       expect(disabled.icon.contrast, `${theme} credits icon disappears into its button`).toBeGreaterThanOrEqual(3);
+      expect(disabled.accountIcon.width, `${theme} sidebar balance needs a visible Coins icon`).toBeCloseTo(16, 0);
+      expect(disabled.accountIcon.height).toBeCloseTo(16, 0);
+      expect(disabled.accountIcon.contrast, `${theme} sidebar Coins icon disappears into its surface`).toBeGreaterThanOrEqual(3);
       if (theme === "light") {
         await expect(composer).toHaveCSS("background-color", "rgb(255, 255, 255)");
         await expect(creation.locator(".dialog-prompt-area")).toHaveCSS("background-color", "rgb(255, 255, 255)");
@@ -708,6 +719,7 @@ export async function verifyDialog({ page, screenshot }) {
     await expect(sidebarBalance).toHaveText(/^[\d,]+$/);
     await expect(sidebarBalance).toHaveAttribute("aria-label", /^积分余额 [\d,]+$/);
     await expect(sidebarBalance).toHaveAttribute("title", /^[\d,]+ 积分$/);
+    await expect(sidebarBalance.locator("svg.lucide-coins")).toBeVisible();
     await expect(accountTrigger.locator("svg.lucide-chevron-down")).toHaveCount(0);
     const triggerBox = await accountTrigger.boundingBox(), balanceBox = await sidebarBalance.boundingBox();
     expect(balanceBox.x + balanceBox.width, "Sidebar balance is clipped by the account trigger").toBeLessThanOrEqual(triggerBox.x + triggerBox.width + 1);
@@ -718,8 +730,43 @@ export async function verifyDialog({ page, screenshot }) {
     await accessible(page.getByRole("radiogroup", { name: "主题", exact: true }));
     await page.keyboard.press("Escape");
     await closeAccount();
+    const folderToggle = sidebar.getByRole("button", { name: "文件夹列表", exact: true });
+    const foldersWereOpen = await folderToggle.getAttribute("aria-expanded") === "true";
+    if (foldersWereOpen) await folderToggle.click();
+    await expect(folderToggle).toHaveAttribute("aria-expanded", "false");
     await page.getByRole("button", { name: "收起侧栏", exact: true }).click();
     await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(72, 0);
+    const folderButtons = sidebar.locator("#folder-navigation .nav-subitem");
+    expect(await folderButtons.count(), "The preview fixture should provide folders for collapsed navigation").toBeGreaterThan(0);
+    await expect(sidebar.locator("#folder-navigation")).not.toHaveAttribute("inert");
+    for (const folder of await folderButtons.all()) {
+      await expect(folder).toBeVisible();
+      await expect(folder.locator("span")).toHaveCount(0);
+      await expect(folder).toHaveAttribute("title", await folder.getAttribute("aria-label"));
+      const shape = await folder.evaluate(element => {
+        const button = element.getBoundingClientRect(), icon = element.querySelector("svg").getBoundingClientRect();
+        return { height: button.height, iconWidth: icon.width, iconHeight: icon.height,
+          centerDelta: Math.abs(icon.left + icon.width / 2 - button.left - button.width / 2) };
+      });
+      expect(shape.height).toBeCloseTo(44, 0); expect(shape.iconWidth).toBeCloseTo(18, 0); expect(shape.iconHeight).toBeCloseTo(18, 0);
+      expect(shape.centerDelta).toBeLessThanOrEqual(1);
+    }
+    // Compact navigation exposes folders without changing the expanded list preference.
+    await page.getByRole("button", { name: "展开侧栏", exact: true }).click();
+    await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(224, 0);
+    await expect(folderToggle).toHaveAttribute("aria-expanded", "false");
+    await expect(sidebar.locator("#folder-navigation")).toHaveAttribute("inert", "");
+    if (foldersWereOpen) await folderToggle.click();
+    await page.getByRole("button", { name: "收起侧栏", exact: true }).click();
+    await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(72, 0);
+    const firstFolder = folderButtons.first();
+    await firstFolder.focus();
+    await firstFolder.press("Enter");
+    await expect(firstFolder).toHaveAttribute("aria-current", "page");
+    await expect(page).toHaveURL(/#\/gallery\//);
+    await screenshot("dialog-collapsed-folder-navigation");
+    await sidebar.getByRole("button", { name: "图像创作", exact: true }).click();
+    await expect(creation).toBeVisible();
     const collapsed = await openAccount();
     await screenshot("dialog-account-popup-collapsed-sidebar");
     await closeAccount();

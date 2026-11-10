@@ -11,14 +11,14 @@ Go 测试保留在同一个外部测试包，文件名区分主题，既有 49 �
 | 仅说明文档 | npm run check:docs |
 | 根工具、状态命令、构建缓存 | npm run check:tools；实际执行相关安全命令；构建入口变化时再执行一次 npm run build 并核对复用摘要 |
 | 前端 | npm --prefix frontend run check；npm run build；受影响浏览器流程，完整模拟用 npm run verify；同时改说明时补 check:docs |
-| 工作区生成进度与图内操作 | node frontend/tests/e2e/workbench-motion-check.mjs；检查真实单图排队／生成与独立计时、解码后100%和持续可见的渐显／进度收尾、成图返回不改变画框、失败保图、悬浮与预览及390px导航；只用本地响应样本，过渡采样不禁用动画 |
+| 工作区生成进度与图内操作 | node frontend/tests/e2e/workbench-motion-check.mjs；检查真实单图排队／生成与独立计时、解码后数字／白条随清晰化推进且清晰才100%、成图返回不改变画框、失败保图、悬浮与预览及390px导航；只用本地响应样本，过渡采样不禁用动画 |
 | 后端 | 前端嵌入产物可用后 go test ./...、go vet ./...、go build ./... |
 | 跨端、构建与 CI | npm run verify:all；真实数据库/浏览器按下节启用 |
 | 设计稿变更 | 保存当前指定稿；按变动核对局部画面、字体及对应真实浏览器；需要时显式指定稿审计／导出，旧场景映射仍适用时才运行 design:compare |
 | 现行创作对话框圆角或尺寸 | 保存指定稿后 node tests/design/check-dialog-corners.mjs；检查当前批准参数与适配组，浏览器只补受影响流程。新风格先更新相应规则与用例，其他区域不硬套旧参数和节点 ID |
 | 对话框按钮轮廓或栅格绘制 | node frontend/tests/e2e/dialog-pixels-check.mjs；覆盖 0.9、1、1.1、1.125、1.25、1.5、2 DPR 的亮暗及输入增长，比较截图可见对边，并用旧 CSS 负例确认能发现不均；不以几何值代替截图 |
 | 图片资源选择、附件自适应预览 | node frontend/tests/e2e/image-renditions-check.mjs；按实际尺寸/DPR核对压缩URL、当前卡片锚点、比例/小图/长图、输入增高、快速切换与失败回退；真实编码及权限由Go测试验证，不读生产图片 |
-| 点击大图的打开时序、资源切换 | node frontend/tests/e2e/big-preview-check.mjs；DPR1/2的冷加载与暖缓存重开、导航缩略图实际加载、原图按钮及放大同步状态、失败保预览和手动重试、快速切图／关闭取消旧加载；隐藏dialog不得按1px先选缩略图，旧零尺寸缩略图实现须能触发回归失败 |
+| 点击大图的打开时序、资源切换 | node frontend/tests/e2e/big-preview-check.mjs；DPR1/2的冷加载与暖缓存重开、导航缩略图实际加载、原图按钮及放大同步状态、失败保预览和手动重试、快速切图／关闭取消旧加载；36图桌面无横溢出且隐藏滚动条仍能滚动、窄屏首尾键盘可达。可用 --rail-only 只查长轨道、--output-dir 隔离证据；旧滚动条负例用 --negative-rail 并指定独立目录。隐藏dialog不得按1px先选缩略图 |
 | 设计连接工具 | npm run design:smoke，相关命令实际验证 |
 | 上游探测脚本 | Python 语法和安全 dry-run、Go 显式编译；不自动实际收费探测 |
 

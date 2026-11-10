@@ -29,6 +29,7 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
   const sidebarToggle = useRef<HTMLButtonElement>(null);
   const folders = data.folders.filter(folder => folder.userId === currentUser.id);
   const compact = narrow ? !mobileOpen : collapsed && !isSettings;
+  const folderListOpen = compact || foldersOpen;
 
   useEffect(() => {
     const media = matchMedia("(max-width: 680px)");
@@ -132,13 +133,13 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
             </button>}
             {!compact && createFolderButton}
           </div>
-          {!compact && <div className={"nav-submenu " + (foldersOpen ? "open" : "")} id="folder-navigation" inert={!foldersOpen}>
+          <div className={"nav-submenu " + (folderListOpen ? "open" : "")} id="folder-navigation" inert={!folderListOpen}>
             <div className="nav-submenu-inner">
               {folders.map(folder => <button key={folder.id} className={"nav-subitem " + (isGallery && activeFolder === folder.id ? "active" : "")}
                 title={folder.name} aria-label={folder.name} aria-current={isGallery && activeFolder === folder.id ? "page" : undefined}
-                onClick={() => go("/gallery/" + folder.id)}><Icon name="folder" size={18} /><span>{folder.name}</span></button>)}
+                onClick={() => go("/gallery/" + folder.id)}><Icon name="folder" size={18} />{!compact && <span>{folder.name}</span>}</button>)}
             </div>
-          </div>}
+          </div>
         </>}
       </nav>
       <div className="sidebar-bottom"><div className="account-menu-wrap">
@@ -147,7 +148,7 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
           <span className="avatar">{currentUser.username.charAt(0).toUpperCase()}</span>
           {!compact && <><span><span>我的账户</span><small>{currentUser.username}</small></span>
             <span className="account-trigger-balance" aria-label={`积分余额 ${currentUser.balance.toLocaleString("zh-CN")}`}
-              title={`${currentUser.balance.toLocaleString("zh-CN")} 积分`}>{currentUser.balance.toLocaleString("zh-CN")}</span></>}
+              title={`${currentUser.balance.toLocaleString("zh-CN")} 积分`}><Icon name="coins" size={16} />{currentUser.balance.toLocaleString("zh-CN")}</span></>}
         </button>
         {accountMenu && <><button className="menu-dismiss" tabIndex={-1} aria-label="关闭账户菜单" onClick={() => setAccountMenu(false)} />
           <AccountMenu onNavigate={target => { go(target); setAccountMenu(false); }}

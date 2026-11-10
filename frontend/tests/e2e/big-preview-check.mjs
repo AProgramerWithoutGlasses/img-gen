@@ -4,11 +4,18 @@ import { chromium, expect } from "@playwright/test";
 import { createServer } from "vite";
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { prepareEvidenceOutput } from "./evidence-output.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
-const output = new URL("../../outputs/big-preview/", import.meta.url);
-const probe = process.argv.includes("--probe");
-const negativeThumbnails = process.argv.includes("--negative-thumbnails");
+const evidence = await prepareEvidenceOutput(process.argv.slice(2), {
+  defaultDirectory: "frontend/outputs/big-preview",
+  booleanFlags: ["--probe", "--negative-thumbnails", "--rail-only", "--negative-rail"],
+});
+const output = evidence.url;
+const probe = evidence.flags.has("--probe");
+const negativeThumbnails = evidence.flags.has("--negative-thumbnails");
+const railOnly = evidence.flags.has("--rail-only");
+const negativeRail = evidence.flags.has("--negative-rail");
 const origin = "http://127.0.0.1:5178";
 await mkdir(output, { recursive: true });
 const options = { modelId: "gpt-image-2", ratio: "自动", count: 3 };
@@ -115,7 +122,7 @@ async function readyThumbnails(modal) {
 const originalGets = asset => requests.filter(request => request.path === asset.url && request.method === "GET");
 try {
   browser = await chromium.launch({ channel: process.platform === "win32" ? "msedge" : undefined });
-  for (const dpr of probe ? [1] : [1, 2]) {
+  for (const dpr of railOnly ? [] : probe ? [1] : [1, 2]) {
     originalResponses.clear();
     delay = 120;
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: dpr });
@@ -287,6 +294,80 @@ try {
       results.push({ name: `gallery-images-load-after-activation-${dpr}x`, status: "passed" });
     }
     await context.close();
+  }
+  if (!probe) {
+    originalResponses.clear();
+    delay = 0;
+    // Many independent single-image generations reproduce the real long rail
+    // without exceeding the product's four-image limit for one generation.
+    for (let index = assets.length; index < 36; index++) {
+      const extra = { ...assets[0], id: `rail-${index + 1}`, name: `rail-${index + 1}.png`,
+        url: `/api/images/rail-${index + 1}`, thumbnailUrl: `/api/images/rail-${index + 1}/thumbnail/1`,
+        previewUrl: `/api/images/rail-${index + 1}/preview/1`, batchId: `rail-batch-${index + 1}`,
+        options: { ...options, count: 1 }, outputIndex: 0 };
+      assets.push(extra);
+      state.generations.push({ ...state.generations[0], id: extra.batchId,
+        options: extra.options, imageIds: [extra.id] });
+    }
+    for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+      const mobile = viewport.width < 760;
+      const context = await browser.newContext({ viewport, colorScheme: mobile ? "dark" : "light" });
+      try {
+        const page = await context.newPage();
+        page.on("pageerror", e => errors.push(e.message));
+        page.on("console", e => { if (e.type() === "error") errors.push(e.text()); });
+        await page.goto(origin);
+        await page.getByRole("navigation", { name: "主导航", exact: true }).getByRole("button", { name: "全部图片", exact: true }).click();
+        const gallery = page.getByRole("region", { name: "我的图片", exact: true });
+        await gallery.getByRole("button", { name: "查看 rail-15.png", exact: true }).click();
+        const modal = page.getByRole("dialog", { name: "图片预览", exact: true });
+        await expect(modal).toBeVisible();
+        await ready(modal.locator(".preview-stage img"));
+        const rail = modal.getByRole("navigation", { name: "图片切换", exact: true });
+        const buttons = rail.getByRole("button");
+        await expect(buttons).toHaveCount(36);
+        if (negativeRail) await page.addStyleTag({ content: ".image-preview .preview-thumbnails { overflow:auto!important; scrollbar-width:thin!important; } .image-preview .preview-thumbnails::-webkit-scrollbar { display:block!important; width:15px!important; height:15px!important; }" });
+        const metrics = await rail.evaluate(element => {
+          const style = getComputedStyle(element);
+          return { clientWidth: element.clientWidth, scrollWidth: element.scrollWidth,
+            clientHeight: element.clientHeight, scrollHeight: element.scrollHeight,
+            overflowX: style.overflowX, overflowY: style.overflowY, scrollbarWidth: style.scrollbarWidth };
+        });
+        expect(metrics.scrollbarWidth, "Thumbnail navigation must hide its scrollbar without disabling scrolling").toBe("none");
+        if (mobile) {
+          expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
+          expect(metrics.scrollHeight).toBeLessThanOrEqual(metrics.clientHeight + 1);
+          expect(metrics.overflowX).toBe("auto");
+          expect(metrics.overflowY).toBe("hidden");
+        } else {
+          expect(metrics.scrollWidth, "A vertical thumbnail rail must not create horizontal overflow").toBeLessThanOrEqual(metrics.clientWidth);
+          expect(metrics.scrollHeight).toBeGreaterThan(metrics.clientHeight);
+          expect(metrics.overflowX).toBe("hidden");
+          expect(metrics.overflowY).toBe("auto");
+          await rail.hover();
+          const before = await rail.evaluate(element => element.scrollTop);
+          await page.mouse.wheel(0, 240);
+          await expect.poll(() => rail.evaluate(element => element.scrollTop)).toBeGreaterThan(before);
+        }
+        const visibleInRail = button => button.evaluate(element => {
+          const box = element.getBoundingClientRect();
+          const parent = element.closest("nav").getBoundingClientRect();
+          return box.left >= parent.left - 1 && box.right <= parent.right + 1
+            && box.top >= parent.top - 1 && box.bottom <= parent.bottom + 1;
+        });
+        await buttons.first().focus();
+        await expect.poll(() => visibleInRail(buttons.first())).toBe(true);
+        await page.keyboard.press("Enter");
+        await expect(modal.locator(".preview-index")).toHaveText("1 / 36");
+        await buttons.last().focus();
+        await expect.poll(() => visibleInRail(buttons.last())).toBe(true);
+        await page.keyboard.press("Enter");
+        await expect(modal.locator(".preview-index")).toHaveText("36 / 36");
+        await ready(modal.locator(".preview-stage img"));
+        await page.screenshot({ path: fileURLToPath(new URL(`thumbnail-rail-36-${viewport.width}px.png`, output)), animations: "disabled" });
+        results.push({ name: `36-image-rail-scroll-and-keyboard-${viewport.width}px`, metrics, status: "passed" });
+      } finally { await context.close(); }
+    }
   }
   expect(errors).toEqual([]);
   await writeFile(new URL(probe ? "before.json" : "regression.json", output), JSON.stringify({
