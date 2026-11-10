@@ -294,6 +294,51 @@ try {
   expect(await foldersIcon.locator('path').count(), 'The folder-management icon should visibly contain stacked folders').toBeGreaterThanOrEqual(2);
   const toggleBox = await foldersToggle.boundingBox(), newFolderBox = await newFolder.boundingBox();
   expect(toggleBox.x + toggleBox.width, 'Folder-list arrow should sit to the left of the new-folder action').toBeLessThanOrEqual(newFolderBox.x + 1);
+  for (const [label, control] of [['arrow', foldersToggle], ['new-folder', newFolder]]) {
+    const geometry = await control.evaluate(button => {
+      const box = button.getBoundingClientRect(), icon = button.querySelector('svg').getBoundingClientRect();
+      return { width: box.width, height: box.height, iconWidth: icon.width, iconHeight: icon.height };
+    });
+    expect(geometry.width, `${label} should use the same compact hit area`).toBeCloseTo(28, 0);
+    expect(geometry.height).toBeCloseTo(28, 0);
+    expect(geometry.iconWidth).toBeCloseTo(16, 0);
+    expect(geometry.iconHeight).toBeCloseTo(16, 0);
+  }
+  const folderLink = folderRow.getByRole('button', { name: '文件夹管理', exact: true });
+  const readFolderHover = () => folderRow.evaluate(row => {
+    const transparent = color => color === 'rgba(0, 0, 0, 0)' || color === 'transparent';
+    const background = element => getComputedStyle(element).backgroundColor;
+    return { row: background(row), linkClear: transparent(background(row.querySelector('.nav-folder-link'))),
+      arrowClear: transparent(background(row.querySelector('.nav-folder-toggle'))),
+      addClear: transparent(background(row.querySelector('.sidebar-new-folder'))) };
+  });
+  const expectFolderHover = async (highlighted, rowColor) => {
+    await expect.poll(async () => {
+      const state = await readFolderHover();
+      return state.linkClear && state.arrowClear === (highlighted !== 'arrow') && state.addClear === (highlighted !== 'add')
+        && state.row !== 'rgba(0, 0, 0, 0)' && state.row !== 'transparent'
+        && (!rowColor || state.row === rowColor);
+    }, 'The whole folder row should highlight while only the hovered or focused control gets its own small background').toBe(true);
+    return (await readFolderHover()).row;
+  };
+  await folderLink.hover();
+  const rowHoverColor = await expectFolderHover(null);
+  await screenshot('mobile-390-folder-row-link-hover');
+  await foldersToggle.hover();
+  await expectFolderHover('arrow', rowHoverColor);
+  await screenshot('mobile-390-folder-row-arrow-hover');
+  await newFolder.hover();
+  await expectFolderHover('add', rowHoverColor);
+  await screenshot('mobile-390-folder-row-add-hover');
+  await page.mouse.move(350, 100);
+  await foldersToggle.focus();
+  await page.keyboard.press('Tab');
+  await expect(newFolder).toBeFocused();
+  await expectFolderHover('add', rowHoverColor);
+  await page.keyboard.press('Shift+Tab');
+  await expect(foldersToggle).toBeFocused();
+  await expectFolderHover('arrow', rowHoverColor);
+  await screenshot('mobile-390-folder-row-keyboard-focus');
   await expect(foldersToggle).toHaveAttribute('aria-expanded', 'true');
   await foldersToggle.click();
   await expect(foldersToggle).toHaveAttribute('aria-expanded', 'false');

@@ -18,7 +18,7 @@ body:has(.toast) .workbench-selection-toolbar { top:76px; }
 .workbench-selection-toolbar .workbench-selection-cancel { color:var(--muted); }
 .workbench-edit-guard { display:inline-flex; align-items:center; flex-wrap:wrap; justify-content:center; border-radius:7px; }
 .workbench-edit-guard:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-.workbench-selection-hint { padding:0 6px; color:var(--muted); text-align:center; white-space:nowrap; font-size:12px; line-height:18px; }
+.workbench-selection-hint { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
 .workbench-stage { position:relative; flex:1; min-height:0; margin:0; overflow:hidden; }
 .result-card { position:absolute; box-sizing:border-box; border:0; border-radius:8px; background:#1d232b; overflow:hidden; isolation:isolate; transition:left 200ms var(--ease-out),top 200ms var(--ease-out),width 200ms var(--ease-out),height 200ms var(--ease-out); }
 .result-backdrop { position:absolute; inset:-24px; background:radial-gradient(ellipse at 20% 20%,#6f8491 0%,transparent 55%),radial-gradient(ellipse at 75% 72%,#2c3c45 0%,transparent 50%),linear-gradient(165deg,#6c7881 0%,#343e47 49%,#10171d 100%); filter:blur(16px); pointer-events:none; }

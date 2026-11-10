@@ -70,7 +70,7 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
   };
   const toggleLabel = compact ? "展开侧栏" : "收起侧栏";
   const createFolderButton = <button className="icon-button sidebar-new-folder" aria-label="新建文件夹" title="新建文件夹"
-    onClick={() => { newFolder(); setMobileOpen(false); }}><Icon name="plus" size={18} /></button>;
+    onClick={() => { newFolder(); setMobileOpen(false); }}><Icon name="plus" size={compact ? 18 : 16} /></button>;
 
   return <>
     {mobileOpen && <button className="sidebar-backdrop" tabIndex={-1} aria-label="关闭侧栏"
@@ -128,7 +128,7 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
             {!compact && <button className="icon-button nav-folder-toggle" aria-label="文件夹列表"
               title={foldersOpen ? "收起文件夹列表" : "展开文件夹列表"}
               aria-expanded={foldersOpen} aria-controls="folder-navigation" onClick={() => setFoldersOpen(value => !value)}>
-              <Icon name="chevronDown" size={15} className={"nav-chevron" + (foldersOpen ? " open" : "")} />
+              <Icon name="chevronDown" size={16} className={"nav-chevron" + (foldersOpen ? " open" : "")} />
             </button>}
             {!compact && createFolderButton}
           </div>

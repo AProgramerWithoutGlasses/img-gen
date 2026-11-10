@@ -32,11 +32,27 @@ async function topToast(text) {
   const toast = page.locator(".toast");
   await expect(toast).toContainText(text);
   await expect(toast).toBeVisible();
-  const box = await toast.boundingBox();
-  expect(box.y, "Feedback should appear at the top of the page").toBeCloseTo(20, 0);
-  expect(box.x + box.width / 2, "Feedback should be centred in the page").toBeCloseTo(page.viewportSize().width / 2, 0);
-  expect(box.x).toBeGreaterThanOrEqual(0);
-  expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize().width);
+  const measure = () => toast.evaluate(element => {
+    const box = element.getBoundingClientRect();
+    const dialog = element.closest("dialog[open]");
+    const area = (dialog ?? document.querySelector(".workspace")).getBoundingClientRect();
+    return { left: box.left, right: box.right, top: box.top, center: box.left + box.width / 2,
+      targetLeft: area.left, targetRight: area.right, targetCenter: area.left + area.width / 2,
+      inDialog: Boolean(dialog),
+      closeReachable: (() => {
+        const close = element.querySelector('[aria-label="关闭提示"]'), rect = close.getBoundingClientRect();
+        return close.contains(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2));
+      })() };
+  });
+  await expect.poll(async () => {
+    const box = await measure();
+    return Math.abs(box.center - box.targetCenter);
+  }, "Feedback should centre in the active workspace or modal, excluding the sidebar").toBeLessThanOrEqual(1);
+  const box = await measure();
+  expect(box.top, "Feedback should appear at the top of the page").toBeCloseTo(20, 0);
+  expect(box.left).toBeGreaterThanOrEqual(box.targetLeft);
+  expect(box.right).toBeLessThanOrEqual(box.targetRight);
+  expect(box.closeReachable, "Feedback is covered by another layer").toBe(true);
   await expect(toast.getByRole("button", { name: "关闭提示", exact: true })).toBeVisible();
   return toast;
 }
@@ -233,7 +249,21 @@ async function verifyCreation() {
   await secondChoice.check();
   await expect(selection).toContainText("已选 2 张");
   await expect(selection.getByRole("button", { name: "继续修图", exact: true })).toBeDisabled();
-  await expect(selection.getByText("多选时无法继续修图", { exact: true })).toBeVisible();
+  const editGuard = selection.locator(".workbench-edit-guard");
+  await expect(editGuard).toHaveAttribute("title", "多选时无法继续修图");
+  await expect(editGuard).toHaveAccessibleDescription("多选时无法继续修图");
+  const selectionHint = selection.locator(".workbench-selection-hint");
+  await expect(selectionHint).toHaveText("多选时无法继续修图");
+  const hiddenHint = await selectionHint.evaluate(element => {
+    const box = element.getBoundingClientRect(), style = getComputedStyle(element);
+    return { width: box.width, height: box.height, position: style.position,
+      clipped: style.clipPath === "inset(50%)" || /^rect\(0px,? 0px,? 0px,? 0px\)$/.test(style.clip),
+      accessible: style.display !== "none" && style.visibility !== "hidden" && !element.hidden };
+  });
+  expect(hiddenHint.width, "The disabled reason must not take visible toolbar space").toBeLessThanOrEqual(1);
+  expect(hiddenHint.height).toBeLessThanOrEqual(1);
+  expect(hiddenHint.position).toBe("absolute");
+  expect(hiddenHint.clipped && hiddenHint.accessible, "Keep the disabled reason available to assistive technology without painting it").toBe(true);
   for (const edit of await creation.getByRole("button", { name: "继续修图", exact: true, includeHidden: true }).all())
     await expect(edit).toBeDisabled();
   // In selection mode a centre click toggles that image instead of opening a
@@ -269,8 +299,42 @@ async function verifyCreation() {
   await batchPicker.getByRole("checkbox", { name: "待整理", exact: true }).check();
   await batchPicker.getByRole("button", { name: "加入", exact: true }).click();
   await expect(batchPicker).toHaveCount(0);
+  // Keep this real success notification alive while the layout changes. Tick
+  // animation frames deliberately so sidebar transitions and preview geometry
+  // still settle under the controlled clock.
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 50));
   const batchToast = await topToast("已将 2 张图片加入文件夹");
-  await screenshot("creation-bulk-folder-toast-top-centre");
+  const sidebar = page.locator(".sidebar");
+  await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(224, 0);
+  await screenshot("creation-bulk-folder-toast-workspace-expanded");
+  await page.getByRole("button", { name: "收起侧栏", exact: true }).click();
+  await page.clock.runFor(300);
+  await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(72, 0);
+  await topToast("已将 2 张图片加入文件夹");
+  await screenshot("creation-bulk-folder-toast-workspace-collapsed");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.runFor(300);
+  await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(58, 0);
+  await topToast("已将 2 张图片加入文件夹");
+  await screenshot("creation-bulk-folder-toast-workspace-390px");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.clock.runFor(100);
+  await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(72, 0);
+  await page.getByRole("button", { name: "展开侧栏", exact: true }).click();
+  await page.clock.runFor(300);
+  await expect.poll(async () => (await sidebar.boundingBox()).width).toBeCloseTo(224, 0);
+  await selection.getByRole("button", { name: "取消选择", exact: true }).click();
+  await creation.locator(".result-open").first().click();
+  const modal = page.getByRole("dialog", { name: "图片预览", exact: true });
+  await expect(modal).toBeVisible();
+  await page.clock.runFor(200);
+  await expect(modal.locator(".toast")).toBeVisible();
+  await topToast("已将 2 张图片加入文件夹");
+  await screenshot("creation-toast-modal-top-layer-centre");
+  await modal.getByRole("button", { name: "关闭", exact: true }).click();
+  await page.clock.runFor(100);
+  await topToast("已将 2 张图片加入文件夹");
+  await page.clock.resume();
   await page.clock.fastForward(3200);
   await expect(batchToast, "Ordinary feedback should disappear after three seconds").toHaveCount(0);
   if (await selection.count()) await selection.getByRole("button", { name: "取消选择", exact: true }).click();

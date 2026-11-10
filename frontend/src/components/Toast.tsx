@@ -13,7 +13,7 @@ export function Toast({ text, action, onClose }: {
   useLayoutEffect(() => {
     const update = () => {
       const dialogs = document.querySelectorAll<HTMLDialogElement>("dialog[open]");
-      setHost(dialogs.item(dialogs.length - 1) ?? document.body);
+      setHost(dialogs.item(dialogs.length - 1) ?? document.querySelector(".app-shell") ?? document.body);
     };
     update();
     const observer = new MutationObserver(update);

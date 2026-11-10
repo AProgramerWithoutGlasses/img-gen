@@ -130,7 +130,7 @@
 .toast {
   position: fixed;
   top: max(20px, env(safe-area-inset-top));
-  left: 50%;
+  left: calc((100% + var(--sidebar-width, 0px)) / 2);
   transform: translateX(-50%);
   z-index: 1000;
   display: flex;
@@ -142,10 +142,11 @@
   border-radius: 12px;
   box-shadow: 0 4px 24px #0002;
   width: max-content;
-  max-width: min(520px, calc(100vw - 32px));
+  max-width: min(520px, calc(100vw - var(--sidebar-width, 0px) - 32px));
   font-size: 14px;
 }
 .toast > span { min-width: 0; overflow-wrap: anywhere; }
+dialog .toast { left: 50%; max-width: min(520px, calc(100vw - 32px)); }
 .toast > button:not(.icon-button) {
   flex: none;
   color: inherit;
