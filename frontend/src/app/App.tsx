@@ -222,18 +222,6 @@ function StudioApp() {
         notify={notify}
       />
       <main className={`workspace${!isGallery && !isSettings ? " workbench-workspace" : ""}`}>
-        {isSettings && <header className="page-header">
-          <h1>
-            {isSettings
-              ? settingsLabels[settingsSection]
-              : isGallery
-                ? "我的图片"
-                : "图像创作"}
-          </h1>
-          {import.meta.env.MODE === "preview" && (
-            <span className="preview-badge">本地预览</span>
-          )}
-        </header>}
         <CreationPage
           key={currentUser.id}
           active={!isGallery && !isSettings}

@@ -410,7 +410,7 @@ async function verifyRequestsAndKeyboard() {
   await expect(
     page.getByRole("cell", { name: "没有匹配的请求", exact: true }),
   ).toBeVisible();
-  await verifyScroll(page.locator(".settings-content"));
+  await verifyScroll(page.locator(".settings-scroll"));
   await page.getByRole("button", { name: "返回创作", exact: true }).click();
   const creation = page.getByRole("region", { name: "图像创作", exact: true });
   const prompt = creation.getByRole("textbox", { name: "提示词", exact: true });
