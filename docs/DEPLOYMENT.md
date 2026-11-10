@@ -13,6 +13,7 @@
 - 应用配置：`/opt/img-gen/.env`，权限 `root:imggen 0640`；保留服务器原有 API Key、Base URL 和数据库连接。
 - HTTPS 会话需要 `COOKIE_SECURE=true`。首次账号迁移使用 `ADMIN_PASSWORD`，未设置时兼容原 `APP_PASSWORD`；已有账号不会被环境变量重置密码。
 - MySQL：独立容器 `img-gen-mysql`，数据卷 `img-gen-mysql-data`，监听 `127.0.0.1:13306`，数据库名 `imggen`。此部署沿用既有 MySQL 8.2 容器。
+- 当前 MySQL 容器内存上限640MiB，额外swap额度512MiB；Docker的 `--memory-swap` 是两者总额，当前为1152MiB。此值已通过 `docker update` 持久化，现有64MiB缓冲池、30连接上限和关闭Performance Schema的配置保留。资源调整不重启数据库或修改业务数据。
 - Nginx：`/etc/nginx/sites-available/img-gen`；`client_max_body_size 25m` 覆盖新版每张附件20MB的独立上传及旧双图表单上限；证书由 `certbot.timer` 续期。调整后先执行 `nginx -t`，通过后 reload。
 - 升级备份：`/opt/img-gen/backups/<UTC时间>/`，目录权限 `0700`，备份文件权限 `0600`。
 - 发布信息：`/opt/img-gen/release.json`，记录代码提交、二进制 SHA256、前一版本与备份位置，不保存密钥。
@@ -33,6 +34,8 @@
 同批验证中只有前端补丁、后端源码和依赖均未改变时，可复用本轮已验证且仍可恢复的完整数据库备份；记录其来源和摘要，并另存补丁切换前的配置与版本元数据。不以备份复用为由跳过队列、产物、健康或容量检查。
 
 启动失败可将 `current` 切回前一二进制并恢复原配置。数据库迁移独立于二进制切换；恢复数据库前必须核对迁移和新增业务数据，不能自动覆盖线上数据库。
+
+服务为active仍可能在等待数据库，须同时确认18080监听和healthz。遇到数据库连接超时、SSH缓慢或高负载，先保存cgroup内存上限、memory.events、memory.pressure和主机现场，区分硬限额回收抖动与OOM；停止无效的应用重启循环，查明原因并稳定数据库后再恢复。2026-11-10曾出现512MiB硬限额顶满、无OOM但内存停顿约78%的故障；提高余量后停顿归零，不能仅凭无OOM记录认定内存充足。
 
 首次启用积分系统后，账号初始余额为 0、模型初始价格为每张 1 积分。管理员需在后台按实际需要配置价格和增加余额；部署过程不擅自调整业务积分。
 
