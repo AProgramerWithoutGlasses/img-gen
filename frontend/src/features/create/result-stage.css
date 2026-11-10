@@ -86,6 +86,8 @@ body:has(.toast) .workbench-selection-toolbar { top:76px; }
   .workbench-header { gap:12px; padding-top:24px; }
   .workbench-header-actions { max-width:120px; }
   .workbench-selection-toolbar { gap:2px; padding:6px; }
+  .workbench-selection-toolbar { position:relative; top:auto; left:auto; transform:none; align-self:center; flex:none; margin-bottom:12px; }
+  body:has(.toast) .workbench-selection-toolbar { top:auto; }
   .workbench-selection-toolbar button { padding:6px 7px; font-size:12px; }
   .workbench-selected-count { font-size:12px; padding:0 5px; }
 }

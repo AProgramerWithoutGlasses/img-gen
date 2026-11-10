@@ -247,6 +247,23 @@ async function verifyCreation() {
   await expect(secondChoice).toBeChecked();
   await expect(creation.locator(".result-card.is-selected")).toHaveCount(2);
   await screenshot("creation-two-selected-bulk-toolbar");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => selection.evaluate(toolbar => {
+    const box = toolbar.getBoundingClientRect();
+    const stage = toolbar.closest('.workbench-turn').querySelector('.workbench-stage').getBoundingClientRect();
+    return box.bottom <= stage.top + 1 && box.left >= 0 && box.right <= innerWidth
+      && [...toolbar.querySelectorAll('button')].every(button => {
+        const r = button.getBoundingClientRect();
+        return button.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+      });
+  }), "Narrow selection actions must remain reachable without covering images").toBe(true);
+  await expect.poll(() => creation.locator('.result-card').evaluateAll(cards => cards.every(card => {
+    const r = card.getBoundingClientRect(), stage = card.parentElement.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && r.left >= stage.left - 1 && r.right <= stage.right + 1
+      && r.top >= stage.top - 1 && r.bottom <= stage.bottom + 1;
+  })), "Every selected image must fit inside the resized narrow result area").toBe(true);
+  await screenshot("creation-two-selected-390-no-image-overlap");
+  await page.setViewportSize({ width: 1440, height: 900 });
   await selection.getByRole("button", { name: "加入文件夹", exact: true }).click();
   const batchPicker = page.getByRole("dialog", { name: "加入文件夹", exact: true });
   await batchPicker.getByRole("checkbox", { name: "待整理", exact: true }).check();

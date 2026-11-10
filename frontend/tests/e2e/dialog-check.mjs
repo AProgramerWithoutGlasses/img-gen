@@ -358,6 +358,14 @@ export async function verifyDialog({ page, screenshot }) {
   const verifyTooltip = async (control) => {
     await moveAway();
     await expect(tooltip).toHaveCount(0);
+    let previousBounds;
+    await expect.poll(async () => {
+      const box = await control.boundingBox();
+      const bounds = box && [box.x, box.y, box.width, box.height].map(value => Math.round(value * 10)).join(',');
+      const stable = !!bounds && bounds === previousBounds;
+      previousBounds = bounds;
+      return stable;
+    }, "Wait for responsive layout before moving onto the button").toBe(true);
     await control.hover();
     await expect(tooltip).toBeVisible();
     await expect(tooltip).toHaveCSS("opacity", "1");
@@ -415,14 +423,17 @@ export async function verifyDialog({ page, screenshot }) {
     await page.keyboard.press("Escape");
     await expect(tooltip).toHaveCount(0);
     await moveAway();
+    await prompt.fill("窄屏按钮提示位置检查");
     await page.setViewportSize({ width: 390, height: 844 });
     const generate = creation.getByRole("button", { name: "生成", exact: true });
+    await expect(generate).toBeEnabled();
     const narrow = await verifyTooltip(generate);
     expect(narrow.placement, "A bottom-row tooltip should flip above when the page bottom has no space").toBe("above");
     await screenshot("dialog-tooltip-390px-flips-above");
     await page.keyboard.press("Escape");
     await moveAway();
     await page.setViewportSize({ width: 1440, height: 900 });
+    await prompt.fill("");
     return { shortWidth: short.width, longWidth: long.width, bottomSpace: page.viewportSize().height - box.y - box.height };
   });
 
