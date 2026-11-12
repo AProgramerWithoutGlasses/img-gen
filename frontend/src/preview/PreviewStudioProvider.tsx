@@ -121,12 +121,41 @@ export default function PreviewStudioProvider({
         throw new Error("此名称已被使用，请换一个名称");
       return clean;
     };
+    const changeImages = (action: "trash" | "restore" | "purge", imageIds: string[]) => update(d => {
+      const user = actor(d);
+      const ids = [...new Set(imageIds)];
+      if (!ids.length || ids.length > 500) throw new Error("请选择 1–500 张图片");
+      const images = ids.map(imageId => d.assets.find(image => image.id === imageId && image.userId === user.id));
+      if (images.some(image => !image)) throw new Error("图片不存在");
+      if (action === "purge" && images.some(image => !image!.trashedAt)) throw new Error("只能彻底删除回收站中的图片");
+      for (const image of images) {
+        image!.trashedAt = action === "trash" ? image!.trashedAt ?? new Date().toISOString() : undefined;
+        const record = d.generations.find(generation => generation.id === image!.batchId);
+        if (!record) continue;
+        const output = record.outputs?.find(item => item.outputIndex === image!.outputIndex);
+        if (output) {
+          const known = d.assets.filter(item => item.batchId === record.id && item.outputIndex === output.outputIndex);
+          output.imageStates = {
+            ...Object.fromEntries(known.map(item => [item.id, item.trashedAt ? "trashed" as const : "available" as const])),
+            ...output.imageStates,
+            [image!.id]: action === "trash" ? "trashed" : action === "restore" ? "available" : "deleted",
+          };
+          const values = Object.values(output.imageStates);
+          output.imageState = values.includes("available") ? "available" : values.includes("trashed") ? "trashed" : "deleted";
+        }
+        record.imageIds = action === "restore" ? [...new Set([...record.imageIds, image!.id])]
+          : record.imageIds.filter(id => id !== image!.id);
+      }
+      if (action === "purge") d.assets = d.assets.filter(image => !ids.includes(image.id));
+    });
     return {
       async generate(prompt, attachments, options, onAccepted) {
         const normalized = normalizeOptions(options, attachments.length > 0);
         if (!prompt.trim()) throw new Error("请输入提示词");
         const job = await update<Generation>((d) => {
           const user = actor(d);
+          if (attachments.some(attachment => d.assets.some(image => image.id === attachment.id && (image.trashedAt || image.userId !== user.id))))
+            throw new Error("图片已移入回收站，请先复原后使用");
           const cost = d.prices[normalized.modelId] * normalized.count;
           if (user.balance < cost) throw new Error("积分不足，请先充值");
           const record: Generation = {
@@ -243,7 +272,7 @@ export default function PreviewStudioProvider({
           const user = actor(d);
           folderIds.forEach((f) => folder(d, f));
           const assets = imageIds.map((i) =>
-            d.assets.find((a) => a.id === i && a.userId === user.id),
+            d.assets.find((a) => a.id === i && a.userId === user.id && !a.trashedAt),
           );
           if (assets.some((a) => !a)) throw new Error("图片不存在");
           assets.forEach((a) => {
@@ -260,6 +289,9 @@ export default function PreviewStudioProvider({
               a.folderIds = a.folderIds.filter((f) => f !== folderId);
             });
         }),
+      trashImages: imageIds => changeImages("trash", imageIds),
+      restoreImages: imageIds => changeImages("restore", imageIds),
+      purgeImages: imageIds => changeImages("purge", imageIds),
       setPreferences: (patch) =>
         update((d) => {
           actor(d);

@@ -121,7 +121,7 @@ func (a *App) studioMemberships(w http.ResponseWriter, r *http.Request) {
 	for _, item := range []struct {
 		ids   []string
 		query string
-	}{{input.FolderIDs, "SELECT id FROM studio_folders WHERE id=? AND user_id=? FOR UPDATE"}, {input.ImageIDs, "SELECT images.id FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=? AND jobs.user_id=? FOR UPDATE"}} {
+	}{{input.FolderIDs, "SELECT id FROM studio_folders WHERE id=? AND user_id=? FOR UPDATE"}, {input.ImageIDs, "SELECT images.id FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=? AND jobs.user_id=? AND images.trashed_at IS NULL AND images.purged_at IS NULL FOR UPDATE"}} {
 		for _, id := range item.ids {
 			if !ValidID(id) {
 				apiError(w, 404, "图片或文件夹不存在")

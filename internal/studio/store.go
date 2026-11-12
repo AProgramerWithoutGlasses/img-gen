@@ -107,6 +107,8 @@ type Job struct {
 	StartedAt        *time.Time         `json:"started_at"`
 	FinishedAt       *time.Time         `json:"finished_at"`
 	Images           []Picture          `json:"images"`
+	ImageState       string             `json:"image_state,omitempty"`
+	ImageStates      map[string]string  `json:"-"`
 	HasInput         bool               `json:"has_input"`
 	Input            []byte             `json:"-"`
 	InputMIME        string             `json:"-"`
@@ -122,15 +124,16 @@ type SourcePicture struct {
 	Bytes      int    `json:"bytes"`
 }
 type Picture struct {
-	ThumbnailURL string `json:"thumbnail_url"`
-	PreviewURL   string `json:"preview_url"`
-	ID           string `json:"id"`
-	URL          string `json:"url"`
-	MIME         string `json:"mime"`
-	Width        int    `json:"width"`
-	Height       int    `json:"height"`
-	Bytes        int    `json:"bytes"`
-	Content      []byte `json:"-"`
+	TrashedAt    *time.Time `json:"trashed_at,omitempty"`
+	ThumbnailURL string     `json:"thumbnail_url"`
+	PreviewURL   string     `json:"preview_url"`
+	ID           string     `json:"id"`
+	URL          string     `json:"url"`
+	MIME         string     `json:"mime"`
+	Width        int        `json:"width"`
+	Height       int        `json:"height"`
+	Bytes        int        `json:"bytes"`
+	Content      []byte     `json:"-"`
 }
 
 // Input bytes and MIME are always persisted together. Read the small MIME
@@ -147,7 +150,7 @@ func ScanJob(row scanner) (Job, error) {
 }
 
 func (a *App) pictures(ctx context.Context, j *Job) error {
-	rows, err := a.DB.QueryContext(ctx, "SELECT id,mime,width,height,byte_size FROM images WHERE job_id=? ORDER BY id", j.ID)
+	rows, err := a.DB.QueryContext(ctx, "SELECT id,mime,width,height,byte_size FROM images WHERE job_id=? AND trashed_at IS NULL AND purged_at IS NULL ORDER BY id", j.ID)
 	if err != nil {
 		return err
 	}

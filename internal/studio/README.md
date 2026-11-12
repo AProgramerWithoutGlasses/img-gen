@@ -10,6 +10,7 @@
 | jobs.go、worker.go | 原任务接口、队列领取、上游执行与结果保存 |
 | studio_generation.go、studio_state.go | 当前页面生成与历史适配 |
 | studio_attachments.go、studio_folders.go | 六附件与图片多归属 |
+| studio_images.go、studio_image_trash.go | 图片分页、回收站与输出资源清理；任务和积分流水独立保留 |
 | auth.go、login_limit.go、admin.go | 会话、密码、限流与用户管理 |
 | credits.go、store*.go | 冻结/结算/退款与重复可执行的增量迁移 |
 | provider.go、studio_provider.go、polish.go | 上游协议适配与旧接口兼容 |

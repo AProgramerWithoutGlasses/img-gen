@@ -129,7 +129,7 @@ func (a *App) studioState(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取文件夹失败")
 		return
 	}
-	generations, assets, err := a.loadStudioHistory(ctx, jobs, actor.ID)
+	generations, assets, err := a.loadStudioHistory(ctx, jobs, actor.ID, false)
 	if err != nil {
 		apiError(w, 500, "读取图片历史失败")
 		return
@@ -191,7 +191,7 @@ func studioHistory(jobs []Job, opts map[string]GenerationOptions, positions map[
 		var started, finished *time.Time
 		for i, j := range batch {
 			// Use the same stable slot index as Asset.OutputIndex, including legacy batches.
-			g.Outputs = append(g.Outputs, GenerationOutput{OutputIndex: i, Status: j.Status, StartedAt: j.StartedAt, FinishedAt: j.FinishedAt})
+			g.Outputs = append(g.Outputs, GenerationOutput{OutputIndex: i, Status: j.Status, StartedAt: j.StartedAt, FinishedAt: j.FinishedAt, ImageState: j.ImageState, ImageStates: j.ImageStates})
 			active = active || j.Status == "queued" || j.Status == "running"
 			failed = failed || j.Status == "failed"
 			if j.Error != "" {
@@ -214,7 +214,7 @@ func studioHistory(jobs []Job, opts map[string]GenerationOptions, positions map[
 				if fids == nil {
 					fids = []string{}
 				}
-				assets = append(assets, Asset{Attachment: Attachment{ID: p.ID, Name: "生成图片-" + p.ID + "." + strings.TrimPrefix(p.MIME, "image/"), URL: p.URL, Width: p.Width, Height: p.Height}, ThumbnailURL: p.ThumbnailURL, PreviewURL: p.PreviewURL, UserID: j.UserID, CreatedAt: j.CreatedAt, BatchID: id, OutputIndex: i, Prompt: j.Prompt, Options: o, FolderIDs: fids})
+				assets = append(assets, Asset{Attachment: Attachment{ID: p.ID, Name: "生成图片-" + p.ID + "." + strings.TrimPrefix(p.MIME, "image/"), URL: p.URL, Width: p.Width, Height: p.Height}, ThumbnailURL: p.ThumbnailURL, PreviewURL: p.PreviewURL, UserID: j.UserID, CreatedAt: j.CreatedAt, BatchID: id, OutputIndex: i, Prompt: j.Prompt, Options: o, FolderIDs: fids, TrashedAt: p.TrashedAt})
 				g.ImageIDs = append(g.ImageIDs, p.ID)
 			}
 		}

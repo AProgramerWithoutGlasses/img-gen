@@ -21,5 +21,18 @@ func migrateStudio(ctx context.Context, DB *sql.DB) error {
 			return err
 		}
 	}
+	// Keep a small output tombstone after a permanent delete. Jobs and the
+	// independent credit ledger remain the accounting source of truth.
+	for _, name := range []string{"trashed_at", "purged_at"} {
+		var n int
+		if err := DB.QueryRowContext(ctx, "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='images' AND column_name=?", name).Scan(&n); err != nil {
+			return err
+		}
+		if n == 0 {
+			if _, err := DB.ExecContext(ctx, "ALTER TABLE images ADD COLUMN "+name+" DATETIME(3) NULL"); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }

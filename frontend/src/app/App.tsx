@@ -124,11 +124,23 @@ function StudioApp() {
     setPreview(next);
   };
   const assetsById = useMemo(() => new Map(data.assets.map(image => [image.id, image])), [data.assets]);
-  const previewImages = useMemo(() => preview?.images.map(image => assetsById.get(image.id) ?? image) ?? [], [preview?.images, assetsById]);
+  const previewImages = useMemo(() => preview?.images.map(image => assetsById.get(image.id))
+    .filter((image): image is ImageAsset => !!image && !!image.trashedAt === (preview?.options?.view === "trash")) ?? [], [preview?.images, preview?.options?.view, assetsById]);
   const selectedImage = preview
-    ? assetsById.get(preview.activeId) ?? preview.images.find(image => image.id === preview.activeId)
+    ? previewImages.find(image => image.id === preview.activeId)
     : undefined;
-  const previewIndex = preview?.images.findIndex(image => image.id === preview.activeId) ?? -1;
+  const previewIndex = previewImages.findIndex(image => image.id === preview?.activeId);
+  useEffect(() => {
+    const current = previewRef.current;
+    if (!current) return;
+    if (!previewImages.some(image => image.id === current.activeId)) { closePreview(); return; }
+    if (previewImages.length !== current.images.length) {
+      const next = { ...current, images: previewImages, options: current.options ? { ...current.options,
+        total: Math.max(previewImages.length, (current.options.total ?? current.images.length) - current.images.length + previewImages.length) } : undefined };
+      previewRef.current = next;
+      setPreview(next);
+    }
+  }, [previewImages, closePreview]);
   const loadMorePreview = (manual = false): Promise<ImageAsset[] | undefined> => {
     if (previewRead.current) return previewRead.current.promise;
     const current = previewRef.current;
@@ -137,7 +149,7 @@ function StudioApp() {
     const session = previewEpoch.current;
     const controller = new AbortController();
     setPreview(previous => previous ? { ...previous, loading: true, loadError: undefined } : previous);
-    const promise = actions.listImages({ folderId: current.options?.folderId, cursor, signal: controller.signal })
+    const promise = actions.listImages({ view: current.options?.view, folderId: current.options?.folderId, cursor, signal: controller.signal })
       .then(page => {
         if (controller.signal.aborted || session !== previewEpoch.current) return undefined;
         const latest = previewRef.current;

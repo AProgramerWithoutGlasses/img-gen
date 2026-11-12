@@ -15,7 +15,7 @@ export function ImageSelectionToolbar({ count, allSelected, onSelectAll, onClose
 }) {
   return <div className="image-selection-toolbar workbench-selection-toolbar" role="toolbar" aria-label={label}>
     <span className="workbench-selected-count" aria-live="polite">已选 {count} 张</span>
-    <button type="button" onClick={onSelectAll}>{allSelected ? "取消全选" : selectAllLabel}</button>
+    {!allSelected && <button type="button" onClick={onSelectAll} disabled={closeDisabled}>{selectAllLabel}</button>}
     {children}
     <button type="button" className="image-selection-close workbench-selection-cancel" aria-label="退出多选"
       title="退出多选" onClick={onClose} disabled={closeDisabled}><Icon name="close" size={18} /></button>

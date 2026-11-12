@@ -150,7 +150,7 @@ func TestThumbnailAccessAndPersistence(t *testing.T) {
 				}
 				r := httptest.NewRequest("GET", path, nil)
 				mock := mockSession(t, a, r, "user")
-				query := `SELECT t.content FROM images JOIN jobs ON jobs.id=images.job_id\s+LEFT JOIN image_thumbnails t ON t.image_id=images.id AND t.version=\? WHERE images.id=\? AND jobs.user_id=\?`
+				query := `SELECT t.content FROM images JOIN jobs ON jobs.id=images.job_id\s+LEFT JOIN image_thumbnails t ON t.image_id=images.id AND t.version=\? WHERE images.id=\? AND images.purged_at IS NULL AND jobs.user_id=\?`
 				userID := strings.Repeat("b", 32)
 				want := http.StatusOK
 				switch scenario {
@@ -160,7 +160,7 @@ func TestThumbnailAccessAndPersistence(t *testing.T) {
 					for i := 0; i < 2; i++ {
 						mock.ExpectQuery(query).WithArgs(variant.version, id, userID).WillReturnRows(sqlmock.NewRows([]string{"content"}).AddRow(nil))
 					}
-					mock.ExpectQuery(`SELECT images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=\? AND jobs.user_id=\?`).WithArgs(id, userID).WillReturnRows(sqlmock.NewRows([]string{"content"}).AddRow(testPNG()))
+					mock.ExpectQuery(`SELECT images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=\? AND images.purged_at IS NULL AND jobs.user_id=\?`).WithArgs(id, userID).WillReturnRows(sqlmock.NewRows([]string{"content"}).AddRow(testPNG()))
 					mock.ExpectExec(`INSERT INTO image_thumbnails`).WithArgs(id, variant.version, sqlmock.AnyArg()).WillReturnResult(sqlmock.NewResult(0, 1))
 				case "denied":
 					mock.ExpectQuery(query).WithArgs(variant.version, id, userID).WillReturnRows(sqlmock.NewRows([]string{"content"}))
@@ -228,14 +228,14 @@ func TestImageConditionalRequestsRespectAccess(t *testing.T) {
 						var query *sqlmock.ExpectedQuery
 						var rows *sqlmock.Rows
 						if suffix == "" {
-							query = mock.ExpectQuery(`SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=\? AND jobs.user_id=\?`).WithArgs(id, strings.Repeat("b", 32))
+							query = mock.ExpectQuery(`SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=\? AND images.purged_at IS NULL AND jobs.user_id=\?`).WithArgs(id, strings.Repeat("b", 32))
 							rows = sqlmock.NewRows([]string{"mime", "content"}).AddRow("image/png", data)
 						} else {
 							version := thumbnailVersion
 							if suffix == "/preview/1" {
 								version = previewCacheVersion
 							}
-							query = mock.ExpectQuery(`SELECT t.content .* WHERE images.id=\? AND jobs.user_id=\?`).WithArgs(version, id, strings.Repeat("b", 32))
+							query = mock.ExpectQuery(`SELECT t.content .* WHERE images.id=\? AND images.purged_at IS NULL AND jobs.user_id=\?`).WithArgs(version, id, strings.Repeat("b", 32))
 							rows = sqlmock.NewRows([]string{"content"}).AddRow(data)
 						}
 						if access == "foreign" {

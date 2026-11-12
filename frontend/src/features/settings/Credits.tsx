@@ -65,7 +65,7 @@ export function Credits({ notify }: { notify: Notify }) {
                         (model) => model.id === generation.options.modelId,
                       )?.name ?? generation.options.modelId}
                     </td>
-                    <td>{generation.imageIds.length} 张</td>
+                    <td>{generation.outputs?.filter(output => output.status === "succeeded").length ?? generation.imageIds.length} 张</td>
                     <td>
                       {generation.status === "processing"
                         ? "结算中"
@@ -74,7 +74,7 @@ export function Credits({ notify }: { notify: Notify }) {
                     <td>
                       <span className={`status-chip ${generation.status}`}>
                         {generation.status === "failed" &&
-                        generation.imageIds.length > 0
+                        (generation.outputs?.filter(output => output.status === "succeeded").length ?? generation.imageIds.length) > 0
                           ? "部分完成"
                           : statusLabel(generation.status)}
                       </span>

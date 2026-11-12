@@ -22,6 +22,7 @@ interface Props {
   onEdit: (images: ImageAsset[]) => void;
   onFolder: (imageIds: string[]) => void;
   onRestore: () => void;
+  onTrash: (imageIds: string[]) => void;
 }
 interface SlotProps {
   image?: ImageAsset;
@@ -44,6 +45,7 @@ interface SlotProps {
   onEdit: Props["onEdit"];
   onFolder: Props["onFolder"];
   onError: () => void;
+  onTrash: Props["onTrash"];
 }
 type ImagePhase = "loading" | "returned" | "revealing" | "finishing" | "ready" | "failed";
 const imageDragType = "application/x-img-gen-image-id";
@@ -53,7 +55,7 @@ const revealExitMs = 260;
 
 function ResultSlot({ image, collection, job, index, output, active, busy, reveal, width, height,
   left, top, selecting, selected, onToggle, onReadyChange,
-  onPreview, onEdit, onFolder, onError }: SlotProps) {
+  onPreview, onEdit, onFolder, onError, onTrash }: SlotProps) {
   const [phase, setPhase] = useState<ImagePhase>("loading");
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
@@ -61,12 +63,13 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
   activeRef.current = active;
   const [presentation, setPresentation] = useState(0);
   const shouldReveal = useRef(reveal);
-  const failed = !image && (output?.status === "failed" || job.status !== "processing");
+  const unavailable = !image && (output?.imageState === "trashed" || output?.imageState === "deleted");
+  const failed = !image && !unavailable && (output?.status === "failed" || job.status !== "processing");
   const queued = !image && output?.status === "queued";
   const finishedAt = output?.finishedAt ?? image?.createdAt ?? (job.status !== "processing" ? job.completedAt : undefined);
   const [elapsed, setElapsed] = useState(() => resultElapsed(output?.startedAt,
     finishedAt ? Date.parse(finishedAt) : undefined));
-  const isReady = phase === "ready";
+  const isReady = !!image && phase === "ready";
   const resourceFailed = phase === "failed";
   const hasDecoded = phase === "returned" || phase === "revealing" || phase === "finishing" || isReady;
   const showProgress = shouldReveal.current || !image;
@@ -190,7 +193,7 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
         }} />
     </button>}
     {!isReady && <div className={`result-generation-layer result-slot-placeholder${phase === "finishing" ? " is-leaving" : ""}`}>
-      {failed || resourceFailed ? <div className="result-generation-meta result-generation-error" role="alert">
+      {unavailable ? <div className="result-generation-meta"><span>{output?.imageState === "trashed" ? "已移入回收站" : "图片已彻底删除"}</span></div> : failed || resourceFailed ? <div className="result-generation-meta result-generation-error" role="alert">
         <span>{failed ? "生成失败" : "图片暂时无法加载"}</span>
         {failed && <button onClick={onError}>查看错误</button>}
       </div> : <>
@@ -207,15 +210,15 @@ function ResultSlot({ image, collection, job, index, output, active, busy, revea
         </div>}
       </>}
     </div>}
-    {image && isReady && <ImageSelectionControl selected={selected} onToggle={() => onToggle(image.id)} label={`选择第 ${index + 1} 张图片`} />}
+    {image && isReady && <ImageSelectionControl selected={selected} onToggle={() => onToggle(image.id)} label={`选择第 ${index + 1} 张图片`} disabled={busy} />}
     {image && isReady && <ImageCardActions image={image} compact={compact} active={active} selecting={selecting}
       onEdit={() => onEdit([image])} onFolder={() => onFolder([image.id])} onDownload={() => downloadImage(image)}
-      editDisabled={busy} />}
+      editDisabled={busy} onTrash={() => onTrash([image.id])} />}
 
   </div>;
 }
 
-export default function ResultStage({ job, images, active, busy, onPreview, onEdit, onFolder, onRestore }: Props) {
+export default function ResultStage({ job, images, active, busy, onPreview, onEdit, onFolder, onRestore, onTrash }: Props) {
   const stage = useRef<HTMLDivElement>(null);
   const previousColumns = useRef<number | undefined>(undefined);
   const liveBatch = useRef(job.status === "processing");
@@ -233,8 +236,9 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
     if (!ready) setSelectedIds(previous => previous.includes(imageId) ? previous.filter(id => id !== imageId) : previous);
   }, []);
   const toggleSelected = useCallback((imageId: string) => {
+    if (busy || downloading) return;
     setSelectedIds(previous => previous.includes(imageId) ? previous.filter(id => id !== imageId) : [...previous, imageId]);
-  }, []);
+  }, [busy, downloading]);
   const ordered = [...images].sort((a, b) => a.outputIndex - b.outputIndex);
   const selectedImages = ordered.filter(image => selectedIds.includes(image.id));
   const readyImages = ordered.filter(image => readyIds.includes(image.id));
@@ -257,14 +261,14 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
   useEffect(() => {
     if (!active || !selecting) return;
     const escape = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== "Escape" || event.defaultPrevented
+      if (event.key !== "Escape" || event.defaultPrevented || busy || downloading
         || document.querySelector('dialog[open], [role="dialog"][aria-modal="true"], .result-image-menu')) return;
       event.preventDefault();
       setSelectedIds([]);
     };
     document.addEventListener("keydown", escape);
     return () => document.removeEventListener("keydown", escape);
-  }, [active, selecting]);
+  }, [active, selecting, busy, downloading]);
   useLayoutEffect(() => {
     const element = stage.current;
     if (!active || !element) return;
@@ -284,18 +288,19 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
       {job.status === "failed" && <div className="workbench-header-actions"><button className="workbench-error-details" onClick={() => setDetails("error")}>查看错误</button></div>}
     </header>
     {active && selecting && <ImageSelectionToolbar count={selectedImages.length} allSelected={allSelected}
-      onSelectAll={() => setSelectedIds(allSelected ? [] : readyImages.map(image => image.id))} onClose={() => setSelectedIds([])}>
+      closeDisabled={busy || downloading} onSelectAll={() => { if (!busy && !downloading) setSelectedIds(readyImages.map(image => image.id)); }} onClose={() => setSelectedIds([])}>
       <span className="workbench-edit-guard" tabIndex={editLimitExceeded ? 0 : undefined}
         title={editLimitExceeded ? `最多选择${MAX_BASE_IMAGES}张基础图` : undefined} aria-describedby={editLimitExceeded ? selectionHintId : undefined}>
-        <button type="button" disabled={busy || !selectedImages.length || editLimitExceeded} onClick={() => { if (selectedImages.length && !editLimitExceeded) onEdit(selectedImages); }}><Icon name="edit" size={16} />继续修图</button>
+        <button type="button" disabled={busy || downloading || !selectedImages.length || editLimitExceeded} onClick={() => { if (selectedImages.length && !editLimitExceeded) onEdit(selectedImages); }}><Icon name="edit" size={16} />继续修图</button>
         {editLimitExceeded && <span className="workbench-selection-hint" id={selectionHintId}>最多选择{MAX_BASE_IMAGES}张基础图</span>}
       </span>
-      <button type="button" onClick={() => onFolder(selectedImages.map(image => image.id))}><Icon name="folderPlus" size={16} />加入文件夹</button>
-      <button type="button" disabled={downloading} onClick={() => {
+      <button type="button" disabled={busy || downloading} onClick={() => onFolder(selectedImages.map(image => image.id))}><Icon name="folderPlus" size={16} />加入文件夹</button>
+      <button type="button" disabled={busy || downloading} onClick={() => {
         setDownloading(true); setDownloadError("");
         void downloadImages(selectedImages).catch(cause => setDownloadError(cause instanceof Error ? cause.message : "下载失败，请重试。"))
           .finally(() => setDownloading(false));
       }}><Icon name="download" size={16} />{downloading ? "准备下载…" : "下载"}</button>
+      <button type="button" disabled={busy || downloading} onClick={() => onTrash(selectedImages.map(image => image.id))}><Icon name="trash" size={16} />移入回收站</button>
     </ImageSelectionToolbar>}
     {downloadError && <div className="workbench-download-error" role="alert">{downloadError}<button type="button" aria-label="关闭下载提示" onClick={() => setDownloadError("")}><Icon name="close" size={16} /></button></div>}
 
@@ -306,7 +311,7 @@ export default function ResultStage({ job, images, active, busy, onPreview, onEd
         selecting={selecting} selected={selectedIds.includes(image?.id ?? "")}
         onToggle={toggleSelected} onReadyChange={readyChanged}
         width={layout.imageWidth} height={layout.imageHeight} left={layout.positions[index].left} top={layout.positions[index].top}
-        onPreview={onPreview} onEdit={onEdit} onFolder={onFolder} onError={() => setDetails("error")} />)}
+        onPreview={onPreview} onEdit={onEdit} onFolder={onFolder} onTrash={onTrash} onError={() => setDetails("error")} />)}
     </div>
     {details && <Modal title={details === "prompt" ? "本轮提示词" : "生成未全部完成"} onClose={() => setDetails(null)} footer={details === "error" ? (
       <button className="btn" disabled={busy} onClick={() => { onRestore(); setDetails(null); }}>重新编辑</button>

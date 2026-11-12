@@ -263,10 +263,10 @@ export function Requests({
                       aria-label={`查看 ${request.username} 的请求详情`}
                       onClick={() => setDetail(request)}
                     >
-                      {request.imageIds.length ? (
+                      {request.imageIds.some(id => data.assets.some(asset => asset.id === id && !asset.trashedAt)) ? (
                         <div className="request-thumbnails">
                           {request.imageIds.slice(0, 2).map((id) => {
-                            const asset = data.assets.find((a) => a.id === id);
+                            const asset = data.assets.find((a) => a.id === id && !a.trashedAt);
                             return asset ? (
                               <img
                                 key={id}
@@ -345,7 +345,7 @@ function RequestDetail({
 }) {
   const { data } = useStudio();
   const images = data.assets.filter((asset) =>
-    request.imageIds.includes(asset.id),
+    request.imageIds.includes(asset.id) && !asset.trashedAt,
   );
   return (
     <Modal
@@ -427,7 +427,7 @@ function RequestDetail({
           </div>
         ) : (
           <p className={request.error ? "field-error" : "settings-muted"}>
-            {request.error || "正在生成…"}
+            {request.error || (request.outputs?.some(output => output.imageState === "deleted") ? "图片已彻底删除，生成与积分记录仍保留。" : request.outputs?.some(output => output.imageState === "trashed") ? "图片已移入回收站。" : request.status === "processing" ? "正在生成…" : "暂无可显示的图片。")}
           </p>
         )}
       </section>

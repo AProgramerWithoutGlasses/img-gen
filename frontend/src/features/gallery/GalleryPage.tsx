@@ -81,6 +81,10 @@ export default function GalleryPage({
   notify,
 }: GalleryPageProps) {
   const { data, actions, currentUser } = useStudio();
+  const trash = activeFolder === "trash";
+  const imageMutationLock = useRef(false);
+  const [purging, setPurging] = useState<string[] | null>(null);
+  const [purgeError, setPurgeError] = useState("");
   const [selecting, setSelecting] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [organizing, setOrganizing] = useState<string[] | null>(null);
@@ -103,9 +107,9 @@ export default function GalleryPage({
   const [pageLoading, setPageLoading] = useState(false);
   const [pageError, setPageError] = useState("");
   const listImages = actions.listImages;
-  const queryFolder = sourceTarget ? "all" : activeFolder;
-  const queryKey = `${currentUser.id}\n${queryFolder}`;
-  const queryCount = queryFolder === "all" ? data.imageSummary?.total : data.imageSummary?.folderCounts[queryFolder];
+  const queryFolder = sourceTarget || trash ? "all" : activeFolder;
+  const queryKey = `${currentUser.id}\n${trash ? "trash" : "active"}\n${queryFolder}`;
+  const queryCount = trash ? data.imageSummary?.trashTotal : queryFolder === "all" ? data.imageSummary?.total : data.imageSummary?.folderCounts[queryFolder];
   const loadPage = useCallback(async (cursor?: string, reset = false) => {
     if (!listImages || queryFolder === "folders" || pageRequest.current) return;
     const controller = new AbortController();
@@ -113,7 +117,7 @@ export default function GalleryPage({
     setPageLoading(true);
     setPageError("");
     try {
-      const result = await listImages({ folderId: queryFolder, cursor, signal: controller.signal });
+      const result = await listImages({ view: trash ? "trash" : "active", folderId: queryFolder, cursor, signal: controller.signal });
       if (controller.signal.aborted) return;
       setPages(previous => ({ key: queryKey, total: result.total, nextCursor: result.nextCursor,
         ids: [...new Set([...(reset || previous.key !== queryKey ? [] : previous.ids), ...result.images.map(image => image.id)])],
@@ -126,10 +130,10 @@ export default function GalleryPage({
         setPageLoading(false);
       }
     }
-  }, [listImages, queryFolder, queryKey]);
+  }, [listImages, queryFolder, queryKey, trash]);
   const userAssets = useMemo(
-    () => data.assets.filter((image) => image.userId === currentUser.id),
-    [data.assets, currentUser.id],
+    () => data.assets.filter((image) => image.userId === currentUser.id && !!image.trashedAt === trash),
+    [data.assets, currentUser.id, trash],
   );
   const assetsByID = useMemo(() => new Map(userAssets.map(image => [image.id, image])), [userAssets]);
   const userFolders = data.folders.filter(
@@ -169,6 +173,8 @@ export default function GalleryPage({
     setFolderMenu(false);
     setOrganizing(null);
     setFolderDialog(null);
+    setPurging(null);
+    setPurgeError("");
   }, [activeFolder]);
   useEffect(() => {
     const target = gridRef.current;
@@ -188,7 +194,7 @@ export default function GalleryPage({
       return assets
         .filter(
           (image) =>
-            sourceTarget ||
+            trash || sourceTarget ||
             activeFolder === "all" ||
             (activeFolder === "unfiled"
               ? image.folderIds.length === 0
@@ -200,7 +206,7 @@ export default function GalleryPage({
             : b.createdAt.localeCompare(a.createdAt),
         );
     },
-    [userAssets, assetsByID, activeFolder, sourceTarget, listImages, pages.key, pages.ids, queryKey],
+    [userAssets, assetsByID, activeFolder, sourceTarget, listImages, pages.key, pages.ids, queryKey, trash],
   );
   const imageTotal = listImages ? (pages.key === queryKey ? pages.total : queryCount ?? 0) : images.length;
   const hasUserAssets = (data.imageSummary?.total ?? userAssets.length) > 0;
@@ -221,7 +227,7 @@ export default function GalleryPage({
   const editLimitExceeded = selectedImages.length > MAX_BASE_IMAGES;
   const title = sourceTarget
     ? "选择图片"
-    : activeFolder === "all"
+    : trash ? "回收站" : activeFolder === "all"
       ? "全部图片"
       : activeFolder === "unfiled"
         ? "未分类"
@@ -253,6 +259,38 @@ export default function GalleryPage({
     document.addEventListener("keydown", escape);
     return () => document.removeEventListener("keydown", escape);
   }, [selecting, busy, downloading]);
+
+  async function changeImages(action: "trash" | "restore" | "purge", imageIds: string[]) {
+    if (busy || downloading || imageMutationLock.current || !imageIds.length) return;
+    if (imageIds.length > 500) { notify("单次最多操作 500 张图片，请减少选择。"); return; }
+    imageMutationLock.current = true;
+    setBusy(true);
+    setPurgeError("");
+    const ids = [...imageIds];
+    try {
+      if (action === "trash") await actions.trashImages(ids);
+      else if (action === "restore") await actions.restoreImages(ids);
+      else await actions.purgeImages(ids);
+      setSelected([]);
+      setSelecting(false);
+      setPurging(null);
+      notify(action === "trash" ? `已移入回收站 ${ids.length} 张图片` : action === "restore" ? `已复原 ${ids.length} 张图片` : `已彻底删除 ${ids.length} 张图片`, action === "trash" ? {
+        label: "撤销", run: () => { void actions.restoreImages(ids).then(() => notify("已撤销移入回收站")).catch(failure => notify(errorText(failure))); },
+      } : undefined);
+    } catch (failure) {
+      if (action === "purge") setPurgeError(errorText(failure));
+      else notify(errorText(failure));
+    } finally {
+      imageMutationLock.current = false;
+      setBusy(false);
+    }
+  }
+
+  function confirmPurge(ids: string[]) {
+    if (busy || downloading || !ids.length) return;
+    setPurgeError("");
+    setPurging([...ids]);
+  }
 
   async function downloadSelected() {
     if (!selectedImages.length || downloading) return;
@@ -336,7 +374,7 @@ export default function GalleryPage({
   }
 
   return (
-    <section className="gallery-page" aria-label="我的图片">
+    <section className="gallery-page" aria-label={trash ? "回收站" : "我的图片"}>
       <header className="gallery-heading">
         <div className="gallery-heading-copy">
           {currentFolder && !sourceTarget && (
@@ -346,7 +384,7 @@ export default function GalleryPage({
             <h1>{title}</h1>
             <span>{imageTotal} 张</span>
           </div>
-          <p>{sourceTarget ? "选中要加入此文件夹的图片。" : currentFolder ? "属于这个文件夹的图片，也会保留在全部图片中。" : "所有生成的图片都在这里，按时间整理。"}</p>
+          <p>{sourceTarget ? "选中要加入此文件夹的图片。" : trash ? "可复原图片，或彻底删除以释放存储空间。" : currentFolder ? "属于这个文件夹的图片，也会保留在全部图片中。" : "所有生成的图片都在这里，按时间整理。"}</p>
         </div>
         <div className="gallery-heading-actions">
           {images.length > 0 && !selecting && (
@@ -417,9 +455,13 @@ export default function GalleryPage({
                     selected={selectedVisible.includes(image.id)}
                     busy={busy || downloading}
                     onToggle={() => toggle(image.id)}
+                    trash={trash}
+                    onTrash={ids => { void changeImages("trash", ids); }}
+                    onRestore={ids => { void changeImages("restore", ids); }}
+                    onPurge={confirmPurge}
                     onEdit={onEdit}
-                    onPreview={(image, collection) => onPreview(image, collection, listImages ? {
-                      folderId: queryFolder, total: imageTotal, nextCursor: pages.nextCursor,
+                    onPreview={(image, collection) => onPreview(image, collection, trash || listImages ? {
+                      view: trash ? "trash" : "active", folderId: queryFolder, total: imageTotal, nextCursor: pages.nextCursor,
                     } : undefined)}
                     folderId={sourceTarget ? undefined : currentFolder?.id}
                     onOrganize={setOrganizing}
@@ -441,15 +483,17 @@ export default function GalleryPage({
         )}
         {images.length === 0 && !pageLoading && !pageError && (
           <div className="gallery-empty">
-            <Icon name={currentFolder ? "folder" : "image"} />
+            <Icon name={trash ? "trash" : currentFolder ? "folder" : "image"} />
             <h2>
-              {currentFolder
+              {trash ? "回收站是空的" : currentFolder
                 ? "这个文件夹还没有图片"
                 : activeFolder === "unfiled" && hasUserAssets
                   ? "所有图片都已归类"
                   : "还没有生成的图片"}
             </h2>
-            {currentFolder && hasUserAssets ? (
+            {trash ? (
+              <><p>移入回收站的图片会显示在这里。</p><button className="btn" onClick={() => onChangeFolder("all")}>查看全部图片</button></>
+            ) : currentFolder && hasUserAssets ? (
               <button
                 className="btn"
                 onClick={() => {
@@ -474,7 +518,7 @@ export default function GalleryPage({
                 去图像创作
               </button>
             )}
-            {!userFolders.length && (
+            {!trash && !userFolders.length && (
               <button className="gallery-empty-new" onClick={onCreateFolder}>
                 新建文件夹
               </button>
@@ -484,9 +528,13 @@ export default function GalleryPage({
       </div>
       {selecting && (
         <ImageSelectionToolbar count={selectedVisible.length} allSelected={allSelected}
-          label="图片整理" selectAllLabel={listImages && pages.nextCursor ? "全选已加载" : "全选"}
+          label={trash ? "回收站图片操作" : "图片整理"} selectAllLabel={listImages && pages.nextCursor ? "全选已加载" : "全选"}
           closeDisabled={busy || downloading} onClose={cancelSelection}
           onSelectAll={() => { if (!busy && !downloading) setSelected(allSelected ? [] : images.map(image => image.id)); }}>
+          {trash ? <>
+            <button type="button" disabled={busy || !selectedVisible.length} onClick={() => { void changeImages("restore", selectedVisible); }}><Icon name="restore" size={16} />复原</button>
+            <button type="button" className="image-selection-danger" disabled={busy || !selectedVisible.length} onClick={() => confirmPurge(selectedVisible)}><Icon name="trash" size={16} />彻底删除</button>
+          </> : <>
           <span className="workbench-edit-guard" tabIndex={editLimitExceeded ? 0 : undefined}
             title={editLimitExceeded ? `最多选择${MAX_BASE_IMAGES}张基础图` : undefined}
             aria-describedby={editLimitExceeded ? selectionHintId : undefined}>
@@ -520,8 +568,18 @@ export default function GalleryPage({
           <button type="button" onClick={() => void downloadSelected()} disabled={busy || downloading || !selectedVisible.length}>
             <Icon name="download" size={16} />{downloading ? "准备下载…" : "下载"}
           </button>
+          <button type="button" disabled={busy || downloading || !selectedVisible.length} onClick={() => { void changeImages("trash", selectedVisible); }}><Icon name="trash" size={16} />移入回收站</button>
+          </>}
         </ImageSelectionToolbar>
       )}
+      {purging && <Modal title="彻底删除图片？" className="gallery-folder-dialog" onClose={() => { if (!busy) setPurging(null); }} footer={<>
+        <button className="btn" disabled={busy} onClick={() => setPurging(null)}>取消</button>
+        <button className="btn gallery-danger-button" disabled={busy} onClick={() => { void changeImages("purge", purging); }}>{busy ? "删除中…" : "彻底删除"}</button>
+      </>}>
+        <p className="gallery-delete-message">将彻底删除 {purging.length} 张图片，删除后无法恢复。</p>
+        <p className="gallery-delete-message">已消耗的积分不会退还，生成与积分记录仍会保留。</p>
+        {purgeError && <p className="field-error" role="alert">{purgeError}</p>}
+      </Modal>}
       {organizing && (
         <FolderPicker
           imageIds={organizing}

@@ -288,11 +288,11 @@ export function ImagePreview({ selectedImage, collection, previewIndex, total, s
                 <span aria-live="polite">{originalLabels[originalState.status]}</span>
               </button>
             </div>
-            <div className="preview-actions" role="group" aria-label="图片操作">
+            {!selectedImage.trashedAt && <div className="preview-actions" role="group" aria-label="图片操作">
               <button className="preview-action-button preview-action-primary" onClick={edit}><Icon name="edit" size={17} /><span>继续修图</span></button>
               <button className="preview-action-button" onClick={() => onFolder(selectedImage.id)}><Icon name="folder" size={17} /><span>加入文件夹</span></button>
               <button className="preview-action-button" onClick={() => downloadImage(selectedImage)}><Icon name="download" size={17} /><span>下载原图</span></button>
-            </div>
+            </div>}
           </div>
         </div>
         {detailsOpen && (

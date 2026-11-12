@@ -27,6 +27,7 @@ type studioImagePage struct {
 
 type imageSummary struct {
 	Total        int            `json:"total"`
+	TrashTotal   int            `json:"trashTotal"`
 	FolderCounts map[string]int `json:"folderCounts"`
 }
 
@@ -67,13 +68,15 @@ func (a *App) workspaceBatchIDs(ctx context.Context, userID string) ([]string, e
 
 func (a *App) studioImageSummary(ctx context.Context, userID string) (imageSummary, error) {
 	summary := imageSummary{FolderCounts: map[string]int{}}
-	if err := a.DB.QueryRowContext(ctx, `SELECT COUNT(*) FROM images
-		JOIN jobs ON jobs.id=images.job_id WHERE jobs.user_id=?`, userID).Scan(&summary.Total); err != nil {
+	if err := a.DB.QueryRowContext(ctx, `SELECT COUNT(CASE WHEN images.trashed_at IS NULL THEN 1 END),
+		COUNT(CASE WHEN images.trashed_at IS NOT NULL THEN 1 END) FROM images
+		JOIN jobs ON jobs.id=images.job_id WHERE jobs.user_id=? AND images.purged_at IS NULL`, userID).Scan(&summary.Total, &summary.TrashTotal); err != nil {
 		return summary, err
 	}
 	rows, err := a.DB.QueryContext(ctx, `SELECT m.folder_id,COUNT(*) FROM studio_image_folders m
 		JOIN studio_folders f ON f.id=m.folder_id JOIN images ON images.id=m.image_id
-		JOIN jobs ON jobs.id=images.job_id WHERE f.user_id=? AND jobs.user_id=? GROUP BY m.folder_id`, userID, userID)
+		JOIN jobs ON jobs.id=images.job_id WHERE f.user_id=? AND jobs.user_id=?
+		AND images.trashed_at IS NULL AND images.purged_at IS NULL GROUP BY m.folder_id`, userID, userID)
 	if err != nil {
 		return summary, err
 	}
@@ -103,8 +106,23 @@ func (a *App) studioImages(w http.ResponseWriter, r *http.Request) {
 			limit = value
 		}
 	}
-	where, args := " WHERE jobs.user_id=?", []any{actor.ID}
+	view := r.URL.Query().Get("view")
+	if view != "" && view != "active" && view != "trash" {
+		apiError(w, 400, "无效的图片视图")
+		return
+	}
+	trash := view == "trash"
+	where, args := " WHERE jobs.user_id=? AND images.purged_at IS NULL", []any{actor.ID}
+	if trash {
+		where += " AND images.trashed_at IS NOT NULL"
+	} else {
+		where += " AND images.trashed_at IS NULL"
+	}
 	folderID := r.URL.Query().Get("folderId")
+	if trash && folderID != "" && folderID != "all" {
+		apiError(w, 400, "回收站不能按文件夹筛选")
+		return
+	}
 	if folderID == "unfiled" {
 		where += " AND NOT EXISTS (SELECT 1 FROM studio_image_folders m JOIN studio_folders f ON f.id=m.folder_id WHERE m.image_id=images.id AND f.user_id=?)"
 		args = append(args, actor.ID)
@@ -201,7 +219,7 @@ func (a *App) studioImages(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "读取图片任务失败")
 		return
 	}
-	_, assets, err := a.loadStudioHistory(ctx, jobs, actor.ID)
+	_, assets, err := a.loadStudioHistory(ctx, jobs, actor.ID, trash)
 	if err != nil {
 		apiError(w, 500, "读取图片信息失败")
 		return
@@ -220,7 +238,7 @@ func (a *App) studioImages(w http.ResponseWriter, r *http.Request) {
 
 // Both snapshots and image pages use the same history conversion. Every query
 // reads only metadata for the jobs selected by its caller, never binary content.
-func (a *App) loadStudioHistory(ctx context.Context, jobs []Job, membershipOwner string) ([]Generation, []Asset, error) {
+func (a *App) loadStudioHistory(ctx context.Context, jobs []Job, membershipOwner string, trash bool) ([]Generation, []Asset, error) {
 	if len(jobs) == 0 {
 		return []Generation{}, []Asset{}, nil
 	}
@@ -313,17 +331,37 @@ func (a *App) loadStudioHistory(ctx context.Context, jobs []Job, membershipOwner
 	if err != nil {
 		return nil, nil, err
 	}
-	rows, err = a.DB.QueryContext(ctx, `SELECT images.job_id,images.id,images.mime,images.width,images.height,images.byte_size
+	rows, err = a.DB.QueryContext(ctx, `SELECT images.job_id,images.id,images.mime,images.width,images.height,images.byte_size,images.trashed_at,images.purged_at
 		FROM images WHERE 1=1`+jobScope+` ORDER BY images.job_id,images.id`, jobArgs...)
 	if err != nil {
 		return nil, nil, err
 	}
 	pictures := map[string][]Picture{}
+	imageStates := map[string]string{}
+	perImageStates := map[string]map[string]string{}
 	for rows.Next() {
 		var jobID string
 		var picture Picture
-		if err = rows.Scan(&jobID, &picture.ID, &picture.MIME, &picture.Width, &picture.Height, &picture.Bytes); err != nil {
+		var purgedAt *time.Time
+		if err = rows.Scan(&jobID, &picture.ID, &picture.MIME, &picture.Width, &picture.Height, &picture.Bytes, &picture.TrashedAt, &purgedAt); err != nil {
 			break
+		}
+		state := "available"
+		if purgedAt != nil {
+			state = "deleted"
+		} else if picture.TrashedAt != nil {
+			state = "trashed"
+		}
+		if perImageStates[jobID] == nil {
+			perImageStates[jobID] = map[string]string{}
+		}
+		perImageStates[jobID][picture.ID] = state
+		old := imageStates[jobID]
+		if old == "" || state == "available" || old == "deleted" && state == "trashed" {
+			imageStates[jobID] = state
+		}
+		if purgedAt != nil || (picture.TrashedAt != nil) != trash {
+			continue
 		}
 		picture.URL = "/api/images/" + picture.ID
 		picture.ThumbnailURL = picture.URL + "/thumbnail/" + thumbnailVersion
@@ -337,6 +375,8 @@ func (a *App) loadStudioHistory(ctx context.Context, jobs []Job, membershipOwner
 	}
 	for i := range jobs {
 		jobs[i].Images = pictures[jobs[i].ID]
+		jobs[i].ImageState = imageStates[jobs[i].ID]
+		jobs[i].ImageStates = perImageStates[jobs[i].ID]
 	}
 	generations, assets := studioHistory(jobs, opts, positions, attachments, memberships)
 	return generations, assets, nil

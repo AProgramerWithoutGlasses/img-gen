@@ -8,7 +8,7 @@ React / TypeScript / Vite。用户按下表中的页面描述需求即可，agen
 | 登录 | src/features/auth/LoginPage.tsx | 登录及会话联调 |
 | 图像创作、输入与结果 | src/features/create/CreationPage.tsx、ResultStage.tsx、result-layout.ts | 主界面设计稿中的工作区、1–4图及生成状态 |
 | 创作对话框控件、附件与悬停预览 | src/features/create/DialogControls.tsx、DialogAttachments.tsx | 独立[对话框设计稿](../design/对话框设计稿.figcraft)中“本轮适配”的几何与附件，配色跟随主界面稿 |
-| 全部图片、文件夹管理及内容页 | src/features/gallery/GalleryPage.tsx、FolderManagement.tsx | 主界面设计稿中的图库与文件夹管理 |
+| 全部图片、回收站、文件夹管理及内容页 | src/features/gallery/GalleryPage.tsx、FolderManagement.tsx | 主界面设计稿中的图库与文件夹管理；回收站见默认稿第12页 |
 | 文件夹选择、图片预览 | FolderPicker.tsx、ImagePreview.tsx（图库目录） | 主界面设计稿中的图片查看、详情与整理 |
 | 账户、外观、积分 | src/features/settings/Account.tsx、Appearance.tsx、Credits.tsx | 18–22、31–33 |
 | 用户、请求、价格 | src/features/settings/Users.tsx、Requests.tsx、Prices.tsx | 23–28、34–36 |
@@ -37,7 +37,9 @@ React / TypeScript / Vite。用户按下表中的页面描述需求即可，agen
 
 登录页与侧栏共用 ImagePlus 品牌图形及 AiCraft 名称。登录页提供公开注册：新账号为启用的普通用户、初始0积分；注册密码8–128 UTF-8字节，既有登录／改密维持4–128字节兼容，原生输入上限128字符后再校验字节长度，密码显隐使用Lucide。注册失败不自动重试；注册已成功而登录失败时提示直接登录。
 
-图库和工作台共用 `ImageCardActions`、`ImageSelectionControl`、`ImageSelectionToolbar`，图内悬停／键盘聚焦提供修图、加入文件夹、下载，小卡把操作收进更多菜单，点图仍查看大图，菜单不重复此入口。顶部多选条提供数量、全选／取消全选、动作和叉号退出；图库仅全选已加载图片，有后续页时明确标记范围。两处批量下载共用原图ZIP打包，每批最多500张／256MiB，串行鉴权读取、去除文件路径及重名、全部成功后保存一个包；失败明确提示，不下载半成品，不自动重试。fflate按需加载，图片不重复压缩。工作台提示词正文18px／26px。
+图库和工作台共用 `ImageCardActions`、`ImageSelectionControl`、`ImageSelectionToolbar`，图内悬停／键盘聚焦提供修图、加入文件夹、下载及移入回收站，小卡把修图等操作收进更多菜单，删除仍可直接操作。点图仍查看大图，菜单不重复此入口。顶部多选条提供数量、未选满时全选、动作和叉号退出，不再重复显示取消全选；图库仅全选已加载图片，有后续页时明确标记范围。两处批量下载共用原图ZIP打包，每批最多500张／256MiB，串行鉴权读取、去除文件路径及重名、全部成功后保存一个包；失败明确提示，不下载半成品，不自动重试。fflate按需加载，图片不重复压缩。工作台提示词正文18px／26px。
+
+回收站位于全部图片下方，支持单张与多选复原、彻底删除。回收站卡片悬停只显示选择框、复原与彻底删除，预览不提供修图／文件夹／下载；永久删除需确认。普通移入回收站可撤销，复原恢复仍存在的原文件夹关联。历史已生成数依据成功任务，积分消耗与余额均不因删除图片改变。数据层在删除成功后取消旧读取并更新缓存，防止旧响应重新显示图片。
 
 ## 样式与数据
 

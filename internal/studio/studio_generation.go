@@ -94,13 +94,28 @@ func (a *App) createStudioGeneration(w http.ResponseWriter, r *http.Request) {
 	defer tx.Rollback()
 	// All resources are checked against the actor, including when the actor is an administrator.
 	for _, id := range input.AttachmentIDs {
+		// Generated inputs may already have an independent attachment snapshot.
+		// Check the original tombstone first so that snapshot cannot be reused to
+		// bypass trash/purge. Locking serializes reuse against lifecycle changes.
+		var imageOwner string
+		var trashedAt, purgedAt sql.NullTime
+		err = tx.QueryRowContext(ctx, `SELECT jobs.user_id,images.trashed_at,images.purged_at FROM images
+			JOIN jobs ON jobs.id=images.job_id WHERE images.id=? FOR UPDATE`, id).Scan(&imageOwner, &trashedAt, &purgedAt)
+		if err == nil && (imageOwner != uid || trashedAt.Valid || purgedAt.Valid) {
+			apiError(w, 404, "附件不存在或无权使用")
+			return
+		}
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			apiError(w, 500, "读取附件状态失败")
+			return
+		}
 		var owner string
-		err = tx.QueryRowContext(ctx, "SELECT user_id FROM studio_attachments WHERE id=?", id).Scan(&owner)
+		err = tx.QueryRowContext(ctx, "SELECT user_id FROM studio_attachments WHERE id=? FOR UPDATE", id).Scan(&owner)
 		if errors.Is(err, sql.ErrNoRows) {
 			var mime string
 			var data []byte
 			var width, height int
-			err = tx.QueryRowContext(ctx, "SELECT jobs.user_id,images.mime,images.content,images.width,images.height FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=? AND jobs.user_id=?", id, uid).Scan(&owner, &mime, &data, &width, &height)
+			err = tx.QueryRowContext(ctx, "SELECT jobs.user_id,images.mime,images.content,images.width,images.height FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=? AND jobs.user_id=? AND images.trashed_at IS NULL AND images.purged_at IS NULL", id, uid).Scan(&owner, &mime, &data, &width, &height)
 			if err == nil {
 				_, err = tx.ExecContext(ctx, "INSERT INTO studio_attachments(id,user_id,name,mime,width,height,content) VALUES(?,?,?,?,?,?,?)", id, uid, "生成图片", mime, width, height, data)
 			}

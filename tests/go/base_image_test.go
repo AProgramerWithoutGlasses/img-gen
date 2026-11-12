@@ -43,7 +43,7 @@ func TestSavedBaseImageAccess(t *testing.T) {
 			r.Header.Set("Content-Type", mw.FormDataContentType())
 			mock := mockSession(t, a, r, "user")
 			if studio.ValidID(tc.id) && !tc.upload {
-				query := mock.ExpectQuery(`SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=\? AND jobs.user_id=\?`).WithArgs(tc.id, strings.Repeat("b", 32))
+				query := mock.ExpectQuery(`SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=\? AND images.trashed_at IS NULL AND images.purged_at IS NULL AND jobs.user_id=\?`).WithArgs(tc.id, strings.Repeat("b", 32))
 				if tc.found {
 					query.WillReturnRows(sqlmock.NewRows([]string{"mime", "content"}).AddRow("image/png", testPNG()))
 					mock.ExpectQuery("SELECT COUNT.*FROM jobs WHERE status").WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(maxBatchImages))

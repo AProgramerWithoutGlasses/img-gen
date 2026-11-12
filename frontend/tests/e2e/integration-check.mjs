@@ -5,6 +5,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
 import { chooseDialogOption } from './dialog-check.mjs';
+import { checkTrashFlow } from './trash-flow.mjs';
 
 const origin = process.argv[2];
 if (!origin?.startsWith('http://127.0.0.1:')) throw new Error('requires the local Go test server');
@@ -198,6 +199,7 @@ try {
   await openFolder('浏览器 B');
   await expect(gallery.locator('.gallery-tile')).toHaveCount(1);
   await shot('04-folder-persistence');
+  await checkTrashFlow(page, { readState, shot });
   await page.getByRole('button', { name: '我的账户', exact: true }).click();
   await page.getByRole('button', { name: '设置', exact: true }).click();
   await page.getByRole('button', { name: '模型价格', exact: true }).click();

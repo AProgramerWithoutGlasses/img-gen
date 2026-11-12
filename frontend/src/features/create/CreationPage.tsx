@@ -70,6 +70,8 @@ export default function CreationPage({
   }));
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const deleteLock = useRef(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const promptInput = useRef<HTMLTextAreaElement>(null);
@@ -131,7 +133,7 @@ export default function CreationPage({
   // Explicit acceptance selects this workspace batch, even when local/server clocks differ.
   const currentBatch = accepted ?? latest;
   const currentImages = currentBatch
-    ? currentBatch.imageIds.map(id => data.assets.find(image => image.id === id)).filter((image): image is ImageAsset => !!image)
+    ? currentBatch.imageIds.map(id => data.assets.find(image => image.id === id)).filter((image): image is ImageAsset => !!image && !image.trashedAt)
     : [];
   const cost = data.prices[options.modelId] * options.count;
   const quoteReady = Number.isFinite(cost) && cost >= 0;
@@ -158,7 +160,7 @@ export default function CreationPage({
       notify("任务正在提交，请稍候再添加基础图。");
       return;
     }
-    const incoming = [...new Map(images.map(image => [image.id, image])).values()];
+    const incoming = [...new Map(images.filter(image => !image.trashedAt).map(image => [image.id, image])).values()];
     if (!incoming.length) return;
     const current = attachmentItemsRef.current;
     const itemsById = new Map(current.map(item => [item.id, item]));
@@ -197,6 +199,22 @@ export default function CreationPage({
       }
     } else lastAttachment.current = "";
   }, [pendingAttachments]);
+  async function trashImages(ids: string[]) {
+    if (deleteLock.current || sending || !ids.length) return;
+    deleteLock.current = true;
+    setDeleting(true);
+    try {
+      await actions.trashImages(ids);
+      const keep = attachmentItemsRef.current.filter(item => !ids.includes(item.id));
+      attachmentItemsRef.current = keep;
+      setAttachmentItems(keep);
+      updateBaseAttachmentIds(baseAttachmentIdsRef.current.filter(id => !ids.includes(id)));
+      notify(`已移入回收站 ${ids.length} 张图片`, { label: "撤销", run: () => {
+        void actions.restoreImages(ids).then(() => notify("已撤销移入回收站")).catch(error => notify(error instanceof Error ? error.message : "复原失败"));
+      } });
+    } catch (error) { notify(error instanceof Error ? error.message : "移入回收站失败"); }
+    finally { deleteLock.current = false; setDeleting(false); }
+  }
   const submit = async () => {
     if (sending || uploading || incompleteAttachments || !quoteReady || insufficientCredits || !prompt.trim()) return;
     setOpenMenu(null);
@@ -298,7 +316,8 @@ export default function CreationPage({
           job={currentBatch}
           images={currentImages}
           active={active}
-          busy={sending}
+          busy={sending || deleting}
+          onTrash={ids => { void trashImages(ids); }}
           onPreview={onPreview}
           onEdit={continueEditing}
           onFolder={onFolder}
@@ -337,7 +356,7 @@ export default function CreationPage({
             const imageId = event.dataTransfer.getData(imageDragType);
             if (imageId) {
               const image = data.assets.find(item => item.id === imageId);
-              if (image) addAttachment(image);
+              if (image && !image.trashedAt) addAttachment(image);
               return;
             }
             void upload(event.dataTransfer.files);

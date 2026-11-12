@@ -36,13 +36,16 @@ type Asset struct {
 	Prompt       string            `json:"prompt"`
 	Options      GenerationOptions `json:"options"`
 	FolderIDs    []string          `json:"folderIds"`
+	TrashedAt    *time.Time        `json:"trashedAt,omitempty"`
 }
 
 type GenerationOutput struct {
-	OutputIndex int        `json:"outputIndex"`
-	Status      string     `json:"status"`
-	StartedAt   *time.Time `json:"startedAt,omitempty"`
-	FinishedAt  *time.Time `json:"finishedAt,omitempty"`
+	OutputIndex int               `json:"outputIndex"`
+	Status      string            `json:"status"`
+	StartedAt   *time.Time        `json:"startedAt,omitempty"`
+	FinishedAt  *time.Time        `json:"finishedAt,omitempty"`
+	ImageState  string            `json:"imageState,omitempty"`
+	ImageStates map[string]string `json:"imageStates,omitempty"`
 }
 
 type Generation struct {

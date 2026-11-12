@@ -121,9 +121,8 @@ try {
   await expect(galleryBar).toContainText('已选 0 张');
   await galleryBar.getByRole('button',{name:'全选',exact:true}).click();
   await expect(galleryBar).toContainText(`已选 ${await tiles.count()} 张`);
-  await galleryBar.getByRole('button',{name:'取消全选',exact:true}).click();
-  await expect(galleryBar).toContainText('已选 0 张');
-  await page.keyboard.press('Escape');
+  await expect(galleryBar.getByRole('button',{name:'取消全选',exact:true})).toHaveCount(0);
+  await galleryBar.getByRole('button',{name:'退出多选',exact:true}).click();
   await expect(galleryBar).toHaveCount(0);
   await tiles.first().hover();
   if(compact){

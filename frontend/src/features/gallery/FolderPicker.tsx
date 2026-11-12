@@ -19,7 +19,7 @@ export function FolderPicker({ imageIds, onClose, notify }: FolderPickerProps) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const images = data.assets.filter(
-    (image) => image.userId === currentUser.id && imageIds.includes(image.id),
+    (image) => image.userId === currentUser.id && !image.trashedAt && imageIds.includes(image.id),
   );
   const folders = data.folders.filter(
     (folder) => folder.userId === currentUser.id,

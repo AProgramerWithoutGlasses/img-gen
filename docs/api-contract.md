@@ -21,6 +21,8 @@
 | GET /api/studio/state | 默认保留完整历史兼容协议，按需用于请求／积分历史；普通用户仅自己的资料和资源，管理员可读取请求记录需要的全部记录；不含密码和图片二进制 |
 | GET /api/studio/state?view=workspace | 日常启动与轮询：当前用户最近10个完整批次及仍在排队／运行的批次，附 imageSummary.total/folderCounts；watch可携最多100个批次ID，跟踪已知旧任务至终态，仍严格校验归属 |
 | GET /api/studio/images | 当前用户图片分页：limit缺省50、最大50，cursor为不透明稳定游标，folderId可为all／unfiled／自有文件夹ID；返回images、完整total、可选nextCursor。只读取该页命中批次的元数据，不读取图片二进制 |
+| GET /api/studio/images?view=trash | 当前用户回收站分页，返回含trashedAt的图片；不支持文件夹筛选。缺省或view=active只列未删除图片；workspace的imageSummary额外提供trashTotal |
+| POST /api/studio/images/{trash\|restore\|purge} | JSON imageIds，1–500个图片ID；事务内检查所有图片归属，批量原子操作。trash移入回收站并保留文件夹关联，restore复原，purge仅允许彻底删除回收站中的图片；成功返回action与imageIds，不自动重试写请求 |
 | POST /api/studio/attachments | multipart 的 image 字段，单张20MB、PNG/JPEG/WebP/GIF、最多6400万像素，返回服务端附件ID和私有URL |
 | GET /api/studio/attachments/{id} | 认证后按归属读取原始附件；管理员可查看请求中的附件 |
 | GET /api/studio/attachments/{id}/{kind}/1 | kind为thumbnail、preview或preview-large，分别返回256px方形、640px等比、1600px等比静态预览；首次访问懒生成，缓存命中及304/HEAD均先检查权限 |
@@ -35,6 +37,10 @@
 ## 任务与计费
 
 新增表均为增量迁移：studio_batches、studio_batch_jobs、studio_attachments、studio_batch_attachments、studio_folders、studio_image_folders。已有用户/任务/原图/积分流水不重写、不导入、不删除。迁移可重复执行。
+
+图片回收站通过images的trashed_at／purged_at增量字段记录状态，不删除任务、批次或积分流水。彻底删除会清空输出图片二进制、尺寸与格式，删除缩略图及文件夹关联，仅保留图片ID、任务关联与删除状态用于幂等和历史识别；此前已被任务引用的独立输入快照保留。原图和衍生资源在彻底删除后均返回404，回收站原图仅供有权限的查看，不可再用原图片ID提交新任务或加入文件夹。
+
+Generation.imageIds与普通assets只列可用图片；outputs中成功任务始终保留succeeded及imageState（available／trashed／deleted），imageStates另按图片ID返回同任务各图状态，包含彻底删除的墓碑，避免多图任务的缓存串用状态。历史已生成数以成功输出计数，消耗仍来自任务结算与积分流水，删图不退款、不降低历史消耗，也不将已删除成功输出显示为生成中。
 
 每个输出仍独立进入原队列并单独调用上游，保持现有冻结/成功结算/失败退款逻辑。服务端保存批内outputIndex，刷新后顺序稳定；批内部分完成时立即显示成功图，仍有运行任务则整批processing，全部结束且有失败则failed。成功图仍入图库，费用只包含服务端实际冻结或结算的任务；完成失败批次的管理记录显示实际消耗。旧多模型批次按模型拆成多轮，旧批内序号没有历史事实可恢复，保留旧创建时间/ID顺序。
 

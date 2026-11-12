@@ -77,7 +77,7 @@ func (a *App) serveRendition(w http.ResponseWriter, r *http.Request, version str
 	scope, args := ownerScope(r, "jobs.user_id")
 	queryArgs := append([]any{version, id}, args...)
 	query := `SELECT t.content FROM images JOIN jobs ON jobs.id=images.job_id
-		LEFT JOIN image_thumbnails t ON t.image_id=images.id AND t.version=? WHERE images.id=?` + scope
+		LEFT JOIN image_thumbnails t ON t.image_id=images.id AND t.version=? WHERE images.id=? AND images.purged_at IS NULL` + scope
 	var data []byte
 	read := func() error { return a.DB.QueryRowContext(r.Context(), query, queryArgs...).Scan(&data) }
 	err := read()
@@ -102,7 +102,7 @@ func (a *App) serveRendition(w http.ResponseWriter, r *http.Request, version str
 				return err
 			}
 			var original []byte
-			if err := a.DB.QueryRowContext(r.Context(), "SELECT images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=?"+scope, append([]any{id}, args...)...).Scan(&original); err != nil {
+			if err := a.DB.QueryRowContext(r.Context(), "SELECT images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=? AND images.purged_at IS NULL"+scope, append([]any{id}, args...)...).Scan(&original); err != nil {
 				return err
 			}
 			data, err = encode(original)

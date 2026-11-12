@@ -8,7 +8,15 @@
 .image-card-edit-guard { display:block; border-radius:6px; pointer-events:auto; }
 .image-card-edit-guard:focus-visible { outline:2px solid #fff; outline-offset:1px; }
 .image-card-left-actions { position:absolute; left:9px; bottom:9px; display:grid; gap:0; }
-.image-card-actions .image-card-download { position:absolute; right:9px; bottom:9px; padding:4px 10px; border:1px solid #ffffff6b; border-radius:18px; background:#00000020; }
+.image-card-right-actions { position:absolute; right:9px; bottom:9px; display:flex; align-items:center; gap:6px; }
+.image-card-actions .image-card-download { padding:4px 10px; border:1px solid #ffffff6b; border-radius:18px; background:#00000020; }
+.image-card-actions .image-card-trash { justify-content:center; width:32px; height:32px; padding:6px; }
+.image-card-trash-actions .image-card-restore { position:absolute; left:9px; bottom:9px; }
+.image-card-trash-actions .image-card-purge { position:absolute; right:9px; bottom:9px; }
+.image-card-trash-actions.is-compact button { justify-content:center; min-width:32px; padding:6px; }
+.image-card-trash-actions.is-compact button span { display:none; }
+.image-card-narrow .image-card-trash-actions .image-card-restore { left:auto; right:6px; bottom:47px; }
+.image-card-narrow .image-card-trash-actions .image-card-purge { right:6px; bottom:9px; }
 .image-card-actions .image-card-more { position:absolute; top:9px; right:9px; width:32px; height:32px; justify-content:center; padding:6px; pointer-events:auto; }
 .image-card-actions.is-compact .image-card-left-actions,.image-card-actions.is-compact .image-card-download { display:none; }
 .image-card-menu { position:fixed; z-index:40; width:176px; overflow:auto; padding:5px; border:1px solid #ffffff24; border-radius:9px; background:#151719f5; box-shadow:0 8px 24px #0003; color:#fff; pointer-events:auto; }
@@ -21,6 +29,8 @@
   .image-card .image-card-actions { opacity:1; visibility:visible; pointer-events:none; background:none; }
   .image-card .image-card-left-actions,.image-card .image-card-download { opacity:0; visibility:hidden; pointer-events:none; }
   .image-card .image-card-more { background:#0007; pointer-events:auto; }
+  .image-card .image-card-trash { background:#0007; }
+  .image-card .image-card-trash-actions { background:linear-gradient(180deg,transparent 52%,#0009 100%); }
   .image-card:focus-within .image-card-actions { background:linear-gradient(180deg,#00000059 0%,transparent 30%,transparent 52%,#0009 100%); }
   .image-card:focus-within .image-card-left-actions,.image-card:focus-within .image-card-download { opacity:1; visibility:visible; pointer-events:auto; }
 }

@@ -5,6 +5,7 @@ body:has(.toast) .image-selection-toolbar { top:76px; }
 .workbench-selected-count { padding:0 8px; white-space:nowrap; font-size:13px; font-weight:600; }
 .image-selection-toolbar button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:32px; padding:6px 9px; border-radius:7px; white-space:nowrap; font-size:13px; line-height:20px; }
 .image-selection-toolbar button:hover:not(:disabled) { background:var(--surface-alt); }
+.image-selection-toolbar .image-selection-danger { color:var(--error); }
 .image-selection-toolbar .image-selection-close { width:32px; padding:0; margin-left:4px; color:var(--muted); }
 .workbench-edit-guard { display:inline-flex; align-items:center; flex-wrap:wrap; justify-content:center; border-radius:7px; }
 .workbench-edit-guard:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }

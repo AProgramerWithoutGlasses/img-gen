@@ -4,7 +4,7 @@ import {
   Copy, Download, Folder, Folders, FolderOpen, FolderPlus, Grid2X2, Image, Images,
   Info, LoaderCircle, LogOut, Maximize, Minus, Moon, MoreHorizontal, MoreVertical,
   PanelLeftClose, PanelLeftOpen, Pencil, Plus, RefreshCw, Search, Send,
-  Settings, ShieldCheck, Sparkles, Sun, Trash2, UserRound, X, ZoomIn, ZoomOut,
+  Settings, ShieldCheck, Sparkles, Sun, Trash2, Undo2, UserRound, X, ZoomIn, ZoomOut,
   type LucideIcon,
 } from "lucide-react";
 
@@ -18,7 +18,7 @@ const icons: Record<string, LucideIcon> = {
   logout: LogOut, search: Search, refresh: RefreshCw, send: Send, shield: ShieldCheck,
   coins: Coins, grid: Grid2X2, layoutGrid: Grid2X2, edit: Pencil, pencil: Pencil,
   info: Info, zoomIn: ZoomIn, zoomOut: ZoomOut, minus: Minus, copy: Copy,
-  trash: Trash2, loader: LoaderCircle, sparkles: Sparkles,
+  trash: Trash2, restore: Undo2, loader: LoaderCircle, sparkles: Sparkles,
 };
 
 export function Icon({ name, size = 20, className, style }: {

@@ -44,6 +44,7 @@ export interface ImageAsset extends Attachment {
   prompt: string;
   options: GenerationOptions;
   folderIds: string[];
+  trashedAt?: string;
 }
 export interface ImagePage {
   images: ImageAsset[];
@@ -51,11 +52,13 @@ export interface ImagePage {
   nextCursor?: string;
 }
 export interface ImageListOptions {
+  view?: "active" | "trash";
   folderId?: string;
   cursor?: string;
   signal?: AbortSignal;
 }
 export interface PreviewCollectionOptions {
+  view?: "active" | "trash";
   folderId?: string;
   total?: number;
   nextCursor?: string;
@@ -71,6 +74,8 @@ export interface GenerationOutput {
   status: "queued" | "running" | "succeeded" | "failed";
   startedAt?: string;
   finishedAt?: string;
+  imageState?: "available" | "trashed" | "deleted";
+  imageStates?: Record<string, "available" | "trashed" | "deleted">;
 }
 export interface Generation {
   id: string;
@@ -111,7 +116,7 @@ export interface StudioData {
   priceUpdatedAt: Partial<Record<ModelId, string>>;
   priceVersions?: Partial<Record<ModelId, number>>;
   preferences: Preferences;
-  imageSummary?: { total: number; folderCounts: Record<string, number> };
+  imageSummary?: { total: number; folderCounts: Record<string, number>; trashTotal?: number };
 }
 export interface NotifyOptions {
   durationMs?: number;
@@ -145,6 +150,9 @@ export interface StudioActions {
   deleteFolder: (id: string) => Promise<void>;
   addToFolders: (imageIds: string[], folderIds: string[]) => Promise<void>;
   removeFromFolder: (imageIds: string[], folderId: string) => Promise<void>;
+  trashImages: (imageIds: string[]) => Promise<void>;
+  restoreImages: (imageIds: string[]) => Promise<void>;
+  purgeImages: (imageIds: string[]) => Promise<void>;
   setPreferences: (patch: Partial<Preferences>) => Promise<void>;
   createUser: (input: CreateUserInput) => Promise<StudioUser>;
   updateUser: (

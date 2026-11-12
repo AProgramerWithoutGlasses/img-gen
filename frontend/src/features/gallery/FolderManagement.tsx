@@ -108,7 +108,7 @@ export function FolderManagement({
     if (data.imageSummary) return new Map(Object.entries(data.imageSummary.folderCounts));
     const result = new Map<string, number>();
     for (const image of data.assets) {
-      if (image.userId !== currentUser.id) continue;
+      if (image.userId !== currentUser.id || image.trashedAt) continue;
       for (const folderId of image.folderIds) result.set(folderId, (result.get(folderId) ?? 0) + 1);
     }
     return result;

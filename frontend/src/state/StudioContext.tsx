@@ -33,6 +33,7 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState("");
   const ref = useRef(data);
   const epoch = useRef(0);
+  const imageRevision = useRef(0);
   const refreshQueue = useRef<Promise<void>>(Promise.resolve());
   const pendingSubmission = useRef<{ signature: string; id: string } | null>(null);
   const legacyAttachments = useRef(new Map<string, string>());
@@ -52,8 +53,9 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
   }
   function refresh(fullHistory = false) {
     const generation = epoch.current;
+    const revision = imageRevision.current;
     const task = refreshQueue.current.catch(() => undefined).then(async () => {
-      if (generation !== epoch.current) return;
+      if (generation !== epoch.current || revision !== imageRevision.current) return;
       const controller = new AbortController();
       pendingReads.current.add(controller);
       try {
@@ -64,13 +66,24 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
           .filter((id): id is string => !!id))].slice(0, 100);
         if (processing.length) query.set("watch", processing.join(","));
         const next = await api<ServerData>(fullHistory ? "/api/studio/state" : "/api/studio/state?" + query, { signal: controller.signal });
-        if (generation !== epoch.current || controller.signal.aborted) return;
+        if (generation !== epoch.current || revision !== imageRevision.current || controller.signal.aborted) return;
         const previous = ref.current.currentUserId === next.currentUserId ? ref.current : emptyData();
+        const updatedBatches = new Map(next.generations.map(record => [record.id, record]));
+        const retainedAssets = previous.assets.flatMap(image => {
+          const output = updatedBatches.get(image.batchId)?.outputs?.find(item => item.outputIndex === image.outputIndex);
+          const state = output?.imageStates?.[image.id] ?? output?.imageState;
+          if (state === "deleted") return [];
+          if (state === "trashed") return [{ ...image, trashedAt: image.trashedAt ?? new Date().toISOString() }];
+          if (state === "available") return [{ ...image, trashedAt: undefined }];
+          return [image];
+        });
         publish({ ...next, preferences: preferences(next.currentUserId),
-          assets: mergeRecords(previous.assets, next.assets),
+          assets: mergeRecords(retainedAssets, next.assets),
           generations: mergeRecords(previous.generations, next.generations),
           imageSummary: next.imageSummary ?? previous.imageSummary,
         });
+      } catch (cause) {
+        if (!controller.signal.aborted) throw cause;
       } finally { pendingReads.current.delete(controller); }
     });
     refreshQueue.current = task;
@@ -115,6 +128,47 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
     return () => { active = false; clearTimeout(timer); };
   }, [ready, data.currentUserId, data.generations.some(g => g.userId === data.currentUserId && g.status === "processing")]);
   const actions = useMemo<StudioActions>(() => {
+    async function changeImages(action: "trash" | "restore" | "purge", imageIds: string[]) {
+      const session = epoch.current;
+      const ids = new Set(imageIds);
+      await api("/api/studio/images/" + action, { method: "POST", body: JSON.stringify({ imageIds }) });
+      if (session !== epoch.current) return;
+      // Reads started before this write must not reintroduce an old image state.
+      imageRevision.current++;
+      for (const controller of pendingReads.current) controller.abort();
+      pendingReads.current.clear();
+      historyRequest.current = null;
+      const affected = ref.current.assets.filter(image => ids.has(image.id));
+      const now = new Date().toISOString();
+      publish({ ...ref.current,
+        assets: ref.current.assets.flatMap(image => !ids.has(image.id) ? [image]
+          : action === "purge" ? [] : [{ ...image, trashedAt: action === "trash" ? image.trashedAt ?? now : undefined }]),
+        generations: ref.current.generations.map(record => {
+          const outputs = affected.filter(image => image.batchId === record.id);
+          if (!outputs.length) return record;
+          return { ...record,
+            imageIds: action === "restore" ? [...new Set([...record.imageIds, ...outputs.map(image => image.id)])]
+              : record.imageIds.filter(id => !ids.has(id)),
+            outputs: record.outputs?.map(output => {
+              const changed = outputs.filter(image => image.outputIndex === output.outputIndex);
+              if (!changed.length) return output;
+              const known = ref.current.assets.filter(image => image.batchId === record.id && image.outputIndex === output.outputIndex);
+              const states: NonNullable<typeof output.imageStates> = {
+                ...Object.fromEntries(known.map(image => [image.id, image.trashedAt ? "trashed" as const : "available" as const])),
+                ...output.imageStates,
+                ...Object.fromEntries(changed.map(image => [image.id, action === "trash" ? "trashed" as const : action === "restore" ? "available" as const : "deleted" as const])),
+              };
+              const values = Object.values(states);
+              return { ...output, imageStates: states,
+                imageState: values.includes("available") ? "available" : values.includes("trashed") ? "trashed" : "deleted" };
+            }),
+          };
+        }),
+      });
+      try { await refresh(); } catch {
+        window.dispatchEvent(new CustomEvent("studio:error", { detail: "操作已提交，更新列表失败，请刷新核对。" }));
+      }
+    }
     async function mutate<T>(path: string, method: string, body?: unknown): Promise<T> {
       const result = await api<T>(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
       // A failed subsequent read must not turn a successful mutation into a retry.
@@ -127,6 +181,9 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
       async generate(prompt, attachments, options, onAccepted) {
         const attachmentIds: string[] = [];
         for (const attachment of attachments) {
+          if (ref.current.assets.find(image => image.id === attachment.id)?.trashedAt
+            || ("trashedAt" in attachment && attachment.trashedAt))
+            throw new Error("图片已移入回收站，请先复原后使用。");
           const foreignResult = "userId" in attachment && attachment.userId !== ref.current.currentUserId;
           if (/^[a-f0-9]{32}$/.test(attachment.id) && !foreignResult) { attachmentIds.push(attachment.id); continue; }
           let uploaded = legacyAttachments.current.get(attachment.id);
@@ -190,6 +247,9 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
             ? { ...image, folderIds: image.folderIds.filter(id => id !== folderId) } : image),
         });
       },
+      trashImages: imageIds => changeImages("trash", imageIds),
+      restoreImages: imageIds => changeImages("restore", imageIds),
+      purgeImages: imageIds => changeImages("purge", imageIds),
       async setPreferences(patch) {
         const next = { ...ref.current.preferences, ...patch };
         localStorage.setItem("studio-preferences:" + ref.current.currentUserId, JSON.stringify(next));
@@ -219,16 +279,18 @@ function RemoteStudioProvider({ children }: { children: ReactNode }) {
       refreshData: async () => { await refresh(); return ref.current; },
       async listImages(options = {}) {
         const generation = epoch.current;
+        const revision = imageRevision.current;
         const userId = ref.current.currentUserId;
         const controller = new AbortController();
         pendingReads.current.add(controller);
         const signal = options.signal ? AbortSignal.any([controller.signal, options.signal]) : controller.signal;
         const query = new URLSearchParams({ limit: "50" });
+        if (options.view) query.set("view", options.view);
         if (options.folderId) query.set("folderId", options.folderId);
         if (options.cursor) query.set("cursor", options.cursor);
         try {
           const result = await api<ImagePage>("/api/studio/images?" + query, { signal });
-          if (signal.aborted || generation !== epoch.current || userId !== ref.current.currentUserId) {
+          if (signal.aborted || generation !== epoch.current || revision !== imageRevision.current || userId !== ref.current.currentUserId) {
             throw new DOMException("图片读取已取消", "AbortError");
           }
           publish({ ...ref.current, assets: mergeRecords(ref.current.assets, result.images) });

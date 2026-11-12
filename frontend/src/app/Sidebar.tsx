@@ -46,7 +46,7 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
     setMobileOpen(false);
   }, [currentUser.id]);
   useEffect(() => {
-    if (isGallery && activeFolder !== "all") setFoldersOpen(true);
+    if (isGallery && activeFolder !== "all" && activeFolder !== "trash") setFoldersOpen(true);
     setMobileOpen(false);
   }, [isGallery, activeFolder, isSettings, settingsSection]);
   useEffect(() => {
@@ -122,6 +122,9 @@ export function Sidebar({ isSettings, isGallery, collapsed, setCollapsed, settin
           <button className={"nav-item " + (isGallery && activeFolder === "all" ? "active" : "")}
             aria-label="全部图片" aria-current={isGallery && activeFolder === "all" ? "page" : undefined}
             onClick={() => go("/gallery")}><Icon name="grid" size={18} />{!compact && <span>全部图片</span>}</button>
+          <button className={"nav-item " + (isGallery && activeFolder === "trash" ? "active" : "")}
+            aria-label="回收站" aria-current={isGallery && activeFolder === "trash" ? "page" : undefined}
+            onClick={() => go("/gallery/trash")}><Icon name="trash" size={18} />{!compact && <span>回收站</span>}</button>
           <div className={"nav-folder-row " + (isGallery && activeFolder === "folders" ? "active" : "")}>
             <button className="nav-item nav-folder-link" aria-label="文件夹管理"
               aria-current={isGallery && activeFolder === "folders" ? "page" : undefined} onClick={() => go("/gallery/folders")}>

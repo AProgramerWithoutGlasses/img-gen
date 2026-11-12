@@ -44,6 +44,10 @@ func (a *App) createJobs(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 400, "上传图片请使用编辑模式")
 		return
 	}
+	// Serialize admission before reading a saved base image so a concurrent
+	// purge cannot finish and then have that source admitted as a new edit.
+	a.submit.Lock()
+	defer a.submit.Unlock()
 	if j.Mode == "edit" {
 		var Base Picture
 		var err error
@@ -56,7 +60,7 @@ func (a *App) createJobs(w http.ResponseWriter, r *http.Request) {
 			scope, args := ownerScope(r, "jobs.user_id")
 			var data []byte
 			var mime string
-			err = a.DB.QueryRowContext(r.Context(), "SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=?"+scope, append([]any{ids[0]}, args...)...).Scan(&mime, &data)
+			err = a.DB.QueryRowContext(r.Context(), "SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=? AND images.trashed_at IS NULL AND images.purged_at IS NULL"+scope, append([]any{ids[0]}, args...)...).Scan(&mime, &data)
 			if errors.Is(err, sql.ErrNoRows) {
 				apiError(w, 404, "基础图不存在或无权访问")
 				return
@@ -91,8 +95,6 @@ func (a *App) createJobs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Serializes queue admission within the single active server process.
-	a.submit.Lock()
-	defer a.submit.Unlock()
 	var pending int
 	if err := a.DB.QueryRowContext(r.Context(), "SELECT COUNT(*) FROM jobs WHERE status IN ('queued','running')").Scan(&pending); err != nil {
 		apiError(w, 500, "读取任务队列失败")
@@ -337,7 +339,7 @@ func (a *App) getImage(w http.ResponseWriter, r *http.Request) {
 	var data []byte
 	var mime string
 	scope, args := ownerScope(r, "jobs.user_id")
-	err := a.DB.QueryRowContext(r.Context(), "SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=?"+scope, append([]any{id}, args...)...).Scan(&mime, &data)
+	err := a.DB.QueryRowContext(r.Context(), "SELECT images.mime,images.content FROM images JOIN jobs ON jobs.id=images.job_id WHERE images.id=? AND images.purged_at IS NULL"+scope, append([]any{id}, args...)...).Scan(&mime, &data)
 	if errors.Is(err, sql.ErrNoRows) {
 		apiError(w, 404, "图片不存在")
 		return
