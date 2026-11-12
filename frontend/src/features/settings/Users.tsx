@@ -4,6 +4,7 @@ import { useStudio } from "../../state/StudioContext";
 import { Modal } from "../../components/Modal";
 import { Icon } from "../../components/Icon";
 import type { CreateUserInput, StudioUser } from "../../types";
+import { USERNAME_PATTERN } from "../../lib/auth";
 import {
   roleLabel,
   formatTime,
@@ -190,7 +191,7 @@ function UserForm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const name = input.username.trim();
-  const nameError = !/^[A-Za-z0-9_][A-Za-z0-9_.-]{2,31}$/.test(name)
+  const nameError = !USERNAME_PATTERN.test(name)
     ? "使用 3–32 位字母、数字、下划线、点或连字符；不能以点或连字符开头。"
     : data.users.some(
           (user) => user.username.toLowerCase() === name.toLowerCase(),

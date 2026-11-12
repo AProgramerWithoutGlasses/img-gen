@@ -25,20 +25,8 @@
     gap: 6px;
     padding: 8px;
   }
-  .composer-toolbar .model-select {
-    width: 216px;
-    min-width: 180px;
-    font-size: 14px;
-  }
   .composer-toolbar select {
     font-size: 14px;
-  }
-  .estimated-cost {
-    font-size: 11px;
-  }
-  .send-button {
-    min-width: 74px;
-    padding: 8px 12px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

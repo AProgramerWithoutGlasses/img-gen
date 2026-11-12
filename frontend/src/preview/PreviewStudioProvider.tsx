@@ -301,7 +301,7 @@ export default function PreviewStudioProvider({
         update((d) => {
           admin(d);
           const username = input.username.trim();
-          if (!/^[a-zA-Z0-9_][a-zA-Z0-9_.-]{2,31}$/.test(username))
+          if (!USERNAME_PATTERN.test(username))
             throw new Error("用户名格式不正确");
           if (
             d.users.some(
@@ -309,8 +309,7 @@ export default function PreviewStudioProvider({
             )
           )
             throw new Error("用户名已存在");
-          const bytes = new TextEncoder().encode(input.password).length;
-          if (bytes < 4 || bytes > 128)
+          if (passwordLengthError(input.password))
             throw new Error("初始密码应为 4–128 字节");
           const user: StudioUser = {
             id: id(),

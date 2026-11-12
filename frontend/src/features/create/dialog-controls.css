@@ -136,10 +136,6 @@
 .dialog-button-generate {
   width: 100px;
 }
-.dialog-button-fit {
-  width: auto;
-  padding: 0 14px;
-}
 .dialog-menu {
   position: fixed;
   z-index: 10020;

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Generation, StudioUser } from "../../types";
+import { passwordLengthError } from "../../lib/auth";
 
 export const roleLabel = (role: StudioUser["role"]) =>
   role === "admin" ? "管理员" : "普通用户";
@@ -9,10 +10,7 @@ export const formatTime = (value?: string) =>
   value ? new Date(value).toLocaleString("zh-CN", { hour12: false }) : "—";
 export const messageOf = (error: unknown) =>
   error instanceof Error ? error.message : "操作失败，请重试。";
-export const validPassword = (password: string) => {
-  const length = new TextEncoder().encode(password).length;
-  return length >= 4 && length <= 128;
-};
+export const validPassword = (password: string) => !passwordLengthError(password);
 
 export function Heading({
   title,

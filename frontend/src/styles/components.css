@@ -43,22 +43,8 @@
   font-size: 13px;
   margin-top: 8px;
 }
-.prompt-modal {
-  width: 896px;
-}
-.prompt-modal textarea {
-  width: 100%;
-  height: min(50dvh, 440px);
-  resize: vertical;
-  line-height: 1.8;
-}
 .image-preview {
   width: 1280px;
-}
-.preview-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 292px;
-  gap: 36px;
 }
 .preview-stage {
   height: min(69dvh, 624px);
@@ -86,17 +72,6 @@
 }
 .preview-next {
   right: -15px;
-}
-.preview-position {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface);
-  border-radius: 4px;
-  padding: 4px 8px;
-  color: var(--muted);
-  font-size: 12px;
 }
 .preview-details {
   border-left: 1px solid var(--border);
