@@ -91,9 +91,9 @@ try {
     if (new URL(route.request().url()).pathname === '/api/studio/models') await heldModels;
     await route.fulfill({ status: 401, json: { error: '请先登录' } });
   });
-  const stateRejected = guestPage.waitForResponse(r => r.url().endsWith('/api/studio/state'));
+  const stateRejected = guestPage.waitForResponse(r => new URL(r.url()).pathname === '/api/studio/state');
   await guestPage.goto(origin);
-  await stateRejected;
+  expect((await stateRejected).status()).toBe(401);
   await guestPage.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   try { await expect(guestPage.getByRole('status')).toHaveText('正在载入…'); }
   finally { releaseModels(); }
