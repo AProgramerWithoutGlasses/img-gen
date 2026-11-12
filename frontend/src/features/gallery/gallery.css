@@ -172,12 +172,12 @@
 .gallery-menu button.gallery-danger {
   color: var(--error);
 }
-.gallery-danger-button {
+.btn.gallery-danger-button {
   background: var(--error);
   border-color: var(--error);
   color: var(--on-accent, #fff);
 }
-.gallery-danger-button:hover:not(:disabled) {
+.btn.gallery-danger-button:hover:not(:disabled) {
   background: var(--error);
   filter: brightness(.92);
 }
